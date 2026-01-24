@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![GSD Version](https://img.shields.io/badge/GSD-v1.9.10-blue.svg)](https://github.com/anthropics/claude-code)
 [![n8n Integration](https://img.shields.io/badge/n8n-2709%20templates-orange.svg)](https://n8n.io)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org)
+[![Python 3.9+](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org)
 
 ---
 
@@ -56,7 +56,7 @@ MyWork is a productivity framework that orchestrates multiple AI tools into a co
 
 ### Prerequisites
 
-- Python 3.10+
+- Python 3.9+
 - Node.js 18+
 - [Claude Code CLI](https://github.com/anthropics/claude-code)
 - Git

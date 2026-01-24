@@ -110,7 +110,7 @@ if [[ -n "$SHELL_PROFILE" ]]; then
         echo "" >> "$SHELL_PROFILE"
         echo "# MyWork-AI Framework" >> "$SHELL_PROFILE"
         echo "export MYWORK_ROOT=\"$SCRIPT_DIR\"" >> "$SHELL_PROFILE"
-        echo "export PATH=\"\$MYWORK_ROOT/tools:\$PATH\"" >> "$SHELL_PROFILE"
+        echo "export PATH=\"\$MYWORK_ROOT/.venv/bin:\$MYWORK_ROOT/tools:\$PATH\"" >> "$SHELL_PROFILE"
         echo -e "${GREEN}Added MYWORK_ROOT to $SHELL_PROFILE${NC}"
     fi
 fi
@@ -144,5 +144,5 @@ echo ""
 echo "Quick commands:"
 echo "  mw status        - Check system health"
 echo "  mw brain search  - Search the knowledge vault"
-echo "  mw scaffold new  - Create a new project"
+echo "  mw new            - Create a new project"
 echo ""

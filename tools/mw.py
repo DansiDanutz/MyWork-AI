@@ -53,32 +53,23 @@ import subprocess
 from pathlib import Path
 from typing import List, Optional
 
-# Configuration - Dynamic path detection
-def get_mywork_root() -> Path:
-    """
-    Detect MyWork root directory.
-    Priority:
-    1. MYWORK_ROOT environment variable
-    2. Parent of this script's directory (tools/ -> MyWork/)
-    3. Default to ~/MyWork
-    """
-    # Check environment variable first
-    if env_root := os.environ.get("MYWORK_ROOT"):
-        return Path(env_root)
+# Configuration - prefer shared config for consistent path detection
+try:
+    from config import MYWORK_ROOT, TOOLS_DIR, PROJECTS_DIR
+except ImportError:
+    def _get_mywork_root() -> Path:
+        if env_root := os.environ.get("MYWORK_ROOT"):
+            return Path(env_root)
+        script_dir = Path(__file__).resolve().parent
+        if script_dir.name == "tools":
+            potential_root = script_dir.parent
+            if (potential_root / "CLAUDE.md").exists():
+                return potential_root
+        return Path.home() / "MyWork"
 
-    # Try to detect from script location
-    script_dir = Path(__file__).resolve().parent
-    if script_dir.name == "tools":
-        potential_root = script_dir.parent
-        if (potential_root / "CLAUDE.md").exists():
-            return potential_root
-
-    # Default fallback
-    return Path.home() / "MyWork"
-
-MYWORK_ROOT = get_mywork_root()
-TOOLS_DIR = MYWORK_ROOT / "tools"
-PROJECTS_DIR = MYWORK_ROOT / "projects"
+    MYWORK_ROOT = _get_mywork_root()
+    TOOLS_DIR = MYWORK_ROOT / "tools"
+    PROJECTS_DIR = MYWORK_ROOT / "projects"
 
 # Color codes for terminal
 class Colors:
@@ -103,7 +94,7 @@ def run_tool(tool_name: str, args: List[str] = None) -> int:
         print(f"{Colors.RED}Tool not found: {tool_name}{Colors.ENDC}")
         return 1
 
-    cmd = ["python3", str(tool_path)] + (args or [])
+    cmd = [sys.executable, str(tool_path)] + (args or [])
     return subprocess.call(cmd)
 
 

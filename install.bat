@@ -79,10 +79,14 @@ echo Setting environment variables...
 setx MYWORK_ROOT "%SCRIPT_DIR%" >nul 2>&1
 
 REM Add tools to PATH if not already present
+set "ADD_PATH=0"
+echo %PATH% | find /i "%SCRIPT_DIR%\.venv\Scripts" >nul 2>&1
+if errorlevel 1 set "ADD_PATH=1"
 echo %PATH% | find /i "%SCRIPT_DIR%\tools" >nul 2>&1
-if errorlevel 1 (
-    setx PATH "%PATH%;%SCRIPT_DIR%\tools" >nul 2>&1
-    echo Added tools directory to PATH
+if errorlevel 1 set "ADD_PATH=1"
+if "%ADD_PATH%"=="1" (
+    setx PATH "%PATH%;%SCRIPT_DIR%\.venv\Scripts;%SCRIPT_DIR%\tools" >nul 2>&1
+    echo Added .venv Scripts and tools directories to PATH
 )
 
 REM Verify installation
@@ -111,7 +115,7 @@ echo.
 echo Quick commands:
 echo   mw status        - Check system health
 echo   mw brain search  - Search the knowledge vault
-echo   mw scaffold new  - Create a new project
+echo   mw new            - Create a new project
 echo.
 
 pause
