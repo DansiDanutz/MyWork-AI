@@ -31,7 +31,7 @@ echo -e "${NC}"
 # Check Python version
 echo -e "${YELLOW}Checking Python version...${NC}"
 PYTHON_VERSION=$(python3 --version 2>&1 | cut -d' ' -f2 | cut -d'.' -f1,2)
-REQUIRED_VERSION="3.10"
+REQUIRED_VERSION="3.9"
 
 if [[ "$(printf '%s\n' "$REQUIRED_VERSION" "$PYTHON_VERSION" | sort -V | head -n1)" != "$REQUIRED_VERSION" ]]; then
     echo -e "${RED}Error: Python $REQUIRED_VERSION or higher is required (found $PYTHON_VERSION)${NC}"

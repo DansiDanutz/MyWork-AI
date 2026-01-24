@@ -5,7 +5,7 @@ MyWork-AI Framework Setup
 Installation script for MyWork-AI framework tools.
 """
 
-from setuptools import setup, find_packages
+from setuptools import setup
 from pathlib import Path
 
 # Read the README
@@ -53,7 +53,7 @@ setup(
         "Bug Reports": "https://github.com/dansidanutz/MyWork-AI/issues",
         "Source": "https://github.com/dansidanutz/MyWork-AI",
     },
-    packages=find_packages(where="tools"),
+    packages=[],
     package_dir={"": "tools"},
     py_modules=[
         "mw",
@@ -68,7 +68,7 @@ setup(
         "scaffold",
         "switch_llm_provider",
     ],
-    python_requires=">=3.10",
+    python_requires=">=3.9",
     install_requires=requirements,
     extras_require=extras_require,
     entry_points={
@@ -86,9 +86,9 @@ setup(
         "Development Status :: 4 - Beta",
         "Environment :: Console",
         "Intended Audience :: Developers",
-        "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
