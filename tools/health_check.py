@@ -27,7 +27,14 @@ import json
 import socket
 import subprocess
 import time
-import fcntl
+try:
+    import fcntl  # Unix-only
+except ImportError:  # pragma: no cover - Windows fallback
+    fcntl = None
+try:
+    import msvcrt  # Windows-only
+except ImportError:  # pragma: no cover - Unix fallback
+    msvcrt = None
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any, Tuple, Optional
@@ -69,16 +76,25 @@ class HealthCheckLock:
 
             # Create lock file
             self.lock_fd = open(self.lock_file, 'w')
+            self.lock_fd.seek(0)
 
             # Try to acquire exclusive lock with timeout
             start_time = time.time()
             while True:
                 try:
-                    fcntl.flock(self.lock_fd.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    if fcntl is not None:
+                        fcntl.flock(self.lock_fd.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    elif msvcrt is not None:
+                        # Lock 1 byte in non-blocking mode
+                        msvcrt.locking(self.lock_fd.fileno(), msvcrt.LK_NBLCK, 1)
+                    else:
+                        # No locking available; proceed without lock
+                        return self
+
                     self.lock_fd.write(f"health_check:{os.getpid()}:{time.time()}\n")
                     self.lock_fd.flush()
                     return self
-                except BlockingIOError:
+                except (BlockingIOError, OSError):
                     if time.time() - start_time > self.timeout:
                         raise RuntimeError(f"Another health check is running (timeout after {self.timeout}s)")
                     time.sleep(0.1)
@@ -90,7 +106,11 @@ class HealthCheckLock:
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.lock_fd:
             try:
-                fcntl.flock(self.lock_fd.fileno(), fcntl.LOCK_UN)
+                if fcntl is not None:
+                    fcntl.flock(self.lock_fd.fileno(), fcntl.LOCK_UN)
+                elif msvcrt is not None:
+                    self.lock_fd.seek(0)
+                    msvcrt.locking(self.lock_fd.fileno(), msvcrt.LK_UNLCK, 1)
                 self.lock_fd.close()
                 # Clean up lock file
                 if self.lock_file.exists():
