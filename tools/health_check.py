@@ -26,6 +26,8 @@ import sys
 import json
 import socket
 import subprocess
+import time
+import fcntl
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any, Tuple, Optional
@@ -45,8 +47,103 @@ except ImportError:
     MYWORK_ROOT = _get_mywork_root()
     AUTOCODER_PATH = Path(os.environ.get("AUTOCODER_ROOT", Path.home() / "GamesAI" / "autocoder"))
 
+# Health check lock file for preventing concurrent runs
+HEALTH_CHECK_LOCK = MYWORK_ROOT / ".tmp" / "health_check.lock"
+
 GSD_PATH = Path.home() / ".claude" / "commands" / "gsd"
 N8N_SKILLS_PATH = Path.home() / ".claude" / "skills" / "n8n-skills"
+
+
+class HealthCheckLock:
+    """Context manager for preventing concurrent health check runs."""
+
+    def __init__(self, lock_file: Path, timeout: int = 5):
+        self.lock_file = lock_file
+        self.timeout = timeout
+        self.lock_fd = None
+
+    def __enter__(self):
+        try:
+            # Ensure .tmp directory exists
+            self.lock_file.parent.mkdir(parents=True, exist_ok=True)
+
+            # Create lock file
+            self.lock_fd = open(self.lock_file, 'w')
+
+            # Try to acquire exclusive lock with timeout
+            start_time = time.time()
+            while True:
+                try:
+                    fcntl.flock(self.lock_fd.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    self.lock_fd.write(f"health_check:{os.getpid()}:{time.time()}\n")
+                    self.lock_fd.flush()
+                    return self
+                except BlockingIOError:
+                    if time.time() - start_time > self.timeout:
+                        raise RuntimeError(f"Another health check is running (timeout after {self.timeout}s)")
+                    time.sleep(0.1)
+        except Exception:
+            if self.lock_fd:
+                self.lock_fd.close()
+            raise
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self.lock_fd:
+            try:
+                fcntl.flock(self.lock_fd.fileno(), fcntl.LOCK_UN)
+                self.lock_fd.close()
+                # Clean up lock file
+                if self.lock_file.exists():
+                    self.lock_file.unlink()
+            except Exception:
+                pass  # Best effort cleanup
+
+
+def check_file_permissions(path: Path, need_write: bool = False) -> tuple[bool, str]:
+    """
+    Check if we have required permissions for file/directory operations.
+
+    Returns:
+        (success, error_message)
+    """
+    try:
+        if not path.exists():
+            # Check parent directory for write permission if we need to create
+            parent = path.parent
+            if parent.exists():
+                if need_write and not os.access(parent, os.W_OK):
+                    return False, f"No write permission for parent directory: {parent}"
+                return True, ""
+            else:
+                return check_file_permissions(parent, need_write=True)
+
+        # Check existing file/directory
+        if not os.access(path, os.R_OK):
+            return False, f"No read permission: {path}"
+
+        if need_write and not os.access(path, os.W_OK):
+            return False, f"No write permission: {path}"
+
+        return True, ""
+    except Exception as e:
+        return False, f"Permission check failed: {e}"
+
+
+def safe_socket_connect(host: str, port: int, timeout: float = 3.0) -> bool:
+    """
+    Safely check if a socket connection can be established with timeout protection.
+
+    Returns:
+        True if connection successful, False otherwise
+    """
+    try:
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(timeout)
+        result = sock.connect_ex((host, port))
+        sock.close()
+        return result == 0
+    except (socket.error, socket.timeout, OSError):
+        return False
 
 
 class Status(Enum):
@@ -193,10 +290,8 @@ class HealthChecker:
                 ))
                 return
 
-            # Check if server is running
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            server_running = sock.connect_ex(('127.0.0.1', 8888)) == 0
-            sock.close()
+            # Check if server is running (with timeout protection)
+            server_running = safe_socket_connect('127.0.0.1', 8888, timeout=3.0)
 
             if server_running:
                 self.add_result(CheckResult(
@@ -810,30 +905,57 @@ def main():
     """Main entry point."""
     command = sys.argv[1] if len(sys.argv) > 1 else "full"
 
-    checker = HealthChecker()
-
+    # Use lock file protection for non-quick checks
     if command == "quick":
+        checker = HealthChecker()
         results = checker.run_quick()
         print_results(results)
+        return
 
-    elif command == "fix":
-        results = checker.run_all()
-        print_results(results)
-        auto_fix(results)
+    try:
+        with HealthCheckLock(HEALTH_CHECK_LOCK, timeout=10):
+            checker = HealthChecker()
 
-    elif command == "report":
-        results = checker.run_all()
-        report = generate_report(results)
-        report_file = MYWORK_ROOT / ".tmp" / f"health_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
-        report_file.parent.mkdir(parents=True, exist_ok=True)
-        with open(report_file, "w") as f:
-            f.write(report)
-        print(f"✅ Report saved to: {report_file}")
-        print_results(results)
+            if command == "fix":
+                # Check file permissions before attempting fixes
+                can_write, error = check_file_permissions(MYWORK_ROOT, need_write=True)
+                if not can_write:
+                    print(f"❌ Cannot run fix mode: {error}")
+                    sys.exit(1)
 
-    else:  # full
-        results = checker.run_all()
-        print_results(results, verbose=True)
+                results = checker.run_all()
+                print_results(results)
+                checker.auto_fix()
+
+            elif command == "report":
+                results = checker.run_all()
+                report = generate_report(results)
+                report_file = MYWORK_ROOT / ".tmp" / f"health_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+
+                # Check permissions before writing report
+                can_write, error = check_file_permissions(report_file.parent, need_write=True)
+                if not can_write:
+                    print(f"❌ Cannot write report: {error}")
+                else:
+                    report_file.parent.mkdir(parents=True, exist_ok=True)
+                    with open(report_file, "w") as f:
+                        f.write(report)
+                    print(f"✅ Report saved to: {report_file}")
+
+                print_results(results)
+
+            else:  # full check
+                results = checker.run_all()
+                print_results(results)
+
+    except RuntimeError as e:
+        print(f"⚠️  {e}")
+        print("If you need to force a health check, remove the lock file:")
+        print(f"   rm {HEALTH_CHECK_LOCK}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"❌ Health check failed: {e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
