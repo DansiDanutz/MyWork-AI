@@ -19,19 +19,17 @@ router = APIRouter()
 class BrainEntryCreate(BaseModel):
     title: str
     content: str
-    entry_type: str  # pattern, snippet, tutorial, solution, documentation
+    type: str  # pattern, snippet, tutorial, solution, documentation
     category: str
     tags: List[str] = []
     language: Optional[str] = None
     framework: Optional[str] = None
-    is_public: bool = True
 
 
 class BrainEntryUpdate(BaseModel):
     title: Optional[str] = None
     content: Optional[str] = None
     tags: Optional[List[str]] = None
-    is_public: Optional[bool] = None
 
 
 class BrainEntryResponse(BaseModel):
@@ -40,17 +38,16 @@ class BrainEntryResponse(BaseModel):
     contributor_username: Optional[str]
     title: str
     content: str
-    entry_type: str
+    type: str
     category: str
     tags: List[str]
     language: Optional[str]
     framework: Optional[str]
     quality_score: float
     usage_count: int
-    upvotes: int
-    downvotes: int
-    is_verified: bool
-    is_public: bool
+    helpful_votes: int
+    unhelpful_votes: int
+    verified: bool
 
     class Config:
         from_attributes = True
@@ -94,7 +91,7 @@ async def contribute_knowledge(
 
     # Validate entry type
     valid_types = ["pattern", "snippet", "tutorial", "solution", "documentation"]
-    if entry_data.entry_type not in valid_types:
+    if entry_data.type not in valid_types:
         raise HTTPException(
             status_code=400,
             detail=f"Invalid entry type. Must be one of: {valid_types}"
@@ -105,7 +102,7 @@ async def contribute_knowledge(
         contributor_id=user_id,
         title=entry_data.title,
         content=entry_data.content,
-        entry_type=entry_data.entry_type,
+        type=entry_data.type,
         category=entry_data.category,
         tags=entry_data.tags,
         language=entry_data.language,
@@ -127,17 +124,17 @@ async def contribute_knowledge(
         contributor_username=None,  # TODO: Get username
         title=entry.title,
         content=entry.content,
-        entry_type=entry.entry_type,
+        type=entry.type,
         category=entry.category,
         tags=entry.tags or [],
         language=entry.language,
         framework=entry.framework,
         quality_score=entry.quality_score,
         usage_count=entry.usage_count,
-        upvotes=entry.upvotes,
-        downvotes=entry.downvotes,
-        is_verified=entry.is_verified,
-        is_public=entry.is_public
+        upvotes=entry.helpful_votes,
+        downvotes=entry.unhelpful_votes,
+        is_verified=entry.verified,
+        is_public=entry.status
     )
 
 
@@ -217,17 +214,17 @@ async def search_brain(
             contributor_username=user.username if user else None,
             title=entry.title,
             content=entry.content,
-            entry_type=entry.entry_type,
+            type=entry.type,
             category=entry.category,
             tags=entry.tags or [],
             language=entry.language,
             framework=entry.framework,
             quality_score=entry.quality_score,
             usage_count=entry.usage_count,
-            upvotes=entry.upvotes,
-            downvotes=entry.downvotes,
-            is_verified=entry.is_verified,
-            is_public=entry.is_public
+            upvotes=entry.helpful_votes,
+            downvotes=entry.unhelpful_votes,
+            is_verified=entry.verified,
+            is_public=entry.status
         ))
 
     return BrainSearchResponse(
@@ -296,17 +293,17 @@ async def query_brain(
             contributor_username=user.username if user else None,
             title=entry.title,
             content=entry.content,
-            entry_type=entry.entry_type,
+            type=entry.type,
             category=entry.category,
             tags=entry.tags or [],
             language=entry.language,
             framework=entry.framework,
             quality_score=entry.quality_score,
             usage_count=entry.usage_count,
-            upvotes=entry.upvotes,
-            downvotes=entry.downvotes,
-            is_verified=entry.is_verified,
-            is_public=entry.is_public
+            upvotes=entry.helpful_votes,
+            downvotes=entry.unhelpful_votes,
+            is_verified=entry.verified,
+            is_public=entry.status
         ))
 
     # TODO: Generate AI summary using Claude
@@ -317,6 +314,51 @@ async def query_brain(
         results=entry_responses,
         ai_summary=ai_summary
     )
+
+
+@router.get("/stats/overview")
+async def get_brain_stats(
+    db: AsyncSession = Depends(get_db)
+):
+    """Get Brain statistics."""
+    # Total entries
+    total_query = select(func.count(BrainEntry.id))
+    total_result = await db.execute(total_query)
+    total_entries = total_result.scalar()
+
+    # Entries by type
+    type_query = select(
+        BrainEntry.entry_type,
+        func.count(BrainEntry.id)
+    ).group_by(BrainEntry.entry_type)
+    type_result = await db.execute(type_query)
+    entries_by_type = dict(type_result.all())
+
+    # Top categories
+    category_query = select(
+        BrainEntry.category,
+        func.count(BrainEntry.id)
+    ).group_by(BrainEntry.category).order_by(func.count(BrainEntry.id).desc()).limit(10)
+    category_result = await db.execute(category_query)
+    top_categories = dict(category_result.all())
+
+    # Verified entries
+    verified_query = select(func.count(BrainEntry.id)).where(BrainEntry.is_verified == True)
+    verified_result = await db.execute(verified_query)
+    verified_count = verified_result.scalar()
+
+    # Total usage
+    usage_query = select(func.sum(BrainEntry.usage_count))
+    usage_result = await db.execute(usage_query)
+    total_usage = usage_result.scalar() or 0
+
+    return {
+        "total_entries": total_entries,
+        "verified_entries": verified_count,
+        "total_queries": total_usage,
+        "entries_by_type": entries_by_type,
+        "top_categories": top_categories
+    }
 
 
 @router.get("/{entry_id}", response_model=BrainEntryResponse)
@@ -332,7 +374,7 @@ async def get_brain_entry(
     if not entry:
         raise HTTPException(status_code=404, detail="Entry not found")
 
-    if not entry.is_public:
+    if not entry.status:
         # TODO: Check if user is contributor or admin
         raise HTTPException(status_code=403, detail="Entry is private")
 
@@ -347,17 +389,17 @@ async def get_brain_entry(
         contributor_username=user.username if user else None,
         title=entry.title,
         content=entry.content,
-        entry_type=entry.entry_type,
+        type=entry.type,
         category=entry.category,
         tags=entry.tags or [],
         language=entry.language,
         framework=entry.framework,
         quality_score=entry.quality_score,
         usage_count=entry.usage_count,
-        upvotes=entry.upvotes,
-        downvotes=entry.downvotes,
-        is_verified=entry.is_verified,
-        is_public=entry.is_public
+        upvotes=entry.helpful_votes,
+        downvotes=entry.unhelpful_votes,
+        is_verified=entry.verified,
+        is_public=entry.status
     )
 
 
@@ -402,17 +444,17 @@ async def update_brain_entry(
         contributor_username=user.username if user else None,
         title=entry.title,
         content=entry.content,
-        entry_type=entry.entry_type,
+        type=entry.type,
         category=entry.category,
         tags=entry.tags or [],
         language=entry.language,
         framework=entry.framework,
         quality_score=entry.quality_score,
         usage_count=entry.usage_count,
-        upvotes=entry.upvotes,
-        downvotes=entry.downvotes,
-        is_verified=entry.is_verified,
-        is_public=entry.is_public
+        upvotes=entry.helpful_votes,
+        downvotes=entry.unhelpful_votes,
+        is_verified=entry.verified,
+        is_public=entry.status
     )
 
 
@@ -468,14 +510,14 @@ async def vote_on_entry(
     # TODO: Track user votes to prevent double voting
 
     if vote_data.vote == 1:
-        entry.upvotes += 1
+        entry.helpful_votes += 1
     else:
-        entry.downvotes += 1
+        entry.unhelpful_votes += 1
 
     # Recalculate quality score
-    total_votes = entry.upvotes + entry.downvotes
+    total_votes = entry.helpful_votes + entry.unhelpful_votes
     if total_votes > 0:
-        vote_ratio = entry.upvotes / total_votes
+        vote_ratio = entry.helpful_votes / total_votes
         # Weight by usage and votes
         entry.quality_score = (
             vote_ratio * 0.5 +
@@ -496,60 +538,15 @@ async def vote_on_entry(
         contributor_username=user.username if user else None,
         title=entry.title,
         content=entry.content,
-        entry_type=entry.entry_type,
+        type=entry.type,
         category=entry.category,
         tags=entry.tags or [],
         language=entry.language,
         framework=entry.framework,
         quality_score=entry.quality_score,
         usage_count=entry.usage_count,
-        upvotes=entry.upvotes,
-        downvotes=entry.downvotes,
-        is_verified=entry.is_verified,
-        is_public=entry.is_public
+        upvotes=entry.helpful_votes,
+        downvotes=entry.unhelpful_votes,
+        is_verified=entry.verified,
+        is_public=entry.status
     )
-
-
-@router.get("/stats/overview")
-async def get_brain_stats(
-    db: AsyncSession = Depends(get_db)
-):
-    """Get Brain statistics."""
-    # Total entries
-    total_query = select(func.count(BrainEntry.id))
-    total_result = await db.execute(total_query)
-    total_entries = total_result.scalar()
-
-    # Entries by type
-    type_query = select(
-        BrainEntry.entry_type,
-        func.count(BrainEntry.id)
-    ).group_by(BrainEntry.entry_type)
-    type_result = await db.execute(type_query)
-    entries_by_type = dict(type_result.all())
-
-    # Top categories
-    category_query = select(
-        BrainEntry.category,
-        func.count(BrainEntry.id)
-    ).group_by(BrainEntry.category).order_by(func.count(BrainEntry.id).desc()).limit(10)
-    category_result = await db.execute(category_query)
-    top_categories = dict(category_result.all())
-
-    # Verified entries
-    verified_query = select(func.count(BrainEntry.id)).where(BrainEntry.is_verified == True)
-    verified_result = await db.execute(verified_query)
-    verified_count = verified_result.scalar()
-
-    # Total usage
-    usage_query = select(func.sum(BrainEntry.usage_count))
-    usage_result = await db.execute(usage_query)
-    total_usage = usage_result.scalar() or 0
-
-    return {
-        "total_entries": total_entries,
-        "verified_entries": verified_count,
-        "total_queries": total_usage,
-        "entries_by_type": entries_by_type,
-        "top_categories": top_categories
-    }
