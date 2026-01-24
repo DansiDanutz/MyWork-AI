@@ -4,6 +4,7 @@ Checkout API endpoints for Stripe payment processing.
 
 from typing import Optional
 from datetime import datetime
+from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -77,14 +78,15 @@ async def create_checkout_session(
 
     # Calculate price based on license type
     if checkout_data.license_type == "extended":
-        price = product.extended_license_price or product.price * 2.5
+        # Extended license is 2.5x the standard price
+        price = product.price * Decimal('2.5')
         license_name = "Extended License"
     else:
         price = product.price
         license_name = "Standard License"
 
     # Convert to cents (Stripe uses smallest currency unit)
-    price_cents = int(price * 100)
+    price_cents = int(price * Decimal('100'))
 
     # Create Stripe Checkout Session
     try:
@@ -98,7 +100,7 @@ async def create_checkout_session(
                     "price_data": {
                         "currency": "usd",
                         "product_data": {
-                            "name": product.name,
+                            "name": product.title,
                             "description": product.description[:500] if product.description else "",
                             "metadata": {
                                 "product_id": product.id,
@@ -208,7 +210,7 @@ async def verify_and_create_order(
             raise HTTPException(status_code=404, detail="Product not found")
 
         # Calculate fees
-        platform_fee = price * (settings.PLATFORM_FEE_PERCENT / 100)
+        platform_fee = price * (Decimal(str(settings.PLATFORM_FEE_PERCENT)) / Decimal('100'))
         seller_amount = price - platform_fee
 
         # Create the order
@@ -216,7 +218,7 @@ async def verify_and_create_order(
             buyer_id=buyer_id,
             seller_id=seller_id,
             product_id=product_id,
-            product_name=product.name,
+            product_name=product.title,
             amount=price,
             platform_fee=platform_fee,
             seller_amount=seller_amount,
@@ -263,11 +265,11 @@ async def get_product_prices(
         raise HTTPException(status_code=404, detail="Product not found")
 
     standard_price = product.price
-    extended_price = product.extended_license_price or product.price * 2.5
+    extended_price = product.price * Decimal('2.5')
 
     return {
         "product_id": product.id,
-        "product_name": product.name,
+        "product_name": product.title,
         "standard_license": {
             "price": standard_price,
             "description": "Standard License - Single project use"

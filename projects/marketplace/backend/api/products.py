@@ -3,6 +3,7 @@ Products API endpoints.
 """
 
 from typing import List, Optional
+from datetime import datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
@@ -57,8 +58,8 @@ class ProductResponse(ProductBase):
     rating_count: int
     version: str
     preview_images: Optional[List[str]] = None
-    created_at: str
-    updated_at: str
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         from_attributes = True
