@@ -7,6 +7,7 @@ import {
 } from '@clerk/nextjs'
 import { Inter } from 'next/font/google'
 import Link from 'next/link'
+import { Toaster } from 'sonner'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -65,6 +66,7 @@ export default function RootLayout({
             </div>
           </header>
           {children}
+          <Toaster position="top-right" richColors />
         </body>
       </html>
     </ClerkProvider>

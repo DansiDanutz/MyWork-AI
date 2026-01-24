@@ -12,10 +12,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from auth import get_current_user
 from database import get_db
-from models.user import User
+from models.user import User, SellerProfile
 from models.payout import Payout, PAYOUT_STATUSES
 from models.order import Order
-from models.seller_profile import SellerProfile
 
 router = APIRouter(prefix="/api/payouts", tags=["payouts"])
 
