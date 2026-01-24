@@ -165,10 +165,77 @@ python tools/mw.py <command>
 | Command | Description |
 |---------|-------------|
 | `mw ac start <project>` | Start Autocoder |
-| `mw ac stop` | Stop Autocoder |
+| `mw ac stop <project>` | Stop Autocoder |
+| `mw ac pause <project>` | Pause Autocoder |
+| `mw ac resume <project>` | Resume Autocoder |
 | `mw ac status` | Check Autocoder status |
+| `mw ac progress <project>` | Show Autocoder progress |
+| `mw ac list` | List Autocoder projects |
 | `mw n8n list` | List n8n workflows |
 | `mw n8n status` | Check n8n connection |
+
+### Autocoder Access Options
+
+**Option 1: mw CLI (recommended)**
+
+```bash
+mw ac status
+mw ac start marketplace
+mw ac pause marketplace
+mw ac resume marketplace
+mw ac stop marketplace
+mw ac ui
+```
+
+**Option 2: Explicit venv path (no activation needed)**
+
+```bash
+$AUTOCODER_ROOT/venv/bin/python $MYWORK_ROOT/tools/autocoder_api.py status
+$AUTOCODER_ROOT/venv/bin/python $MYWORK_ROOT/tools/autocoder_api.py start marketplace
+```
+
+**Option 3: Activate Autocoder venv first**
+
+```bash
+cd $AUTOCODER_ROOT
+source venv/bin/activate
+python $MYWORK_ROOT/tools/autocoder_api.py status
+```
+
+### Autocoder Always-On (macOS)
+
+If you want long-running autonomous coding (multi-hour sessions), install the LaunchAgent service:
+
+```bash
+mw ac service setup
+mw ac service install
+mw ac service status
+```
+
+This keeps the Autocoder UI available and restarts the server if it exits.
+
+### Autocoder Troubleshooting
+
+Common fixes if the service or UI isn't responding:
+
+```bash
+# Check service status
+mw ac service status
+
+# Restart the service
+mw ac service restart
+
+# View logs (last 50 lines)
+mw ac service logs
+
+# Follow logs live
+mw ac service logs -f
+```
+
+If the server is not running, confirm:
+- `AUTOCODER_ROOT` points to the correct Autocoder folder
+- the Autocoder venv exists (`$AUTOCODER_ROOT/venv`)
+- port `8888` is not already in use
 
 ---
 

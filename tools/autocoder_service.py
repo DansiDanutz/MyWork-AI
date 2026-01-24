@@ -21,6 +21,7 @@ import sys
 import subprocess
 import argparse
 import time
+import plistlib
 from pathlib import Path
 
 # Configuration - Import from shared config with fallback
@@ -42,6 +43,62 @@ except ImportError:
 SERVICE_NAME = "com.mywork.autocoder"
 PLIST_PATH = Path.home() / "Library/LaunchAgents" / f"{SERVICE_NAME}.plist"
 SERVER_URL = "http://127.0.0.1:8888"
+
+def get_autocoder_python() -> str:
+    """Prefer Autocoder venv python when available."""
+    candidates = [
+        AUTOCODER_PATH / "venv" / "bin" / "python",
+        AUTOCODER_PATH / ".venv" / "bin" / "python",
+        AUTOCODER_PATH / "venv" / "Scripts" / "python.exe",
+        AUTOCODER_PATH / ".venv" / "Scripts" / "python.exe",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return str(candidate)
+    return sys.executable
+
+def generate_plist() -> dict:
+    """Generate LaunchAgent plist content."""
+    python_bin = get_autocoder_python()
+    start_script = AUTOCODER_PATH / "start_ui.py"
+    return {
+        "Label": SERVICE_NAME,
+        "ProgramArguments": [python_bin, str(start_script)],
+        "WorkingDirectory": str(AUTOCODER_PATH),
+        "RunAtLoad": True,
+        "KeepAlive": True,
+        "StandardOutPath": str(LOG_PATH),
+        "StandardErrorPath": str(ERROR_LOG_PATH),
+        "EnvironmentVariables": {
+            "MYWORK_ROOT": str(MYWORK_ROOT),
+            "AUTOCODER_ROOT": str(AUTOCODER_PATH),
+        },
+    }
+
+def setup():
+    """Create or update the LaunchAgent plist."""
+    if sys.platform != "darwin":
+        print("ERROR: Autocoder service uses macOS LaunchAgents.")
+        print("Run Autocoder manually on this platform.")
+        return False
+
+    if not AUTOCODER_PATH.exists():
+        print(f"ERROR: Autocoder not found at {AUTOCODER_PATH}")
+        return False
+
+    start_script = AUTOCODER_PATH / "start_ui.py"
+    if not start_script.exists():
+        print(f"ERROR: Autocoder start script missing at {start_script}")
+        return False
+
+    PLIST_PATH.parent.mkdir(parents=True, exist_ok=True)
+    plist_data = generate_plist()
+    with open(PLIST_PATH, "wb") as f:
+        plistlib.dump(plist_data, f)
+
+    print(f"Created plist: {PLIST_PATH}")
+    print(f"Uses python: {plist_data['ProgramArguments'][0]}")
+    return True
 
 
 def run_cmd(cmd: list, check: bool = True) -> subprocess.CompletedProcess:
@@ -80,9 +137,9 @@ def get_pid() -> int | None:
 def install():
     """Install and load the service."""
     if not PLIST_PATH.exists():
-        print(f"ERROR: Plist file not found at {PLIST_PATH}")
-        print("Run the setup command first to create the plist file.")
-        return False
+        print("Plist file missing; generating now...")
+        if not setup():
+            return False
 
     # Ensure log directory exists
     LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -227,6 +284,7 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Commands:
+  setup     Create or update the LaunchAgent plist
   install   Install and start the service (runs on login)
   start     Start the service
   stop      Stop the service
@@ -236,6 +294,7 @@ Commands:
   uninstall Remove the service
 
 Examples:
+  python tools/autocoder_service.py setup     # Generate plist
   python tools/autocoder_service.py install   # First time setup
   python tools/autocoder_service.py status    # Check if running
   python tools/autocoder_service.py logs -f   # Follow logs live
@@ -244,6 +303,7 @@ Examples:
 
     subparsers = parser.add_subparsers(dest="command", required=True)
 
+    subparsers.add_parser("setup", help="Create or update plist")
     subparsers.add_parser("install", help="Install and start service")
     subparsers.add_parser("start", help="Start service")
     subparsers.add_parser("stop", help="Stop service")
@@ -259,6 +319,8 @@ Examples:
 
     if args.command == "install":
         install()
+    elif args.command == "setup":
+        setup()
     elif args.command == "start":
         start()
     elif args.command == "stop":

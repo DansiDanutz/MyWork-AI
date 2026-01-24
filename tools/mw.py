@@ -24,9 +24,14 @@ Project Commands:
 
 Autocoder Commands:
     mw ac start <project>    Start Autocoder for project
-    mw ac stop               Stop Autocoder
+    mw ac stop <project>     Stop Autocoder
+    mw ac pause <project>    Pause Autocoder
+    mw ac resume <project>   Resume Autocoder
     mw ac status             Check Autocoder status
+    mw ac progress <project> Show Autocoder progress
+    mw ac list               List Autocoder projects
     mw ac ui                 Open Autocoder UI
+    mw ac service <command>  Manage Autocoder service (macOS)
 
 n8n Commands:
     mw n8n list              List n8n workflows
@@ -233,13 +238,43 @@ def cmd_autocoder(args: List[str]):
         return run_tool("autocoder_api", ["start", args[1]])
 
     elif subcmd == "stop":
-        return run_tool("autocoder_api", ["stop"])
+        if len(args) < 2:
+            print("Usage: mw ac stop <project-name>")
+            return 1
+        return run_tool("autocoder_api", ["stop", args[1]])
+
+    elif subcmd == "pause":
+        if len(args) < 2:
+            print("Usage: mw ac pause <project-name>")
+            return 1
+        return run_tool("autocoder_api", ["pause", args[1]])
+
+    elif subcmd == "resume":
+        if len(args) < 2:
+            print("Usage: mw ac resume <project-name>")
+            return 1
+        return run_tool("autocoder_api", ["resume", args[1]])
 
     elif subcmd == "status":
         return run_tool("autocoder_api", ["status"])
 
+    elif subcmd == "progress":
+        if len(args) < 2:
+            print("Usage: mw ac progress <project-name>")
+            return 1
+        return run_tool("autocoder_api", ["progress", args[1]])
+
+    elif subcmd == "list":
+        return run_tool("autocoder_api", ["list"])
+
     elif subcmd == "ui":
         return run_tool("autocoder_api", ["ui"])
+
+    elif subcmd == "service":
+        if len(args) < 2:
+            print("Usage: mw ac service <setup|install|start|stop|restart|status|logs|uninstall> [options]")
+            return 1
+        return run_tool("autocoder_service", args[1:])
 
     else:
         print(f"Unknown autocoder command: {subcmd}")

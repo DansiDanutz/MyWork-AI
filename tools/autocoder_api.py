@@ -64,6 +64,19 @@ AVAILABLE_MODELS = [
     "claude-sonnet-4-5-20250929",
 ]
 
+def get_autocoder_python() -> str:
+    """Prefer Autocoder venv python when available."""
+    candidates = [
+        AUTOCODER_PATH / "venv" / "bin" / "python",
+        AUTOCODER_PATH / ".venv" / "bin" / "python",
+        AUTOCODER_PATH / "venv" / "Scripts" / "python.exe",
+        AUTOCODER_PATH / ".venv" / "Scripts" / "python.exe",
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return str(candidate)
+    return sys.executable
+
 
 class AutocoderAPI:
     """Client for Autocoder REST API."""
@@ -171,8 +184,9 @@ def start_server():
         return False
 
     # Start server in background
+    python_bin = get_autocoder_python()
     subprocess.Popen(
-        [sys.executable, str(start_script)],
+        [python_bin, str(start_script)],
         cwd=str(AUTOCODER_PATH),
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL
