@@ -300,6 +300,8 @@ class ProjectScanner:
 
         total = 0
         for project_dir in PROJECTS_DIR.iterdir():
+            if project_dir.is_symlink():
+                continue
             if project_dir.is_dir() and not project_dir.name.startswith((".", "_")):
                 count = self.scan_project(project_dir)
                 total += count
@@ -314,11 +316,13 @@ class ProjectScanner:
         count = 0
 
         for lang, patterns in SCAN_PATTERNS.items():
-            for pattern in patterns:
-                for file_path in project_path.rglob(pattern):
-                    # Skip excluded directories
-                    if any(skip in file_path.parts for skip in SKIP_DIRS):
-                        continue
+                for pattern in patterns:
+                    for file_path in project_path.rglob(pattern):
+                        if any(parent.is_symlink() for parent in file_path.parents):
+                            continue
+                        # Skip excluded directories
+                        if any(skip in file_path.parts for skip in SKIP_DIRS):
+                            continue
 
                     try:
                         modules = self.scan_file(file_path, project_name, lang)

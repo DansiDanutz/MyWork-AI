@@ -347,12 +347,22 @@ class HealthChecker:
                 text=True,
                 timeout=30
             )
-            # npx n8n-mcp might not have --version, so just check if it runs
-            self.add_result(CheckResult(
-                name="n8n-mcp Package",
-                status=Status.OK,
-                message="n8n-mcp available via npx"
-            ))
+            if result.returncode == 0:
+                # npx n8n-mcp might not have --version, so just check if it runs
+                self.add_result(CheckResult(
+                    name="n8n-mcp Package",
+                    status=Status.OK,
+                    message="n8n-mcp available via npx"
+                ))
+            else:
+                output = (result.stderr or result.stdout or "").strip()
+                detail = output.splitlines()[0] if output else "npx returned non-zero exit code"
+                self.add_result(CheckResult(
+                    name="n8n-mcp Package",
+                    status=Status.WARNING,
+                    message=f"n8n-mcp not available via npx ({detail})",
+                    fix_command="npm install -g n8n-mcp"
+                ))
 
         except subprocess.TimeoutExpired:
             self.add_result(CheckResult(
