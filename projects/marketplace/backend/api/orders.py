@@ -186,21 +186,29 @@ async def list_my_orders(
         product_result = await db.execute(product_query)
         product = product_result.scalar_one_or_none()
 
+        # Calculate max_downloads based on license type
+        if order.license_type == "extended":
+            max_downloads = 10
+        elif order.license_type == "unlimited":
+            max_downloads = 999
+        else:
+            max_downloads = 5
+
         order_responses.append(OrderResponse(
             id=order.id,
             buyer_id=order.buyer_id,
             seller_id=order.seller_id,
             product_id=order.product_id,
-            product_name=product.name if product else "Unknown",
-            amount=order.amount,
-            platform_fee=order.platform_fee,
-            seller_amount=order.seller_amount,
+            product_name=product.title if product else "Unknown",
+            amount=float(order.amount),
+            platform_fee=float(order.platform_fee),
+            seller_amount=float(order.seller_amount),
             license_type=order.license_type,
             status=order.status,
-            payment_intent_id=order.payment_intent_id,
+            payment_intent_id=order.stripe_payment_intent_id,
             download_count=order.download_count,
-            max_downloads=order.max_downloads,
-            escrow_release_date=order.escrow_release_date,
+            max_downloads=max_downloads,
+            escrow_release_date=order.escrow_release_at,
             created_at=order.created_at
         ))
 
@@ -238,21 +246,29 @@ async def get_order(
     product_result = await db.execute(product_query)
     product = product_result.scalar_one_or_none()
 
+    # Calculate max_downloads based on license type
+    if order.license_type == "extended":
+        max_downloads = 10
+    elif order.license_type == "unlimited":
+        max_downloads = 999
+    else:
+        max_downloads = 5
+
     return OrderResponse(
         id=order.id,
         buyer_id=order.buyer_id,
         seller_id=order.seller_id,
         product_id=order.product_id,
-        product_name=product.name if product else "Unknown",
-        amount=order.amount,
-        platform_fee=order.platform_fee,
-        seller_amount=order.seller_amount,
+        product_name=product.title if product else "Unknown",
+        amount=float(order.amount),
+        platform_fee=float(order.platform_fee),
+        seller_amount=float(order.seller_amount),
         license_type=order.license_type,
         status=order.status,
-        payment_intent_id=order.payment_intent_id,
+        payment_intent_id=order.stripe_payment_intent_id,
         download_count=order.download_count,
-        max_downloads=order.max_downloads,
-        escrow_release_date=order.escrow_release_date,
+        max_downloads=max_downloads,
+        escrow_release_date=order.escrow_release_at,
         created_at=order.created_at
     )
 
@@ -349,20 +365,28 @@ async def request_refund(
     product_result = await db.execute(product_query)
     product = product_result.scalar_one_or_none()
 
+    # Calculate max_downloads based on license type
+    if order.license_type == "extended":
+        max_downloads = 10
+    elif order.license_type == "unlimited":
+        max_downloads = 999
+    else:
+        max_downloads = 5
+
     return OrderResponse(
         id=order.id,
         buyer_id=order.buyer_id,
         seller_id=order.seller_id,
         product_id=order.product_id,
-        product_name=product.name if product else "Unknown",
-        amount=order.amount,
-        platform_fee=order.platform_fee,
-        seller_amount=order.seller_amount,
+        product_name=product.title if product else "Unknown",
+        amount=float(order.amount),
+        platform_fee=float(order.platform_fee),
+        seller_amount=float(order.seller_amount),
         license_type=order.license_type,
         status=order.status,
-        payment_intent_id=order.payment_intent_id,
+        payment_intent_id=order.stripe_payment_intent_id,
         download_count=order.download_count,
-        max_downloads=order.max_downloads,
-        escrow_release_date=order.escrow_release_date,
+        max_downloads=max_downloads,
+        escrow_release_date=order.escrow_release_at,
         created_at=order.created_at
     )

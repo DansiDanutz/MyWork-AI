@@ -101,6 +101,7 @@ from api.orders import router as orders_router
 from api.reviews import router as reviews_router
 from api.brain import router as brain_router
 from api.webhooks import router as webhooks_router
+from api.payouts import router as payouts_router
 
 app.include_router(products_router, prefix="/api/products", tags=["Products"])
 app.include_router(users_router, prefix="/api/users", tags=["Users"])
@@ -108,6 +109,7 @@ app.include_router(orders_router, prefix="/api/orders", tags=["Orders"])
 app.include_router(reviews_router, prefix="/api/reviews", tags=["Reviews"])
 app.include_router(brain_router, prefix="/api/brain", tags=["Brain"])
 app.include_router(webhooks_router, prefix="/api/webhooks", tags=["Webhooks"])
+app.include_router(payouts_router, tags=["Payouts"])
 
 
 if __name__ == "__main__":

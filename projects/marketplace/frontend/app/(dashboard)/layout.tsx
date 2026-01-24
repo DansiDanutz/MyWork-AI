@@ -15,6 +15,7 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Receipt,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useEffect, useState } from "react"
@@ -29,6 +30,11 @@ const sidebarLinks = [
     href: "/my-products",
     label: "My Products",
     icon: Package,
+  },
+  {
+    href: "/orders",
+    label: "Sales",
+    icon: Receipt,
   },
   {
     href: "/purchases",
