@@ -1,6 +1,6 @@
 # MyWork Marketplace - Development Progress
 
-## Session: 2025-01-25 (Feature #13 - Product Search Complete)
+## Session: 2025-01-25 (Settings Page Implementation)
 
 ---
 
@@ -10,12 +10,13 @@
 
 **Evidence**:
 - Feature #15: "Subscriber can create Credits game room" (Room Management - gaming)
-- Feature #16-25: All about game lobbies, invitations, players kicking, etc.
+- Feature #16: "Non-subscriber cannot create Credits room" (Room Management - gaming)
+- Feature #17-25: All about game lobbies, invitations, players kicking, etc.
 - These features reference "Credits", "game rooms", "lobby", "match screens"
 
 **Actual Project**: MyWork Marketplace is an **e-commerce platform** for selling code, SaaS templates, and development projects.
 
-**Resolution**: Feature #15 was skipped (moved to priority 61) as it's not applicable.
+**Resolution**: Features #15-16 skipped (moved to priorities 61-62) as they're not applicable.
 
 ---
 
