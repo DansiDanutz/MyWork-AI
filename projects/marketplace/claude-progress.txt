@@ -1,6 +1,10 @@
 # MyWork Marketplace - Development Progress
 
-## Session: 2025-01-25 (Settings Page Implementation)
+## Session: 2025-01-25 (Feature #16 Skipped - Database Mismatch)
+
+---
+
+## CRITICAL ISSUE: Feature Database Project Mismatch
 
 ---
 
@@ -224,4 +228,30 @@ Feature #13 now shows `passes: true` in features database
 **Feature #13 Status**: ✅ PASSING
 **Implementation Required**: None (already complete)
 **Testing**: ✅ Verified (5/5 tests passing)
+
+
+---
+
+## Session Notes: Feature #16
+
+**Date**: 2025-01-25 01:00
+**Assigned Feature**: #16 - "Non-subscriber cannot create Credits room"
+**Action**: Feature skipped (moved to priority 62)
+
+**Reason**: Feature #16 is from a gaming platform project (references "Credits game rooms"), not applicable to MyWork Marketplace e-commerce platform.
+
+**Feature Database Mismatch**:
+- Database contains 56 features from a gaming platform project
+- Features reference: Credits, game rooms, lobbies, players, matches
+- Actual project: MyWork Marketplace (e-commerce for developers)
+
+**Current Status**:
+- Backend server: Running on port 8000 ✅
+- Frontend server: Running on port 3000 ✅
+- 10/56 features passing (17.9%)
+- Features #15-16 skipped (moved to priorities 61-62)
+
+**Servers**: Both backend and frontend are running and operational.
+
+**Next Steps**: Continue skipping non-applicable features until marketplace-specific features are reached, or work directly from app_spec.txt requirements.
 
