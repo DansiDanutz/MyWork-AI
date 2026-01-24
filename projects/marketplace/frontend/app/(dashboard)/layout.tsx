@@ -26,32 +26,32 @@ const sidebarLinks = [
     icon: LayoutDashboard,
   },
   {
-    href: "/dashboard/my-products",
+    href: "/my-products",
     label: "My Products",
     icon: Package,
   },
   {
-    href: "/dashboard/purchases",
+    href: "/purchases",
     label: "Purchases",
     icon: ShoppingBag,
   },
   {
-    href: "/dashboard/analytics",
+    href: "/analytics",
     label: "Analytics",
     icon: BarChart3,
   },
   {
-    href: "/dashboard/payouts",
+    href: "/payouts",
     label: "Payouts",
     icon: Wallet,
   },
   {
-    href: "/dashboard/brain",
+    href: "/brain",
     label: "Brain Contributions",
     icon: Brain,
   },
   {
-    href: "/dashboard/settings",
+    href: "/settings",
     label: "Settings",
     icon: Settings,
   },
