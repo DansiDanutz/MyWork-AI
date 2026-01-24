@@ -302,7 +302,7 @@ export default function BrainContributionsPage() {
                     <label className="block text-sm font-medium text-gray-300 mb-2">Entry Type *</label>
                     <select
                       value={formData.type}
-                      onChange={(e) => setFormData({ ...formData, entry_type: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                       className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       required
                     >
@@ -368,17 +368,6 @@ export default function BrainContributionsPage() {
                     className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="e.g., hooks, api, async"
                   />
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="is_public"
-                    checked={formData.isPublic}
-                    onChange={(e) => setFormData({ ...formData, is_public: e.target.checked })}
-                    className="w-4 h-4 bg-gray-800 border-gray-700 rounded focus:ring-2 focus:ring-blue-500"
-                  />
-                  <label htmlFor="is_public" className="text-sm text-gray-300">Make this entry public</label>
                 </div>
 
                 {formError && (
@@ -502,11 +491,6 @@ export default function BrainContributionsPage() {
                         {entry.verified && (
                           <span className="px-2 py-1 bg-green-500/20 text-green-300 text-xs rounded-full border border-green-500/30">
                             ✓ Verified
-                          </span>
-                        )}
-                        {!entry.status === "active" && (
-                          <span className="px-2 py-1 bg-gray-700 text-gray-300 text-xs rounded-full">
-                            Private
                           </span>
                         )}
                       </div>

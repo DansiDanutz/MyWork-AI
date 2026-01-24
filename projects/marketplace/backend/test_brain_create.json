@@ -1,0 +1,9 @@
+{
+  "title": "Test Pattern: Async Database Patterns",
+  "content": "Always use async database operations in FastAPI to prevent blocking the event loop.",
+  "type": "pattern",
+  "category": "FastAPI",
+  "tags": ["async", "database", "fastapi"],
+  "language": "Python",
+  "framework": "FastAPI"
+}
