@@ -10,6 +10,7 @@ from pydantic import BaseModel, Field
 
 from database import get_db
 from models.product import Product, PRODUCT_CATEGORIES
+from auth import get_current_user, CurrentUser
 
 router = APIRouter()
 
@@ -301,3 +302,43 @@ async def publish_product(
     await db.refresh(product)
 
     return ProductResponse.model_validate(product)
+
+
+@router.get("/me", response_model=ProductListResponse)
+async def get_my_products(
+    status: Optional[str] = Query(None, pattern="^(draft|active|archived|pending)$"),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    db: AsyncSession = Depends(get_db),
+    current_user: CurrentUser = Depends(get_current_user)
+):
+    """Get the current user's products."""
+
+    # Base query - user's products only
+    query = select(Product).where(Product.seller_id == current_user.user_id)
+
+    # Optional status filter
+    if status:
+        query = query.where(Product.status == status)
+
+    # Count total
+    count_query = select(func.count()).select_from(query.subquery())
+    total = await db.scalar(count_query)
+
+    # Apply sorting (newest first)
+    query = query.order_by(Product.created_at.desc())
+
+    # Apply pagination
+    offset = (page - 1) * page_size
+    query = query.offset(offset).limit(page_size)
+
+    # Execute
+    result = await db.execute(query)
+    products = result.scalars().all()
+
+    return ProductListResponse(
+        products=[ProductResponse.model_validate(p) for p in products],
+        total=total or 0,
+        page=page,
+        page_size=page_size
+    )
