@@ -39,10 +39,18 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass, asdict, field
 
-# Configuration
-MYWORK_ROOT = Path("/Users/dansidanutz/Desktop/MyWork")
-BRAIN_FILE = MYWORK_ROOT / ".planning" / "BRAIN.md"
-BRAIN_JSON = MYWORK_ROOT / ".planning" / "brain_data.json"
+# Configuration - Import from shared config
+try:
+    from config import MYWORK_ROOT, BRAIN_DATA_JSON as BRAIN_JSON, BRAIN_MD as BRAIN_FILE
+except ImportError:
+    def _get_mywork_root():
+        if env_root := os.environ.get("MYWORK_ROOT"):
+            return Path(env_root)
+        script_dir = Path(__file__).resolve().parent
+        return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+    MYWORK_ROOT = _get_mywork_root()
+    BRAIN_FILE = MYWORK_ROOT / ".planning" / "BRAIN.md"
+    BRAIN_JSON = MYWORK_ROOT / ".planning" / "brain_data.json"
 
 # Entry types and their sections in BRAIN.md
 ENTRY_TYPES = {

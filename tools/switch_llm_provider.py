@@ -22,7 +22,18 @@ import re
 from pathlib import Path
 
 # Load environment variables from master .env (without requiring dotenv)
-MYWORK_ROOT = Path("/Users/dansidanutz/Desktop/MyWork")
+# Configuration - Import from shared config with fallback
+try:
+    from config import MYWORK_ROOT, AUTOCODER_ROOT
+    AUTOCODER_ENV = AUTOCODER_ROOT / ".env"
+except ImportError:
+    def _get_mywork_root():
+        if env_root := os.environ.get("MYWORK_ROOT"):
+            return Path(env_root)
+        script_dir = Path(__file__).resolve().parent
+        return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+    MYWORK_ROOT = _get_mywork_root()
+    AUTOCODER_ENV = Path(os.environ.get("AUTOCODER_ROOT", Path.home() / "GamesAI" / "autocoder")) / ".env"
 
 def load_env_file(env_path: Path):
     """Load environment variables from a .env file."""
@@ -39,8 +50,6 @@ def load_env_file(env_path: Path):
                     os.environ.setdefault(key, value)
 
 load_env_file(MYWORK_ROOT / ".env")
-
-AUTOCODER_ENV = Path.home() / "Desktop/GamesAI/autocoder/.env"
 
 # Get API keys from environment (SECURE - no hardcoded secrets)
 def get_env_key(key: str, default: str = "") -> str:

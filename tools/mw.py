@@ -53,8 +53,30 @@ import subprocess
 from pathlib import Path
 from typing import List, Optional
 
-# Configuration
-MYWORK_ROOT = Path("/Users/dansidanutz/Desktop/MyWork")
+# Configuration - Dynamic path detection
+def get_mywork_root() -> Path:
+    """
+    Detect MyWork root directory.
+    Priority:
+    1. MYWORK_ROOT environment variable
+    2. Parent of this script's directory (tools/ -> MyWork/)
+    3. Default to ~/MyWork
+    """
+    # Check environment variable first
+    if env_root := os.environ.get("MYWORK_ROOT"):
+        return Path(env_root)
+
+    # Try to detect from script location
+    script_dir = Path(__file__).resolve().parent
+    if script_dir.name == "tools":
+        potential_root = script_dir.parent
+        if (potential_root / "CLAUDE.md").exists():
+            return potential_root
+
+    # Default fallback
+    return Path.home() / "MyWork"
+
+MYWORK_ROOT = get_mywork_root()
 TOOLS_DIR = MYWORK_ROOT / "tools"
 PROJECTS_DIR = MYWORK_ROOT / "projects"
 

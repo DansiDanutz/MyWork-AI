@@ -22,11 +22,22 @@ from datetime import datetime
 from pathlib import Path
 from typing import Optional, Dict, Any, Tuple
 
-# Configuration
-MYWORK_ROOT = Path("/Users/dansidanutz/Desktop/MyWork")
-BACKUP_DIR = MYWORK_ROOT / ".backups"
-UPDATE_LOG = MYWORK_ROOT / ".tmp" / "update.log"
-VERSION_CACHE = MYWORK_ROOT / ".tmp" / "versions.json"
+# Configuration - Import from shared config with fallback
+try:
+    from config import MYWORK_ROOT, TMP_DIR
+    BACKUP_DIR = MYWORK_ROOT / ".backups"
+    UPDATE_LOG = TMP_DIR / "update.log"
+    VERSION_CACHE = TMP_DIR / "versions.json"
+except ImportError:
+    def _get_mywork_root():
+        if env_root := os.environ.get("MYWORK_ROOT"):
+            return Path(env_root)
+        script_dir = Path(__file__).resolve().parent
+        return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+    MYWORK_ROOT = _get_mywork_root()
+    BACKUP_DIR = MYWORK_ROOT / ".backups"
+    UPDATE_LOG = MYWORK_ROOT / ".tmp" / "update.log"
+    VERSION_CACHE = MYWORK_ROOT / ".tmp" / "versions.json"
 
 # Component paths
 COMPONENTS = {
@@ -40,7 +51,7 @@ COMPONENTS = {
         "post_update": None,
     },
     "autocoder": {
-        "path": Path("/Users/dansidanutz/Desktop/GamesAI/autocoder"),
+        "path": Path(os.environ.get("AUTOCODER_ROOT", Path.home() / "GamesAI" / "autocoder")),
         "type": "git",
         "remote": "origin",
         "branch": "master",

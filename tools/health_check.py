@@ -32,9 +32,19 @@ from typing import Dict, List, Any, Tuple, Optional
 from dataclasses import dataclass, field
 from enum import Enum
 
-# Configuration
-MYWORK_ROOT = Path("/Users/dansidanutz/Desktop/MyWork")
-AUTOCODER_PATH = Path("/Users/dansidanutz/Desktop/GamesAI/autocoder")
+# Configuration - Import from shared config
+try:
+    from config import MYWORK_ROOT, AUTOCODER_ROOT as AUTOCODER_PATH
+except ImportError:
+    # Fallback if config not available
+    def _get_mywork_root():
+        if env_root := os.environ.get("MYWORK_ROOT"):
+            return Path(env_root)
+        script_dir = Path(__file__).resolve().parent
+        return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+    MYWORK_ROOT = _get_mywork_root()
+    AUTOCODER_PATH = Path(os.environ.get("AUTOCODER_ROOT", Path.home() / "GamesAI" / "autocoder"))
+
 GSD_PATH = Path.home() / ".claude" / "commands" / "gsd"
 N8N_SKILLS_PATH = Path.home() / ".claude" / "skills" / "n8n-skills"
 

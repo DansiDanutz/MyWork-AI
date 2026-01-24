@@ -37,11 +37,19 @@ from typing import Dict, List, Any, Optional, Set
 from dataclasses import dataclass, asdict
 from collections import defaultdict
 
-# Configuration
-MYWORK_ROOT = Path("/Users/dansidanutz/Desktop/MyWork")
-PROJECTS_DIR = MYWORK_ROOT / "projects"
-REGISTRY_FILE = MYWORK_ROOT / ".planning" / "module_registry.json"
-REGISTRY_MD = MYWORK_ROOT / ".planning" / "MODULE_REGISTRY.md"
+# Configuration - Import from shared config with fallback
+try:
+    from config import MYWORK_ROOT, PROJECTS_DIR, MODULE_REGISTRY_JSON as REGISTRY_FILE, MODULE_REGISTRY_MD as REGISTRY_MD
+except ImportError:
+    def _get_mywork_root():
+        if env_root := os.environ.get("MYWORK_ROOT"):
+            return Path(env_root)
+        script_dir = Path(__file__).resolve().parent
+        return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+    MYWORK_ROOT = _get_mywork_root()
+    PROJECTS_DIR = MYWORK_ROOT / "projects"
+    REGISTRY_FILE = MYWORK_ROOT / ".planning" / "module_registry.json"
+    REGISTRY_MD = MYWORK_ROOT / ".planning" / "MODULE_REGISTRY.md"
 
 # File patterns to scan
 SCAN_PATTERNS = {

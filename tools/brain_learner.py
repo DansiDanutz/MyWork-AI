@@ -38,16 +38,26 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 from collections import defaultdict
 
-# Configuration
-MYWORK_ROOT = Path("/Users/dansidanutz/Desktop/MyWork")
-PROJECTS_DIR = MYWORK_ROOT / "projects"
-BRAIN_JSON = MYWORK_ROOT / ".planning" / "brain_data.json"
-BRAIN_MD = MYWORK_ROOT / ".planning" / "BRAIN.md"
-LEARNING_LOG = MYWORK_ROOT / ".tmp" / "learning_log.json"
-ERROR_LOG = MYWORK_ROOT / ".tmp" / "error_patterns.json"
+# Configuration - Import from shared config with fallback
+try:
+    from config import MYWORK_ROOT, PROJECTS_DIR, BRAIN_DATA_JSON as BRAIN_JSON, BRAIN_MD, TMP_DIR
+    LEARNING_LOG = TMP_DIR / "learning_log.json"
+    ERROR_LOG = TMP_DIR / "error_patterns.json"
+except ImportError:
+    def _get_mywork_root():
+        if env_root := os.environ.get("MYWORK_ROOT"):
+            return Path(env_root)
+        script_dir = Path(__file__).resolve().parent
+        return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+    MYWORK_ROOT = _get_mywork_root()
+    PROJECTS_DIR = MYWORK_ROOT / "projects"
+    BRAIN_JSON = MYWORK_ROOT / ".planning" / "brain_data.json"
+    BRAIN_MD = MYWORK_ROOT / ".planning" / "BRAIN.md"
+    LEARNING_LOG = MYWORK_ROOT / ".tmp" / "learning_log.json"
+    ERROR_LOG = MYWORK_ROOT / ".tmp" / "error_patterns.json"
 
 # Import brain manager
-sys.path.insert(0, str(MYWORK_ROOT / "tools"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 try:
     from brain import BrainManager, BrainEntry
 except ImportError:

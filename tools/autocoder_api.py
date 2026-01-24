@@ -43,9 +43,17 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv(Path(__file__).parent.parent / ".env")
 
-# Configuration
-AUTOCODER_PATH = Path(os.getenv("AUTOCODER_PATH", "/Users/dansidanutz/Desktop/GamesAI/autocoder"))
-MYWORK_PROJECTS = Path(os.getenv("MYWORK_PROJECTS_PATH", "/Users/dansidanutz/Desktop/MyWork/projects"))
+# Configuration - Import from shared config with fallback
+try:
+    from config import AUTOCODER_ROOT as AUTOCODER_PATH, PROJECTS_DIR as MYWORK_PROJECTS
+except ImportError:
+    def _get_mywork_root():
+        if env_root := os.environ.get("MYWORK_ROOT"):
+            return Path(env_root)
+        script_dir = Path(__file__).resolve().parent
+        return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+    AUTOCODER_PATH = Path(os.getenv("AUTOCODER_ROOT", Path.home() / "GamesAI" / "autocoder"))
+    MYWORK_PROJECTS = _get_mywork_root() / "projects"
 AUTOCODER_API = "http://127.0.0.1:8888"
 WEBHOOK_URL = os.getenv("PROGRESS_N8N_WEBHOOK_URL", "")
 

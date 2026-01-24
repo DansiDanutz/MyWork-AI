@@ -26,10 +26,19 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, Any, Optional
 
-# Configuration
-MYWORK_ROOT = Path("/Users/dansidanutz/Desktop/MyWork")
-PROJECTS_DIR = MYWORK_ROOT / "projects"
-TEMPLATES_DIR = PROJECTS_DIR / "_template"
+# Configuration - Import from shared config with fallback
+try:
+    from config import MYWORK_ROOT, PROJECTS_DIR
+    TEMPLATES_DIR = PROJECTS_DIR / "_template"
+except ImportError:
+    def _get_mywork_root():
+        if env_root := os.environ.get("MYWORK_ROOT"):
+            return Path(env_root)
+        script_dir = Path(__file__).resolve().parent
+        return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+    MYWORK_ROOT = _get_mywork_root()
+    PROJECTS_DIR = MYWORK_ROOT / "projects"
+    TEMPLATES_DIR = PROJECTS_DIR / "_template"
 
 # Template definitions
 TEMPLATES = {

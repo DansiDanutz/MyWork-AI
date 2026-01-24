@@ -23,12 +23,24 @@ import argparse
 import time
 from pathlib import Path
 
-# Configuration
+# Configuration - Import from shared config with fallback
+try:
+    from config import MYWORK_ROOT, TMP_DIR, AUTOCODER_ROOT as AUTOCODER_PATH
+    LOG_PATH = TMP_DIR / "autocoder.log"
+    ERROR_LOG_PATH = TMP_DIR / "autocoder.error.log"
+except ImportError:
+    def _get_mywork_root():
+        if env_root := os.environ.get("MYWORK_ROOT"):
+            return Path(env_root)
+        script_dir = Path(__file__).resolve().parent
+        return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+    MYWORK_ROOT = _get_mywork_root()
+    LOG_PATH = MYWORK_ROOT / ".tmp" / "autocoder.log"
+    ERROR_LOG_PATH = MYWORK_ROOT / ".tmp" / "autocoder.error.log"
+    AUTOCODER_PATH = Path(os.environ.get("AUTOCODER_ROOT", Path.home() / "GamesAI" / "autocoder"))
+
 SERVICE_NAME = "com.mywork.autocoder"
 PLIST_PATH = Path.home() / "Library/LaunchAgents" / f"{SERVICE_NAME}.plist"
-LOG_PATH = Path("/Users/dansidanutz/Desktop/MyWork/.tmp/autocoder.log")
-ERROR_LOG_PATH = Path("/Users/dansidanutz/Desktop/MyWork/.tmp/autocoder.error.log")
-AUTOCODER_PATH = Path("/Users/dansidanutz/Desktop/GamesAI/autocoder")
 SERVER_URL = "http://127.0.0.1:8888"
 
 
