@@ -13,7 +13,7 @@ async function testFeature6Detailed() {
   try {
     // Navigate to sign-in
     console.log('1️⃣  Navigating to /sign-in...');
-    await page.goto('http://localhost:3004/sign-in');
+    await page.goto('http://localhost:3001/sign-in');
     await page.waitForSelector('input', { timeout: 15000 });
     console.log('   ✅ Page loaded, form ready\n');
 
