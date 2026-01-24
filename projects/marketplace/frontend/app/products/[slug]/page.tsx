@@ -36,10 +36,7 @@ export default function ProductPage() {
     async function fetchData() {
       setLoading(true)
       try {
-        const [productRes, reviewsRes] = await Promise.all([
-          productsApi.getBySlug(slug),
-          // Reviews would be fetched with product ID
-        ])
+        const productRes = await productsApi.getBySlug(slug)
         setProduct(productRes.data)
       } catch (error) {
         console.error("Failed to fetch product:", error)
@@ -446,7 +443,7 @@ Perfect for launching your SaaS product in days, not months.`,
   price: 299,
   extendedLicensePrice: 599,
   unlimitedLicensePrice: 999,
-  thumbnailUrl: null,
+  thumbnailUrl: undefined,
   previewImages: [],
   demoUrl: "https://demo.example.com",
   previewUrl: "https://github.com/example/preview",

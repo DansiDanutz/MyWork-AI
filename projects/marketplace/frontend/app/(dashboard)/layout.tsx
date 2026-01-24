@@ -26,7 +26,7 @@ const sidebarLinks = [
     icon: LayoutDashboard,
   },
   {
-    href: "/dashboard/products",
+    href: "/dashboard/my-products",
     label: "My Products",
     icon: Package,
   },

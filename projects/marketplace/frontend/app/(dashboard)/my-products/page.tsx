@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useAuth } from "@clerk/nextjs"
 import { useUser } from "@clerk/nextjs"
 import {
   Package,
@@ -52,7 +53,7 @@ const STATUS_COLORS: Record<string, { text: string; variant: "success" | "warnin
 }
 
 export default function ProductsPage() {
-  const { user, getToken } = useUser()
+  const { getToken } = useAuth()
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -129,7 +130,7 @@ export default function ProductsPage() {
             Manage your product listings
           </p>
         </div>
-        <Link href="/dashboard/products/new">
+        <Link href="/dashboard/my-products/new">
           <Button className="gap-2">
             <Plus className="h-4 w-4" />
             New Product
@@ -193,7 +194,7 @@ export default function ProductsPage() {
                 : `No ${statusFilter} products found.`}
             </p>
             {statusFilter === "all" && (
-              <Link href="/dashboard/products/new">
+              <Link href="/dashboard/my-products/new">
                 <Button className="gap-2">
                   <Plus className="h-4 w-4" />
                   Create Product
@@ -221,7 +222,7 @@ export default function ProductsPage() {
                           </Badge>
                         </div>
                         <p className="text-sm text-gray-400 line-clamp-2 mb-2">
-                          {product.short_description || product.description?.substring(0, 150)}...
+                          {product.short_description || "No description"}
                         </p>
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           <span className="text-white font-medium">
@@ -260,7 +261,7 @@ export default function ProductsPage() {
                         <ExternalLink className="h-4 w-4" />
                       </Button>
                     </Link>
-                    <Link href={`/dashboard/products/${product.id}/edit`}>
+                    <Link href={`/dashboard/my-products/${product.id}/edit`}>
                       <Button variant="ghost" size="icon" title="Edit">
                         <Edit className="h-4 w-4" />
                       </Button>
