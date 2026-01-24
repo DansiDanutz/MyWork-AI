@@ -1,8 +1,6 @@
 import type { Metadata } from 'next'
 import {
   ClerkProvider,
-  SignInButton,
-  SignUpButton,
   SignedIn,
   SignedOut,
   UserButton,
@@ -45,16 +43,12 @@ export default function RootLayout({
               </div>
               <div className="flex items-center gap-4">
                 <SignedOut>
-                  <SignInButton mode="modal">
-                    <button className="text-gray-300 hover:text-white transition">
-                      Sign In
-                    </button>
-                  </SignInButton>
-                  <SignUpButton mode="modal">
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 font-medium transition">
-                      Sign Up
-                    </button>
-                  </SignUpButton>
+                  <Link href="/sign-in" className="text-gray-300 hover:text-white transition">
+                    Sign In
+                  </Link>
+                  <Link href="/sign-up" className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2 font-medium transition">
+                    Sign Up
+                  </Link>
                 </SignedOut>
                 <SignedIn>
                   <button className="text-gray-300 hover:text-white transition relative p-2">
