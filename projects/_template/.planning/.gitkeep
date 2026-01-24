@@ -1,0 +1,5 @@
+# This folder holds project-specific GSD planning files
+# Initialize with /gsd:new-project or create manually:
+# - PROJECT.md - Vision and scope
+# - ROADMAP.md - Phases and status
+# - STATE.md - Current state, decisions

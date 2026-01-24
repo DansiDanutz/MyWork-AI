@@ -1,0 +1,253 @@
+# Master Orchestrator Brain
+
+> A living knowledge vault that grows with every project.
+> Last updated: 2026-01-24
+
+---
+
+## How This Works
+
+This file is the Master Orchestrator's persistent memory. It contains:
+- **Lessons learned** from real projects
+- **Patterns that work** (tested and proven)
+- **Anti-patterns to avoid** (mistakes not to repeat)
+- **Tool wisdom** (tips and tricks discovered)
+- **Integration insights** (how things connect)
+
+### Rules for This File
+1. **Add** when you discover something useful
+2. **Update** when you find a better way
+3. **Delete** when something becomes outdated or wrong
+4. **Tag** entries with `[TESTED]`, `[EXPERIMENTAL]`, or `[DEPRECATED]`
+5. **Date** significant updates
+
+---
+
+## Lessons Learned
+
+### Project Management
+
+| Lesson | Context | Date |
+|--------|---------|------|
+| [TESTED] Always check `.planning/STATE.md` before starting any work | Prevents duplicate effort and context loss | 2026-01-24 |
+| [TESTED] Run module registry search before building new features | Found 1,347 reusable modules in first scan | 2026-01-24 |
+| [TESTED] GSD phases should be small enough to complete in one session | Large phases cause context loss between sessions | 2026-01-24 |
+
+### Code Quality
+
+| Lesson | Context | Date |
+|--------|---------|------|
+| [TESTED] Never hardcode API keys in source files | Security vulnerability found in switch_llm_provider.py | 2026-01-24 |
+| [TESTED] Read from .env files instead of embedding secrets | Secure and configurable | 2026-01-24 |
+
+### Tool Usage
+
+| Lesson | Context | Date |
+|--------|---------|------|
+| [TESTED] Use `npx` for n8n-mcp to always get latest version | Avoids stale cached versions | 2026-01-24 |
+| [TESTED] Check Autocoder server status before attempting updates | Prevents corruption | 2026-01-24 |
+
+---
+
+## Patterns That Work
+
+### Project Setup Pattern
+```
+1. mw new <name> <template>     # Scaffold with template
+2. cd projects/<name>           # Enter project
+3. /gsd:new-project            # Initialize GSD state
+4. mw search "relevant keywords" # Find reusable modules
+5. /gsd:plan-phase 1           # Plan first phase
+```
+**Status:** [TESTED] | **Added:** 2026-01-24
+
+### Debug Pattern
+```
+1. Check error message carefully
+2. Search module registry for similar patterns
+3. Check if issue exists in other projects
+4. Fix in isolation, test, then integrate
+5. Document fix in BRAIN.md if novel
+```
+**Status:** [TESTED] | **Added:** 2026-01-24
+
+### Context Recovery Pattern
+```
+1. Read .planning/STATE.md
+2. Read .planning/ROADMAP.md (current phase)
+3. Check git log for recent commits
+4. Run mw status for system health
+5. Continue from documented state
+```
+**Status:** [TESTED] | **Added:** 2026-01-24
+
+### Safe Update Pattern
+```
+1. python tools/auto_update.py check  # See what's available
+2. python tools/auto_update.py status # Current versions
+3. Ensure Autocoder server is stopped
+4. python tools/auto_update.py update <component>
+5. python tools/health_check.py       # Verify nothing broke
+6. python tools/auto_update.py rollback <component> # If needed
+```
+**Status:** [TESTED] | **Added:** 2026-01-24
+
+---
+
+## Anti-Patterns to Avoid
+
+### Never Do These
+
+| Anti-Pattern | Why It's Bad | Better Approach |
+|--------------|--------------|-----------------|
+| Building without searching registry first | Wastes time reinventing | `mw search "keyword"` first |
+| Hardcoding paths in scripts | Breaks portability | Use Path variables from config |
+| Skipping GSD state files | Lose context between sessions | Always update STATE.md |
+| Running git commands without checking status | May commit unwanted files | Always `git status` first |
+| Updating dependencies without backup | Can break everything | Use `auto_update.py` with rollback |
+| Editing production n8n workflows directly | Risk of breaking live automations | Copy, edit, test, then deploy |
+
+### Common Mistakes
+
+| Mistake | Symptom | Fix |
+|---------|---------|-----|
+| Forgot to activate venv | `ModuleNotFoundError` | `source venv/bin/activate` |
+| Port already in use | `Address already in use` | `lsof -i :<port>` then kill |
+| Stale node_modules | Mysterious JS errors | `rm -rf node_modules && npm ci` |
+| Git merge conflicts in .planning/ | GSD state corrupted | Manually resolve, prefer latest |
+
+---
+
+## Tool Wisdom
+
+### mw (Unified CLI)
+- `mw status` is your morning coffee - run it daily
+- `mw search` before `mw new` - don't rebuild what exists
+- `mw doctor` when anything feels wrong
+
+### GSD
+- `/gsd:discuss-phase` before `/gsd:plan-phase` - saves rework
+- `/gsd:pause-work` before stopping - preserves context
+- `/gsd:verify-work` after execution - catches issues early
+
+### Autocoder
+- Start with `--concurrency 1` until confident in spec
+- Use `--yolo` only for prototypes, never production
+- Monitor with `mw ac status` during long runs
+- WebSocket at `ws://127.0.0.1:8888/ws/projects/{name}` for real-time
+
+### n8n
+- ALWAYS search templates first (2,709 available)
+- Validate nodes before building workflow
+- Never trust default parameter values
+- Test with sample data before activating
+
+### Module Registry
+- Scan after completing any project
+- Export to markdown for easy browsing
+- Search by type when you know what you need: `list component`
+
+---
+
+## Integration Insights
+
+### GSD + Autocoder
+- Autocoder needs app_spec.txt, GSD produces PLAN.md
+- Use `/gsd-to-autocoder-spec` to convert
+- Track Autocoder progress in STATE.md
+- 20+ features = Autocoder territory
+
+### GSD + n8n
+- Track workflow IDs in GSD plans
+- n8n handles automation, GSD handles code
+- Webhooks connect them: n8n triggers → API → updates
+
+### Module Registry + Scaffolding
+- Registry learns from completed projects
+- Scaffolding creates starting points
+- Together: don't start from zero, start from best practices
+
+---
+
+## Performance Tips
+
+### Speed Optimizations
+| Tip | Impact | Verified |
+|-----|--------|----------|
+| Use `--concurrency 3` for Autocoder when specs are solid | 3x faster | Yes |
+| Run module registry scan in background | Non-blocking | Yes |
+| Use health_check quick mode for daily checks | 5x faster | Yes |
+| Parallel tool calls when independent | Significant | Yes |
+
+### Resource Management
+- Clear `.tmp/` periodically
+- Watch disk space with `mw doctor`
+- Kill zombie processes: `lsof -i :8888`
+
+---
+
+## Project-Specific Insights
+
+### ai-dashboard
+- Uses FastAPI + Next.js pattern
+- Scheduler runs scrapers on intervals
+- No auth yet - add before public deployment
+- 88 modules indexed, reusable for similar projects
+
+### Autocoder (my-games)
+- 1,259 modules - rich source of patterns
+- Parallel orchestrator is 53KB of logic
+- Security module has command allowlist
+- Good example of large Python project structure
+
+---
+
+## Pending Experiments
+
+| Experiment | Hypothesis | Status |
+|------------|------------|--------|
+| Auto-scan after git commit | Would keep registry fresh automatically | [IDEA] |
+| Weekly brain cleanup | Remove [DEPRECATED] entries automatically | [IDEA] |
+| Cross-project dependency tracking | Know when updating one breaks another | [IDEA] |
+
+---
+
+## Changelog
+
+| Date | Change | Category |
+|------|--------|----------|
+| 2026-01-24 | Initial brain created | Setup |
+| 2026-01-24 | Added security lesson about hardcoded keys | Lessons |
+| 2026-01-24 | Added module registry insights | Tools |
+| 2026-01-24 | Added all patterns and anti-patterns | Patterns |
+
+---
+
+## Meta
+
+### How to Update This File
+
+**Adding a lesson:**
+```bash
+python tools/brain.py add lesson "Your lesson here" --context "Where you learned it"
+```
+
+**Adding a pattern:**
+```bash
+python tools/brain.py add pattern "Pattern name" --steps "1. First\n2. Second"
+```
+
+**Marking something deprecated:**
+```bash
+python tools/brain.py deprecate "entry identifier"
+```
+
+**Cleaning up:**
+```bash
+python tools/brain.py cleanup  # Removes [DEPRECATED] entries
+```
+
+**Reviewing:**
+```bash
+python tools/brain.py review   # Shows entries needing attention
+```

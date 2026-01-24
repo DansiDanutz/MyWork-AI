@@ -1,0 +1,242 @@
+# ============================================
+# MyWork Framework - Security-First .gitignore
+# ============================================
+# CRITICAL: Never commit sensitive data!
+# ============================================
+
+# ============================================
+# SECRETS & CREDENTIALS (NEVER COMMIT)
+# ============================================
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+credentials.json
+token.json
+secrets.json
+**/secrets/
+**/credentials/
+*.secret
+*.secrets
+service-account*.json
+oauth*.json
+auth*.json
+
+# API Keys patterns
+*api_key*
+*apikey*
+*API_KEY*
+*APIKEY*
+
+# ============================================
+# MCP CONFIGURATION (contains API keys)
+# ============================================
+.mcp.json
+!.mcp.json.example
+
+# ============================================
+# TEMPORARY & CACHE FILES
+# ============================================
+.tmp/
+tmp/
+temp/
+*.tmp
+*.temp
+*.log
+*.logs
+logs/
+cache/
+.cache/
+*.cache
+
+# ============================================
+# BRAIN DATA (may contain sensitive context)
+# ============================================
+.planning/brain_data.json
+.planning/module_registry.json
+.tmp/learning_log.json
+.tmp/error_patterns.json
+
+# Keep templates but not generated content
+!.planning/BRAIN.md
+!.planning/MODULE_REGISTRY.md
+
+# ============================================
+# DATABASE FILES
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-shm
+*.db-wal
+
+# ============================================
+# PYTHON
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+*.manifest
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+.mypy_cache/
+.ruff_cache/
+venv/
+.venv/
+ENV/
+env/
+.pytype/
+
+# ============================================
+# NODE.JS
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+.pnpm-store/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs
+.next/
+.nuxt/
+dist/
+out/
+.output/
+
+# ============================================
+# IDE & EDITORS
+# ============================================
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json.example
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-workspace
+*.sublime-project
+.atom/
+.history/
+
+# ============================================
+# OPERATING SYSTEM
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ============================================
+# PROJECT-SPECIFIC EXCLUSIONS
+# ============================================
+# Projects may have their own sensitive data
+projects/*/.env
+projects/*/.env.*
+projects/*/venv/
+projects/*/.venv/
+projects/*/node_modules/
+projects/*/*.db
+projects/*/*.sqlite
+projects/*/.tmp/
+
+# Keep project structure but not runtime files
+!projects/_template/
+
+# ============================================
+# BACKUPS
+# ============================================
+.backups/
+*.bak
+*.backup
+*.old
+*~
+
+# ============================================
+# COVERAGE & TEST REPORTS
+# ============================================
+coverage/
+.nyc_output/
+test-results/
+junit.xml
+
+# ============================================
+# DOCUMENTATION BUILD
+# ============================================
+docs/_build/
+site/
+.docusaurus/
+
+# ============================================
+# MISC
+# ============================================
+*.pid
+*.seed
+*.pid.lock
+.grunt
+bower_components/
+.lock-wscript
+.node_repl_history
+*.tgz
+.yarn-integrity
+.env.test
+
+# Large files
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+*.iso
+*.dmg
+
+# Media (usually don't version)
+*.mp4
+*.mp3
+*.wav
+*.avi
+*.mov
