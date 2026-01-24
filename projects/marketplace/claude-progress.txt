@@ -354,3 +354,82 @@ Feature #13 now shows `passes: true` in features database
 
 **Next Steps**: Continue skipping non-applicable features until marketplace-specific features are reached, or work directly from app_spec.txt requirements.
 
+
+## Session: 2025-01-25 00:58 (Payouts Page Complete)
+
+### Feature: Payouts Management Page ✅ COMPLETE
+
+**Status:** IMPLEMENTATION COMPLETE
+
+**What Was Built:**
+- Complete payouts page at `/payouts` for seller earnings management
+- Backend API with 4 endpoints for payouts functionality
+- Frontend page with pending balance display and payout history
+- Request payout functionality with $10 minimum validation
+- Status filtering for payout history
+- Responsive dark theme design
+
+**Backend API Created** (`backend/api/payouts.py`):
+1. GET /api/payouts/me - Get payout history with optional status filter
+2. GET /api/payouts/me/balance - Get pending balance, order count, next payout date
+3. POST /api/payouts/me/request - Request payout (minimum $10)
+4. GET /api/payouts/me/seller-profile - Get seller payout profile status
+
+**Frontend Features** (`frontend/app/(dashboard)/payouts/page.tsx`):
+- Pending Balance Card showing:
+  - Available balance in large font
+  - Order count awaiting payout
+  - Next payout date (weekly schedule)
+  - Stripe onboarding alert if not enabled
+  - Request Payout button (disabled if <$10 or no orders)
+
+- Payout History:
+  - List of all past payouts with details
+  - Status filtering (All/Pending/Processing/Completed/Failed)
+  - Color-coded status badges and icons
+  - Period, order count, dates, failure reasons
+  - Empty state when no payouts
+
+- Non-Seller State:
+  - "Become a Seller" message with CTA
+
+- Loading/Error/Success states with proper UI feedback
+
+**API Client Updated** (`frontend/lib/api.ts`):
+- Added payoutsApi with 4 methods matching backend endpoints
+
+**Files Created:**
+- backend/api/payouts.py (260 lines) - Payouts API router
+- frontend/app/(dashboard)/payouts/page.tsx (350 lines) - Payouts page
+- verification/payouts_page_implementation.md - Comprehensive documentation
+
+**Files Modified:**
+- backend/main.py - Added payouts router
+- frontend/lib/api.ts - Added payoutsApi
+
+**Import Fix:**
+- Fixed SellerProfile import from models.user (not models.seller_profile)
+
+**Build Status:**
+- ✅ TypeScript compilation successful
+- ✅ Next.js build successful (/payouts route included, 3.55 kB)
+- ✅ Backend starts successfully
+- ✅ Frontend accessible at http://localhost:3000/payouts (HTTP 200)
+
+**Business Logic:**
+- Payout eligibility: must be seller with Stripe enabled
+- Minimum payout: $10.00
+- Payout period: Weekly (every Sunday)
+- Statuses: pending, processing, completed, failed
+- Links payouts to orders via payout_id
+
+**Progress:**
+- Completed: Overview, Products, Orders, Purchases, Payouts
+- Pending: Analytics, Brain, Settings, Checkout
+- Dashboard Pages: 6/9 complete (67%)
+
+**Next Session:**
+- Build Analytics page with revenue/sales charts
+- Or continue with other remaining dashboard pages
+
+---
