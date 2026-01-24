@@ -32,17 +32,17 @@ interface BrainEntry {
   contributor_username: string | null
   title: string
   content: string
-  entry_type: string
+  type: string
   category: string
   tags: string[]
   language: string | null
   framework: string | null
   quality_score: number
   usage_count: number
-  upvotes: number
-  downvotes: number
-  is_verified: boolean
-  is_public: boolean
+  helpful_votes: number
+  unhelpful_votes: number
+  verified: boolean
+  status: string
 }
 
 interface BrainStats {
@@ -55,18 +55,18 @@ interface BrainStats {
 
 const ENTRY_TYPES = [
   { value: "pattern", label: "Design Pattern", icon: Lightbulb },
-  { value: "snippet", label: "Code Snippet", icon: Code },
-  { value: "tutorial", label: "Tutorial", icon: BookOpen },
   { value: "solution", label: "Solution", icon: Wrench },
-  { value: "documentation", label: "Documentation", icon: FileText },
+  { value: "lesson", label: "Lesson", icon: BookOpen },
+  { value: "tip", label: "Tip", icon: Code },
+  { value: "antipattern", label: "Anti-Pattern", icon: FileText },
 ]
 
 const ENTRY_TYPE_COLORS: Record<string, string> = {
   pattern: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
-  snippet: "bg-blue-500/20 text-blue-300 border-blue-500/30",
-  tutorial: "bg-green-500/20 text-green-300 border-green-500/30",
   solution: "bg-purple-500/20 text-purple-300 border-purple-500/30",
-  documentation: "bg-orange-500/20 text-orange-300 border-orange-500/30",
+  lesson: "bg-green-500/20 text-green-300 border-green-500/30",
+  tip: "bg-blue-500/20 text-blue-300 border-blue-500/30",
+  antipattern: "bg-red-500/20 text-red-300 border-red-500/30",
 }
 
 export default function BrainContributionsPage() {
@@ -86,12 +86,11 @@ export default function BrainContributionsPage() {
   const [formData, setFormData] = useState({
     title: "",
     content: "",
-    entry_type: "pattern",
+    type: "pattern",
     category: "",
     tags: "",
     language: "",
     framework: "",
-    is_public: true,
   })
   const [formError, setFormError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -111,7 +110,7 @@ export default function BrainContributionsPage() {
       const response = await brainApi.search({
         q: searchQuery || undefined,
         category: selectedCategory || undefined,
-        entryType: selectedType || undefined,
+        type: selectedType || undefined,
         sort: sortBy,
         pageSize: 50,
       })
@@ -143,24 +142,22 @@ export default function BrainContributionsPage() {
       await brainApi.contribute({
         title: formData.title,
         content: formData.content,
-        entryType: formData.entry_type,
+        type: formData.type,
         category: formData.category,
         tags: formData.tags.split(",").map(t => t.trim()).filter(t => t),
         language: formData.language || undefined,
         framework: formData.framework || undefined,
-        isPublic: formData.is_public,
       })
 
       // Reset form and reload
       setFormData({
         title: "",
         content: "",
-        entry_type: "pattern",
+        type: "pattern",
         category: "",
         tags: "",
         language: "",
         framework: "",
-        is_public: true,
       })
       setShowCreateForm(false)
       loadEntries()
@@ -304,7 +301,7 @@ export default function BrainContributionsPage() {
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">Entry Type *</label>
                     <select
-                      value={formData.entry_type}
+                      value={formData.type}
                       onChange={(e) => setFormData({ ...formData, entry_type: e.target.value })}
                       className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       required
@@ -377,7 +374,7 @@ export default function BrainContributionsPage() {
                   <input
                     type="checkbox"
                     id="is_public"
-                    checked={formData.is_public}
+                    checked={formData.isPublic}
                     onChange={(e) => setFormData({ ...formData, is_public: e.target.checked })}
                     className="w-4 h-4 bg-gray-800 border-gray-700 rounded focus:ring-2 focus:ring-blue-500"
                   />
@@ -486,7 +483,7 @@ export default function BrainContributionsPage() {
             </div>
           ) : (
             entries.map((entry) => {
-              const entryType = ENTRY_TYPES.find(t => t.value === entry.entry_type)
+              const entryType = ENTRY_TYPES.find(t => t.value === entry.type)
               const EntryIcon = entryType?.icon || Lightbulb
               const isExpanded = expandedEntries.has(entry.id)
               const isOwner = entry.contributor_id === "temp-user-id"
@@ -502,12 +499,12 @@ export default function BrainContributionsPage() {
                       <div className="flex items-center gap-3 mb-2">
                         <EntryIcon className="w-5 h-5 text-blue-500" />
                         <h3 className="text-lg font-semibold text-white">{entry.title}</h3>
-                        {entry.is_verified && (
+                        {entry.verified && (
                           <span className="px-2 py-1 bg-green-500/20 text-green-300 text-xs rounded-full border border-green-500/30">
                             ✓ Verified
                           </span>
                         )}
-                        {!entry.is_public && (
+                        {!entry.status === "active" && (
                           <span className="px-2 py-1 bg-gray-700 text-gray-300 text-xs rounded-full">
                             Private
                           </span>
@@ -515,7 +512,7 @@ export default function BrainContributionsPage() {
                       </div>
                       <div className="flex items-center gap-4 text-sm text-gray-400">
                         <span>{entry.contributor_username || "Anonymous"}</span>
-                        <span className="px-2 py-1 text-xs rounded border {ENTRY_TYPE_COLORS[entry.entry_type]}">
+                        <span className="px-2 py-1 text-xs rounded border {ENTRY_TYPE_COLORS[entry.type]}">
                           {entryType?.label}
                         </span>
                         {entry.category && (
@@ -586,14 +583,14 @@ export default function BrainContributionsPage() {
                           className="flex items-center gap-1 text-gray-400 hover:text-green-400 transition-colors"
                         >
                           <ThumbsUp className="w-4 h-4" />
-                          <span>{entry.upvotes}</span>
+                          <span>{entry.helpful_votes}</span>
                         </button>
                         <button
                           onClick={() => handleVote(entry.id, -1)}
                           className="flex items-center gap-1 text-gray-400 hover:text-red-400 transition-colors"
                         >
                           <ThumbsDown className="w-4 h-4" />
-                          <span>{entry.downvotes}</span>
+                          <span>{entry.unhelpful_votes}</span>
                         </button>
                       </div>
                       <div className="text-gray-400">

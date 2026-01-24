@@ -90,6 +90,7 @@ async def root():
             "users": "/api/users",
             "orders": "/api/orders",
             "brain": "/api/brain",
+            "checkout": "/api/checkout",
         }
     }
 
@@ -103,6 +104,7 @@ from api.brain import router as brain_router
 from api.webhooks import router as webhooks_router
 from api.payouts import router as payouts_router
 from api.analytics import router as analytics_router
+from api.checkout import router as checkout_router
 
 app.include_router(products_router, prefix="/api/products", tags=["Products"])
 app.include_router(users_router, prefix="/api/users", tags=["Users"])
@@ -112,6 +114,7 @@ app.include_router(brain_router, prefix="/api/brain", tags=["Brain"])
 app.include_router(webhooks_router, prefix="/api/webhooks", tags=["Webhooks"])
 app.include_router(payouts_router, tags=["Payouts"])
 app.include_router(analytics_router, prefix="/api/analytics", tags=["Analytics"])
+app.include_router(checkout_router, prefix="/api/checkout", tags=["Checkout"])
 
 
 if __name__ == "__main__":

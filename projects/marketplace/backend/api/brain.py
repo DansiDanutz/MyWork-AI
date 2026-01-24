@@ -107,7 +107,7 @@ async def contribute_knowledge(
         tags=entry_data.tags,
         language=entry_data.language,
         framework=entry_data.framework,
-        is_public=entry_data.is_public,
+        status="active",  # Default to active status
         quality_score=0.5  # Start with neutral score
     )
 
@@ -131,10 +131,9 @@ async def contribute_knowledge(
         framework=entry.framework,
         quality_score=entry.quality_score,
         usage_count=entry.usage_count,
-        upvotes=entry.helpful_votes,
-        downvotes=entry.unhelpful_votes,
-        is_verified=entry.verified,
-        is_public=entry.status
+        helpful_votes=entry.helpful_votes,
+        unhelpful_votes=entry.unhelpful_votes,
+        verified=entry.verified
     )
 
 
@@ -154,13 +153,13 @@ async def search_brain(
 ):
     """Search the Brain knowledge base."""
     # Build query
-    query = select(BrainEntry).where(BrainEntry.is_public == True)
+    query = select(BrainEntry).where(BrainEntry.status == "active")
 
     if category:
         query = query.where(BrainEntry.category == category)
 
     if entry_type:
-        query = query.where(BrainEntry.entry_type == entry_type)
+        query = query.where(BrainEntry.type == entry_type)
 
     if language:
         query = query.where(BrainEntry.language == language)
@@ -169,7 +168,7 @@ async def search_brain(
         query = query.where(BrainEntry.framework == framework)
 
     if verified_only:
-        query = query.where(BrainEntry.is_verified == True)
+        query = query.where(BrainEntry.verified == True)
 
     if tag:
         query = query.where(BrainEntry.tags.contains([tag]))
@@ -221,10 +220,9 @@ async def search_brain(
             framework=entry.framework,
             quality_score=entry.quality_score,
             usage_count=entry.usage_count,
-            upvotes=entry.helpful_votes,
-            downvotes=entry.unhelpful_votes,
-            is_verified=entry.verified,
-            is_public=entry.status
+            helpful_votes=entry.helpful_votes,
+            unhelpful_votes=entry.unhelpful_votes,
+            verified=entry.verified
         ))
 
     return BrainSearchResponse(
@@ -300,10 +298,9 @@ async def query_brain(
             framework=entry.framework,
             quality_score=entry.quality_score,
             usage_count=entry.usage_count,
-            upvotes=entry.helpful_votes,
-            downvotes=entry.unhelpful_votes,
-            is_verified=entry.verified,
-            is_public=entry.status
+            helpful_votes=entry.helpful_votes,
+            unhelpful_votes=entry.unhelpful_votes,
+            verified=entry.verified
         ))
 
     # TODO: Generate AI summary using Claude
@@ -328,9 +325,9 @@ async def get_brain_stats(
 
     # Entries by type
     type_query = select(
-        BrainEntry.entry_type,
+        BrainEntry.type,
         func.count(BrainEntry.id)
-    ).group_by(BrainEntry.entry_type)
+    ).group_by(BrainEntry.type)
     type_result = await db.execute(type_query)
     entries_by_type = dict(type_result.all())
 
@@ -343,7 +340,7 @@ async def get_brain_stats(
     top_categories = dict(category_result.all())
 
     # Verified entries
-    verified_query = select(func.count(BrainEntry.id)).where(BrainEntry.is_verified == True)
+    verified_query = select(func.count(BrainEntry.id)).where(BrainEntry.verified == True)
     verified_result = await db.execute(verified_query)
     verified_count = verified_result.scalar()
 
@@ -396,10 +393,9 @@ async def get_brain_entry(
         framework=entry.framework,
         quality_score=entry.quality_score,
         usage_count=entry.usage_count,
-        upvotes=entry.helpful_votes,
-        downvotes=entry.unhelpful_votes,
-        is_verified=entry.verified,
-        is_public=entry.status
+        helpful_votes=entry.helpful_votes,
+        unhelpful_votes=entry.unhelpful_votes,
+        verified=entry.verified
     )
 
 
@@ -451,10 +447,9 @@ async def update_brain_entry(
         framework=entry.framework,
         quality_score=entry.quality_score,
         usage_count=entry.usage_count,
-        upvotes=entry.helpful_votes,
-        downvotes=entry.unhelpful_votes,
-        is_verified=entry.verified,
-        is_public=entry.status
+        helpful_votes=entry.helpful_votes,
+        unhelpful_votes=entry.unhelpful_votes,
+        verified=entry.verified
     )
 
 
@@ -545,8 +540,7 @@ async def vote_on_entry(
         framework=entry.framework,
         quality_score=entry.quality_score,
         usage_count=entry.usage_count,
-        upvotes=entry.helpful_votes,
-        downvotes=entry.unhelpful_votes,
-        is_verified=entry.verified,
-        is_public=entry.status
+        helpful_votes=entry.helpful_votes,
+        unhelpful_votes=entry.unhelpful_votes,
+        verified=entry.verified
     )
