@@ -141,4 +141,4 @@ async function testInvalidCredentials() {
   }
 }
 
-test_invalid_credentials().catch(console.error);
+testInvalidCredentials().catch(console.error);
