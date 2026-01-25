@@ -21,13 +21,14 @@ BACKEND_URL = _get_env(
     "https://mywork-ai-production.up.railway.app",
 ).rstrip("/")
 TIMEOUT = float(_get_env("SMOKE_TIMEOUT", "15"))
+VERCEL_BYPASS = os.getenv("VERCEL_AUTOMATION_BYPASS_SECRET", "").strip()
 
 
 def fetch(url: str, expect_json: bool = False):
-    req = urllib.request.Request(
-        url,
-        headers={"User-Agent": "MyWork-SmokeTest/1.0"},
-    )
+    headers = {"User-Agent": "MyWork-SmokeTest/1.0"}
+    if VERCEL_BYPASS:
+        headers["x-vercel-protection-bypass"] = VERCEL_BYPASS
+    req = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(req, timeout=TIMEOUT) as response:
         status = response.getcode()
         raw = response.read()
