@@ -118,10 +118,12 @@ Plans:
   4. System logs feature usage with timestamps for pattern analysis
   5. System handles GitHub API rate limits gracefully without errors
   6. Usage data is available for brain pattern extraction
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 06-01: TBD during planning
+- [ ] 06-01-PLAN.md - Analytics foundation: database schema, event types, non-blocking tracker
+- [ ] 06-02-PLAN.md - GitHub API integration with rate limiting and caching
+- [ ] 06-03-PLAN.md - Export API endpoint, query functions, and data retention
 
 ### Phase 7: Performance & Quality
 **Goal**: Application meets production quality standards for performance and user experience
@@ -166,6 +168,6 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 3. Core Task Management | 0/TBD | Not started | - |
 | 4. Task Organization & Discovery | 0/TBD | Not started | - |
 | 5. File Attachments | 0/TBD | Not started | - |
-| 6. GitHub Integration & Analytics | 0/TBD | Not started | - |
+| 6. GitHub Integration & Analytics | 0/3 | Planned | - |
 | 7. Performance & Quality | 0/TBD | Not started | - |
 | 8. Deployment & Validation | 0/TBD | Not started | - |
