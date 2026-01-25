@@ -5,6 +5,6 @@
   "installCommand": "npm install",
   "outputDirectory": ".next",
   "env": {
-    "NEXT_PUBLIC_API_URL": "https://ai-dashboard-backend.railway.app"
+    "NEXT_PUBLIC_API_URL": "https://ai-dashboard-backend-production-c40e.up.railway.app"
   }
 }
