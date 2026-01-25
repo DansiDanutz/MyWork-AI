@@ -4,9 +4,11 @@ MyWork Marketplace - Backend API
 FastAPI application for the marketplace platform.
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from uuid import uuid4
+import time
 import structlog
 
 from config import settings
@@ -49,6 +51,39 @@ app = FastAPI(
     docs_url="/docs" if settings.DEBUG else None,
     redoc_url="/redoc" if settings.DEBUG else None,
 )
+
+# Request logging middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    if not settings.LOG_HTTP_REQUESTS:
+        return await call_next(request)
+
+    request_id = request.headers.get("x-request-id", str(uuid4()))
+    start = time.perf_counter()
+    try:
+        response = await call_next(request)
+    except Exception:
+        duration_ms = int((time.perf_counter() - start) * 1000)
+        logger.exception(
+            "http_request_failed",
+            method=request.method,
+            path=request.url.path,
+            duration_ms=duration_ms,
+            request_id=request_id,
+        )
+        raise
+
+    duration_ms = int((time.perf_counter() - start) * 1000)
+    logger.info(
+        "http_request",
+        method=request.method,
+        path=request.url.path,
+        status_code=response.status_code,
+        duration_ms=duration_ms,
+        request_id=request_id,
+    )
+    response.headers["X-Request-ID"] = request_id
+    return response
 
 # CORS middleware
 app.add_middleware(

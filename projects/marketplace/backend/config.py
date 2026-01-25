@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     APP_VERSION: str = "0.1.0"
     ENVIRONMENT: str = "development"
     DEBUG: bool = True
+    LOG_HTTP_REQUESTS: bool = True
 
     # URLs
     APP_URL: str = "http://localhost:3000"
