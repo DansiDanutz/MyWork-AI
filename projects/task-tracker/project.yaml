@@ -1,0 +1,15 @@
+name: task-tracker
+type: product
+owner: mywork
+status: active
+marketplace: false
+brain_contribution: true
+stack:
+  - nextjs
+  - prisma
+  - postgres
+tags:
+  - productivity
+  - tasks
+  - dashboard
+description: "Task tracking app with dashboards and analytics."

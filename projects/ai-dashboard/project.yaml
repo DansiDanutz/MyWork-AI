@@ -1,0 +1,15 @@
+name: ai-dashboard
+type: product
+owner: mywork
+status: active
+marketplace: false
+brain_contribution: true
+stack:
+  - nextjs
+  - fastapi
+  - postgres
+tags:
+  - analytics
+  - ai
+  - dashboard
+description: "AI analytics dashboard for tracking usage and insights."

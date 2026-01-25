@@ -1,0 +1,17 @@
+name: mywork-marketplace
+type: product
+owner: mywork
+status: active
+marketplace: true
+brain_contribution: true
+stack:
+  - nextjs
+  - fastapi
+  - postgresql
+  - stripe
+  - clerk
+tags:
+  - marketplace
+  - saas
+  - templates
+description: "AI-powered marketplace where developers sell production-ready projects."
