@@ -4,6 +4,10 @@ on:
   workflow_dispatch:
   schedule:
     - cron: "0 9 * * *"
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
 
 jobs:
   smoke:
