@@ -18,12 +18,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Task Management
 
-- [ ] **TASK-01**: User can create new tasks with title and description
-- [ ] **TASK-02**: User can edit existing tasks (title, description, status)
-- [ ] **TASK-03**: User can delete tasks they created
-- [ ] **TASK-04**: User can set task status (todo, in progress, done)
+- [x] **TASK-01**: User can create new tasks with title and description
+- [x] **TASK-02**: User can edit existing tasks (title, description, status)
+- [x] **TASK-03**: User can delete tasks they created
+- [x] **TASK-04**: User can set task status (todo, in progress, done)
 - [ ] **TASK-05**: User can organize tasks into categories or projects
-- [ ] **TASK-06**: User can view all their tasks in a organized list
+- [x] **TASK-06**: User can view all their tasks in a organized list
 - [ ] **TASK-07**: User can search tasks by title, description, or content
 - [ ] **TASK-08**: User can filter tasks by status, category, or date
 
