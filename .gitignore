@@ -10,6 +10,7 @@
 .env
 .env.*
 !.env.example
+!.env.production
 *.pem
 *.key
 *.crt
@@ -186,6 +187,8 @@ $RECYCLE.BIN/
 # Projects may have their own sensitive data
 projects/*/.env
 projects/*/.env.*
+!projects/*/.env.production
+!projects/**/.env.production
 projects/*/venv/
 projects/*/.venv/
 projects/*/node_modules/
