@@ -31,6 +31,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   analyticsEvents AnalyticsEvent[]
+  tasks         Task[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -85,4 +86,32 @@ model AnalyticsEvent {
   @@index([userId, createdAt])    // Fast user timeline queries
   @@index([eventType, createdAt]) // Fast event type aggregations
   @@index([createdAt])            // Time-series queries
+}
+
+// Task status enum
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+
+  @@map("task_status")
+}
+
+// User tasks for task management
+model Task {
+  id          String     @id @default(cuid())
+  title       String     @db.VarChar(255)
+  description String?    @db.Text
+  status      TaskStatus @default(TODO)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Foreign key to User
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Composite indexes for performance
+  @@index([userId, status])
+  @@index([userId, createdAt])
+  @@map("tasks")
 }
