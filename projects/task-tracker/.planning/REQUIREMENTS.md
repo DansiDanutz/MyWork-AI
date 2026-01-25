@@ -126,12 +126,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | FILE-05 | Phase 5 | Pending |
 | FILE-06 | Phase 5 | Pending |
 | FILE-07 | Phase 5 | Pending |
-| INTG-01 | Phase 6 | Pending |
-| INTG-02 | Phase 6 | Pending |
-| INTG-03 | Phase 6 | Pending |
+| INTG-01 | Phase 6 | Complete |
+| INTG-02 | Phase 6 | Complete |
+| INTG-03 | Phase 6 | Complete |
 | INTG-04 | Phase 2 | Pending |
-| INTG-05 | Phase 6 | Pending |
-| INTG-06 | Phase 6 | Pending |
+| INTG-05 | Phase 6 | Complete |
+| INTG-06 | Phase 6 | Complete |
 | SYS-01 | Phase 7 | Pending |
 | SYS-02 | Phase 7 | Pending |
 | SYS-03 | Phase 7 | Pending |
