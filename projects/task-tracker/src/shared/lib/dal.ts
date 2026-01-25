@@ -3,7 +3,7 @@ import { cache } from 'react'
 import { auth } from '@/shared/lib/auth'
 import { prisma } from '@/shared/lib/db'
 import { redirect } from 'next/navigation'
-import { Task, TaskStatus, Tag, Prisma } from '@prisma/client'
+import { Task, TaskStatus, Tag, FileAttachment, Prisma } from '@prisma/client'
 
 /**
  * Verify the current session and redirect to login if not authenticated.
@@ -280,6 +280,85 @@ export const getTaskWithTags = cache(async (
     return task
   } catch (error) {
     console.error('Error fetching task with tags:', error)
+    return null
+  }
+})
+
+/**
+ * Get all file attachments for a task with ownership verification.
+ */
+export const getFilesByTask = cache(async (
+  taskId: string,
+  userId: string
+): Promise<FileAttachment[]> => {
+  try {
+    const files = await prisma.fileAttachment.findMany({
+      where: { taskId, userId },
+      orderBy: { createdAt: 'desc' },
+    })
+    return files
+  } catch (error) {
+    console.error('Error fetching task files:', error)
+    return []
+  }
+})
+
+/**
+ * Get a single file attachment with ownership verification.
+ */
+export const getFile = cache(async (
+  fileId: string,
+  userId: string
+): Promise<FileAttachment | null> => {
+  try {
+    const file = await prisma.fileAttachment.findFirst({
+      where: { id: fileId, userId },
+    })
+    return file
+  } catch (error) {
+    console.error('Error fetching file:', error)
+    return null
+  }
+})
+
+/**
+ * Get file count for a task (for UI indicators).
+ */
+export const getTaskFileCount = cache(async (
+  taskId: string,
+  userId: string
+): Promise<number> => {
+  try {
+    const count = await prisma.fileAttachment.count({
+      where: { taskId, userId },
+    })
+    return count
+  } catch (error) {
+    console.error('Error counting task files:', error)
+    return 0
+  }
+})
+
+/**
+ * Get task with files included.
+ */
+export const getTaskWithFiles = cache(async (
+  taskId: string,
+  userId: string
+): Promise<(Task & { attachments: FileAttachment[], tags: Tag[] }) | null> => {
+  try {
+    const task = await prisma.task.findFirst({
+      where: { id: taskId, userId },
+      include: {
+        attachments: {
+          orderBy: { createdAt: 'desc' },
+        },
+        tags: true,
+      },
+    })
+    return task
+  } catch (error) {
+    console.error('Error fetching task with files:', error)
     return null
   }
 })
