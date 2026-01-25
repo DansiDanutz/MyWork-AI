@@ -18,3 +18,8 @@ export { EmptyState } from './EmptyState'
 export { FileDropzone } from './FileDropzone'
 export { FileUploadProgress } from './FileUploadProgress'
 export type { UploadState, UploadStatus } from './FileUploadProgress'
+
+// File display components
+export { FileThumbnail, FileTypeIcon } from './FileThumbnail'
+export { FilePreview } from './FilePreview'
+export { FileList, FileCountBadge } from './FileList'
