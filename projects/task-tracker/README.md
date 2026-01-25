@@ -59,3 +59,4 @@ See `.env.example` for required values. Key items:
 
 - GitHub OAuth is required for authentication.
 - Use the repository root `CONTRIBUTING.md` for workflow standards.
+- Live status: https://mywork-task-tracker.vercel.app/status
