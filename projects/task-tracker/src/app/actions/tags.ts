@@ -13,11 +13,6 @@ const CreateTagSchema = z.object({
   color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format').optional(),
 })
 
-const UpdateTaskTagsSchema = z.object({
-  taskId: z.string().min(1),
-  tagIds: z.array(z.string()),
-})
-
 type ActionResult<T = void> =
   | { success: true; data?: T }
   | { success: false; error: string }
