@@ -18,7 +18,7 @@ export async function trackEventAsync(event: AnalyticsEvent): Promise<void> {
       data: {
         userId: validatedEvent.userId,
         eventType: validatedEvent.type,
-        properties: validatedEvent.properties,
+        properties: validatedEvent.properties as any,
       }
     })
   } catch (error) {
