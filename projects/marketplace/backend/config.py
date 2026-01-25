@@ -17,6 +17,12 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     LOG_HTTP_REQUESTS: bool = True
 
+    # Observability (Sentry)
+    SENTRY_DSN: str = ""
+    SENTRY_ENVIRONMENT: Optional[str] = None
+    SENTRY_TRACES_SAMPLE_RATE: float = 0.05
+    SENTRY_PROFILES_SAMPLE_RATE: float = 0.0
+
     # URLs
     APP_URL: str = "http://localhost:3000"
     API_URL: str = "http://localhost:8000"

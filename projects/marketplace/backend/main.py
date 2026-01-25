@@ -10,6 +10,10 @@ from contextlib import asynccontextmanager
 from uuid import uuid4
 import time
 import structlog
+import sentry_sdk
+from sentry_sdk.integrations.fastapi import FastApiIntegration
+from sentry_sdk.integrations.starlette import StarletteIntegration
+from sentry_sdk.integrations.sqlalchemy import SqlalchemyIntegration
 
 from config import settings
 from database import init_db
@@ -22,6 +26,21 @@ structlog.configure(
     ]
 )
 logger = structlog.get_logger()
+
+# Sentry (optional)
+if settings.SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=settings.SENTRY_DSN,
+        environment=settings.SENTRY_ENVIRONMENT or settings.ENVIRONMENT,
+        traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,
+        profiles_sample_rate=settings.SENTRY_PROFILES_SAMPLE_RATE,
+        integrations=[
+            FastApiIntegration(),
+            StarletteIntegration(),
+            SqlalchemyIntegration(),
+        ],
+        send_default_pii=False,
+    )
 
 
 @asynccontextmanager
