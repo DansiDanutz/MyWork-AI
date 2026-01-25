@@ -70,10 +70,13 @@ Plans:
   4. User can set task status to todo, in progress, or done
   5. User can view all their tasks in an organized list
   6. All user actions provide immediate visual feedback (loading states, confirmations)
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 03-01: TBD during planning
+- [ ] 03-01-PLAN.md - Database schema, Server Actions, and DAL for task CRUD
+- [ ] 03-02-PLAN.md - TaskCard, TaskList, and TaskForm UI components
+- [ ] 03-03-PLAN.md - Task list page, create page, and dashboard integration
+- [ ] 03-04-PLAN.md - Task edit page with full CRUD verification
 
 ### Phase 4: Task Organization & Discovery
 **Goal**: Users can organize and find tasks efficiently
@@ -165,7 +168,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 |-------|----------------|--------|-----------|
 | 1. Foundation & Setup | 3/3 | Complete | 2026-01-24 |
 | 2. Authentication & Profiles | 5/5 | Complete | 2026-01-25 |
-| 3. Core Task Management | 0/TBD | Not started | - |
+| 3. Core Task Management | 0/4 | Not started | - |
 | 4. Task Organization & Discovery | 0/TBD | Not started | - |
 | 5. File Attachments | 0/TBD | Not started | - |
 | 6. GitHub Integration & Analytics | 3/3 | Complete | 2026-01-25 |
