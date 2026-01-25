@@ -95,6 +95,8 @@ downloads/
 eggs/
 .eggs/
 lib/
+!projects/ai-dashboard/frontend/lib/
+!projects/ai-dashboard/frontend/lib/**
 lib64/
 parts/
 sdist/
