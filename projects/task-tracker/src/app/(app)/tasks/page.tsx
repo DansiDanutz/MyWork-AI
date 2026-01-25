@@ -1,7 +1,17 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
-import { getTasksByUser, verifySession } from '@/shared/lib/dal'
+import {
+  getTasksByUser,
+  verifySession,
+  getTagsByUser,
+  searchTasks,
+  filterTasks,
+} from '@/shared/lib/dal'
 import { TaskList } from '@/shared/components/TaskList'
+import { TaskSearchBar } from '@/shared/components/TaskSearchBar'
+import { TaskFilters } from '@/shared/components/TaskFilters'
+import { searchParamsCache } from './search-params'
+import { TaskStatus } from '@prisma/client'
 
 // Loading skeleton that matches TaskList layout
 function TaskListSkeleton() {
@@ -43,19 +53,81 @@ function TaskListSkeleton() {
   )
 }
 
-// Async component that loads tasks
-async function TaskListContent() {
+// Async component that loads tasks with search/filter
+async function TaskListContent({
+  searchQuery,
+  statusFilters,
+  tagFilters,
+}: {
+  searchQuery: string
+  statusFilters: string[]
+  tagFilters: string[]
+}) {
   const { userId } = await verifySession()
-  const tasks = await getTasksByUser(userId)
+
+  let tasks
+
+  // If there's a search query, use search function
+  if (searchQuery.trim().length > 0) {
+    const searchResults = await searchTasks(userId, searchQuery.trim())
+
+    // Apply additional filters to search results
+    tasks = searchResults
+
+    if (statusFilters.length > 0) {
+      tasks = tasks.filter((task) => statusFilters.includes(task.status))
+    }
+
+    if (tagFilters.length > 0) {
+      tasks = tasks.filter((task) =>
+        task.tags.some((tag) => tagFilters.includes(tag.id))
+      )
+    }
+  } else if (statusFilters.length > 0 || tagFilters.length > 0) {
+    // Use filter function if filters are active
+    const filterObj: {
+      status?: TaskStatus[]
+      tagIds?: string[]
+    } = {}
+
+    if (statusFilters.length > 0) {
+      filterObj.status = statusFilters as TaskStatus[]
+    }
+
+    if (tagFilters.length > 0) {
+      filterObj.tagIds = tagFilters
+    }
+
+    tasks = await filterTasks(userId, filterObj)
+  } else {
+    // No filters, get all tasks
+    tasks = await getTasksByUser(userId)
+  }
 
   return <TaskList tasks={tasks} />
 }
 
-export default function TasksPage() {
+// Async component that loads filter data
+async function TaskFiltersContent() {
+  const { userId } = await verifySession()
+  const tags = await getTagsByUser(userId)
+
+  return <TaskFilters tags={tags} />
+}
+
+export default async function TasksPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>
+}) {
+  // Parse URL search params
+  const params = await searchParams
+  const { q, status, tags } = searchParamsCache.parse(params)
+
   return (
     <div>
       {/* Page header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
           My Tasks
         </h1>
@@ -91,10 +163,42 @@ export default function TasksPage() {
         </Link>
       </div>
 
-      {/* Task list with Suspense for streaming */}
-      <Suspense fallback={<TaskListSkeleton />}>
-        <TaskListContent />
-      </Suspense>
+      {/* Search bar */}
+      <div className="mb-6">
+        <TaskSearchBar />
+      </div>
+
+      {/* Two-column layout: filters sidebar + task list */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Filter sidebar */}
+        <aside className="lg:col-span-1">
+          <Suspense
+            fallback={
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 animate-pulse">
+                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-4" />
+                <div className="space-y-2">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded" />
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded" />
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded" />
+                </div>
+              </div>
+            }
+          >
+            <TaskFiltersContent />
+          </Suspense>
+        </aside>
+
+        {/* Task list */}
+        <main className="lg:col-span-3">
+          <Suspense fallback={<TaskListSkeleton />}>
+            <TaskListContent
+              searchQuery={q}
+              statusFilters={status}
+              tagFilters={tags}
+            />
+          </Suspense>
+        </main>
+      </div>
     </div>
   )
 }
