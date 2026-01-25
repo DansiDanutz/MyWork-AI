@@ -3,6 +3,7 @@
 import { useOptimistic, useTransition } from 'react'
 import { updateTaskStatus, deleteTask } from '@/app/actions/tasks'
 import Link from 'next/link'
+import { TagBadge } from './TagBadge'
 
 type Task = {
   id: string
@@ -11,6 +12,7 @@ type Task = {
   status: 'TODO' | 'IN_PROGRESS' | 'DONE'
   createdAt: Date
   updatedAt: Date
+  tags?: { id: string; name: string; color: string | null }[]
 }
 
 type TaskCardProps = {
@@ -93,6 +95,26 @@ export function TaskCard({ task }: TaskCardProps) {
       <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
         {optimisticTask.title}
       </h3>
+
+      {/* Tags */}
+      {optimisticTask.tags && optimisticTask.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-2">
+          {optimisticTask.tags.slice(0, 3).map((tag) => (
+            <TagBadge
+              key={tag.id}
+              name={tag.name}
+              color={tag.color || undefined}
+              size="sm"
+            />
+          ))}
+          {optimisticTask.tags.length > 3 && (
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              +{optimisticTask.tags.length - 3} more
+            </span>
+          )}
+        </div>
+      )}
+
       {optimisticTask.description && (
         <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
           {optimisticTask.description}
