@@ -74,6 +74,14 @@ marketplace/
 | 6. Subscriptions | 1 week | Tiers |
 | 7. Launch | 2 weeks | Admin, Polish |
 
+## Submission Workflow
+
+Marketplace listings require an automated audit pass:
+
+1. Seller submits a project package (ZIP/TAR) with `project.yaml`, `README.md`, and `LICENSE`.
+2. Automated audit scans for missing files and secret leaks.
+3. If approved, the seller can publish the listing.
+
 ## Development
 
 ### Prerequisites

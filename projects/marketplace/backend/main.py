@@ -162,6 +162,7 @@ from api.payouts import router as payouts_router
 from api.analytics import router as analytics_router
 from api.checkout import router as checkout_router
 from api.uploads import router as uploads_router
+from api.submissions import router as submissions_router
 
 app.include_router(products_router, prefix="/api/products", tags=["Products"])
 app.include_router(users_router, prefix="/api/users", tags=["Users"])
@@ -173,6 +174,7 @@ app.include_router(payouts_router, tags=["Payouts"])
 app.include_router(analytics_router, prefix="/api/analytics", tags=["Analytics"])
 app.include_router(checkout_router, prefix="/api/checkout", tags=["Checkout"])
 app.include_router(uploads_router, prefix="/api/uploads", tags=["Uploads"])
+app.include_router(submissions_router, prefix="/api/submissions", tags=["Submissions"])
 
 
 if __name__ == "__main__":

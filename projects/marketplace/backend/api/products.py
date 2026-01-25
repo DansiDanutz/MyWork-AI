@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 from database import get_db
 from dependencies import get_current_db_user
 from models.product import Product, PRODUCT_CATEGORIES
-from models.user import User
+from models.user import User, SellerProfile
 from services.storage import extract_key_from_url, generate_presigned_get
 
 router = APIRouter()
@@ -119,6 +119,27 @@ def _product_response(product: Product) -> ProductResponse:
     response.package_url = product.package_url
     response.package_size_bytes = product.package_size_bytes
     return response
+
+
+async def _require_verified_seller(
+    current_user: User,
+    db: AsyncSession,
+) -> SellerProfile:
+    if not current_user.is_seller:
+        raise HTTPException(status_code=403, detail="Seller account required")
+
+    profile = await db.scalar(
+        select(SellerProfile).where(SellerProfile.user_id == current_user.id)
+    )
+    if not profile:
+        raise HTTPException(status_code=404, detail="Seller profile not found")
+
+    if profile.verification_level not in ("verified", "premium"):
+        raise HTTPException(
+            status_code=403,
+            detail="Seller verification required. Submit a project for audit first.",
+        )
+    return profile
 
 
 # Endpoints
@@ -247,8 +268,7 @@ async def create_product(
     db: AsyncSession = Depends(get_db),
 ):
     """Create a new product listing."""
-    if not current_user.is_seller:
-        raise HTTPException(status_code=403, detail="Seller account required")
+    await _require_verified_seller(current_user, db)
 
     # Generate slug
     import re
@@ -350,6 +370,7 @@ async def publish_product(
     db: AsyncSession = Depends(get_db),
 ):
     """Publish a draft product."""
+    await _require_verified_seller(current_user, db)
     query = select(Product).where(Product.id == product_id)
     result = await db.execute(query)
     product = result.scalar_one_or_none()

@@ -10,6 +10,7 @@ from api.orders import router as orders_router
 from api.reviews import router as reviews_router
 from api.brain import router as brain_router
 from api.webhooks import router as webhooks_router
+from api.submissions import router as submissions_router
 
 # Create main API router
 api_router = APIRouter()
@@ -21,6 +22,7 @@ api_router.include_router(orders_router, prefix="/orders", tags=["Orders"])
 api_router.include_router(reviews_router, prefix="/reviews", tags=["Reviews"])
 api_router.include_router(brain_router, prefix="/brain", tags=["Brain"])
 api_router.include_router(webhooks_router, prefix="/webhooks", tags=["Webhooks"])
+api_router.include_router(submissions_router, prefix="/submissions", tags=["Submissions"])
 
 __all__ = [
     "api_router",
@@ -30,4 +32,5 @@ __all__ = [
     "reviews_router",
     "brain_router",
     "webhooks_router",
+    "submissions_router",
 ]

@@ -267,6 +267,43 @@ export const uploadsApi = {
   }) => api.post('/uploads/presign', data),
 }
 
+// Submissions API
+export const submissionsApi = {
+  create: (data: {
+    title: string
+    short_description?: string
+    description: string
+    category: string
+    subcategory?: string
+    tags?: string[]
+    price: number
+    license_type?: string
+    tech_stack?: string[]
+    framework?: string
+    requirements?: string
+    demo_url?: string
+    documentation_url?: string
+    preview_images?: string[]
+    package_url?: string
+    package_size_bytes?: number | null
+  }) => api.post('/submissions', data),
+
+  listMine: (params?: { status?: string; page?: number; pageSize?: number }) =>
+    api.get('/submissions/me', {
+      params: {
+        status: params?.status,
+        page: params?.page,
+        page_size: params?.pageSize,
+      },
+    }),
+
+  get: (id: string) => api.get(`/submissions/${id}`),
+
+  retry: (id: string) => api.post(`/submissions/${id}/retry`),
+
+  publish: (id: string) => api.post(`/submissions/${id}/publish`),
+}
+
 // Checkout API
 export const checkoutApi = {
   createSession: (data: { productId: string; licenseType: 'standard' | 'extended' }) =>

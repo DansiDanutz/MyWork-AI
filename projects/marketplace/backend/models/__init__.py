@@ -10,6 +10,7 @@ from models.review import Review
 from models.subscription import Subscription
 from models.payout import Payout
 from models.brain import BrainEntry
+from models.submission import ProjectSubmission
 
 __all__ = [
     "Base",
@@ -22,4 +23,5 @@ __all__ = [
     "Subscription",
     "Payout",
     "BrainEntry",
+    "ProjectSubmission",
 ]

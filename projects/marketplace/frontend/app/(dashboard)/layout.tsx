@@ -32,6 +32,11 @@ const sidebarLinks = [
     icon: Package,
   },
   {
+    href: "/submissions",
+    label: "Submissions",
+    icon: Package,
+  },
+  {
     href: "/orders",
     label: "Sales",
     icon: Receipt,

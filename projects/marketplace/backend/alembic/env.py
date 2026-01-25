@@ -20,6 +20,7 @@ from models.review import Review
 from models.subscription import Subscription
 from models.payout import Payout
 from models.brain import BrainEntry
+from models.submission import ProjectSubmission
 
 # Import settings
 from config import settings

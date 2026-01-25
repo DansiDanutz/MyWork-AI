@@ -2,14 +2,14 @@
 
 export const dynamic = "force-dynamic"
 
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@clerk/nextjs"
 import { ChevronLeft, ChevronRight, Upload, X, Plus, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { productsApi, setAuthToken } from "@/lib/api"
+import { productsApi, submissionsApi, usersApi, setAuthToken } from "@/lib/api"
 import { uploadFileWithPresign } from "@/lib/uploads"
 
 const PRODUCT_CATEGORIES = [
@@ -113,6 +113,8 @@ export default function NewProductPage() {
   const [currentStep, setCurrentStep] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [sellerProfile, setSellerProfile] = useState<{ verification_level: string } | null>(null)
+  const [sellerProfileLoading, setSellerProfileLoading] = useState(true)
 
   const [formData, setFormData] = useState<FormData>({
     // Step 1
@@ -145,6 +147,26 @@ export default function NewProductPage() {
   const [imageUploads, setImageUploads] = useState<ImageUpload[]>([])
   const [packageUpload, setPackageUpload] = useState<PackageUpload | null>(null)
   const [uploadError, setUploadError] = useState<string | null>(null)
+
+  const isVerifiedSeller = sellerProfile?.verification_level === "verified" || sellerProfile?.verification_level === "premium"
+
+  useEffect(() => {
+    const loadSellerProfile = async () => {
+      try {
+        const token = await getToken()
+        if (!token) return
+        setAuthToken(token)
+        const response = await usersApi.getSellerProfile()
+        setSellerProfile(response.data)
+      } catch (err) {
+        setSellerProfile(null)
+      } finally {
+        setSellerProfileLoading(false)
+      }
+    }
+
+    loadSellerProfile()
+  }, [getToken])
 
   // Validation
   const validateStep = (step: number): boolean => {
@@ -251,13 +273,16 @@ export default function NewProductPage() {
         ...(formData.package_size_bytes && { package_size_bytes: formData.package_size_bytes }),
       }
 
-      await productsApi.create(productData)
-
-      // Redirect to product list
-      router.push("/dashboard/my-products")
+      if (isVerifiedSeller) {
+        await productsApi.create(productData)
+        router.push("/dashboard/my-products")
+      } else {
+        await submissionsApi.create(productData)
+        router.push("/dashboard/submissions")
+      }
     } catch (err: any) {
       console.error("Failed to create product:", err)
-      setError(err.response?.data?.detail || "Failed to create product")
+      setError(err.response?.data?.detail || "Failed to submit product")
     } finally {
       setLoading(false)
     }
@@ -514,6 +539,17 @@ export default function NewProductPage() {
           <CardContent className="p-4 flex items-start gap-3">
             <AlertCircle className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
             <p className="text-red-400 text-sm">{error}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {!sellerProfileLoading && !isVerifiedSeller && (
+        <Card className="mb-6 border-yellow-900 bg-yellow-950/20">
+          <CardContent className="p-4">
+            <p className="text-sm text-yellow-300">
+              Your seller account needs verification before you can publish.
+              Submit your project for audit and we’ll unlock publishing once it passes.
+            </p>
           </CardContent>
         </Card>
       )}
@@ -1013,20 +1049,24 @@ export default function NewProductPage() {
             <div className="flex gap-2">
               {currentStep === STEP_TITLES.length - 1 ? (
                 <>
-                  <Button
-                    onClick={() => handleSubmit(true)}
-                    disabled={loading || hasActiveUploads}
-                    variant="outline"
-                    className="gap-2"
-                  >
-                    Save as Draft
-                  </Button>
+                  {isVerifiedSeller && (
+                    <Button
+                      onClick={() => handleSubmit(true)}
+                      disabled={loading || hasActiveUploads}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      Save as Draft
+                    </Button>
+                  )}
                   <Button
                     onClick={() => handleSubmit(false)}
                     disabled={loading || hasActiveUploads}
                     className="gap-2"
                   >
-                    {loading ? "Creating..." : "Publish Product"}
+                    {loading
+                      ? isVerifiedSeller ? "Creating..." : "Submitting..."
+                      : isVerifiedSeller ? "Publish Product" : "Submit for Audit"}
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </>

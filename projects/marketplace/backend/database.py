@@ -65,7 +65,7 @@ async def init_db():
     # Import models to register them
     from models import (
         User, SellerProfile, Product, ProductVersion,
-        Order, Review, Subscription, Payout, BrainEntry
+        Order, Review, Subscription, Payout, BrainEntry, ProjectSubmission
     )
 
     await create_tables()
