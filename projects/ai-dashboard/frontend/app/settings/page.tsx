@@ -2,8 +2,8 @@
 export const dynamic = 'force-dynamic';
 export const runtime = 'edge';
 
-import VideosClient from './VideosClient';
+import SettingsClient from './SettingsClient';
 
-export default function VideosPage() {
-  return <VideosClient />;
+export default function SettingsPage() {
+  return <SettingsClient />;
 }

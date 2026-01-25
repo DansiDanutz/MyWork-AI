@@ -3,33 +3,33 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Home,
-  Video,
-  Newspaper,
-  FolderGit2,
-  Bot,
-  Settings,
-  Activity
-} from 'lucide-react';
+  LuHouse,
+  LuVideo,
+  LuNewspaper,
+  LuFolderGit2,
+  LuBot,
+  LuSettings,
+  LuActivity
+} from 'react-icons/lu';
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: Home },
-  { name: 'AI Videos', href: '/videos', icon: Video },
-  { name: 'AI News', href: '/news', icon: Newspaper },
-  { name: 'GitHub Projects', href: '/projects', icon: FolderGit2 },
-  { name: 'YouTube Bot', href: '/youtube-bot', icon: Bot },
+  { name: 'Dashboard', href: '/', icon: LuHouse },
+  { name: 'AI Videos', href: '/videos', icon: LuVideo },
+  { name: 'AI News', href: '/news', icon: LuNewspaper },
+  { name: 'GitHub Projects', href: '/projects', icon: LuFolderGit2 },
+  { name: 'YouTube Bot', href: '/youtube-bot', icon: LuBot },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-gray-900 text-white min-h-screen flex flex-col">
+    <aside className="fixed left-0 top-0 w-64 bg-gray-900 text-white h-screen flex flex-col overflow-y-auto">
       {/* Logo */}
       <div className="p-6 border-b border-gray-800">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-            <Activity className="w-6 h-6" />
+            <LuActivity className="w-6 h-6" />
           </div>
           <div>
             <h1 className="font-bold text-lg">AI Dashboard</h1>
@@ -68,7 +68,7 @@ export function Sidebar() {
           href="/settings"
           className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-gray-800 hover:text-white rounded-lg transition-colors"
         >
-          <Settings className="w-5 h-5" />
+          <LuSettings className="w-5 h-5" />
           <span>Settings</span>
         </Link>
       </div>
