@@ -115,10 +115,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 | TASK-02 | Phase 3 | Pending |
 | TASK-03 | Phase 3 | Pending |
 | TASK-04 | Phase 3 | Pending |
-| TASK-05 | Phase 4 | Pending |
+| TASK-05 | Phase 4 | Complete |
 | TASK-06 | Phase 3 | Pending |
-| TASK-07 | Phase 4 | Pending |
-| TASK-08 | Phase 4 | Pending |
+| TASK-07 | Phase 4 | Complete |
+| TASK-08 | Phase 4 | Complete |
 | FILE-01 | Phase 5 | Pending |
 | FILE-02 | Phase 5 | Pending |
 | FILE-03 | Phase 5 | Pending |
