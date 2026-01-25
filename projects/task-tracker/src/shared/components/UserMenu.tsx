@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 interface UserMenuProps {
   user: {
@@ -34,9 +35,11 @@ export function UserMenu({ user, signOutAction }: UserMenuProps) {
         className="flex items-center gap-2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
       >
         {user.image ? (
-          <img
+          <Image
             src={user.image}
             alt={user.name || 'User avatar'}
+            width={32}
+            height={32}
             className="w-8 h-8 rounded-full"
           />
         ) : (

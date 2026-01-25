@@ -47,7 +47,7 @@ Progress: [████████░░] 79%
 Decisions are logged in PROJECT.md Key Decisions table and plan SUMMARY files.
 Recent decisions affecting current work:
 
-- **TECH-001** (2026-01-24): Use Next.js 15.0.3 instead of 16.x due to React 19 compatibility issues
+- **TECH-001** (2026-01-26): Use Next.js 15.5.9 instead of 16.x due to React 19 compatibility issues (patched build)
 - **ARCH-001** (2026-01-24): Modular monolith architecture for clean module extraction to framework brain
 - **TECH-002** (2026-01-24): TypeScript strict mode enabled for type safety across entire application
 - **TECH-003** (2026-01-24): Prisma 7 with PostgreSQL adapter for database connection pooling
@@ -112,12 +112,7 @@ None yet.
 
 ### Blockers/Concerns
 
-**Build Issue (critical for deployment):**
-- Next.js 15.0.3 has a webpack bundling bug causing production builds to fail
-- Error: Pages Router components incorrectly bundled in App Router builds
-- Workaround: Development server works correctly
-- Resolution needed: Either wait for Next.js fix or find Edge Runtime workaround
-- Impact: Cannot deploy to production until resolved
+None currently. (Build issue resolved by upgrading Next.js to 15.5.9.)
 
 **User setup still required for testing:**
 - GitHub OAuth app must be created and credentials added to .env

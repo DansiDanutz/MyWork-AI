@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import Image from 'next/image'
 import { useDebounce } from '@/shared/hooks/useDebounce'
 import { updateProfileField, type ProfileUpdateResult } from '@/app/actions/profile'
 
@@ -94,9 +95,11 @@ export function ProfileForm({ user }: ProfileFormProps) {
       <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
         <div className="flex items-center gap-4">
           {user.image && (
-            <img
+            <Image
               src={user.image}
               alt={user.name || 'GitHub avatar'}
+              width={64}
+              height={64}
               className="w-16 h-16 rounded-full"
             />
           )}

@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import { getUser } from '@/shared/lib/dal'
 
 export default async function WelcomePage() {
@@ -16,9 +17,11 @@ export default async function WelcomePage() {
       <div className="text-center mb-8">
         {/* User avatar */}
         {user.image && (
-          <img
+          <Image
             src={user.image}
             alt={user.name || 'User avatar'}
+            width={80}
+            height={80}
             className="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-blue-100 dark:border-blue-900"
           />
         )}
