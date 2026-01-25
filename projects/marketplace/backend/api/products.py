@@ -10,9 +10,10 @@ from sqlalchemy import select, func
 from pydantic import BaseModel, Field
 
 from database import get_db
+from dependencies import get_current_db_user
 from models.product import Product, PRODUCT_CATEGORIES
+from models.user import User
 from services.storage import extract_key_from_url, generate_presigned_get
-from auth import get_current_user, CurrentUser
 
 router = APIRouter()
 
@@ -219,7 +220,13 @@ async def get_product(
     db: AsyncSession = Depends(get_db)
 ):
     """Get product by slug."""
-    query = select(Product).where(Product.slug == slug)
+    import re
+
+    is_uuid = re.fullmatch(r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}", slug)
+    if is_uuid:
+        query = select(Product).where(Product.id == slug)
+    else:
+        query = select(Product).where(Product.slug == slug)
     result = await db.execute(query)
     product = result.scalar_one_or_none()
 
@@ -236,12 +243,12 @@ async def get_product(
 @router.post("", response_model=ProductResponse, status_code=201)
 async def create_product(
     product_data: ProductCreate,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Create a new product listing."""
-    # TODO: Get seller_id from auth
-    # TODO: Validate seller has Pro subscription
+    if not current_user.is_seller:
+        raise HTTPException(status_code=403, detail="Seller account required")
 
     # Generate slug
     import re
@@ -265,11 +272,7 @@ async def create_product(
     if package_url:
         data["package_url"] = package_url
 
-    product = Product(
-        seller_id="temp-seller-id",  # TODO: From auth
-        slug=slug,
-        **data,
-    )
+    product = Product(seller_id=current_user.id, slug=slug, **data)
 
     db.add(product)
     await db.commit()
@@ -282,8 +285,8 @@ async def create_product(
 async def update_product(
     product_id: str,
     product_data: ProductUpdate,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Update a product listing."""
     query = select(Product).where(Product.id == product_id)
@@ -293,7 +296,8 @@ async def update_product(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    # TODO: Verify ownership
+    if product.seller_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
 
     # Update fields
     update_data = product_data.model_dump(exclude_unset=True)
@@ -318,8 +322,8 @@ async def update_product(
 @router.delete("/{product_id}", status_code=204)
 async def delete_product(
     product_id: str,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Delete (archive) a product listing."""
     query = select(Product).where(Product.id == product_id)
@@ -329,7 +333,8 @@ async def delete_product(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    # TODO: Verify ownership
+    if product.seller_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
 
     # Soft delete - change status to archived
     product.status = "archived"
@@ -341,8 +346,8 @@ async def delete_product(
 @router.post("/{product_id}/publish", response_model=ProductResponse)
 async def publish_product(
     product_id: str,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Publish a draft product."""
     query = select(Product).where(Product.id == product_id)
@@ -352,7 +357,8 @@ async def publish_product(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    # TODO: Verify ownership
+    if product.seller_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not authorized")
     # TODO: Validate product is complete (has package, images, etc.)
 
     if product.status != "draft":
@@ -361,9 +367,8 @@ async def publish_product(
             detail="Only draft products can be published"
         )
 
-    product.status = "pending"  # Goes to review
-    # Or set to "active" if auto-approve
-    # product.status = "active"
+    # Auto-approve for now; add moderation workflow later.
+    product.status = "active"
 
     await db.commit()
     await db.refresh(product)
@@ -376,13 +381,13 @@ async def get_my_products(
     status: Optional[str] = Query(None, pattern="^(draft|active|archived|pending)$"),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
+    current_user: User = Depends(get_current_db_user),
     db: AsyncSession = Depends(get_db),
-    current_user: CurrentUser = Depends(get_current_user)
 ):
     """Get the current user's products."""
 
     # Base query - user's products only
-    query = select(Product).where(Product.seller_id == current_user.user_id)
+    query = select(Product).where(Product.seller_id == current_user.id)
 
     # Optional status filter
     if status:

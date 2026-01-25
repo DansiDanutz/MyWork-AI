@@ -184,21 +184,21 @@ export default function CheckoutPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="flex gap-4">
-                    {product.previewImages && product.previewImages[0] && (
+                    {product.preview_images && product.preview_images[0] && (
                       <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-gray-800">
                         <img
-                          src={product.previewImages[0]}
-                          alt={product.name}
+                          src={product.preview_images[0]}
+                          alt={product.title}
                           className="w-full h-full object-cover"
                         />
                       </div>
                     )}
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-white mb-1">
-                        {product.name}
+                        {product.title}
                       </h3>
                       <p className="text-sm text-gray-400 line-clamp-2">
-                        {product.shortDescription || product.description}
+                        {product.short_description || product.description}
                       </p>
                       <div className="flex gap-2 mt-2">
                         {product.category && (
@@ -206,9 +206,9 @@ export default function CheckoutPage() {
                             {product.category}
                           </Badge>
                         )}
-                        {product.techStack && product.techStack.length > 0 && (
+                        {product.tech_stack && product.tech_stack.length > 0 && (
                           <Badge variant="outline" className="text-xs">
-                            {product.techStack[0]}
+                            {product.tech_stack[0]}
                           </Badge>
                         )}
                       </div>
@@ -275,7 +275,7 @@ export default function CheckoutPage() {
                 <CardContent className="space-y-4">
                   {/* Product */}
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">{product.name}</span>
+                    <span className="text-gray-400">{product.title}</span>
                     <span className="text-white font-medium">
                       {formatPrice(currentPrice)}
                     </span>

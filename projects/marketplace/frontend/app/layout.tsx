@@ -8,6 +8,7 @@ import {
 import { Inter } from 'next/font/google'
 import Link from 'next/link'
 import { Toaster } from 'sonner'
+import AuthTokenProvider from '@/components/auth-token-provider'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -27,6 +28,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className="dark">
         <body className={`${inter.className} bg-gray-900 text-gray-100 min-h-screen`}>
+          <AuthTokenProvider />
           <header className="border-b border-gray-800 bg-gray-900/95 backdrop-blur supports-[backdrop-filter]:bg-gray-900/60">
             <div className="container mx-auto px-4 h-16 flex items-center justify-between">
               <div className="flex items-center gap-8">

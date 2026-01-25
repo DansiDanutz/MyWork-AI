@@ -4,14 +4,16 @@ Orders API endpoints.
 
 from typing import Optional, List
 from datetime import datetime, timedelta
+from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
 from pydantic import BaseModel
 
 from database import get_db
+from dependencies import get_current_db_user
 from models.user import User
-from models.product import Product
+from models.product import Product, LICENSE_TYPES
 from models.order import Order
 from config import settings
 from services.storage import generate_presigned_get
@@ -57,16 +59,35 @@ class RefundRequest(BaseModel):
     reason: str
 
 
+def _normalize_license_type(license_type: str) -> str:
+    if license_type == "unlimited":
+        return "enterprise"
+    return license_type
+
+
+def _max_downloads(license_type: str) -> int:
+    if license_type == "extended":
+        return 10
+    if license_type in ("enterprise", "unlimited"):
+        return 999
+    return 5
+
+
+def _calculate_price(product: Product, license_type: str) -> Decimal:
+    normalized = _normalize_license_type(license_type)
+    multiplier = LICENSE_TYPES.get(normalized, LICENSE_TYPES["standard"])["multiplier"]
+    return Decimal(str(product.price)) * Decimal(str(multiplier))
+
+
 # Endpoints
 @router.post("", response_model=OrderResponse, status_code=201)
 async def create_order(
     order_data: OrderCreate,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Create a new order (initiate purchase)."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    user_id = current_user.id
 
     # Get product
     product_query = select(Product).where(Product.id == order_data.product_id)
@@ -76,7 +97,7 @@ async def create_order(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    if product.status != "published":
+    if product.status != "active":
         raise HTTPException(status_code=400, detail="Product is not available")
 
     # Can't buy your own product
@@ -95,16 +116,10 @@ async def create_order(
     if existing_result.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Already purchased this product")
 
-    # Get price based on license type
-    if order_data.license_type == "extended":
-        amount = product.extended_license_price or product.price * 2.5
-    elif order_data.license_type == "unlimited":
-        amount = product.unlimited_license_price or product.price * 5
-    else:
-        amount = product.price
+    amount = _calculate_price(product, order_data.license_type)
 
     # Calculate fees
-    platform_fee = amount * (settings.PLATFORM_FEE_PERCENT / 100)
+    platform_fee = amount * (Decimal(str(settings.PLATFORM_FEE_PERCENT)) / Decimal("100"))
     seller_amount = amount - platform_fee
 
     # Create order
@@ -114,11 +129,11 @@ async def create_order(
         product_id=product.id,
         amount=amount,
         platform_fee=platform_fee,
+        stripe_fee=Decimal("0"),
         seller_amount=seller_amount,
-        license_type=order_data.license_type,
+        license_type=_normalize_license_type(order_data.license_type),
         status="pending",
-        escrow_release_date=datetime.utcnow() + timedelta(days=settings.ESCROW_DAYS),
-        max_downloads=5 if order_data.license_type == "standard" else 10
+        escrow_release_at=datetime.utcnow() + timedelta(days=settings.ESCROW_DAYS),
     )
 
     db.add(order)
@@ -133,16 +148,16 @@ async def create_order(
         buyer_id=order.buyer_id,
         seller_id=order.seller_id,
         product_id=order.product_id,
-        product_name=product.name,
-        amount=order.amount,
-        platform_fee=order.platform_fee,
-        seller_amount=order.seller_amount,
+        product_name=product.title,
+        amount=float(order.amount),
+        platform_fee=float(order.platform_fee),
+        seller_amount=float(order.seller_amount),
         license_type=order.license_type,
         status=order.status,
-        payment_intent_id=order.payment_intent_id,
+        payment_intent_id=order.stripe_payment_intent_id,
         download_count=order.download_count,
-        max_downloads=order.max_downloads,
-        escrow_release_date=order.escrow_release_date,
+        max_downloads=_max_downloads(order.license_type),
+        escrow_release_date=order.escrow_release_at,
         created_at=order.created_at
     )
 
@@ -153,12 +168,11 @@ async def list_my_orders(
     status: Optional[str] = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """List orders (as buyer or seller)."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    user_id = current_user.id
 
     # Build query
     if role == "buyer":
@@ -187,13 +201,7 @@ async def list_my_orders(
         product_result = await db.execute(product_query)
         product = product_result.scalar_one_or_none()
 
-        # Calculate max_downloads based on license type
-        if order.license_type == "extended":
-            max_downloads = 10
-        elif order.license_type == "unlimited":
-            max_downloads = 999
-        else:
-            max_downloads = 5
+        max_downloads = _max_downloads(order.license_type)
 
         order_responses.append(OrderResponse(
             id=order.id,
@@ -224,12 +232,11 @@ async def list_my_orders(
 @router.get("/{order_id}", response_model=OrderResponse)
 async def get_order(
     order_id: str,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Get order details."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    user_id = current_user.id
 
     query = select(Order).where(Order.id == order_id)
     result = await db.execute(query)
@@ -247,13 +254,7 @@ async def get_order(
     product_result = await db.execute(product_query)
     product = product_result.scalar_one_or_none()
 
-    # Calculate max_downloads based on license type
-    if order.license_type == "extended":
-        max_downloads = 10
-    elif order.license_type == "unlimited":
-        max_downloads = 999
-    else:
-        max_downloads = 5
+    max_downloads = _max_downloads(order.license_type)
 
     return OrderResponse(
         id=order.id,
@@ -277,12 +278,11 @@ async def get_order(
 @router.post("/{order_id}/download")
 async def download_product(
     order_id: str,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Get download URL for purchased product."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    user_id = current_user.id
 
     query = select(Order).where(Order.id == order_id)
     result = await db.execute(query)
@@ -294,10 +294,11 @@ async def download_product(
     if order.buyer_id != user_id:
         raise HTTPException(status_code=403, detail="Not authorized")
 
-    if order.status != "completed":
+    if order.status != "completed" or order.payment_status != "completed":
         raise HTTPException(status_code=400, detail="Order not completed")
 
-    if order.download_count >= order.max_downloads:
+    max_downloads = _max_downloads(order.license_type)
+    if order.download_count >= max_downloads:
         raise HTTPException(status_code=400, detail="Download limit reached")
 
     # Increment download count
@@ -324,7 +325,7 @@ async def download_product(
 
     return {
         "download_url": download_url,
-        "downloads_remaining": order.max_downloads - order.download_count
+        "downloads_remaining": max_downloads - order.download_count
     }
 
 
@@ -332,12 +333,11 @@ async def download_product(
 async def request_refund(
     order_id: str,
     refund_data: RefundRequest,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Request a refund for an order."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    user_id = current_user.id
 
     query = select(Order).where(Order.id == order_id)
     result = await db.execute(query)
@@ -349,7 +349,7 @@ async def request_refund(
     if order.buyer_id != user_id:
         raise HTTPException(status_code=403, detail="Not authorized")
 
-    if order.status != "completed":
+    if order.status != "completed" or order.payment_status != "completed":
         raise HTTPException(status_code=400, detail="Can only refund completed orders")
 
     # Check if within refund window (7 days)
@@ -366,7 +366,6 @@ async def request_refund(
     # Update order status
     order.status = "refund_requested"
     order.refund_reason = refund_data.reason
-    order.refund_requested_at = datetime.utcnow()
 
     await db.commit()
     await db.refresh(order)
@@ -376,13 +375,7 @@ async def request_refund(
     product_result = await db.execute(product_query)
     product = product_result.scalar_one_or_none()
 
-    # Calculate max_downloads based on license type
-    if order.license_type == "extended":
-        max_downloads = 10
-    elif order.license_type == "unlimited":
-        max_downloads = 999
-    else:
-        max_downloads = 5
+    max_downloads = _max_downloads(order.license_type)
 
     return OrderResponse(
         id=order.id,

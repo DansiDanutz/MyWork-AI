@@ -15,6 +15,13 @@ from models.user import User, SellerProfile
 from models.subscription import Subscription
 from models.payout import Payout
 from config import settings
+from services.users import (
+    build_display_name,
+    build_user_from_clerk,
+    ensure_unique_username,
+    extract_primary_email,
+    normalize_username,
+)
 
 router = APIRouter()
 
@@ -111,11 +118,12 @@ async def handle_payment_success(data: dict, db: AsyncSession):
 
     # Update order status
     order.status = "completed"
-    order.payment_intent_id = payment_intent_id
-    order.paid_at = datetime.utcnow()
+    order.payment_status = "completed"
+    order.stripe_payment_intent_id = payment_intent_id
+    order.stripe_charge_id = data.get("latest_charge")
 
     # Set escrow release date
-    order.escrow_release_date = datetime.utcnow() + timedelta(days=settings.ESCROW_DAYS)
+    order.escrow_release_at = datetime.utcnow() + timedelta(days=settings.ESCROW_DAYS)
 
     await db.commit()
 
@@ -140,6 +148,7 @@ async def handle_payment_failed(data: dict, db: AsyncSession):
         return
 
     order.status = "failed"
+    order.payment_status = "failed"
     await db.commit()
 
     # TODO: Send payment failed email to buyer
@@ -317,7 +326,7 @@ async def handle_connect_account_updated(data: dict, db: AsyncSession):
     details_submitted = data.get("details_submitted", False)
 
     query = select(SellerProfile).where(
-        SellerProfile.stripe_account_id == account_id
+        SellerProfile.stripe_connect_id == account_id
     )
     result = await db.execute(query)
     seller = result.scalar_one_or_none()
@@ -328,9 +337,11 @@ async def handle_connect_account_updated(data: dict, db: AsyncSession):
     # Update seller verification status
     if charges_enabled and payouts_enabled and details_submitted:
         seller.payouts_enabled = True
+        seller.stripe_connect_status = "active"
         seller.verification_level = "verified"
     else:
         seller.payouts_enabled = False
+        seller.stripe_connect_status = "restricted" if details_submitted else "pending"
 
     await db.commit()
 
@@ -344,21 +355,40 @@ async def handle_transfer_created(data: dict, db: AsyncSession):
     amount = data.get("amount", 0) / 100  # Convert from cents
     metadata = data.get("metadata", {})
     order_id = metadata.get("order_id")
+    seller_id = metadata.get("seller_id")
 
-    if not order_id:
+    if not order_id or not seller_id:
         return
 
-    # Create payout record
+    # Avoid duplicate payout records for the same transfer.
+    existing = await db.execute(
+        select(Payout).where(Payout.stripe_transfer_id == transfer_id)
+    )
+    if existing.scalar_one_or_none():
+        return
+
+    # Create payout record with minimal metadata.
+    now = datetime.utcnow()
     payout = Payout(
-        seller_id=metadata.get("seller_id"),
+        seller_id=seller_id,
         amount=amount,
+        currency=data.get("currency", "USD"),
+        order_count=1,
         status="pending",
         stripe_transfer_id=transfer_id,
-        order_ids=[order_id]
+        period_start=now,
+        period_end=now,
     )
 
     db.add(payout)
     await db.commit()
+
+    # Link order to payout if present.
+    order_result = await db.execute(select(Order).where(Order.id == order_id))
+    order = order_result.scalar_one_or_none()
+    if order:
+        order.payout_id = payout.id
+        await db.commit()
 
 
 async def handle_payout_completed(data: dict, db: AsyncSession):
@@ -402,33 +432,19 @@ async def clerk_webhook(
 async def handle_user_created(data: dict, db: AsyncSession):
     """Handle new user creation from Clerk."""
     clerk_id = data.get("id")
-    email = data.get("email_addresses", [{}])[0].get("email_address")
-    username = data.get("username")
-    first_name = data.get("first_name", "")
-    last_name = data.get("last_name", "")
-    image_url = data.get("image_url")
+    if not clerk_id:
+        return
 
-    # Generate username if not provided
-    if not username:
-        username = email.split("@")[0] if email else f"user_{clerk_id[:8]}"
+    existing = await db.execute(select(User).where(User.clerk_id == clerk_id))
+    if existing.scalar_one_or_none():
+        return
 
-    # Create user in our database
-    user = User(
-        id=clerk_id,  # Use Clerk ID as our user ID
-        email=email,
-        username=username,
-        display_name=f"{first_name} {last_name}".strip() or username,
-        avatar_url=image_url
-    )
-
+    user = await build_user_from_clerk(clerk_id, data, db)
     db.add(user)
+    await db.flush()
 
     # Create free subscription
-    subscription = Subscription(
-        user_id=clerk_id,
-        tier="free",
-        status="active"
-    )
+    subscription = Subscription(user_id=user.id, tier="free", status="active")
     db.add(subscription)
 
     await db.commit()
@@ -437,20 +453,31 @@ async def handle_user_created(data: dict, db: AsyncSession):
 async def handle_user_updated(data: dict, db: AsyncSession):
     """Handle user profile updates from Clerk."""
     clerk_id = data.get("id")
-    email = data.get("email_addresses", [{}])[0].get("email_address")
-    first_name = data.get("first_name", "")
-    last_name = data.get("last_name", "")
+    if not clerk_id:
+        return
+
+    email = extract_primary_email(data)
     image_url = data.get("image_url")
 
-    query = select(User).where(User.id == clerk_id)
+    query = select(User).where(User.clerk_id == clerk_id)
     result = await db.execute(query)
     user = result.scalar_one_or_none()
 
     if not user:
         return
+    if email:
+        user.email = email
 
-    user.email = email
-    user.display_name = f"{first_name} {last_name}".strip() or user.username
+    raw_username = data.get("username") or (email.split("@")[0] if email else None)
+    if raw_username:
+        normalized = normalize_username(raw_username, clerk_id)
+        if normalized != user.username:
+            existing = await db.scalar(select(User.id).where(User.username == normalized))
+            if existing and existing != user.id:
+                normalized = await ensure_unique_username(normalized, db)
+            user.username = normalized
+
+    user.display_name = build_display_name(data, user.username, user.email)
     user.avatar_url = image_url
 
     await db.commit()
@@ -461,7 +488,7 @@ async def handle_user_deleted(data: dict, db: AsyncSession):
     clerk_id = data.get("id")
 
     # Soft delete - just mark as inactive
-    query = select(User).where(User.id == clerk_id)
+    query = select(User).where(User.clerk_id == clerk_id)
     result = await db.execute(query)
     user = result.scalar_one_or_none()
 

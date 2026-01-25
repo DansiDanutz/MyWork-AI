@@ -10,6 +10,7 @@ from sqlalchemy import select, and_, func
 from pydantic import BaseModel, Field
 
 from database import get_db
+from dependencies import get_current_db_user
 from models.user import User
 from models.product import Product
 from models.order import Order
@@ -69,12 +70,11 @@ class ReviewListResponse(BaseModel):
 @router.post("", response_model=ReviewResponse, status_code=201)
 async def create_review(
     review_data: ReviewCreate,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Create a review for a purchased product."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    user_id = current_user.id
 
     # Check if product exists
     product_query = select(Product).where(Product.id == review_data.product_id)
@@ -89,13 +89,14 @@ async def create_review(
         and_(
             Order.buyer_id == user_id,
             Order.product_id == review_data.product_id,
-            Order.status == "completed"
+            Order.status == "completed",
+            Order.payment_status == "completed",
         )
     )
     order_result = await db.execute(order_query)
     order = order_result.scalar_one_or_none()
-
-    is_verified = order is not None
+    if not order:
+        raise HTTPException(status_code=403, detail="Purchase required to review")
 
     # Check if already reviewed
     existing_query = select(Review).where(
@@ -112,11 +113,10 @@ async def create_review(
     review = Review(
         product_id=review_data.product_id,
         buyer_id=user_id,
-        order_id=order.id if order else None,
+        order_id=order.id,
         rating=review_data.rating,
         title=review_data.title,
         content=review_data.content,
-        is_verified_purchase=is_verified
     )
 
     db.add(review)
@@ -140,7 +140,7 @@ async def create_review(
         rating=review.rating,
         title=review.title,
         content=review.content,
-        is_verified_purchase=review.is_verified_purchase,
+        is_verified_purchase=True,
         helpful_count=review.helpful_count,
         seller_response=review.seller_response,
         seller_response_at=review.seller_response_at,
@@ -175,14 +175,18 @@ async def get_product_reviews(
         query = query.where(Review.rating == rating)
 
     if verified_only:
-        query = query.where(Review.is_verified_purchase == True)
+        query = query.where(Review.order_id.isnot(None))
 
     # Get total and stats
     all_reviews_query = select(Review).where(Review.product_id == product_id)
     all_reviews_result = await db.execute(all_reviews_query)
     all_reviews = all_reviews_result.scalars().all()
 
-    total = len([r for r in all_reviews if (not rating or r.rating == rating) and (not verified_only or r.is_verified_purchase)])
+    total = len([
+        r for r in all_reviews
+        if (not rating or r.rating == rating)
+        and (not verified_only or r.order_id is not None)
+    ])
 
     # Calculate rating distribution
     rating_distribution = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
@@ -227,7 +231,7 @@ async def get_product_reviews(
             rating=review.rating,
             title=review.title,
             content=review.content,
-            is_verified_purchase=review.is_verified_purchase,
+            is_verified_purchase=review.order_id is not None,
             helpful_count=review.helpful_count,
             seller_response=review.seller_response,
             seller_response_at=review.seller_response_at,
@@ -249,12 +253,11 @@ async def get_product_reviews(
 async def update_review(
     review_id: str,
     update_data: ReviewUpdate,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Update own review."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    user_id = current_user.id
 
     query = select(Review).where(Review.id == review_id)
     result = await db.execute(query)
@@ -294,7 +297,7 @@ async def update_review(
         rating=review.rating,
         title=review.title,
         content=review.content,
-        is_verified_purchase=review.is_verified_purchase,
+        is_verified_purchase=True,
         helpful_count=review.helpful_count,
         seller_response=review.seller_response,
         seller_response_at=review.seller_response_at,
@@ -306,12 +309,11 @@ async def update_review(
 @router.delete("/{review_id}", status_code=204)
 async def delete_review(
     review_id: str,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Delete own review."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    user_id = current_user.id
 
     query = select(Review).where(Review.id == review_id)
     result = await db.execute(query)
@@ -337,11 +339,11 @@ async def delete_review(
 @router.post("/{review_id}/helpful")
 async def mark_helpful(
     review_id: str,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Mark a review as helpful."""
-    # TODO: Get user_id and track votes
+    _ = current_user.id
 
     query = select(Review).where(Review.id == review_id)
     result = await db.execute(query)
@@ -360,12 +362,11 @@ async def mark_helpful(
 async def seller_respond(
     review_id: str,
     response_data: SellerResponseCreate,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Seller responds to a review."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    user_id = current_user.id
 
     query = select(Review).where(Review.id == review_id)
     result = await db.execute(query)
@@ -402,7 +403,7 @@ async def seller_respond(
         rating=review.rating,
         title=review.title,
         content=review.content,
-        is_verified_purchase=review.is_verified_purchase,
+        is_verified_purchase=True,
         helpful_count=review.helpful_count,
         seller_response=review.seller_response,
         seller_response_at=review.seller_response_at,
@@ -431,6 +432,6 @@ async def update_product_rating(product_id: str, db: AsyncSession):
     product = product_result.scalar_one_or_none()
 
     if product:
-        product.average_rating = round(average, 2)
-        product.review_count = len(reviews)
+        product.rating_average = round(average, 2)
+        product.rating_count = len(reviews)
         await db.commit()

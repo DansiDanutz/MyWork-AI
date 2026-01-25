@@ -9,6 +9,7 @@ from sqlalchemy import select
 from pydantic import BaseModel, EmailStr
 
 from database import get_db
+from dependencies import get_current_db_user
 from models.user import User, SellerProfile
 
 router = APIRouter()
@@ -61,70 +62,46 @@ class BecomeSellerRequest(BaseModel):
 # Endpoints
 @router.get("/me", response_model=UserProfile)
 async def get_current_user(
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
 ):
     """Get current user profile."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
-
-    query = select(User).where(User.id == user_id)
-    result = await db.execute(query)
-    user = result.scalar_one_or_none()
-
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
     return UserProfile(
-        id=user.id,
-        email=user.email,
-        username=user.username,
-        display_name=user.display_name,
-        avatar_url=user.avatar_url,
-        role=user.role,
-        subscription_tier=user.subscription_tier,
-        is_seller=user.is_seller
+        id=current_user.id,
+        email=current_user.email,
+        username=current_user.username,
+        display_name=current_user.display_name,
+        avatar_url=current_user.avatar_url,
+        role=current_user.role,
+        subscription_tier=current_user.subscription_tier,
+        is_seller=current_user.is_seller
     )
 
 
 @router.put("/me", response_model=UserProfile)
 async def update_current_user(
     user_data: UserUpdate,
+    current_user: User = Depends(get_current_db_user),
     db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
 ):
     """Update current user profile."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
-
-    query = select(User).where(User.id == user_id)
-    result = await db.execute(query)
-    user = result.scalar_one_or_none()
-
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
     # Update fields
     update_data = user_data.model_dump(exclude_unset=True)
     for field, value in update_data.items():
-        setattr(user, field, value)
+        setattr(current_user, field, value)
 
     await db.commit()
-    await db.refresh(user)
+    await db.refresh(current_user)
 
-    return UserProfile.model_validate(user)
+    return UserProfile.model_validate(current_user)
 
 
 @router.get("/me/seller", response_model=SellerProfileResponse)
 async def get_seller_profile(
+    current_user: User = Depends(get_current_db_user),
     db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
 ):
     """Get current user's seller profile."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
-
-    query = select(SellerProfile).where(SellerProfile.user_id == user_id)
+    query = select(SellerProfile).where(SellerProfile.user_id == current_user.id)
     result = await db.execute(query)
     profile = result.scalar_one_or_none()
 
@@ -137,27 +114,16 @@ async def get_seller_profile(
 @router.post("/become-seller", response_model=SellerProfileResponse, status_code=201)
 async def become_seller(
     request: BecomeSellerRequest,
+    current_user: User = Depends(get_current_db_user),
     db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
 ):
     """Upgrade to seller account."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
-
-    # Get user
-    query = select(User).where(User.id == user_id)
-    result = await db.execute(query)
-    user = result.scalar_one_or_none()
-
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
     # Check if already a seller
-    if user.is_seller:
+    if current_user.is_seller:
         raise HTTPException(status_code=400, detail="Already a seller")
 
     # Check subscription (must be Pro or higher)
-    if user.subscription_tier == "free":
+    if current_user.subscription_tier == "free":
         raise HTTPException(
             status_code=403,
             detail="Pro subscription required to become a seller"
@@ -165,7 +131,7 @@ async def become_seller(
 
     # Create seller profile
     seller_profile = SellerProfile(
-        user_id=user.id,
+        user_id=current_user.id,
         bio=request.bio,
         website=request.website,
         github_username=request.github_username,
@@ -173,7 +139,7 @@ async def become_seller(
     )
 
     # Update user role
-    user.role = "seller"
+    current_user.role = "seller"
 
     db.add(seller_profile)
     await db.commit()

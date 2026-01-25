@@ -7,7 +7,8 @@ from typing import Literal, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
-from auth import CurrentUser, get_current_user
+from dependencies import get_current_db_user
+from models.user import User
 from services.storage import (
     build_object_key,
     build_public_url,
@@ -35,7 +36,7 @@ class PresignResponse(BaseModel):
 @router.post("/presign", response_model=PresignResponse)
 async def create_presigned_upload(
     payload: PresignRequest,
-    current_user: CurrentUser = Depends(get_current_user),
+    current_user: User = Depends(get_current_db_user),
 ):
     """Create a presigned upload URL for direct-to-R2 uploads."""
     try:
@@ -44,7 +45,7 @@ async def create_presigned_upload(
         raise HTTPException(status_code=400, detail=str(exc))
 
     try:
-        key = build_object_key(payload.kind, payload.filename, current_user.user_id)
+        key = build_object_key(payload.kind, payload.filename, current_user.id)
         upload_url = generate_presigned_put(
             key=key,
             content_type=payload.content_type,

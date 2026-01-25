@@ -76,7 +76,7 @@ export default function CheckoutSuccessPage() {
 
     try {
       const response = await ordersApi.download(order.order_id)
-      const { downloadUrl } = response.data
+      const { download_url: downloadUrl } = response.data
 
       // Open download URL in new tab
       window.open(downloadUrl, "_blank")

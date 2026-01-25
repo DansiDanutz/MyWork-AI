@@ -6,10 +6,11 @@ from typing import Optional, List
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_, func
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from database import get_db
-from models.brain import BrainEntry
+from dependencies import get_current_db_user
+from models.brain import BrainEntry, BRAIN_ENTRY_TYPES
 from models.user import User
 
 router = APIRouter()
@@ -19,9 +20,9 @@ router = APIRouter()
 class BrainEntryCreate(BaseModel):
     title: str
     content: str
-    type: str  # pattern, snippet, tutorial, solution, documentation
+    type: str  # pattern, solution, lesson, tip, antipattern
     category: str
-    tags: List[str] = []
+    tags: List[str] = Field(default_factory=list)
     language: Optional[str] = None
     framework: Optional[str] = None
 
@@ -82,15 +83,14 @@ class VoteRequest(BaseModel):
 @router.post("", response_model=BrainEntryResponse, status_code=201)
 async def contribute_knowledge(
     entry_data: BrainEntryCreate,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Contribute knowledge to the Brain."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    user_id = current_user.id
 
     # Validate entry type
-    valid_types = ["pattern", "snippet", "tutorial", "solution", "documentation"]
+    valid_types = list(BRAIN_ENTRY_TYPES.keys())
     if entry_data.type not in valid_types:
         raise HTTPException(
             status_code=400,
@@ -108,7 +108,7 @@ async def contribute_knowledge(
         language=entry_data.language,
         framework=entry_data.framework,
         status="active",  # Default to active status
-        quality_score=0.5  # Start with neutral score
+        quality_score=0.0
     )
 
     db.add(entry)
@@ -236,8 +236,7 @@ async def search_brain(
 @router.post("/query", response_model=BrainQueryResponse)
 async def query_brain(
     query_data: BrainQueryRequest,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency (rate limit for free tier)
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Query the Brain with natural language.
@@ -250,7 +249,7 @@ async def query_brain(
     # 4. Use Claude to generate summary
 
     # For now, fall back to text search
-    query = select(BrainEntry).where(BrainEntry.is_public == True)
+    query = select(BrainEntry).where(BrainEntry.status == "active")
 
     if query_data.category:
         query = query.where(BrainEntry.category == query_data.category)
@@ -371,7 +370,7 @@ async def get_brain_entry(
     if not entry:
         raise HTTPException(status_code=404, detail="Entry not found")
 
-    if not entry.status:
+    if entry.status != "active":
         # TODO: Check if user is contributor or admin
         raise HTTPException(status_code=403, detail="Entry is private")
 
@@ -403,12 +402,11 @@ async def get_brain_entry(
 async def update_brain_entry(
     entry_id: str,
     update_data: BrainEntryUpdate,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Update a Brain entry (contributor only)."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    user_id = current_user.id
 
     query = select(BrainEntry).where(BrainEntry.id == entry_id)
     result = await db.execute(query)
@@ -456,12 +454,11 @@ async def update_brain_entry(
 @router.delete("/{entry_id}", status_code=204)
 async def delete_brain_entry(
     entry_id: str,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Delete a Brain entry (contributor only)."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    user_id = current_user.id
 
     query = select(BrainEntry).where(BrainEntry.id == entry_id)
     result = await db.execute(query)
@@ -485,12 +482,11 @@ async def delete_brain_entry(
 async def vote_on_entry(
     entry_id: str,
     vote_data: VoteRequest,
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """Upvote or downvote a Brain entry."""
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    _ = current_user.id
 
     if vote_data.vote not in [1, -1]:
         raise HTTPException(status_code=400, detail="Vote must be 1 or -1")

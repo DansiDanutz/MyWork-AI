@@ -10,7 +10,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from auth import get_current_user
+from dependencies import get_current_db_user
 from database import get_db
 from models.user import User, SellerProfile
 from models.payout import Payout, PAYOUT_STATUSES
@@ -24,7 +24,7 @@ async def get_seller_payouts(
     status: Optional[str] = None,
     limit: int = 50,
     offset: int = 0,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_db_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get seller's payout history."""
@@ -62,7 +62,7 @@ async def get_seller_payouts(
 
 @router.get("/me/balance")
 async def get_pending_balance(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_db_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get seller's pending balance available for payout."""
@@ -130,13 +130,13 @@ async def get_pending_balance(
         "order_count": order_count,
         "next_payout_date": next_payout_date.isoformat(),
         "payouts_enabled": seller.payouts_enabled,
-        "stripe_account_id": seller.stripe_account_id,
+        "stripe_account_id": seller.stripe_connect_id,
     }
 
 
 @router.post("/me/request")
 async def request_payout(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_db_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Request payout of pending balance."""
@@ -223,7 +223,7 @@ async def request_payout(
 
 @router.get("/me/seller-profile")
 async def get_seller_payout_profile(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_db_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get seller's payout profile status."""
@@ -238,12 +238,14 @@ async def get_seller_payout_profile(
             "payouts_enabled": False,
             "stripe_onboarding_complete": False,
             "stripe_account_id": None,
+            "charges_enabled": None,
         }
 
+    charges_enabled = seller.stripe_connect_status == "active"
     return {
         "is_seller": True,
         "payouts_enabled": seller.payouts_enabled,
-        "stripe_onboarding_complete": seller.stripe_account_id is not None,
-        "stripe_account_id": seller.stripe_account_id,
-        "charges_enabled": seller.charges_enabled,
+        "stripe_onboarding_complete": seller.stripe_connect_id is not None,
+        "stripe_account_id": seller.stripe_connect_id,
+        "charges_enabled": charges_enabled,
     }

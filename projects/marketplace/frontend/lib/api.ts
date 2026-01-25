@@ -28,19 +28,37 @@ export const productsApi = {
     sort?: string
     page?: number
     pageSize?: number
-  }) => api.get('/products', { params }),
+  }) =>
+    api.get('/products', {
+      params: {
+        category: params?.category,
+        search: params?.search,
+        min_price: params?.minPrice,
+        max_price: params?.maxPrice,
+        sort: params?.sort,
+        page: params?.page,
+        page_size: params?.pageSize,
+      },
+    }),
 
   get: (id: string) => api.get(`/products/${id}`),
 
   getById: (id: string) => api.get(`/products/${id}`),
 
-  getBySlug: (slug: string) => api.get(`/products/slug/${slug}`),
+  getBySlug: (slug: string) => api.get(`/products/${slug}`),
 
   getMyProducts: (params?: {
     status?: string
     page?: number
     pageSize?: number
-  }) => api.get('/products/me', { params }),
+  }) =>
+    api.get('/products/me', {
+      params: {
+        status: params?.status,
+        page: params?.page,
+        page_size: params?.pageSize,
+      },
+    }),
 
   create: (data: {
     title: string
@@ -71,7 +89,10 @@ export const usersApi = {
   getMe: () => api.get('/users/me'),
 
   updateMe: (data: { displayName?: string; avatarUrl?: string }) =>
-    api.put('/users/me', data),
+    api.put('/users/me', {
+      ...(data.displayName !== undefined && { display_name: data.displayName }),
+      ...(data.avatarUrl !== undefined && { avatar_url: data.avatarUrl }),
+    }),
 
   getSellerProfile: () => api.get('/users/me/seller'),
 
@@ -80,7 +101,13 @@ export const usersApi = {
     website?: string
     githubUsername?: string
     twitterHandle?: string
-  }) => api.post('/users/become-seller', data),
+  }) =>
+    api.post('/users/become-seller', {
+      ...(data?.bio !== undefined && { bio: data.bio }),
+      ...(data?.website !== undefined && { website: data.website }),
+      ...(data?.githubUsername !== undefined && { github_username: data.githubUsername }),
+      ...(data?.twitterHandle !== undefined && { twitter_handle: data.twitterHandle }),
+    }),
 
   getPublicProfile: (username: string) => api.get(`/users/${username}`),
 
@@ -91,7 +118,10 @@ export const usersApi = {
 // Orders API
 export const ordersApi = {
   create: (data: { productId: string; licenseType?: string }) =>
-    api.post('/orders', data),
+    api.post('/orders', {
+      product_id: data.productId,
+      ...(data.licenseType && { license_type: data.licenseType }),
+    }),
 
   list: (params?: { role?: 'buyer' | 'seller'; status?: string }) =>
     api.get('/orders', { params }),
@@ -106,15 +136,38 @@ export const ordersApi = {
 
 // Reviews API
 export const reviewsApi = {
-  getProductReviews: (productId: string, params?: any) =>
-    api.get(`/reviews/product/${productId}`, { params }),
+  getProductReviews: (
+    productId: string,
+    params?: {
+      rating?: number
+      verifiedOnly?: boolean
+      sort?: string
+      page?: number
+      pageSize?: number
+    }
+  ) =>
+    api.get(`/reviews/product/${productId}`, {
+      params: {
+        rating: params?.rating,
+        verified_only: params?.verifiedOnly,
+        sort: params?.sort,
+        page: params?.page,
+        page_size: params?.pageSize,
+      },
+    }),
 
   create: (data: {
     productId: string
     rating: number
     title: string
     content: string
-  }) => api.post('/reviews', data),
+  }) =>
+    api.post('/reviews', {
+      product_id: data.productId,
+      rating: data.rating,
+      title: data.title,
+      content: data.content,
+    }),
 
   update: (id: string, data: any) => api.put(`/reviews/${id}`, data),
 
@@ -139,7 +192,21 @@ export const brainApi = {
     sort?: string
     page?: number
     pageSize?: number
-  }) => api.get('/brain', { params }),
+  }) =>
+    api.get('/brain', {
+      params: {
+        q: params?.q,
+        category: params?.category,
+        entry_type: params?.type,
+        language: params?.language,
+        framework: params?.framework,
+        tag: params?.tag,
+        verified_only: params?.verifiedOnly,
+        sort: params?.sort,
+        page: params?.page,
+        page_size: params?.pageSize,
+      },
+    }),
 
   query: (data: {
     query: string
@@ -203,7 +270,10 @@ export const uploadsApi = {
 // Checkout API
 export const checkoutApi = {
   createSession: (data: { productId: string; licenseType: 'standard' | 'extended' }) =>
-    api.post('/checkout/create-session', data),
+    api.post('/checkout/create-session', {
+      product_id: data.productId,
+      license_type: data.licenseType,
+    }),
 
   getSession: (sessionId: string) =>
     api.get(`/checkout/session/${sessionId}`),

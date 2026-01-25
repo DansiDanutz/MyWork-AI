@@ -3,7 +3,7 @@ Checkout API endpoints for Stripe payment processing.
 """
 
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import RedirectResponse
@@ -14,6 +14,7 @@ from pydantic import BaseModel
 import stripe
 
 from database import get_db
+from dependencies import get_current_db_user
 from models.user import User
 from models.product import Product
 from models.order import Order
@@ -41,6 +42,7 @@ class CheckoutSessionResponse(BaseModel):
 async def create_checkout_session(
     checkout_data: CreateCheckoutSessionRequest,
     request: Request,
+    current_user: User = Depends(get_current_db_user),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -48,8 +50,7 @@ async def create_checkout_session(
 
     This creates a Stripe Checkout session and returns the URL for the frontend to redirect to.
     """
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    user_id = current_user.id
 
     # Get product
     product_query = select(Product).where(Product.id == checkout_data.product_id)
@@ -59,7 +60,7 @@ async def create_checkout_session(
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    if product.status != "published":
+    if product.status != "active":
         raise HTTPException(status_code=400, detail="Product is not available for purchase")
 
     # Can't buy your own product
@@ -78,20 +79,19 @@ async def create_checkout_session(
 
     # Calculate price based on license type
     if checkout_data.license_type == "extended":
-        # Extended license is 2.5x the standard price
-        price = product.price * Decimal('2.5')
-        license_name = "Extended License"
+        price = Decimal(str(product.price)) * Decimal("2.5")
+    elif checkout_data.license_type in ("enterprise", "unlimited"):
+        price = Decimal(str(product.price)) * Decimal("5")
     else:
-        price = product.price
-        license_name = "Standard License"
+        price = Decimal(str(product.price))
 
     # Convert to cents (Stripe uses smallest currency unit)
     price_cents = int(price * Decimal('100'))
 
     # Create Stripe Checkout Session
     try:
-        # Get the base URL from the request
-        base_url = f"{request.url.scheme}://{request.url.netloc}"
+        # Prefer configured frontend URL if available.
+        base_url = settings.APP_URL.rstrip("/") if settings.APP_URL else f"{request.url.scheme}://{request.url.netloc}"
 
         checkout_session = stripe.checkout.Session.create(
             payment_method_types=["card"],
@@ -162,6 +162,7 @@ async def get_checkout_session(
 @router.post("/verify-and-create-order")
 async def verify_and_create_order(
     session_id: str,
+    current_user: User = Depends(get_current_db_user),
     db: AsyncSession = Depends(get_db)
 ):
     """
@@ -187,10 +188,17 @@ async def verify_and_create_order(
         buyer_id = metadata.get("buyer_id")
         seller_id = metadata.get("seller_id")
         license_type = metadata.get("license_type", "standard")
-        price = float(metadata.get("price", "0"))
+        if license_type == "unlimited":
+            license_type = "enterprise"
+        price = Decimal(str(metadata.get("price", "0")))
+
+        if buyer_id != current_user.id:
+            raise HTTPException(status_code=403, detail="Not authorized")
 
         # Check if order already exists
-        existing_query = select(Order).where(Order.payment_intent_id == session.payment_intent)
+        existing_query = select(Order).where(
+            Order.stripe_payment_intent_id == session.payment_intent
+        )
         existing_result = await db.execute(existing_query)
         existing_order = existing_result.scalar_one_or_none()
 
@@ -210,7 +218,7 @@ async def verify_and_create_order(
             raise HTTPException(status_code=404, detail="Product not found")
 
         # Calculate fees
-        platform_fee = price * (Decimal(str(settings.PLATFORM_FEE_PERCENT)) / Decimal('100'))
+        platform_fee = price * (Decimal(str(settings.PLATFORM_FEE_PERCENT)) / Decimal("100"))
         seller_amount = price - platform_fee
 
         # Create the order
@@ -218,16 +226,16 @@ async def verify_and_create_order(
             buyer_id=buyer_id,
             seller_id=seller_id,
             product_id=product_id,
-            product_name=product.title,
             amount=price,
             platform_fee=platform_fee,
+            stripe_fee=Decimal("0"),
             seller_amount=seller_amount,
             license_type=license_type,
             status="completed",
-            payment_intent_id=session.payment_intent,
-            paid_at=datetime.utcnow(),
+            payment_status="completed",
+            stripe_payment_intent_id=session.payment_intent,
             download_count=0,
-            max_downloads=10,
+            escrow_release_at=datetime.utcnow() + timedelta(days=settings.ESCROW_DAYS),
         )
 
         db.add(order)
@@ -237,8 +245,8 @@ async def verify_and_create_order(
         return {
             "order_id": order.id,
             "status": order.status,
-            "product_name": order.product_name,
-            "amount": order.amount,
+            "product_name": product.title,
+            "amount": float(order.amount),
             "license_type": order.license_type,
             "download_url": f"/api/orders/{order.id}/download",
         }

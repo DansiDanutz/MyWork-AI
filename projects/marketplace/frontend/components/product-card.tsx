@@ -19,10 +19,10 @@ export function ProductCard({ product }: ProductCardProps) {
       {/* Thumbnail */}
       <Link href={`/products/${product.slug}`}>
         <div className="relative aspect-video overflow-hidden bg-gray-900">
-          {product.thumbnailUrl ? (
+          {product.preview_images && product.preview_images[0] ? (
             <img
-              src={product.thumbnailUrl}
-              alt={product.name}
+              src={product.preview_images[0]}
+              alt={product.title}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
             />
           ) : (
@@ -32,7 +32,7 @@ export function ProductCard({ product }: ProductCardProps) {
           )}
 
           {/* Featured badge */}
-          {product.isFeatured && (
+          {product.featured && (
             <Badge className="absolute top-2 left-2" variant="success">
               Featured
             </Badge>
@@ -49,43 +49,43 @@ export function ProductCard({ product }: ProductCardProps) {
         {/* Title */}
         <Link href={`/products/${product.slug}`}>
           <h3 className="font-semibold text-white hover:text-blue-400 transition-colors line-clamp-1">
-            {product.name}
+            {product.title}
           </h3>
         </Link>
 
         {/* Description */}
         <p className="text-sm text-gray-400 mt-1 line-clamp-2">
-          {product.shortDescription || product.description || "No description"}
+          {product.short_description || product.description || "No description"}
         </p>
 
         {/* Stats */}
         <div className="flex items-center gap-4 mt-3 text-sm text-gray-500">
           <div className="flex items-center gap-1">
             <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-            <span>{product.averageRating.toFixed(1)}</span>
-            <span className="text-gray-600">({product.reviewCount})</span>
+            <span>{product.rating_average.toFixed(1)}</span>
+            <span className="text-gray-600">({product.rating_count})</span>
           </div>
           <div className="flex items-center gap-1">
             <ShoppingCart className="h-4 w-4" />
-            <span>{product.salesCount}</span>
+            <span>{product.sales}</span>
           </div>
           <div className="flex items-center gap-1">
             <Eye className="h-4 w-4" />
-            <span>{product.viewCount}</span>
+            <span>{product.views}</span>
           </div>
         </div>
 
         {/* Tech stack */}
-        {product.techStack && product.techStack.length > 0 && (
+        {product.tech_stack && product.tech_stack.length > 0 && (
           <div className="flex flex-wrap gap-1 mt-3">
-            {product.techStack.slice(0, 3).map((tech) => (
+            {product.tech_stack.slice(0, 3).map((tech) => (
               <Badge key={tech} variant="outline" className="text-xs">
                 {tech}
               </Badge>
             ))}
-            {product.techStack.length > 3 && (
+            {product.tech_stack.length > 3 && (
               <Badge variant="outline" className="text-xs">
-                +{product.techStack.length - 3}
+                +{product.tech_stack.length - 3}
               </Badge>
             )}
           </div>
@@ -97,10 +97,10 @@ export function ProductCard({ product }: ProductCardProps) {
         <div className="flex items-center gap-2">
           <Avatar
             size="sm"
-            fallback={product.sellerUsername || "S"}
+            fallback="S"
           />
           <span className="text-sm text-gray-400">
-            {product.sellerUsername || "Seller"}
+            Seller
           </span>
         </div>
 

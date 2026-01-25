@@ -10,6 +10,7 @@ from sqlalchemy import select, and_, func, case, cast, Integer
 from pydantic import BaseModel
 
 from database import get_db
+from dependencies import get_current_db_user
 from models.user import User
 from models.product import Product
 from models.order import Order
@@ -55,8 +56,8 @@ class AnalyticsResponse(BaseModel):
 @router.get("", response_model=AnalyticsResponse)
 async def get_analytics(
     days: int = Query(30, ge=7, le=90, description="Number of days to analyze"),
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get analytics data for the current seller.
@@ -66,8 +67,9 @@ async def get_analytics(
     - Historical data for charts
     - Top performing products
     """
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    user_id = current_user.id
+    if not current_user.is_seller:
+        raise HTTPException(status_code=403, detail="Seller account required")
 
     # Calculate date ranges
     end_date = datetime.utcnow()
@@ -78,7 +80,7 @@ async def get_analytics(
     products_query = select(Product).where(
         and_(
             Product.seller_id == user_id,
-            Product.status == "published"
+            Product.status == "active"
         )
     )
     products_result = await db.execute(products_query)
@@ -109,6 +111,7 @@ async def get_analytics(
         and_(
             Order.seller_id == user_id,
             Order.status == "completed",
+            Order.payment_status == "completed",
             Order.created_at >= start_date,
             Order.created_at <= end_date
         )
@@ -121,6 +124,7 @@ async def get_analytics(
         and_(
             Order.seller_id == user_id,
             Order.status == "completed",
+            Order.payment_status == "completed",
             Order.created_at >= previous_start_date,
             Order.created_at < start_date
         )
@@ -187,12 +191,13 @@ async def get_analytics(
 
         # Get orders in this bucket
         bucket_orders_query = select(Order).where(
-            and_(
-                Order.seller_id == user_id,
-                Order.status == "completed",
-                Order.created_at >= current_bucket_start,
-                Order.created_at < current_bucket_end
-            )
+        and_(
+            Order.seller_id == user_id,
+            Order.status == "completed",
+            Order.payment_status == "completed",
+            Order.created_at >= current_bucket_start,
+            Order.created_at < current_bucket_end
+        )
         )
         bucket_orders_result = await db.execute(bucket_orders_query)
         bucket_orders = bucket_orders_result.scalars().all()
@@ -222,11 +227,12 @@ async def get_analytics(
     for product in products:
         # Get orders for this product
         product_orders_query = select(Order).where(
-            and_(
-                Order.product_id == product.id,
-                Order.status == "completed",
-                Order.created_at >= start_date
-            )
+        and_(
+            Order.product_id == product.id,
+            Order.status == "completed",
+            Order.payment_status == "completed",
+            Order.created_at >= start_date
+        )
         )
         product_orders_result = await db.execute(product_orders_query)
         product_orders = product_orders_result.scalars().all()
@@ -259,8 +265,8 @@ async def get_analytics(
 @router.get("/traffic-sources")
 async def get_traffic_sources(
     days: int = Query(30, ge=7, le=90),
-    db: AsyncSession = Depends(get_db)
-    # TODO: Add auth dependency
+    current_user: User = Depends(get_current_db_user),
+    db: AsyncSession = Depends(get_db),
 ):
     """
     Get traffic sources data.
@@ -268,8 +274,8 @@ async def get_traffic_sources(
     Note: This is a placeholder implementation.
     Real implementation would require tracking referral sources.
     """
-    # TODO: Get user_id from auth token
-    user_id = "temp-user-id"
+    if not current_user.is_seller:
+        raise HTTPException(status_code=403, detail="Seller account required")
 
     # Placeholder data - in real implementation, this would come from analytics tracking
     traffic_sources = [

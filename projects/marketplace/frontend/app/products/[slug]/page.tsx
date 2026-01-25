@@ -89,9 +89,9 @@ export default function ProductPage() {
   const getPrice = () => {
     switch (selectedLicense) {
       case "extended":
-        return product.extendedLicensePrice || product.price * 2.5
+        return product.price * 2.5
       case "unlimited":
-        return product.unlimitedLicensePrice || product.price * 5
+        return product.price * 5
       default:
         return product.price
     }
@@ -111,7 +111,7 @@ export default function ProductPage() {
               {product.category}
             </Link>
             <ChevronRight className="h-4 w-4" />
-            <span className="text-white">{product.name}</span>
+            <span className="text-white">{product.title}</span>
           </div>
         </div>
       </div>
@@ -124,10 +124,10 @@ export default function ProductPage() {
             <div>
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h1 className="text-3xl font-bold text-white mb-2">{product.name}</h1>
-                  <p className="text-gray-400">{product.shortDescription}</p>
+                  <h1 className="text-3xl font-bold text-white mb-2">{product.title}</h1>
+                  <p className="text-gray-400">{product.short_description}</p>
                 </div>
-                {product.isFeatured && (
+                {product.featured && (
                   <Badge variant="success">Featured</Badge>
                 )}
               </div>
@@ -136,26 +136,26 @@ export default function ProductPage() {
               <div className="flex flex-wrap items-center gap-6 text-sm text-gray-400">
                 <div className="flex items-center gap-1">
                   <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                  <span className="font-medium text-white">{product.averageRating.toFixed(1)}</span>
-                  <span>({product.reviewCount} reviews)</span>
+                  <span className="font-medium text-white">{product.rating_average.toFixed(1)}</span>
+                  <span>({product.rating_count} reviews)</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <ShoppingCart className="h-4 w-4" />
-                  <span>{product.salesCount} sales</span>
+                  <span>{product.sales} sales</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Eye className="h-4 w-4" />
-                  <span>{product.viewCount} views</span>
+                  <span>{product.views} views</span>
                 </div>
               </div>
             </div>
 
             {/* Preview Image */}
             <div className="aspect-video rounded-xl overflow-hidden bg-gray-800 border border-gray-700">
-              {product.thumbnailUrl ? (
+              {product.preview_images && product.preview_images[0] ? (
                 <img
-                  src={product.thumbnailUrl}
-                  alt={product.name}
+                  src={product.preview_images[0]}
+                  alt={product.title}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -167,19 +167,19 @@ export default function ProductPage() {
 
             {/* Action buttons */}
             <div className="flex gap-4">
-              {product.demoUrl && (
-                <a href={product.demoUrl} target="_blank" rel="noopener noreferrer">
+              {product.demo_url && (
+                <a href={product.demo_url} target="_blank" rel="noopener noreferrer">
                   <Button variant="outline" className="gap-2">
                     <ExternalLink className="h-4 w-4" />
                     Live Demo
                   </Button>
                 </a>
               )}
-              {product.previewUrl && (
-                <a href={product.previewUrl} target="_blank" rel="noopener noreferrer">
+              {product.documentation_url && (
+                <a href={product.documentation_url} target="_blank" rel="noopener noreferrer">
                   <Button variant="outline" className="gap-2">
                     <Github className="h-4 w-4" />
-                    Preview Code
+                    Documentation
                   </Button>
                 </a>
               )}
@@ -200,14 +200,14 @@ export default function ProductPage() {
             </Card>
 
             {/* Tech Stack */}
-            {product.techStack && product.techStack.length > 0 && (
+            {product.tech_stack && product.tech_stack.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle>Tech Stack</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
-                    {product.techStack.map((tech) => (
+                    {product.tech_stack.map((tech) => (
                       <Badge key={tech} variant="secondary" className="text-sm">
                         {tech}
                       </Badge>
@@ -239,7 +239,7 @@ export default function ProductPage() {
                   <div className="flex items-center gap-2">
                     <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
                     <span className="text-xl font-bold text-white">
-                      {reviews.averageRating.toFixed(1)}
+                      {reviews.average_rating.toFixed(1)}
                     </span>
                     <span className="text-gray-400">
                       ({reviews.total} reviews)
@@ -255,13 +255,13 @@ export default function ProductPage() {
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex items-center gap-3">
                             <Avatar
-                              src={review.buyerAvatar}
-                              fallback={review.buyerUsername}
+                              src={review.buyer_avatar}
+                              fallback={review.buyer_username}
                               size="sm"
                             />
                             <div>
-                              <p className="font-medium text-white">{review.buyerUsername}</p>
-                              <p className="text-sm text-gray-500">{formatDate(review.createdAt)}</p>
+                              <p className="font-medium text-white">{review.buyer_username}</p>
+                              <p className="text-sm text-gray-500">{formatDate(review.created_at)}</p>
                             </div>
                           </div>
                           <div className="flex items-center gap-1">
@@ -279,7 +279,7 @@ export default function ProductPage() {
                         </div>
                         <h4 className="font-medium text-white mb-1">{review.title}</h4>
                         <p className="text-gray-400">{review.content}</p>
-                        {review.isVerifiedPurchase && (
+                        {review.is_verified_purchase && (
                           <Badge variant="success" className="mt-2">
                             <Check className="h-3 w-3 mr-1" />
                             Verified Purchase
@@ -305,19 +305,11 @@ export default function ProductPage() {
                   {/* Seller */}
                   <div className="flex items-center gap-3">
                     <Avatar
-                      fallback={product.sellerUsername || "S"}
+                      fallback="S"
                       size="lg"
                     />
                     <div>
-                      <p className="font-medium text-white">
-                        {product.sellerUsername || "Seller"}
-                      </p>
-                      <Link
-                        href={`/u/${product.sellerUsername}`}
-                        className="text-sm text-blue-400 hover:underline"
-                      >
-                        View profile
-                      </Link>
+                      <p className="font-medium text-white">Seller</p>
                     </div>
                   </div>
 
@@ -351,7 +343,7 @@ export default function ProductPage() {
                       <div className="flex justify-between items-center">
                         <span className="font-medium text-white">Extended</span>
                         <span className="font-bold text-green-400">
-                          {formatPrice(product.extendedLicensePrice || product.price * 2.5)}
+                          {formatPrice(product.price * 2.5)}
                         </span>
                       </div>
                       <p className="text-sm text-gray-400 mt-1">Multiple projects + redistribution</p>
@@ -368,7 +360,7 @@ export default function ProductPage() {
                       <div className="flex justify-between items-center">
                         <span className="font-medium text-white">Unlimited</span>
                         <span className="font-bold text-green-400">
-                          {formatPrice(product.unlimitedLicensePrice || product.price * 5)}
+                          {formatPrice(product.price * 5)}
                         </span>
                       </div>
                       <p className="text-sm text-gray-400 mt-1">Unlimited use + SaaS allowed</p>
@@ -376,9 +368,11 @@ export default function ProductPage() {
                   </div>
 
                   {/* Purchase button */}
-                  <Button className="w-full" size="lg" variant="success">
-                    <Download className="h-5 w-5 mr-2" />
-                    Buy Now - {formatPrice(getPrice())}
+                  <Button className="w-full" size="lg" variant="success" asChild>
+                    <Link href={`/checkout/${product.id}`}>
+                      <Download className="h-5 w-5 mr-2" />
+                      Buy Now - {formatPrice(getPrice())}
+                    </Link>
                   </Button>
 
                   {/* Info */}
@@ -418,11 +412,10 @@ export default function ProductPage() {
 // Mock data
 const MOCK_PRODUCT: Product = {
   id: "1",
-  sellerId: "seller1",
-  sellerUsername: "dansi",
-  name: "SaaS Starter Kit",
+  seller_id: "seller1",
+  title: "SaaS Starter Kit",
   slug: "saas-starter-kit",
-  shortDescription: "Full-stack SaaS boilerplate with auth, payments, and dashboard",
+  short_description: "Full-stack SaaS boilerplate with auth, payments, and dashboard",
   description: `A complete SaaS starter kit built with Next.js 14, TypeScript, and Tailwind CSS.
 
 Features included:
@@ -438,57 +431,55 @@ Features included:
 - 50+ components
 
 Perfect for launching your SaaS product in days, not months.`,
-  category: "saas",
+  category: "saas-starters",
   tags: ["nextjs", "stripe", "tailwind"],
   price: 299,
-  extendedLicensePrice: 599,
-  unlimitedLicensePrice: 999,
-  thumbnailUrl: undefined,
-  previewImages: [],
-  demoUrl: "https://demo.example.com",
-  previewUrl: "https://github.com/example/preview",
-  techStack: ["Next.js 14", "TypeScript", "PostgreSQL", "Stripe", "Clerk", "Tailwind CSS"],
+  license_type: "standard",
+  preview_images: [],
+  demo_url: "https://demo.example.com",
+  tech_stack: ["Next.js 14", "TypeScript", "PostgreSQL", "Stripe", "Clerk", "Tailwind CSS"],
   requirements: "Node.js 18+\nPostgreSQL database\nStripe account\nClerk account",
-  status: "published",
-  isFeatured: true,
-  averageRating: 4.8,
-  reviewCount: 42,
-  salesCount: 156,
-  viewCount: 2340,
-  createdAt: "2024-01-15",
-  publishedAt: "2024-01-15",
+  status: "active",
+  featured: true,
+  rating_average: 4.8,
+  rating_count: 42,
+  sales: 156,
+  views: 2340,
+  version: "1.0.0",
+  created_at: "2024-01-15",
+  updated_at: "2024-01-15",
 }
 
 const MOCK_REVIEWS: ReviewListResponse = {
   reviews: [
     {
       id: "r1",
-      productId: "1",
-      buyerId: "b1",
-      buyerUsername: "developer123",
+      product_id: "1",
+      buyer_id: "b1",
+      buyer_username: "developer123",
       rating: 5,
       title: "Saved me weeks of work",
       content: "This starter kit is incredibly well organized. The code quality is top-notch and everything just works out of the box. Highly recommended!",
-      isVerifiedPurchase: true,
-      helpfulCount: 12,
-      createdAt: "2024-02-01",
+      is_verified_purchase: true,
+      helpful_count: 12,
+      created_at: "2024-02-01",
     },
     {
       id: "r2",
-      productId: "1",
-      buyerId: "b2",
-      buyerUsername: "saasbuilder",
+      product_id: "1",
+      buyer_id: "b2",
+      buyer_username: "saasbuilder",
       rating: 4,
       title: "Great foundation",
       content: "Very solid foundation for a SaaS. Would love to see more documentation, but overall excellent value for the price.",
-      isVerifiedPurchase: true,
-      helpfulCount: 8,
-      createdAt: "2024-01-28",
+      is_verified_purchase: true,
+      helpful_count: 8,
+      created_at: "2024-01-28",
     },
   ],
   total: 42,
-  averageRating: 4.8,
-  ratingDistribution: { 5: 32, 4: 8, 3: 2, 2: 0, 1: 0 },
+  average_rating: 4.8,
+  rating_distribution: { 5: 32, 4: 8, 3: 2, 2: 0, 1: 0 },
   page: 1,
-  pageSize: 20,
+  page_size: 20,
 }
