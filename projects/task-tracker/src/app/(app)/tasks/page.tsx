@@ -7,54 +7,83 @@ import {
   searchTasks,
   filterTasks,
 } from '@/shared/lib/dal'
-import { TaskList } from '@/shared/components/TaskList'
-import { TaskSearchBar } from '@/shared/components/TaskSearchBar'
-import { TaskFilters } from '@/shared/components/TaskFilters'
+import { TaskListWithFilters } from '@/shared/components/TaskListWithFilters'
 import { searchParamsCache } from './search-params'
 import { TaskStatus } from '@prisma/client'
 
-// Loading skeleton that matches TaskList layout
-function TaskListSkeleton() {
+/**
+ * Tasks Page: Full task discovery experience
+ *
+ * Features:
+ * - Search bar with debounced input
+ * - Filter sidebar (status, tags)
+ * - Task list with status grouping
+ * - URL state persistence
+ * - Responsive layout
+ * - Loading states with Suspense
+ *
+ * URL Parameters:
+ * - q: Search query
+ * - status: Status filters (array)
+ * - tags: Tag filters (array)
+ */
+
+// Loading skeleton for full page content
+function TasksLoadingSkeleton() {
   return (
-    <div className="space-y-8 animate-pulse">
-      {/* Three sections (TODO, IN_PROGRESS, DONE) */}
-      {[1, 2, 3].map((section) => (
-        <div key={section}>
-          {/* Section title skeleton */}
-          <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-4" />
+    <div className="space-y-6">
+      {/* Search bar skeleton */}
+      <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
 
-          {/* Three card skeletons */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[1, 2, 3].map((card) => (
-              <div
-                key={card}
-                className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
-              >
-                {/* Title skeleton */}
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-3" />
+      {/* Two-column layout skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Filter sidebar skeleton */}
+        <aside className="lg:col-span-1">
+          <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 animate-pulse">
+            <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-4" />
+            <div className="space-y-2">
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded" />
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded" />
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded" />
+            </div>
+          </div>
+        </aside>
 
-                {/* Description skeleton */}
-                <div className="space-y-2 mb-4">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6" />
-                </div>
-
-                {/* Footer skeleton */}
-                <div className="flex items-center justify-between">
-                  <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-24" />
-                  <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-16" />
+        {/* Task list skeleton */}
+        <main className="lg:col-span-3">
+          <div className="space-y-8 animate-pulse">
+            {[1, 2, 3].map((section) => (
+              <div key={section}>
+                <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-4" />
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[1, 2, 3].map((card) => (
+                    <div
+                      key={card}
+                      className="p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
+                    >
+                      <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-3" />
+                      <div className="space-y-2 mb-4">
+                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+                        <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6" />
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-24" />
+                        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-16" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      ))}
+        </main>
+      </div>
     </div>
   )
 }
 
-// Async component that loads tasks with search/filter
-async function TaskListContent({
+// Server Component that fetches data and renders TaskListWithFilters
+async function TasksContent({
   searchQuery,
   statusFilters,
   tagFilters,
@@ -65,26 +94,30 @@ async function TaskListContent({
 }) {
   const { userId } = await verifySession()
 
+  // Fetch tags for filter sidebar
+  const tags = await getTagsByUser(userId)
+
+  // Fetch tasks based on search/filter state
   let tasks
 
-  // If there's a search query, use search function
   if (searchQuery.trim().length > 0) {
+    // Search with filters
     const searchResults = await searchTasks(userId, searchQuery.trim())
-
-    // Apply additional filters to search results
     tasks = searchResults
 
+    // Apply status filter to search results
     if (statusFilters.length > 0) {
       tasks = tasks.filter((task) => statusFilters.includes(task.status))
     }
 
+    // Apply tag filter to search results
     if (tagFilters.length > 0) {
       tasks = tasks.filter((task) =>
         task.tags.some((tag) => tagFilters.includes(tag.id))
       )
     }
   } else if (statusFilters.length > 0 || tagFilters.length > 0) {
-    // Use filter function if filters are active
+    // Filter without search
     const filterObj: {
       status?: TaskStatus[]
       tagIds?: string[]
@@ -104,15 +137,7 @@ async function TaskListContent({
     tasks = await getTasksByUser(userId)
   }
 
-  return <TaskList tasks={tasks} />
-}
-
-// Async component that loads filter data
-async function TaskFiltersContent() {
-  const { userId } = await verifySession()
-  const tags = await getTagsByUser(userId)
-
-  return <TaskFilters tags={tags} />
+  return <TaskListWithFilters tasks={tasks} tags={tags} />
 }
 
 export default async function TasksPage({
@@ -163,42 +188,14 @@ export default async function TasksPage({
         </Link>
       </div>
 
-      {/* Search bar */}
-      <div className="mb-6">
-        <TaskSearchBar />
-      </div>
-
-      {/* Two-column layout: filters sidebar + task list */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Filter sidebar */}
-        <aside className="lg:col-span-1">
-          <Suspense
-            fallback={
-              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 animate-pulse">
-                <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-24 mb-4" />
-                <div className="space-y-2">
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded" />
-                </div>
-              </div>
-            }
-          >
-            <TaskFiltersContent />
-          </Suspense>
-        </aside>
-
-        {/* Task list */}
-        <main className="lg:col-span-3">
-          <Suspense fallback={<TaskListSkeleton />}>
-            <TaskListContent
-              searchQuery={q}
-              statusFilters={status}
-              tagFilters={tags}
-            />
-          </Suspense>
-        </main>
-      </div>
+      {/* Task discovery interface with search, filters, and list */}
+      <Suspense fallback={<TasksLoadingSkeleton />}>
+        <TasksContent
+          searchQuery={q}
+          statusFilters={status}
+          tagFilters={tags}
+        />
+      </Suspense>
     </div>
   )
 }
