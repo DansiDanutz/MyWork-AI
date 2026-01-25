@@ -30,6 +30,7 @@ model User {
 
   accounts      Account[]
   sessions      Session[]
+  analyticsEvents AnalyticsEvent[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -68,4 +69,20 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// Analytics event tracking for MyWork brain learning
+model AnalyticsEvent {
+  id         String   @id @default(cuid())
+  userId     String
+  eventType  String   // 'page_view', 'task_created', 'file_uploaded', 'search_performed', etc.
+  properties Json     // JSONB for flexible event-specific data
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Indexes for performance - optimized for time-series queries
+  @@index([userId, createdAt])    // Fast user timeline queries
+  @@index([eventType, createdAt]) // Fast event type aggregations
+  @@index([createdAt])            // Time-series queries
 }
