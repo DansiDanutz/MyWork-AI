@@ -95,8 +95,10 @@ downloads/
 eggs/
 .eggs/
 lib/
-!projects/ai-dashboard/frontend/lib/
-!projects/ai-dashboard/frontend/lib/**
+!projects/**/lib/
+!projects/**/lib/**
+!projects/task-tracker/src/shared/lib/
+!projects/task-tracker/src/shared/lib/**
 lib64/
 parts/
 sdist/
