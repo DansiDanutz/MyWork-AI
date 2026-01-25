@@ -11,6 +11,7 @@ from pydantic import BaseModel, Field
 
 from database import get_db
 from models.product import Product, PRODUCT_CATEGORIES
+from services.storage import extract_key_from_url, generate_presigned_get
 from auth import get_current_user, CurrentUser
 
 router = APIRouter()
@@ -86,6 +87,39 @@ class ProductListResponse(BaseModel):
     page_size: int
 
 
+def _normalize_media_fields(
+    preview_images: Optional[List[str]],
+    package_url: Optional[str] = None,
+) -> tuple[list[str], Optional[str]]:
+    normalized_images: list[str] = []
+    for image in preview_images or []:
+        normalized_images.append(extract_key_from_url(image))
+
+    normalized_package = None
+    if package_url:
+        normalized_package = extract_key_from_url(package_url)
+
+    return normalized_images, normalized_package
+
+
+def _resolve_preview_images(images: Optional[List[str]]) -> list[str]:
+    resolved: list[str] = []
+    for image in images or []:
+        if image.startswith("http://") or image.startswith("https://"):
+            resolved.append(image)
+        else:
+            resolved.append(generate_presigned_get(image, expires_in=3600))
+    return resolved
+
+
+def _product_response(product: Product) -> ProductResponse:
+    response = ProductResponse.model_validate(product)
+    response.preview_images = _resolve_preview_images(product.preview_images)
+    response.package_url = product.package_url
+    response.package_size_bytes = product.package_size_bytes
+    return response
+
+
 # Endpoints
 @router.get("", response_model=ProductListResponse)
 async def list_products(
@@ -147,10 +181,10 @@ async def list_products(
     products = result.scalars().all()
 
     return ProductListResponse(
-        products=[ProductResponse.model_validate(p) for p in products],
+        products=[_product_response(p) for p in products],
         total=total or 0,
         page=page,
-        page_size=page_size
+        page_size=page_size,
     )
 
 
@@ -176,7 +210,7 @@ async def list_featured_products(
     result = await db.execute(query)
     products = result.scalars().all()
 
-    return [ProductResponse.model_validate(p) for p in products]
+    return [_product_response(p) for p in products]
 
 
 @router.get("/{slug}", response_model=ProductResponse)
@@ -196,7 +230,7 @@ async def get_product(
     product.views += 1
     await db.commit()
 
-    return ProductResponse.model_validate(product)
+    return _product_response(product)
 
 
 @router.post("", response_model=ProductResponse, status_code=201)
@@ -222,17 +256,26 @@ async def create_product(
         import random
         slug = f"{slug}-{random.randint(1000, 9999)}"
 
+    preview_images, package_url = _normalize_media_fields(
+        product_data.preview_images,
+        product_data.package_url,
+    )
+    data = product_data.model_dump()
+    data["preview_images"] = preview_images
+    if package_url:
+        data["package_url"] = package_url
+
     product = Product(
         seller_id="temp-seller-id",  # TODO: From auth
         slug=slug,
-        **product_data.model_dump()
+        **data,
     )
 
     db.add(product)
     await db.commit()
     await db.refresh(product)
 
-    return ProductResponse.model_validate(product)
+    return _product_response(product)
 
 
 @router.put("/{product_id}", response_model=ProductResponse)
@@ -254,13 +297,22 @@ async def update_product(
 
     # Update fields
     update_data = product_data.model_dump(exclude_unset=True)
+    if "preview_images" in update_data or "package_url" in update_data:
+        preview_images, package_url = _normalize_media_fields(
+            update_data.get("preview_images"),
+            update_data.get("package_url"),
+        )
+        if "preview_images" in update_data:
+            update_data["preview_images"] = preview_images
+        if "package_url" in update_data and package_url:
+            update_data["package_url"] = package_url
     for field, value in update_data.items():
         setattr(product, field, value)
 
     await db.commit()
     await db.refresh(product)
 
-    return ProductResponse.model_validate(product)
+    return _product_response(product)
 
 
 @router.delete("/{product_id}", status_code=204)
@@ -316,7 +368,7 @@ async def publish_product(
     await db.commit()
     await db.refresh(product)
 
-    return ProductResponse.model_validate(product)
+    return _product_response(product)
 
 
 @router.get("/me", response_model=ProductListResponse)
@@ -352,8 +404,8 @@ async def get_my_products(
     products = result.scalars().all()
 
     return ProductListResponse(
-        products=[ProductResponse.model_validate(p) for p in products],
+        products=[_product_response(p) for p in products],
         total=total or 0,
         page=page,
-        page_size=page_size
+        page_size=page_size,
     )

@@ -57,6 +57,8 @@ app.add_middleware(
         "http://localhost:3000",
         "https://marketplace.mywork.ai",
         "https://*.vercel.app",
+        "https://frontend-hazel-ten-17.vercel.app",
+        "https://mywork-ai-production.up.railway.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],

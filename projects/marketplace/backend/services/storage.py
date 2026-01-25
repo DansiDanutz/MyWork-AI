@@ -8,6 +8,7 @@ import mimetypes
 import os
 import re
 import uuid
+from urllib.parse import unquote, urlparse
 from functools import lru_cache
 from typing import Optional
 
@@ -114,6 +115,30 @@ def build_public_url(key: str) -> Optional[str]:
     if not base_url:
         return None
     return f"{base_url}/{key}"
+
+
+def extract_key_from_url(value: str) -> str:
+    """Extract object key from a URL if it belongs to our bucket."""
+    if not value.startswith("http://") and not value.startswith("https://"):
+        return value
+
+    parsed = urlparse(value)
+    path = unquote(parsed.path.lstrip("/"))
+    if not path:
+        return value
+
+    bucket = settings.R2_BUCKET
+    host = parsed.netloc
+
+    # Path-style URLs: /bucket/key
+    if bucket and path.startswith(f"{bucket}/"):
+        return path[len(bucket) + 1 :]
+
+    # Virtual-host or custom domain: bucket.<account>.r2.dev/key
+    if bucket and host.startswith(f"{bucket}."):
+        return path
+
+    return value
 
 
 def _ensure_r2_config() -> None:

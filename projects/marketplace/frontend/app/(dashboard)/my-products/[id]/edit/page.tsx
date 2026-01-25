@@ -113,7 +113,8 @@ interface ImageUpload {
   size: number
   progress: number
   status: UploadStatus
-  url?: string
+  fileKey?: string
+  previewUrl?: string
   error?: string
 }
 
@@ -350,6 +351,13 @@ export default function EditProductPage() {
   }
 
   function removePreviewImage(url: string) {
+    const uploadMatch = imageUploads.find((upload) => upload.fileKey === url)
+    if (uploadMatch?.previewUrl) {
+      URL.revokeObjectURL(uploadMatch.previewUrl)
+    }
+    setImageUploads((prev) =>
+      prev.filter((upload) => upload.fileKey !== url)
+    )
     setFormData({ ...formData, preview_images: formData.preview_images.filter(i => i !== url) })
   }
 
@@ -376,9 +384,10 @@ export default function EditProductPage() {
       }
 
       const id = createUploadId()
+      const previewUrl = URL.createObjectURL(file)
       setImageUploads((prev) => [
         ...prev,
-        { id, name: file.name, size: file.size, progress: 0, status: "uploading" },
+        { id, name: file.name, size: file.size, progress: 0, status: "uploading", previewUrl },
       ])
 
       try {
@@ -390,20 +399,21 @@ export default function EditProductPage() {
           )
         })
 
-        if (!result.publicUrl) {
-          throw new Error("Public URL not configured for image uploads")
-        }
-
         setImageUploads((prev) =>
           prev.map((upload) =>
             upload.id === id
-              ? { ...upload, status: "done", progress: 100, url: result.publicUrl }
+              ? {
+                  ...upload,
+                  status: "done",
+                  progress: 100,
+                  fileKey: result.fileKey,
+                }
               : upload
           )
         )
         setFormData((prev) => ({
           ...prev,
-          preview_images: [...prev.preview_images, result.publicUrl as string],
+          preview_images: [...prev.preview_images, result.fileKey],
         }))
       } catch (err: any) {
         console.error("Image upload failed:", err)
@@ -418,6 +428,18 @@ export default function EditProductPage() {
       }
     }
   }
+
+  const displayPreviewImages = useMemo(() => {
+    return formData.preview_images
+      .map((value) => {
+        if (value.startsWith("http://") || value.startsWith("https://")) {
+          return { key: value, url: value }
+        }
+        const match = imageUploads.find((upload) => upload.fileKey === value)
+        return { key: value, url: match?.previewUrl }
+      })
+      .filter((item) => item.url)
+  }, [formData.preview_images, imageUploads])
 
   const handlePackageFile = async (file: File | null) => {
     if (!file) return
@@ -952,18 +974,18 @@ export default function EditProductPage() {
                 </div>
               )}
 
-              {formData.preview_images.filter(Boolean).length > 0 && (
+              {displayPreviewImages.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                  {formData.preview_images.filter(Boolean).map((url, idx) => (
-                    <div key={idx} className="relative group">
+                  {displayPreviewImages.map((image, idx) => (
+                    <div key={image.key} className="relative group">
                       <img
-                        src={url}
+                        src={image.url as string}
                         alt={`Preview ${idx + 1}`}
                         className="w-full h-32 object-cover rounded border border-gray-700"
                       />
                       <button
                         type="button"
-                        onClick={() => removePreviewImage(url)}
+                        onClick={() => removePreviewImage(image.key)}
                         className="absolute top-2 right-2 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition"
                       >
                         <X className="h-4 w-4 text-white" />

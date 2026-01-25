@@ -56,11 +56,6 @@ async def create_presigned_upload(
     public_url = None
     if payload.kind == "preview_image":
         public_url = build_public_url(key)
-        if not public_url:
-            raise HTTPException(
-                status_code=500,
-                detail="Public URL not configured for image uploads",
-            )
 
     return PresignResponse(
         upload_url=upload_url,
