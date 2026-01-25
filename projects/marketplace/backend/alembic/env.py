@@ -24,12 +24,13 @@ from models.submission import ProjectSubmission
 
 # Import settings
 from config import settings
+from database import get_async_database_url
 
 # this is the Alembic Config object
 config = context.config
 
-# Override sqlalchemy.url with our DATABASE_URL
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("+asyncpg", ""))
+# Override sqlalchemy.url with our DATABASE_URL (async)
+config.set_main_option("sqlalchemy.url", get_async_database_url(settings.DATABASE_URL))
 
 # Interpret the config file for Python logging.
 if config.config_file_name is not None:
