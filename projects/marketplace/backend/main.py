@@ -56,10 +56,10 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "https://marketplace.mywork.ai",
-        "https://*.vercel.app",
         "https://frontend-hazel-ten-17.vercel.app",
         "https://mywork-ai-production.up.railway.app",
     ],
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

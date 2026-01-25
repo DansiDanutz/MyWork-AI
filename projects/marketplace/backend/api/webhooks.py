@@ -3,6 +3,7 @@ Webhook handlers for external services.
 """
 
 import json
+import stripe
 from datetime import datetime, timedelta
 from fastapi import APIRouter, Request, HTTPException, Header, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -31,21 +32,26 @@ async def stripe_webhook(
 
     payload = await request.body()
 
-    # TODO: Verify webhook signature with Stripe
-    # try:
-    #     event = stripe.Webhook.construct_event(
-    #         payload, stripe_signature, settings.STRIPE_WEBHOOK_SECRET
-    #     )
-    # except ValueError:
-    #     raise HTTPException(status_code=400, detail="Invalid payload")
-    # except stripe.error.SignatureVerificationError:
-    #     raise HTTPException(status_code=400, detail="Invalid signature")
-
-    # For now, parse the payload directly (REMOVE IN PRODUCTION)
-    try:
-        event = json.loads(payload)
-    except json.JSONDecodeError:
-        raise HTTPException(status_code=400, detail="Invalid JSON")
+    # Verify webhook signature in production to prevent spoofing
+    if settings.STRIPE_WEBHOOK_SECRET:
+        try:
+            event = stripe.Webhook.construct_event(
+                payload, stripe_signature, settings.STRIPE_WEBHOOK_SECRET
+            )
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid payload")
+        except stripe.error.SignatureVerificationError:
+            raise HTTPException(status_code=400, detail="Invalid signature")
+    else:
+        if settings.ENVIRONMENT != "development":
+            raise HTTPException(
+                status_code=500,
+                detail="Stripe webhook secret not configured"
+            )
+        try:
+            event = json.loads(payload)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=400, detail="Invalid JSON")
 
     event_type = event.get("type")
     data = event.get("data", {}).get("object", {})
