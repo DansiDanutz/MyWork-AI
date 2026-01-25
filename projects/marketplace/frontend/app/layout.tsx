@@ -13,6 +13,8 @@ import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'MyWork Marketplace',
   description: 'You Build. You Share. You Sell. The AI-powered marketplace where developers keep 90%.',
