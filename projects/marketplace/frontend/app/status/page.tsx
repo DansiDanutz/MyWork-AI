@@ -44,9 +44,14 @@ async function checkService(service: ServiceCheck): Promise<ServiceResult> {
     if (service.expectJson) {
       try {
         const data = (await response.json()) as { status?: string } | null
-        if (data?.status) {
+        if (typeof data?.status === 'string') {
           detail = data.status
-          ok = ok && data.status.toLowerCase() === 'healthy'
+          const normalized = data.status.toLowerCase()
+          ok =
+            ok &&
+            (normalized === 'healthy' ||
+              normalized === 'ok' ||
+              normalized === 'pass')
         }
       } catch (error) {
         detail = 'Invalid JSON response'
