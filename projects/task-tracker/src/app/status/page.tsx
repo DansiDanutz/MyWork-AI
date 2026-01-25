@@ -44,7 +44,7 @@ async function checkService(service: ServiceCheck): Promise<ServiceResult> {
           const normalized = data.status.toLowerCase()
           ok = ok && (normalized === 'healthy' || normalized === 'ok' || normalized === 'pass')
         }
-      } catch (error) {
+      } catch {
         detail = 'Invalid JSON response'
         ok = false
       }
