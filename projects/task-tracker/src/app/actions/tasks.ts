@@ -16,6 +16,7 @@ const CreateTaskSchema = z.object({
 const UpdateTaskSchema = z.object({
   title: z.string().min(1, 'Title is required').max(255, 'Title too long'),
   description: z.string().optional(),
+  status: z.enum(['TODO', 'IN_PROGRESS', 'DONE']).optional(),
 })
 
 const TaskStatusSchema = z.enum(['TODO', 'IN_PROGRESS', 'DONE'])
@@ -92,13 +93,14 @@ export async function updateTask(taskId: string, formData: FormData): Promise<Ac
     const result = UpdateTaskSchema.safeParse({
       title: formData.get('title'),
       description: formData.get('description'),
+      status: formData.get('status'),
     })
 
     if (!result.success) {
       return { success: false, error: result.error.issues[0].message }
     }
 
-    const { title, description } = result.data
+    const { title, description, status } = result.data
 
     // Verify task ownership and update
     const task = await prisma.task.findFirst({
@@ -109,27 +111,44 @@ export async function updateTask(taskId: string, formData: FormData): Promise<Ac
       return { success: false, error: 'Task not found or access denied' }
     }
 
+    // Build update data object
+    const updateData: {
+      title: string
+      description: string | null
+      status?: 'TODO' | 'IN_PROGRESS' | 'DONE'
+    } = {
+      title,
+      description: description || null,
+    }
+
+    if (status) {
+      updateData.status = status
+    }
+
     await prisma.task.update({
       where: { id: taskId },
-      data: {
-        title,
-        description: description || null,
-      },
+      data: updateData,
     })
 
-    // Track analytics
+    // Track analytics with changed fields
+    const fieldsChanged: string[] = ['title']
+    if (description !== undefined) fieldsChanged.push('description')
+    if (status) fieldsChanged.push('status')
+
     trackEvent({
       type: 'task_updated',
       userId: user.id,
       properties: {
         taskId,
-        fieldsChanged: ['title', description ? 'description' : null].filter(Boolean) as string[],
+        fieldsChanged,
+        ...(status && { newStatus: status }),
       },
     })
 
     // Revalidate pages
     revalidatePath('/tasks')
     revalidatePath(`/tasks/${taskId}/edit`)
+    revalidatePath('/dashboard')
 
     return { success: true }
   } catch (error) {
