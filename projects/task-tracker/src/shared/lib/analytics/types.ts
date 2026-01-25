@@ -39,6 +39,43 @@ const TaskDeletedEventSchema = z.object({
   })
 })
 
+// Tag events (for Phase 4)
+const TagCreatedEventSchema = z.object({
+  type: z.literal('tag_created'),
+  userId: z.string(),
+  properties: z.object({
+    tagId: z.string(),
+    tagName: z.string(),
+  })
+})
+
+const TagDeletedEventSchema = z.object({
+  type: z.literal('tag_deleted'),
+  userId: z.string(),
+  properties: z.object({
+    tagId: z.string(),
+    tagName: z.string(),
+  })
+})
+
+const TaskTagsUpdatedEventSchema = z.object({
+  type: z.literal('task_tags_updated'),
+  userId: z.string(),
+  properties: z.object({
+    taskId: z.string(),
+    tagCount: z.number(),
+  })
+})
+
+const TagAddedToTaskEventSchema = z.object({
+  type: z.literal('tag_added_to_task'),
+  userId: z.string(),
+  properties: z.object({
+    taskId: z.string(),
+    tagName: z.string(),
+  })
+})
+
 // File events (for future phases)
 const FileUploadedEventSchema = z.object({
   type: z.literal('file_uploaded'),
@@ -93,6 +130,10 @@ export const AnalyticsEventSchema = z.discriminatedUnion('type', [
   TaskCreatedEventSchema,
   TaskUpdatedEventSchema,
   TaskDeletedEventSchema,
+  TagCreatedEventSchema,
+  TagDeletedEventSchema,
+  TaskTagsUpdatedEventSchema,
+  TagAddedToTaskEventSchema,
   FileUploadedEventSchema,
   SearchPerformedEventSchema,
   LoginEventSchema,
@@ -109,6 +150,10 @@ export {
   TaskCreatedEventSchema,
   TaskUpdatedEventSchema,
   TaskDeletedEventSchema,
+  TagCreatedEventSchema,
+  TagDeletedEventSchema,
+  TaskTagsUpdatedEventSchema,
+  TagAddedToTaskEventSchema,
   FileUploadedEventSchema,
   SearchPerformedEventSchema,
   LoginEventSchema,
