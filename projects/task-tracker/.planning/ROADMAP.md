@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Setup** - Project infrastructure and base configuration
 - [x] **Phase 2: Authentication & Profiles** - GitHub OAuth login and user profiles
-- [ ] **Phase 3: Core Task Management** - Basic task CRUD operations
+- [x] **Phase 3: Core Task Management** - Basic task CRUD operations
 - [ ] **Phase 4: Task Organization & Discovery** - Categories, search, and filtering
 - [ ] **Phase 5: File Attachments** - Upload and manage task attachments
 - [x] **Phase 6: GitHub Integration & Analytics** - Usage tracking for brain learning
@@ -73,10 +73,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 03-01-PLAN.md - Database schema, Server Actions, and DAL for task CRUD
-- [ ] 03-02-PLAN.md - TaskCard, TaskList, and TaskForm UI components
-- [ ] 03-03-PLAN.md - Task list page, create page, and dashboard integration
-- [ ] 03-04-PLAN.md - Task edit page with full CRUD verification
+- [x] 03-01-PLAN.md - Database schema, Server Actions, and DAL for task CRUD
+- [x] 03-02-PLAN.md - TaskCard, TaskList, and TaskForm UI components
+- [x] 03-03-PLAN.md - Task list page, create page, and dashboard integration
+- [x] 03-04-PLAN.md - Task edit page with full CRUD verification
 
 ### Phase 4: Task Organization & Discovery
 **Goal**: Users can organize and find tasks efficiently
@@ -88,10 +88,14 @@ Plans:
   3. User can filter tasks by status, category, or date
   4. Search and filter results update instantly
   5. Empty states show helpful guidance when no tasks match filters
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 04-01: TBD during planning
+- [ ] 04-01-PLAN.md - Tag model, PostgreSQL full-text search, and DAL/Actions for tags
+- [ ] 04-02-PLAN.md - Search bar, filter sidebar, and nuqs URL state management
+- [ ] 04-03-PLAN.md - Tag UI components (TagInput, TagBadge) and form integration
+- [ ] 04-04-PLAN.md - TaskListWithFilters integration and empty states
+- [ ] 04-05-PLAN.md - Human verification of complete organization and discovery features
 
 ### Phase 5: File Attachments
 **Goal**: Users can attach and manage files on their tasks
@@ -169,7 +173,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 1. Foundation & Setup | 3/3 | Complete | 2026-01-24 |
 | 2. Authentication & Profiles | 5/5 | Complete | 2026-01-25 |
 | 3. Core Task Management | 4/4 | Complete | 2026-01-25 |
-| 4. Task Organization & Discovery | 0/TBD | Not started | - |
+| 4. Task Organization & Discovery | 0/5 | In Progress | - |
 | 5. File Attachments | 0/TBD | Not started | - |
 | 6. GitHub Integration & Analytics | 3/3 | Complete | 2026-01-25 |
 | 7. Performance & Quality | 0/TBD | Not started | - |
