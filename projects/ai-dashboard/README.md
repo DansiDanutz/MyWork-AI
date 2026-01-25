@@ -77,11 +77,11 @@ ai-dashboard/
 ## Tech Stack
 
 **Backend:** FastAPI, SQLAlchemy, SQLite, APScheduler, DSPy
-**Frontend:** Next.js 14, TypeScript, Tailwind CSS
+**Frontend:** Next.js 15, TypeScript, Tailwind CSS
 
 ## Environment
 
-Uses API keys from framework root `.env`:
+Uses API keys from environment (backend `.env` by default via `load_dotenv()`):
 - `APIFY_API_KEY` - YouTube scraping
 - `ANTHROPIC_API_KEY` - Claude for scripts
 - `HEYGEN_API_KEY` - AI video creation
