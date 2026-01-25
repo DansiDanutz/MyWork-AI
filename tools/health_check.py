@@ -713,18 +713,17 @@ class HealthChecker:
         try:
             issues = []
 
-            # Check for hardcoded secrets in tools
+            # Check for hardcoded secrets in tools (avoid false positives)
             tools_dir = MYWORK_ROOT / "tools"
             for tool_file in tools_dir.glob("*.py"):
+                if tool_file.name == "health_check.py":
+                    continue
                 content = tool_file.read_text()
-                # Look for potential API keys/tokens
-                if any(pattern in content for pattern in [
-                    "sk-", "gsk_", "eyJ", "Bearer ", "token = ",
-                    "api_key = ", "secret = "
-                ]):
+                # Look for potential API keys/tokens (high-signal patterns only)
+                if any(pattern in content for pattern in ["sk-", "gsk_", "eyJ", "Bearer "]):
                     # Check if it's not in a comment or example
                     for line in content.split("\n"):
-                        if any(p in line for p in ["sk-", "gsk_", "eyJ"]):
+                        if any(p in line for p in ["sk-", "gsk_", "eyJ", "Bearer "]):
                             if not line.strip().startswith("#") and "example" not in line.lower():
                                 issues.append(f"Potential hardcoded secret in {tool_file.name}")
                                 break
@@ -733,8 +732,10 @@ class HealthChecker:
             gitignore = MYWORK_ROOT / ".gitignore"
             if gitignore.exists():
                 content = gitignore.read_text()
-                required_ignores = [".env", "*.pyc", "__pycache__", "node_modules"]
+                required_ignores = [".env", "__pycache__", "node_modules"]
                 missing_ignores = [i for i in required_ignores if i not in content]
+                if "*.pyc" not in content and "*.py[cod]" not in content:
+                    missing_ignores.append("*.pyc")
 
                 if missing_ignores:
                     issues.append(f".gitignore missing: {', '.join(missing_ignores)}")

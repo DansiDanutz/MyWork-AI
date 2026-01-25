@@ -18,14 +18,43 @@ Environment Variables Required:
 import os
 import json
 import argparse
+from pathlib import Path
 from typing import Optional
 import httpx
 from dotenv import load_dotenv
 
 load_dotenv()
 
+def _is_placeholder(value: str) -> bool:
+    if not value:
+        return True
+    lowered = value.lower()
+    return "your-instance" in lowered or "your-n8n-api-key" in lowered
+
+
+def _load_from_mcp() -> tuple[str, str]:
+    mcp_path = Path(__file__).resolve().parents[1] / ".mcp.json"
+    if not mcp_path.exists():
+        return "", ""
+    try:
+        config = json.loads(mcp_path.read_text())
+    except json.JSONDecodeError:
+        return "", ""
+    servers = config.get("mcpServers", {})
+    n8n_cfg = servers.get("n8n-mcp", {})
+    env = n8n_cfg.get("env", {})
+    return env.get("N8N_API_URL", ""), env.get("N8N_API_KEY", "")
+
+
 N8N_API_URL = os.getenv("N8N_API_URL", "").rstrip("/")
 N8N_API_KEY = os.getenv("N8N_API_KEY", "")
+
+if _is_placeholder(N8N_API_URL) or _is_placeholder(N8N_API_KEY):
+    mcp_url, mcp_key = _load_from_mcp()
+    if mcp_url:
+        N8N_API_URL = mcp_url.rstrip("/")
+    if mcp_key:
+        N8N_API_KEY = mcp_key
 
 
 def get_headers() -> dict:
@@ -251,11 +280,38 @@ def list_executions(workflow_id: Optional[str] = None, status: Optional[str] = N
     return response.json()
 
 
+def health_check() -> dict:
+    """
+    Perform a lightweight API check to verify connectivity and auth.
+
+    Returns:
+        dict: Health status with workflow count (if available)
+    """
+    response = httpx.get(
+        f"{N8N_API_URL}/api/v1/workflows",
+        headers=get_headers(),
+        timeout=10.0
+    )
+    response.raise_for_status()
+    data = response.json()
+
+    # n8n can return either a list or an object containing data
+    if isinstance(data, dict) and "data" in data:
+        workflows = data.get("data") or []
+    else:
+        workflows = data if isinstance(data, list) else []
+
+    return {
+        "status": "ok",
+        "workflows": len(workflows)
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description="n8n API Client")
     parser.add_argument("--action", required=True,
                        choices=["list", "get", "create", "update", "delete",
-                               "activate", "deactivate", "execute", "webhook", "executions"],
+                               "activate", "deactivate", "execute", "webhook", "executions", "health"],
                        help="Action to perform")
     parser.add_argument("--workflow-id", help="Workflow ID for get/update/delete/activate/deactivate/execute")
     parser.add_argument("--workflow-file", help="JSON file with workflow definition for create/update")
@@ -331,6 +387,9 @@ def main():
                 workflow_id=args.workflow_id,
                 status=args.status
             )
+
+        elif args.action == "health":
+            result = health_check()
 
         print(json.dumps(result, indent=2))
 
