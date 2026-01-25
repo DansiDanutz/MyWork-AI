@@ -15,3 +15,7 @@ tags:
   - saas
   - templates
 description: "AI-powered marketplace where developers sell production-ready projects."
+deployment:
+  status: live
+  frontend_url: "https://frontend-hazel-ten-17.vercel.app"
+  backend_url: "https://mywork-ai-production.up.railway.app"

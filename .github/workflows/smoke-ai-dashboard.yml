@@ -1,0 +1,23 @@
+name: Smoke Test - AI Dashboard
+
+on:
+  schedule:
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+    inputs:
+      frontend_url:
+        description: "Optional frontend URL for AI Dashboard"
+        required: false
+        default: ""
+
+jobs:
+  smoke-ai-dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run smoke tests
+        env:
+          AI_DASHBOARD_BACKEND_URL: "https://ai-dashboard-backend-production-c40e.up.railway.app"
+          AI_DASHBOARD_FRONTEND_URL: ${{ inputs.frontend_url }}
+        run: python3 tools/smoke_test_ai_dashboard.py

@@ -13,3 +13,6 @@ tags:
   - ai
   - dashboard
 description: "AI analytics dashboard for tracking usage and insights."
+deployment:
+  status: live
+  backend_url: "https://ai-dashboard-backend-production-c40e.up.railway.app"

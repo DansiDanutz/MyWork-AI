@@ -13,3 +13,5 @@ tags:
   - tasks
   - dashboard
 description: "Task tracking app with dashboards and analytics."
+deployment:
+  status: not_deployed

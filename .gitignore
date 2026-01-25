@@ -64,12 +64,16 @@ cache/
 # ============================================
 .planning/brain_data.json
 .planning/module_registry.json
+.planning/project_registry.json
+.planning/brain_sync_registry.json
+.planning/brain_sync_payload.json
 .tmp/learning_log.json
 .tmp/error_patterns.json
 
 # Keep templates but not generated content
 !.planning/BRAIN.md
 !.planning/MODULE_REGISTRY.md
+!.planning/PROJECT_REGISTRY.md
 
 # ============================================
 # DATABASE FILES

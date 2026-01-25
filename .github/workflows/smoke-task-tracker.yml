@@ -1,0 +1,20 @@
+name: Smoke Test - Task Tracker
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Task Tracker base URL"
+        required: true
+        default: "https://example.com"
+
+jobs:
+  smoke-task-tracker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run smoke tests
+        env:
+          TASK_TRACKER_BASE_URL: ${{ inputs.base_url }}
+        run: python3 tools/smoke_test_task_tracker.py

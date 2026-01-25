@@ -18,7 +18,9 @@ Commands:
     doctor          Full system diagnostics
 
 Project Commands:
-    mw projects     List all projects
+    mw projects     List all projects (uses project registry if available)
+    mw projects scan    Refresh project registry
+    mw projects export  Export project registry to markdown
     mw open <name>  Open project in VS Code
     mw cd <name>    Print cd command for project
 
@@ -54,13 +56,19 @@ Examples:
 
 import os
 import sys
+import json
 import subprocess
 from pathlib import Path
 from typing import List, Optional
 
+try:
+    import yaml
+except ImportError:  # pragma: no cover - optional dependency
+    yaml = None
+
 # Configuration - prefer shared config for consistent path detection
 try:
-    from config import MYWORK_ROOT, TOOLS_DIR, PROJECTS_DIR
+    from config import MYWORK_ROOT, TOOLS_DIR, PROJECTS_DIR, PROJECT_REGISTRY_JSON
 except ImportError:
     def _get_mywork_root() -> Path:
         if env_root := os.environ.get("MYWORK_ROOT"):
@@ -75,6 +83,7 @@ except ImportError:
     MYWORK_ROOT = _get_mywork_root()
     TOOLS_DIR = MYWORK_ROOT / "tools"
     PROJECTS_DIR = MYWORK_ROOT / "projects"
+    PROJECT_REGISTRY_JSON = MYWORK_ROOT / ".planning" / "project_registry.json"
 
 # Color codes for terminal
 class Colors:
@@ -157,6 +166,13 @@ def cmd_doctor():
 
 def cmd_projects():
     """List all projects."""
+    args: Optional[List[str]] = None
+    if len(sys.argv) > 2:
+        args = sys.argv[2:]
+
+    if args and args[0] in {"scan", "export", "stats", "list"}:
+        return run_tool("project_registry", args)
+
     print(f"\n{Colors.BOLD}📁 MyWork Projects{Colors.ENDC}")
     print("=" * 50)
 
@@ -173,6 +189,88 @@ def cmd_projects():
         print("No projects found. Create one with: mw new <name>")
         return 0
 
+    registry = None
+    if PROJECT_REGISTRY_JSON.exists():
+        try:
+            registry = json.loads(PROJECT_REGISTRY_JSON.read_text())
+        except Exception:
+            registry = None
+
+    def _parse_scalar(value: str):
+        if value.startswith(("\"", "'")) and value.endswith(("\"", "'")):
+            return value[1:-1]
+        lowered = value.lower()
+        if lowered in {"true", "yes"}:
+            return True
+        if lowered in {"false", "no"}:
+            return False
+        return value
+
+    def _simple_yaml_load(text: str) -> dict:
+        data = {}
+        lines = text.splitlines()
+        i = 0
+        while i < len(lines):
+            line = lines[i]
+            stripped = line.strip()
+            if not stripped or stripped.startswith("#"):
+                i += 1
+                continue
+            if ":" not in stripped:
+                i += 1
+                continue
+            key, raw_value = stripped.split(":", 1)
+            key = key.strip()
+            raw_value = raw_value.strip()
+            if raw_value:
+                data[key] = _parse_scalar(raw_value)
+                i += 1
+                continue
+            j = i + 1
+            while j < len(lines) and not lines[j].strip():
+                j += 1
+            if j < len(lines) and lines[j].lstrip().startswith("- "):
+                items = []
+                while j < len(lines) and lines[j].lstrip().startswith("- "):
+                    items.append(_parse_scalar(lines[j].lstrip()[2:].strip()))
+                    j += 1
+                data[key] = items
+                i = j
+                continue
+            if j < len(lines) and lines[j].startswith("  "):
+                mapping = {}
+                while j < len(lines) and lines[j].startswith("  "):
+                    inner = lines[j].strip()
+                    if not inner or inner.startswith("#"):
+                        j += 1
+                        continue
+                    if ":" in inner:
+                        inner_key, inner_value = inner.split(":", 1)
+                        mapping[inner_key.strip()] = _parse_scalar(inner_value.strip())
+                    j += 1
+                data[key] = mapping
+                i = j
+                continue
+            data[key] = {}
+            i += 1
+        return data
+
+    def _safe_load_yaml(path: Path) -> dict:
+        if not path.exists():
+            return {}
+        try:
+            if yaml:
+                return yaml.safe_load(path.read_text()) or {}
+            return _simple_yaml_load(path.read_text())
+        except Exception:
+            return {}
+
+    def _load_project_meta(project_path: Path) -> dict:
+        if registry:
+            return registry.get("projects", {}).get(project_path.name, {})
+        metadata_path = project_path / "project.yaml"
+        return _safe_load_yaml(metadata_path)
+
     for project in sorted(projects):
         # Check if it has GSD state
         has_gsd = (project / ".planning" / "STATE.md").exists()
@@ -182,7 +280,19 @@ def cmd_projects():
         has_start = (project / "start.sh").exists() or (project / "start.bat").exists()
         start_status = "🚀" if has_start else ""
 
-        print(f"   {gsd_status} {project.name} {start_status}")
+        meta = _load_project_meta(project)
+        type_label = meta.get("type", "unknown")
+        status_label = meta.get("status", "unknown")
+        flags = []
+        if meta.get("marketplace"):
+            flags.append("🛒")
+        if meta.get("brain_contribution"):
+            flags.append("🧠")
+        if not meta:
+            flags.append("⚠️")
+        flag_text = "".join(flags)
+
+        print(f"   {gsd_status} {project.name} {start_status} ({type_label}, {status_label}) {flag_text}")
 
     print(f"\n   Total: {len(projects)} projects")
     return 0

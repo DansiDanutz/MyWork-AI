@@ -149,6 +149,8 @@ python tools/mw.py <command>
 | Command | Description |
 |---------|-------------|
 | `mw projects` | List all projects |
+| `mw projects scan` | Refresh project registry metadata |
+| `mw projects export` | Export project registry to markdown |
 | `mw open <name>` | Open in VS Code |
 | `mw cd <name>` | Print cd command |
 
