@@ -10,6 +10,7 @@ type Task = {
   status: 'TODO' | 'IN_PROGRESS' | 'DONE'
   createdAt: Date
   updatedAt: Date
+  tags?: { id: string; name: string; color: string | null }[]
 }
 
 type TaskListProps = {

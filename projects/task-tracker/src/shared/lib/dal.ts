@@ -63,10 +63,11 @@ export const getSession = cache(async () => {
  * Get all tasks for a user, grouped by status and sorted by creation date.
  * Uses React cache() for request deduplication.
  */
-export const getTasksByUser = cache(async (userId: string): Promise<Task[]> => {
+export const getTasksByUser = cache(async (userId: string): Promise<(Task & { tags: Tag[] })[]> => {
   try {
     const tasks = await prisma.task.findMany({
       where: { userId },
+      include: { tags: true },
       orderBy: [
         { status: 'asc' }, // TODO first, then IN_PROGRESS, then DONE
         { createdAt: 'desc' } // Newest first within each status
