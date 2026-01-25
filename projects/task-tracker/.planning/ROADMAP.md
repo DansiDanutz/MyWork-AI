@@ -13,7 +13,7 @@ This roadmap delivers a production-ready task management application that valida
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Setup** - Project infrastructure and base configuration
-- [ ] **Phase 2: Authentication & Profiles** - GitHub OAuth login and user profiles
+- [x] **Phase 2: Authentication & Profiles** - GitHub OAuth login and user profiles
 - [ ] **Phase 3: Core Task Management** - Basic task CRUD operations
 - [ ] **Phase 4: Task Organization & Discovery** - Categories, search, and filtering
 - [ ] **Phase 5: File Attachments** - Upload and manage task attachments
@@ -53,11 +53,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 02-01-PLAN.md - Auth.js core infrastructure with GitHub OAuth and Prisma adapter
-- [ ] 02-02-PLAN.md - Authorization layer with DAL, middleware, and useDebounce hook
-- [ ] 02-03-PLAN.md - Login page, homepage CTA, and welcome/onboarding page
-- [ ] 02-04-PLAN.md - Profile settings with auto-save and logout functionality
-- [ ] 02-05-PLAN.md - Dashboard placeholder and full OAuth flow verification
+- [x] 02-01-PLAN.md - Auth.js core infrastructure with GitHub OAuth and Prisma adapter
+- [x] 02-02-PLAN.md - Authorization layer with DAL, middleware, and useDebounce hook
+- [x] 02-03-PLAN.md - Login page, homepage CTA, and welcome/onboarding page
+- [x] 02-04-PLAN.md - Profile settings with auto-save and logout functionality
+- [x] 02-05-PLAN.md - Dashboard placeholder and full OAuth flow verification
 
 ### Phase 3: Core Task Management
 **Goal**: Users can create, edit, and manage their tasks
@@ -121,9 +121,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 06-01-PLAN.md - Analytics foundation: database schema, event types, non-blocking tracker
-- [ ] 06-02-PLAN.md - GitHub API integration with rate limiting and caching
-- [ ] 06-03-PLAN.md - Export API endpoint, query functions, and data retention
+- [x] 06-01-PLAN.md - Analytics foundation: database schema, event types, non-blocking tracker
+- [x] 06-02-PLAN.md - GitHub API integration with rate limiting and caching
+- [x] 06-03-PLAN.md - Export API endpoint, query functions, and data retention
 
 ### Phase 7: Performance & Quality
 **Goal**: Application meets production quality standards for performance and user experience
@@ -164,7 +164,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Setup | 3/3 | Complete | 2026-01-24 |
-| 2. Authentication & Profiles | 0/5 | Planned | - |
+| 2. Authentication & Profiles | 5/5 | Complete | 2026-01-25 |
 | 3. Core Task Management | 0/TBD | Not started | - |
 | 4. Task Organization & Discovery | 0/TBD | Not started | - |
 | 5. File Attachments | 0/TBD | Not started | - |
