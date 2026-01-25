@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
 }
 
 // HEAD request for TUS protocol (upload info)
-export async function HEAD(_request: NextRequest) {
+export async function HEAD() {
   const userId = await getAuthenticatedUserId()
   if (!userId) {
     return new Response(null, { status: 401 })
@@ -153,7 +153,7 @@ export async function HEAD(_request: NextRequest) {
 }
 
 // PATCH for chunk uploads (TUS protocol)
-export async function PATCH(_request: NextRequest) {
+export async function PATCH() {
   const userId = await getAuthenticatedUserId()
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -167,7 +167,7 @@ export async function PATCH(_request: NextRequest) {
 }
 
 // OPTIONS for CORS
-export async function OPTIONS(_request: NextRequest) {
+export async function OPTIONS() {
   return new Response(null, {
     status: 200,
     headers: {
@@ -183,7 +183,7 @@ export async function OPTIONS(_request: NextRequest) {
 }
 
 // DELETE for canceling uploads
-export async function DELETE(_request: NextRequest) {
+export async function DELETE() {
   const userId = await getAuthenticatedUserId()
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
