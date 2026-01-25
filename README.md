@@ -9,6 +9,16 @@
 
 ---
 
+## Public Status
+
+[![Marketplace Frontend](https://img.shields.io/website?label=Marketplace%20Frontend&url=https%3A%2F%2Fmywork-marketplace.vercel.app&up_message=up&down_message=down)](https://mywork-marketplace.vercel.app)
+[![Marketplace API](https://img.shields.io/website?label=Marketplace%20API&url=https%3A%2F%2Fmywork-ai-production.up.railway.app%2Fhealth&up_message=healthy&down_message=down)](https://mywork-ai-production.up.railway.app/health)
+[![Task Tracker](https://img.shields.io/website?label=Task%20Tracker&url=https%3A%2F%2Fmywork-task-tracker.vercel.app%2Fapi%2Fhealth&up_message=healthy&down_message=down)](https://mywork-task-tracker.vercel.app)
+
+Live status page: https://mywork-marketplace.vercel.app/status
+
+---
+
 ## Overview
 
 MyWork is a productivity framework that orchestrates multiple AI tools into a cohesive development environment:
