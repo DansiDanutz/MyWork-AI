@@ -19,6 +19,8 @@ MyWork is a productivity framework that orchestrates multiple AI tools into a co
 - **n8n Integration** - Visual workflow automation with 2,709+ templates
 - **Brain/Knowledge Vault** - Self-learning system that grows with experience
 
+Strategy alignment guide: see `STRATEGY.md`.
+
 ## Architecture
 
 ```

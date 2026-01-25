@@ -1,0 +1,13 @@
+name: project-name
+type: product
+owner: your-name-or-team
+status: planned
+marketplace: false
+brain_contribution: true
+stack:
+  - python
+  - fastapi
+tags:
+  - template
+  - starter
+description: "Short description of the project."
