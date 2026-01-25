@@ -32,6 +32,7 @@ model User {
   sessions      Session[]
   analyticsEvents AnalyticsEvent[]
   tasks         Task[]
+  tags          Tag[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -110,8 +111,27 @@ model Task {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Tags relation (implicit m-n)
+  tags Tag[]
+
   // Composite indexes for performance
   @@index([userId, status])
   @@index([userId, createdAt])
   @@map("tasks")
+}
+
+// Tag model for task organization
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @db.VarChar(50)
+  color     String?  @db.VarChar(7) // Hex color like #3b82f6
+  userId    String   // Tags are per-user
+  tasks     Task[]   // Implicit m-n relation
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name]) // User can't have duplicate tag names
+  @@index([userId])
+  @@map("tags")
 }
