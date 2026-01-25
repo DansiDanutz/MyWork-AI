@@ -3,7 +3,7 @@ import { cache } from 'react'
 import { auth } from '@/shared/lib/auth'
 import { prisma } from '@/shared/lib/db'
 import { redirect } from 'next/navigation'
-import { Task, TaskStatus } from '@prisma/client'
+import { Task, TaskStatus, Tag, Prisma } from '@prisma/client'
 
 /**
  * Verify the current session and redirect to login if not authenticated.
@@ -126,5 +126,159 @@ export const getTaskCounts = cache(async (userId: string): Promise<{
   } catch (error) {
     console.error('Error fetching task counts:', error)
     return { todo: 0, inProgress: 0, done: 0, total: 0 }
+  }
+})
+
+/**
+ * Get all tags for a user
+ */
+export const getTagsByUser = cache(async (userId: string): Promise<Tag[]> => {
+  try {
+    const tags = await prisma.tag.findMany({
+      where: { userId },
+      orderBy: { name: 'asc' }
+    })
+    return tags
+  } catch (error) {
+    console.error('Error fetching user tags:', error)
+    return []
+  }
+})
+
+/**
+ * Full-text search tasks using PostgreSQL tsvector.
+ * Falls back to fuzzy trigram search if no FTS matches.
+ */
+export const searchTasks = cache(async (
+  userId: string,
+  query: string
+): Promise<(Task & { tags: Tag[], rank?: number })[]> => {
+  if (!query.trim()) {
+    return []
+  }
+
+  try {
+    // First try full-text search
+    const ftsResults = await prisma.$queryRaw<(Task & { rank: number })[]>`
+      SELECT id, title, description, status, "createdAt", "updatedAt", "userId",
+             ts_rank(search_vector, websearch_to_tsquery('english', ${query})) as rank
+      FROM tasks
+      WHERE "userId" = ${userId}
+        AND search_vector @@ websearch_to_tsquery('english', ${query})
+      ORDER BY rank DESC, "createdAt" DESC
+      LIMIT 50
+    `
+
+    // If FTS returns results, fetch with tags
+    if (ftsResults.length > 0) {
+      const taskIds = ftsResults.map(r => r.id)
+      const tasksWithTags = await prisma.task.findMany({
+        where: { id: { in: taskIds } },
+        include: { tags: true }
+      })
+
+      // Preserve FTS ranking order
+      const taskMap = new Map(tasksWithTags.map(t => [t.id, t]))
+      return ftsResults.map(r => ({
+        ...taskMap.get(r.id)!,
+        rank: r.rank
+      }))
+    }
+
+    // Fallback to fuzzy trigram search
+    const fuzzyResults = await prisma.$queryRaw<Task[]>`
+      SELECT id, title, description, status, "createdAt", "updatedAt", "userId"
+      FROM tasks
+      WHERE "userId" = ${userId}
+        AND (
+          title % ${query}
+          OR description % ${query}
+          OR title ILIKE ${'%' + query + '%'}
+          OR description ILIKE ${'%' + query + '%'}
+        )
+      ORDER BY
+        GREATEST(
+          similarity(title, ${query}),
+          COALESCE(similarity(description, ${query}), 0)
+        ) DESC,
+        "createdAt" DESC
+      LIMIT 50
+    `
+
+    if (fuzzyResults.length > 0) {
+      const taskIds = fuzzyResults.map(r => r.id)
+      const tasksWithTags = await prisma.task.findMany({
+        where: { id: { in: taskIds } },
+        include: { tags: true }
+      })
+      const taskMap = new Map(tasksWithTags.map(t => [t.id, t]))
+      return fuzzyResults.map(r => taskMap.get(r.id)!)
+    }
+
+    return []
+  } catch (error) {
+    console.error('Error searching tasks:', error)
+    return []
+  }
+})
+
+/**
+ * Filter tasks by status, tags, and date range.
+ * All filters are optional and combined with AND logic.
+ */
+export const filterTasks = cache(async (
+  userId: string,
+  filters: {
+    status?: TaskStatus[]
+    tagIds?: string[]
+    dateFrom?: Date
+    dateTo?: Date
+  }
+): Promise<(Task & { tags: Tag[] })[]> => {
+  try {
+    const where: Prisma.TaskWhereInput = {
+      userId,
+      ...(filters.status?.length && { status: { in: filters.status } }),
+      ...(filters.tagIds?.length && {
+        tags: {
+          some: { id: { in: filters.tagIds } }
+        }
+      }),
+      ...(filters.dateFrom && { createdAt: { gte: filters.dateFrom } }),
+      ...(filters.dateTo && { createdAt: { lte: filters.dateTo } }),
+    }
+
+    const tasks = await prisma.task.findMany({
+      where,
+      include: { tags: true },
+      orderBy: [
+        { status: 'asc' },
+        { createdAt: 'desc' }
+      ]
+    })
+
+    return tasks
+  } catch (error) {
+    console.error('Error filtering tasks:', error)
+    return []
+  }
+})
+
+/**
+ * Get task with tags for display.
+ */
+export const getTaskWithTags = cache(async (
+  taskId: string,
+  userId: string
+): Promise<(Task & { tags: Tag[] }) | null> => {
+  try {
+    const task = await prisma.task.findFirst({
+      where: { id: taskId, userId },
+      include: { tags: true }
+    })
+    return task
+  } catch (error) {
+    console.error('Error fetching task with tags:', error)
+    return null
   }
 })
