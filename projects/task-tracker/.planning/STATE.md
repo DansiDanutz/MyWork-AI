@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-01-24)
 
 ## Current Position
 
-Phase: 4 of 8 (Task Organization & Discovery)
-Plan: 5 of 5 in current phase
-Status: Complete ✓
-Last activity: 2026-01-25 — Completed Phase 4 (Task Organization & Discovery)
+Phase: 5 of 8 (File Attachments)
+Plan: 1 of 7 in current phase
+Status: In progress
+Last activity: 2026-01-26 — Completed 05-01-PLAN.md
 
-Progress: [████████░░] 75%
+Progress: [████████░░] 77%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 22
+- Total plans completed: 23
 - Average duration: 8 minutes
-- Total execution time: 3.9 hours
+- Total execution time: 4.0 hours
 
 **By Phase:**
 
@@ -31,11 +31,12 @@ Progress: [████████░░] 75%
 | Phase 2 | 5 | 77 min | 15 min |
 | Phase 3 | 4 | 22 min | 5.5 min |
 | Phase 4 | 5 | 30 min | 6 min |
+| Phase 5 | 1 | 4 min | 4 min |
 | Phase 6 | 3 | 10 min | 3 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-05 (5 min), 04-04 (3 min), 04-03 (11 min), 04-02 (6 min), 04-01 (5 min)
-- Trend: Phase 4 complete with consistent 3-6 min velocity per plan
+- Last 5 plans: 05-01 (4 min), 04-05 (5 min), 04-04 (3 min), 04-03 (11 min), 04-02 (6 min)
+- Trend: Phase 5 started with fast 4 min velocity, maintaining sub-6 min average
 
 *Updated after each plan completion*
 
@@ -95,6 +96,10 @@ Recent decisions affecting current work:
 - **UI-013** (2026-01-25): Context-aware empty states: different messages for no tasks vs no results
 - **PATTERN-008** (2026-01-25): Integrated wrapper pattern - Client component combines Server Component data
 - **QUALITY-001** (2026-01-25): Phase 4 validated for production through comprehensive manual testing
+- **FILE-001** (2026-01-26): Content-based MIME validation over client-provided types for security
+- **FILE-002** (2026-01-26): 25MB file size limit with 5MB Server Actions threshold (TUS protocol for >5MB)
+- **FILE-003** (2026-01-26): FileAttachment with denormalized userId for direct ownership checks
+- **FILE-004** (2026-01-26): Cascade delete file attachments when task deleted to prevent orphaned records
 - Framework validation approach: Task tracker serves as seed data for brain - every working pattern becomes an asset
 - GitHub integration mandatory: Essential for tracking which patterns actually work in real usage
 - Ship quickly for validation: MVP must be deployed and accessible for real user testing to validate brain learning
@@ -119,31 +124,19 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-25 (phase 4 completion)
-Stopped at: Completed Phase 4 (Task Organization & Discovery) ✓
+Last session: 2026-01-26 (phase 5 plan 01)
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None
-Next: Ready for Phase 5 (File Attachments) or Phase 7 (Performance & Quality)
+Next: 05-02 - File storage utilities and TUS upload endpoint
 
-**Phase 4 Complete:**
-- ✅ Tag model with implicit many-to-many Task relation
-- ✅ PostgreSQL full-text search with weighted tsvector (title=A, description=B)
-- ✅ pg_trgm extension for fuzzy search fallback
-- ✅ GIN indexes for optimal search performance
-- ✅ DAL functions: searchTasks, filterTasks, getTagsByUser, getTaskWithTags
-- ✅ Tag CRUD Server Actions with analytics tracking
-- ✅ nuqs URL state management for search/filter params
-- ✅ TaskSearchBar with 500ms debounced input
-- ✅ TaskFilters with status and tag multi-select
-- ✅ Two-column layout (sidebar + main content)
-- ✅ TagBadge component with color-coded pills
-- ✅ TagInput autocomplete with create-on-enter
-- ✅ Task creation/edit forms with tag management
-- ✅ EmptyState reusable component
-- ✅ TaskListWithFilters integrated discovery interface
-- ✅ Context-aware empty states (no tasks vs no results)
-- ✅ Complete task discovery page at /tasks
-- ✅ All features verified through human testing
-- 5 of 5 plans complete
+**Phase 5 Progress:**
+- ✅ FileAttachment model with Task cascade delete
+- ✅ Content-based MIME validation using magic bytes
+- ✅ File size validation (25MB limit, 5MB Server Actions threshold)
+- ✅ File upload dependencies installed (react-dropzone, file-type, sharp, tus-*)
+- ✅ Next.js configured with 5MB bodySizeLimit
+- ✅ Helper utilities: formatFileSize, shouldUseTusProtocol, getExtensionFromMime, isImageMime
+- 1 of 7 plans complete
 
 Config (if exists):
 {
