@@ -14,6 +14,7 @@ from models.user import User
 from models.product import Product
 from models.order import Order
 from config import settings
+from services.storage import generate_presigned_get
 
 router = APIRouter()
 
@@ -308,8 +309,18 @@ async def download_product(
     product_result = await db.execute(product_query)
     product = product_result.scalar_one_or_none()
 
-    # TODO: Generate signed download URL from R2
-    download_url = f"https://files.mywork.dev/{product.file_url}"
+    if not product or not product.package_url:
+        raise HTTPException(status_code=400, detail="Product file not available")
+
+    package_ref = product.package_url
+    if package_ref.startswith("http://") or package_ref.startswith("https://"):
+        download_url = package_ref
+    else:
+        try:
+            filename = package_ref.split("/")[-1]
+            download_url = generate_presigned_get(package_ref, filename=filename)
+        except ValueError as exc:
+            raise HTTPException(status_code=500, detail=str(exc))
 
     return {
         "download_url": download_url,

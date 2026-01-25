@@ -56,6 +56,7 @@ class Settings(BaseSettings):
     R2_SECRET_ACCESS_KEY: str = ""
     R2_BUCKET: str = "marketplace-files"
     R2_ENDPOINT: str = ""
+    R2_PUBLIC_URL: str = ""  # Optional public base URL for images
 
     # Email (Resend)
     RESEND_API_KEY: str = ""

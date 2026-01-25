@@ -58,6 +58,7 @@ export const productsApi = {
     documentation_url?: string
     preview_images?: string[]
     package_url?: string
+    package_size_bytes?: number | null
   }) => api.post('/products', data),
 
   update: (id: string, data: any) => api.put(`/products/${id}`, data),
@@ -189,6 +190,16 @@ export const analyticsApi = {
     api.get('/analytics/traffic-sources', { params }),
 }
 
+// Uploads API
+export const uploadsApi = {
+  createPresignedUrl: (data: {
+    kind: 'preview_image' | 'package'
+    filename: string
+    content_type: string
+    size_bytes: number
+  }) => api.post('/uploads/presign', data),
+}
+
 // Checkout API
 export const checkoutApi = {
   createSession: (data: { productId: string; licenseType: 'standard' | 'extended' }) =>
@@ -205,4 +216,3 @@ export const checkoutApi = {
 }
 
 export default api
-

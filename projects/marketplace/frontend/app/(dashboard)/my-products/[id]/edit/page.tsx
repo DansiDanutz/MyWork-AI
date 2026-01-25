@@ -1,13 +1,14 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useMemo, useState, useEffect } from "react"
 import { useRouter, useParams } from "next/navigation"
 import { useAuth } from "@clerk/nextjs"
-import { ChevronLeft, ChevronRight, Upload, X, Plus, Trash2, AlertCircle, Save } from "lucide-react"
+import { ChevronLeft, ChevronRight, Upload, X, Plus, AlertCircle, Save } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { productsApi, setAuthToken } from "@/lib/api"
+import { uploadFileWithPresign } from "@/lib/uploads"
 
 const PRODUCT_CATEGORIES = [
   { value: "saas-starters", label: "SaaS Starters" },
@@ -35,6 +36,19 @@ const COMMON_TECH_STACK = [
   "Docker", "Kubernetes", "AWS", "Vercel", "Stripe"
 ]
 
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024
+const MAX_PACKAGE_BYTES = 500 * 1024 * 1024
+
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"]
+const ALLOWED_PACKAGE_TYPES = [
+  "application/zip",
+  "application/x-zip-compressed",
+  "application/x-tar",
+  "application/gzip",
+  "application/x-gzip",
+  "application/octet-stream",
+]
+
 interface FormData {
   // Step 1: Basic Info
   title: string
@@ -58,6 +72,7 @@ interface FormData {
   // Step 4: Files & Media
   preview_images: string[]
   package_url: string
+  package_size_bytes: number | null
 }
 
 interface Product {
@@ -78,6 +93,7 @@ interface Product {
   documentation_url: string | null
   preview_images: string[]
   package_url: string | null
+  package_size_bytes?: number | null
   version: string
   status: string
 }
@@ -88,6 +104,27 @@ const STEP_TITLES = [
   "Technical Details",
   "Files & Media",
 ]
+
+type UploadStatus = "idle" | "uploading" | "done" | "error"
+
+interface ImageUpload {
+  id: string
+  name: string
+  size: number
+  progress: number
+  status: UploadStatus
+  url?: string
+  error?: string
+}
+
+interface PackageUpload {
+  name: string
+  size: number
+  progress: number
+  status: UploadStatus
+  fileKey?: string
+  error?: string
+}
 
 export default function EditProductPage() {
   const router = useRouter()
@@ -125,10 +162,14 @@ export default function EditProductPage() {
     // Step 4
     preview_images: [],
     package_url: "",
+    package_size_bytes: null,
   })
 
   const [tagInput, setTagInput] = useState("")
   const [techStackInput, setTechStackInput] = useState("")
+  const [imageUploads, setImageUploads] = useState<ImageUpload[]>([])
+  const [packageUpload, setPackageUpload] = useState<PackageUpload | null>(null)
+  const [uploadError, setUploadError] = useState<string | null>(null)
 
   // Fetch product data on mount
   useEffect(() => {
@@ -167,6 +208,7 @@ export default function EditProductPage() {
         documentation_url: product.documentation_url || "",
         preview_images: product.preview_images || [],
         package_url: product.package_url || "",
+        package_size_bytes: product.package_size_bytes || null,
       })
     } catch (err: any) {
       console.error("Failed to load product:", err)
@@ -181,6 +223,11 @@ export default function EditProductPage() {
       setLoading(true)
       setError(null)
       setSaveSuccess(false)
+
+      if (hasActiveUploads) {
+        setError("Please wait for uploads to finish")
+        return
+      }
 
       const token = await getToken()
       if (!token) {
@@ -225,6 +272,7 @@ export default function EditProductPage() {
         documentation_url: formData.documentation_url || null,
         preview_images: formData.preview_images,
         package_url: formData.package_url || null,
+        package_size_bytes: formData.package_size_bytes || null,
       }
 
       // If publishing, set status to active, otherwise keep draft
@@ -273,14 +321,165 @@ export default function EditProductPage() {
     setFormData({ ...formData, tech_stack: formData.tech_stack.filter(t => t !== tech) })
   }
 
-  function addImage(url: string) {
+  const hasActiveUploads = useMemo(() => {
+    const imagesUploading = imageUploads.some((upload) => upload.status === "uploading")
+    const packageUploading = packageUpload?.status === "uploading"
+    return imagesUploading || packageUploading
+  }, [imageUploads, packageUpload])
+
+  const formatBytes = (bytes: number) => {
+    if (!bytes) return "0 B"
+    const sizes = ["B", "KB", "MB", "GB"]
+    const i = Math.floor(Math.log(bytes) / Math.log(1024))
+    const value = bytes / Math.pow(1024, i)
+    return `${value.toFixed(value >= 10 || i === 0 ? 0 : 1)} ${sizes[i]}`
+  }
+
+  const createUploadId = () => {
+    if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+      return crypto.randomUUID()
+    }
+    return `${Date.now()}-${Math.random().toString(16).slice(2)}`
+  }
+
+  function addPreviewImageUrl() {
+    const url = prompt("Enter image URL:")
     if (url && !formData.preview_images.includes(url)) {
       setFormData({ ...formData, preview_images: [...formData.preview_images, url] })
     }
   }
 
-  function removeImage(url: string) {
+  function removePreviewImage(url: string) {
     setFormData({ ...formData, preview_images: formData.preview_images.filter(i => i !== url) })
+  }
+
+  const handleImageFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return
+    setUploadError(null)
+
+    const token = await getToken()
+    if (!token) {
+      setUploadError("Authentication required for uploads")
+      return
+    }
+    setAuthToken(token)
+
+    const fileList = Array.from(files)
+    for (const file of fileList) {
+      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        setUploadError("Only JPG, PNG, or WebP images are allowed")
+        continue
+      }
+      if (file.size > MAX_IMAGE_BYTES) {
+        setUploadError("Image exceeds 5MB limit")
+        continue
+      }
+
+      const id = createUploadId()
+      setImageUploads((prev) => [
+        ...prev,
+        { id, name: file.name, size: file.size, progress: 0, status: "uploading" },
+      ])
+
+      try {
+        const result = await uploadFileWithPresign(file, "preview_image", (progress) => {
+          setImageUploads((prev) =>
+            prev.map((upload) =>
+              upload.id === id ? { ...upload, progress } : upload
+            )
+          )
+        })
+
+        if (!result.publicUrl) {
+          throw new Error("Public URL not configured for image uploads")
+        }
+
+        setImageUploads((prev) =>
+          prev.map((upload) =>
+            upload.id === id
+              ? { ...upload, status: "done", progress: 100, url: result.publicUrl }
+              : upload
+          )
+        )
+        setFormData((prev) => ({
+          ...prev,
+          preview_images: [...prev.preview_images, result.publicUrl as string],
+        }))
+      } catch (err: any) {
+        console.error("Image upload failed:", err)
+        setImageUploads((prev) =>
+          prev.map((upload) =>
+            upload.id === id
+              ? { ...upload, status: "error", error: err?.message || "Upload failed" }
+              : upload
+          )
+        )
+        setUploadError(err?.message || "Failed to upload image")
+      }
+    }
+  }
+
+  const handlePackageFile = async (file: File | null) => {
+    if (!file) return
+    setUploadError(null)
+
+    const isAllowedType =
+      ALLOWED_PACKAGE_TYPES.includes(file.type) ||
+      file.name.toLowerCase().endsWith(".zip") ||
+      file.name.toLowerCase().endsWith(".tar") ||
+      file.name.toLowerCase().endsWith(".tar.gz") ||
+      file.name.toLowerCase().endsWith(".tgz")
+
+    if (!isAllowedType) {
+      setUploadError("Package must be a .zip or .tar archive")
+      return
+    }
+
+    if (file.size > MAX_PACKAGE_BYTES) {
+      setUploadError("Package exceeds 500MB limit")
+      return
+    }
+
+    const token = await getToken()
+    if (!token) {
+      setUploadError("Authentication required for uploads")
+      return
+    }
+    setAuthToken(token)
+
+    setPackageUpload({
+      name: file.name,
+      size: file.size,
+      progress: 0,
+      status: "uploading",
+    })
+
+    try {
+      const result = await uploadFileWithPresign(file, "package", (progress) => {
+        setPackageUpload((prev) =>
+          prev ? { ...prev, progress } : prev
+        )
+      })
+
+      setPackageUpload((prev) =>
+        prev
+          ? { ...prev, status: "done", progress: 100, fileKey: result.fileKey }
+          : prev
+      )
+      setFormData((prev) => ({
+        ...prev,
+        package_url: result.fileKey,
+        package_size_bytes: file.size,
+      }))
+    } catch (err: any) {
+      console.error("Package upload failed:", err)
+      setPackageUpload((prev) =>
+        prev
+          ? { ...prev, status: "error", error: err?.message || "Upload failed" }
+          : prev
+      )
+      setUploadError(err?.message || "Failed to upload package")
+    }
   }
 
   function nextStep() {
@@ -701,28 +900,60 @@ export default function EditProductPage() {
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Preview Images
               </label>
-              <div className="flex gap-2 mb-4">
-                <Input
-                  type="url"
-                  value={formData.preview_images[formData.preview_images.length - 1] || ""}
-                  onChange={(e) => {
-                    const newImages = [...formData.preview_images]
-                    newImages[newImages.length - 1] = e.target.value
-                    setFormData({ ...formData, preview_images: newImages })
+              <p className="text-xs text-gray-500 mb-3">
+                Upload JPG/PNG/WebP files up to 5MB each.
+              </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  id="preview-image-upload"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  multiple
+                  onChange={(event) => {
+                    handleImageFiles(event.target.files)
+                    event.currentTarget.value = ""
                   }}
-                  placeholder="https://example.com/screenshot.png"
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="hidden"
                 />
-                <Button
-                  type="button"
-                  onClick={() => addImage(formData.preview_images[formData.preview_images.length - 1] || "")}
-                  variant="outline"
-                >
-                  <Plus className="h-4 w-4" />
+                <Button asChild type="button" variant="outline" className="gap-2 border-dashed">
+                  <label htmlFor="preview-image-upload" className="cursor-pointer">
+                    <Upload className="h-4 w-4" />
+                    Upload Images
+                  </label>
+                </Button>
+                <Button onClick={addPreviewImageUrl} type="button" variant="ghost">
+                  Add by URL
                 </Button>
               </div>
+
+              {imageUploads.length > 0 && (
+                <div className="mt-4 space-y-3">
+                  {imageUploads.map((upload) => (
+                    <div key={upload.id} className="rounded-lg border border-gray-800 bg-gray-900/60 p-3">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-200">{upload.name}</span>
+                        <span className="text-gray-500">
+                          {upload.status === "uploading" ? `${upload.progress}%` : upload.status}
+                        </span>
+                      </div>
+                      <div className="mt-2 h-1.5 rounded-full bg-gray-800">
+                        <div
+                          className={`h-1.5 rounded-full ${
+                            upload.status === "error" ? "bg-red-600" : "bg-blue-600"
+                          }`}
+                          style={{ width: `${upload.progress}%` }}
+                        />
+                      </div>
+                      {upload.error && (
+                        <p className="mt-2 text-xs text-red-400">{upload.error}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {formData.preview_images.filter(Boolean).length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                   {formData.preview_images.filter(Boolean).map((url, idx) => (
                     <div key={idx} className="relative group">
                       <img
@@ -732,7 +963,7 @@ export default function EditProductPage() {
                       />
                       <button
                         type="button"
-                        onClick={() => removeImage(url)}
+                        onClick={() => removePreviewImage(url)}
                         className="absolute top-2 right-2 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition"
                       >
                         <X className="h-4 w-4 text-white" />
@@ -745,28 +976,113 @@ export default function EditProductPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Package URL (Download Link)
+                Package File
               </label>
-              <Input
-                type="url"
-                value={formData.package_url}
-                onChange={(e) => setFormData({ ...formData, package_url: e.target.value })}
-                placeholder="https://storage.example.com/product.zip"
-                className="bg-gray-800 border-gray-700 text-white"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                This is the download link buyers will receive after purchase
+              <p className="text-xs text-gray-500 mb-3">
+                Upload a .zip or .tar archive (up to 500MB).
               </p>
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  id="package-upload"
+                  type="file"
+                  accept=".zip,.tar,.tar.gz,.tgz"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0] || null
+                    handlePackageFile(file)
+                    event.currentTarget.value = ""
+                  }}
+                  className="hidden"
+                />
+                <Button asChild type="button" variant="outline" className="gap-2 border-dashed">
+                  <label htmlFor="package-upload" className="cursor-pointer">
+                    <Upload className="h-4 w-4" />
+                    Upload Package
+                  </label>
+                </Button>
+                {packageUpload?.status === "done" && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                      setPackageUpload(null)
+                      setFormData((prev) => ({
+                        ...prev,
+                        package_url: "",
+                        package_size_bytes: null,
+                      }))
+                    }}
+                  >
+                    Remove
+                  </Button>
+                )}
+              </div>
+
+              {packageUpload && (
+                <div className="mt-4 rounded-lg border border-gray-800 bg-gray-900/60 p-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-200">{packageUpload.name}</span>
+                    <span className="text-gray-500">
+                      {packageUpload.status === "uploading"
+                        ? `${packageUpload.progress}%`
+                        : packageUpload.status}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-xs text-gray-500 mt-1">
+                    <span>{formatBytes(packageUpload.size)}</span>
+                    {packageUpload.status === "done" && <span>Ready for download</span>}
+                  </div>
+                  <div className="mt-2 h-1.5 rounded-full bg-gray-800">
+                    <div
+                      className={`h-1.5 rounded-full ${
+                        packageUpload.status === "error" ? "bg-red-600" : "bg-green-600"
+                      }`}
+                      style={{ width: `${packageUpload.progress}%` }}
+                    />
+                  </div>
+                  {packageUpload.error && (
+                    <p className="mt-2 text-xs text-red-400">{packageUpload.error}</p>
+                  )}
+                </div>
+              )}
+
+                <div className="mt-4">
+                  <label className="block text-xs text-gray-500 mb-2">
+                    Or paste a hosted URL
+                  </label>
+                  <Input
+                  type="url"
+                  value={formData.package_url && formData.package_url.startsWith("http") ? formData.package_url : ""}
+                  onChange={(e) => {
+                    setFormData((prev) => ({
+                      ...prev,
+                      package_url: e.target.value,
+                      package_size_bytes: null,
+                    }))
+                    if (e.target.value) {
+                      setPackageUpload(null)
+                    }
+                  }}
+                  placeholder="https://storage.example.com/product.zip"
+                  className="bg-gray-800 border-gray-700 text-white"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    This link is used for downloads if you provide a hosted URL.
+                  </p>
+                </div>
+                {!packageUpload && formData.package_url && !formData.package_url.startsWith("http") && (
+                  <p className="mt-2 text-xs text-gray-500">
+                    Stored package: {formData.package_url.split("/").slice(-1)[0]}
+                  </p>
+                )}
             </div>
 
-            <Card className="bg-yellow-950/20 border-yellow-900">
-              <CardContent className="p-4">
-                <p className="text-sm text-yellow-300">
-                  <strong>Note:</strong> For production, file uploads will be handled through Cloudflare R2 integration.
-                  For now, you can use direct URLs to your files.
-                </p>
-              </CardContent>
-            </Card>
+            {uploadError && (
+              <Card className="border-red-900 bg-red-950/20">
+                <CardContent className="p-4">
+                  <p className="text-sm text-red-400">{uploadError}</p>
+                </CardContent>
+              </Card>
+            )}
           </CardContent>
         </Card>
       )}
@@ -785,7 +1101,7 @@ export default function EditProductPage() {
         <div className="flex gap-2">
           <Button
             onClick={() => handleSubmit(false)}
-            disabled={loading}
+            disabled={loading || hasActiveUploads}
             variant="outline"
             className="gap-2"
           >
@@ -801,7 +1117,7 @@ export default function EditProductPage() {
           ) : (
             <Button
               onClick={() => handleSubmit(true)}
-              disabled={loading}
+              disabled={loading || hasActiveUploads}
               className="gap-2"
             >
               Publish Product

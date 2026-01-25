@@ -31,6 +31,9 @@ class ProductBase(BaseModel):
     requirements: Optional[str] = None
     demo_url: Optional[str] = None
     documentation_url: Optional[str] = None
+    preview_images: Optional[List[str]] = None
+    package_url: Optional[str] = None
+    package_size_bytes: Optional[int] = None
 
 
 class ProductCreate(ProductBase):
@@ -45,6 +48,15 @@ class ProductUpdate(BaseModel):
     price: Optional[float] = Field(None, ge=0, le=10000)
     tags: Optional[List[str]] = None
     tech_stack: Optional[List[str]] = None
+    subcategory: Optional[str] = None
+    license_type: Optional[str] = None
+    framework: Optional[str] = None
+    requirements: Optional[str] = None
+    demo_url: Optional[str] = None
+    documentation_url: Optional[str] = None
+    preview_images: Optional[List[str]] = None
+    package_url: Optional[str] = None
+    package_size_bytes: Optional[int] = None
 
 
 class ProductResponse(ProductBase):
@@ -58,6 +70,8 @@ class ProductResponse(ProductBase):
     rating_count: int
     version: str
     preview_images: Optional[List[str]] = None
+    package_url: Optional[str] = None
+    package_size_bytes: Optional[int] = None
     created_at: datetime
     updated_at: datetime
 
