@@ -18,7 +18,9 @@
 import type { checkRateLimitStatus, enrichUser } from '../github'
 
 // Type tests (compile-time only)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type CheckRateLimitType = typeof checkRateLimitStatus
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type EnrichUserType = typeof enrichUser
 
 // If this compiles, the exports are working correctly

@@ -3,6 +3,7 @@ import { after } from 'next/server'
 import { prisma } from '@/shared/lib/db'
 import { auth } from '@/shared/lib/auth'
 import { AnalyticsEventSchema, type AnalyticsEvent } from './types'
+import type { Prisma } from '@prisma/client'
 
 /**
  * Track an analytics event asynchronously.
@@ -18,7 +19,7 @@ export async function trackEventAsync(event: AnalyticsEvent): Promise<void> {
       data: {
         userId: validatedEvent.userId,
         eventType: validatedEvent.type,
-        properties: validatedEvent.properties as any,
+        properties: validatedEvent.properties as Prisma.JsonObject,
       }
     })
   } catch (error) {

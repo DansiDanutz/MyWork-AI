@@ -15,7 +15,7 @@ import { useEffect, useCallback, useRef } from 'react'
  *   saveToServer(value)
  * }, 3000)
  */
-export function useDebounce<T extends (...args: any[]) => any>(
+export function useDebounce<T extends (...args: never[]) => unknown>(
   callback: T,
   delay: number = 3000
 ): (...args: Parameters<T>) => void {
