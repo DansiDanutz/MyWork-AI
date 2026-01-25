@@ -1,2 +1,5 @@
 export { UserMenu } from './UserMenu'
 export { ProfileForm } from './ProfileForm'
+export { TagBadge } from './TagBadge'
+export { TagInput } from './TagInput'
+export { TaskFormWithTags } from './TaskFormWithTags'

@@ -1,7 +1,14 @@
-import { TaskForm } from '@/shared/components/TaskForm'
+import { TaskFormWithTags } from '@/shared/components/TaskFormWithTags'
+import { getTagsByUser, verifySession } from '@/shared/lib/dal'
 import Link from 'next/link'
 
-export default function NewTaskPage() {
+export default async function NewTaskPage() {
+  // Verify authentication and get user ID
+  const { userId } = await verifySession()
+
+  // Fetch available tags for autocomplete
+  const tags = await getTagsByUser(userId)
+
   return (
     <div className="max-w-2xl">
       {/* Page header */}
@@ -42,7 +49,7 @@ export default function NewTaskPage() {
       </div>
 
       {/* Task form component */}
-      <TaskForm />
+      <TaskFormWithTags availableTags={tags} />
     </div>
   )
 }
