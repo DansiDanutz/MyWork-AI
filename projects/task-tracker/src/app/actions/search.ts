@@ -29,7 +29,7 @@ type ActionResult<T = void> =
  */
 export async function searchTasksAction(
   query: string
-): Promise<ActionResult<any[]>> {
+): Promise<ActionResult<unknown[]>> {
   try {
     const user = await getUser()
     if (!user) {
@@ -74,7 +74,7 @@ export async function filterTasksAction(
     dateFrom?: string
     dateTo?: string
   }
-): Promise<ActionResult<any[]>> {
+): Promise<ActionResult<unknown[]>> {
   try {
     const user = await getUser()
     if (!user) {
@@ -145,7 +145,7 @@ export async function getFilteredTasksAction(params: {
   q?: string
   status?: string[]
   tagIds?: string[]
-}): Promise<ActionResult<any[]>> {
+}): Promise<ActionResult<unknown[]>> {
   try {
     const user = await getUser()
     if (!user) {
