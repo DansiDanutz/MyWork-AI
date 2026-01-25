@@ -28,7 +28,12 @@ Be respectful and constructive. We're all here to build something great together
    cp .env.example .env
    # Add your API keys
    ```
-4. Verify setup:
+4. Install pre-commit hooks:
+   ```bash
+   pip install pre-commit
+   pre-commit install
+   ```
+5. Verify setup:
    ```bash
    python tools/mw.py doctor
    ```

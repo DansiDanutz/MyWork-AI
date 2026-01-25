@@ -45,6 +45,7 @@ dev = [
     "black>=23.0.0",
     "ruff>=0.1.0",
     "mypy>=1.7.0",
+    "pre-commit>=3.7.0",
 ]
 all = [
     "fastapi>=0.109.0",
@@ -54,6 +55,7 @@ all = [
     "black>=23.0.0",
     "ruff>=0.1.0",
     "mypy>=1.7.0",
+    "pre-commit>=3.7.0",
 ]
 
 [project.scripts]
