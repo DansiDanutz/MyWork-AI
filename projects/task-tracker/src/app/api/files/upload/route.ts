@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import path from 'path'
 import { auth } from '@/shared/lib/auth'
 import { prisma } from '@/shared/lib/db'
 import { validateFileType, isImageMime, getExtensionFromMime, MAX_FILE_SIZE } from '@/shared/lib/file-validation'
@@ -135,7 +134,7 @@ export async function POST(request: NextRequest) {
 }
 
 // HEAD request for TUS protocol (upload info)
-export async function HEAD(request: NextRequest) {
+export async function HEAD(_request: NextRequest) {
   const userId = await getAuthenticatedUserId()
   if (!userId) {
     return new Response(null, { status: 401 })
@@ -154,7 +153,7 @@ export async function HEAD(request: NextRequest) {
 }
 
 // PATCH for chunk uploads (TUS protocol)
-export async function PATCH(request: NextRequest) {
+export async function PATCH(_request: NextRequest) {
   const userId = await getAuthenticatedUserId()
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -168,7 +167,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 // OPTIONS for CORS
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS(_request: NextRequest) {
   return new Response(null, {
     status: 200,
     headers: {
@@ -184,7 +183,7 @@ export async function OPTIONS(request: NextRequest) {
 }
 
 // DELETE for canceling uploads
-export async function DELETE(request: NextRequest) {
+export async function DELETE(_request: NextRequest) {
   const userId = await getAuthenticatedUserId()
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

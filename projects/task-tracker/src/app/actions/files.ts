@@ -6,7 +6,6 @@ import { revalidatePath } from 'next/cache'
 import {
   validateFileType,
   validateFileSize,
-  isImageMime,
   getExtensionFromMime,
   SERVER_ACTION_SIZE_LIMIT,
 } from '@/shared/lib/file-validation'
