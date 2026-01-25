@@ -1,5 +1,6 @@
 import 'server-only'
-import { after } from 'next/server'
+// TODO: Enable after() when Next.js version supports it
+// import { after } from 'next/server'
 import { prisma } from '@/shared/lib/db'
 import { auth } from '@/shared/lib/auth'
 import { AnalyticsEventSchema, type AnalyticsEvent } from './types'
@@ -30,7 +31,7 @@ export async function trackEventAsync(event: AnalyticsEvent): Promise<void> {
 
 /**
  * Track an analytics event without blocking the response.
- * Uses Next.js 15's after() API to defer database writes.
+ * TODO: Uses fire-and-forget until Next.js after() is available.
  *
  * @param event - The analytics event to track
  *
@@ -52,8 +53,9 @@ export async function trackEventAsync(event: AnalyticsEvent): Promise<void> {
  * ```
  */
 export function trackEvent(event: AnalyticsEvent): void {
-  after(async () => {
-    await trackEventAsync(event)
+  // Fire-and-forget pattern - don't await to avoid blocking response
+  trackEventAsync(event).catch((error) => {
+    console.error('[Analytics] Background tracking failed:', error)
   })
 }
 
