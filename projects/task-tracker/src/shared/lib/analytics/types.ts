@@ -88,14 +88,27 @@ const FileUploadedEventSchema = z.object({
   })
 })
 
-// Search events (for future phases)
+// Search events
 const SearchPerformedEventSchema = z.object({
   type: z.literal('search_performed'),
   userId: z.string(),
   properties: z.object({
     query: z.string(),
-    resultsCount: z.number(),
-    filters: z.record(z.string(), z.unknown()).optional(),
+    resultCount: z.number(),
+    searchType: z.string(),
+  })
+})
+
+const FilterAppliedEventSchema = z.object({
+  type: z.literal('filter_applied'),
+  userId: z.string(),
+  properties: z.object({
+    filters: z.object({
+      status: z.number(),
+      tags: z.number(),
+      hasDateRange: z.boolean(),
+    }),
+    resultCount: z.number(),
   })
 })
 
@@ -136,6 +149,7 @@ export const AnalyticsEventSchema = z.discriminatedUnion('type', [
   TagAddedToTaskEventSchema,
   FileUploadedEventSchema,
   SearchPerformedEventSchema,
+  FilterAppliedEventSchema,
   LoginEventSchema,
   LogoutEventSchema,
   ProfileUpdatedEventSchema,
@@ -156,6 +170,7 @@ export {
   TagAddedToTaskEventSchema,
   FileUploadedEventSchema,
   SearchPerformedEventSchema,
+  FilterAppliedEventSchema,
   LoginEventSchema,
   LogoutEventSchema,
   ProfileUpdatedEventSchema,
