@@ -301,10 +301,6 @@ async def download_product(
     if order.download_count >= max_downloads:
         raise HTTPException(status_code=400, detail="Download limit reached")
 
-    # Increment download count
-    order.download_count += 1
-    await db.commit()
-
     # Get product
     product_query = select(Product).where(Product.id == order.product_id)
     product_result = await db.execute(product_query)
@@ -322,6 +318,11 @@ async def download_product(
             download_url = generate_presigned_get(package_ref, filename=filename)
         except ValueError as exc:
             raise HTTPException(status_code=500, detail=str(exc))
+
+    # Increment download count only after we have a URL.
+    order.download_count += 1
+    order.download_expires_at = datetime.utcnow() + timedelta(minutes=10)
+    await db.commit()
 
     return {
         "download_url": download_url,

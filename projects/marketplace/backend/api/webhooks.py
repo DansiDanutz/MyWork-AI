@@ -5,6 +5,7 @@ Webhook handlers for external services.
 import json
 import stripe
 from datetime import datetime, timedelta
+from decimal import Decimal
 from fastapi import APIRouter, Request, HTTPException, Header, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -106,17 +107,53 @@ async def handle_payment_success(data: dict, db: AsyncSession):
     metadata = data.get("metadata", {})
     order_id = metadata.get("order_id")
 
-    if not order_id:
-        return  # Not our order
-
-    query = select(Order).where(Order.id == order_id)
-    result = await db.execute(query)
-    order = result.scalar_one_or_none()
+    order = None
+    if order_id:
+        result = await db.execute(select(Order).where(Order.id == order_id))
+        order = result.scalar_one_or_none()
+    if not order and payment_intent_id:
+        result = await db.execute(
+            select(Order).where(Order.stripe_payment_intent_id == payment_intent_id)
+        )
+        order = result.scalar_one_or_none()
 
     if not order:
+        product_id = metadata.get("product_id")
+        buyer_id = metadata.get("buyer_id")
+        seller_id = metadata.get("seller_id")
+        license_type = metadata.get("license_type", "standard")
+        amount_cents = data.get("amount")
+        price = metadata.get("price")
+        if not (product_id and buyer_id and seller_id) or (amount_cents is None and price is None):
+            return
+        if amount_cents is not None:
+            amount = Decimal(str(amount_cents)) / Decimal("100")
+        else:
+            amount = Decimal(str(price))
+        platform_fee = amount * (Decimal(str(settings.PLATFORM_FEE_PERCENT)) / Decimal("100"))
+        order = Order(
+            buyer_id=buyer_id,
+            seller_id=seller_id,
+            product_id=product_id,
+            amount=amount,
+            platform_fee=platform_fee,
+            stripe_fee=Decimal("0"),
+            seller_amount=amount - platform_fee,
+            license_type=license_type if license_type != "unlimited" else "enterprise",
+            status="completed",
+            payment_status="completed",
+            stripe_payment_intent_id=payment_intent_id,
+            stripe_charge_id=data.get("latest_charge"),
+            download_count=0,
+            escrow_release_at=datetime.utcnow() + timedelta(days=settings.ESCROW_DAYS),
+        )
+        db.add(order)
+        await db.commit()
         return
 
     # Update order status
+    if order.status == "completed" and order.payment_status == "completed":
+        return
     order.status = "completed"
     order.payment_status = "completed"
     order.stripe_payment_intent_id = payment_intent_id
@@ -136,15 +173,22 @@ async def handle_payment_failed(data: dict, db: AsyncSession):
     """Handle failed payment."""
     metadata = data.get("metadata", {})
     order_id = metadata.get("order_id")
+    payment_intent_id = data.get("id")
 
-    if not order_id:
-        return
-
-    query = select(Order).where(Order.id == order_id)
-    result = await db.execute(query)
-    order = result.scalar_one_or_none()
+    order = None
+    if order_id:
+        result = await db.execute(select(Order).where(Order.id == order_id))
+        order = result.scalar_one_or_none()
+    if not order and payment_intent_id:
+        result = await db.execute(
+            select(Order).where(Order.stripe_payment_intent_id == payment_intent_id)
+        )
+        order = result.scalar_one_or_none()
 
     if not order:
+        return
+
+    if order.payment_status == "completed":
         return
 
     order.status = "failed"

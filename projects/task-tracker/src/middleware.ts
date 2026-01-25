@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { auth } from '@/shared/lib/auth'
 
 // Routes that require authentication
 const protectedRoutes = ['/settings', '/dashboard', '/tasks']
@@ -11,9 +10,10 @@ const authRoutes = ['/login']
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Get session (lightweight check via auth())
-  const session = await auth()
-  const isAuthenticated = !!session?.user
+  // Lightweight session check via cookie only (Edge Runtime compatible)
+  const sessionToken = request.cookies.get('authjs.session-token')?.value ||
+                      request.cookies.get('__Secure-authjs.session-token')?.value
+  const isAuthenticated = !!sessionToken
 
   // Check if current path is protected
   const isProtectedRoute = protectedRoutes.some(route =>
