@@ -103,16 +103,22 @@ Plans:
 **Requirements**: FILE-01, FILE-02, FILE-03, FILE-04, FILE-05, FILE-06, FILE-07, SYS-04, SYS-05
 **Success Criteria** (what must be TRUE):
   1. User can attach files to tasks using drag and drop
-  2. User can upload multiple files per task (up to 10MB each)
+  2. User can upload multiple files per task (up to 25MB each)
   3. User can view basic previews for images and documents
   4. User can download attached files
   5. User can remove file attachments from tasks
   6. System validates file types and enforces size limits with clear error messages
   7. File uploads handle network interruptions without data loss
-**Plans**: TBD
+**Plans**: 7 plans
 
 Plans:
-- [ ] 05-01: TBD during planning
+- [ ] 05-01-PLAN.md - Database schema (FileAttachment model), file validation utilities, and dependency setup
+- [ ] 05-02-PLAN.md - File storage utilities and TUS upload endpoint for resumable uploads
+- [ ] 05-03-PLAN.md - Thumbnail generator, Server Actions for files, and download endpoint
+- [ ] 05-04-PLAN.md - FileDropzone and FileUploadProgress UI components
+- [ ] 05-05-PLAN.md - FileThumbnail, FileList, FilePreview display components
+- [ ] 05-06-PLAN.md - Task UI integration (TaskCard indicators, edit form file management)
+- [ ] 05-07-PLAN.md - Human verification of complete file attachment system
 
 ### Phase 6: GitHub Integration & Analytics
 **Goal**: System captures usage patterns for brain learning without blocking user operations
@@ -174,7 +180,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 2. Authentication & Profiles | 5/5 | Complete | 2026-01-25 |
 | 3. Core Task Management | 4/4 | Complete | 2026-01-25 |
 | 4. Task Organization & Discovery | 5/5 | Complete | 2026-01-25 |
-| 5. File Attachments | 0/TBD | Not started | - |
+| 5. File Attachments | 0/7 | Planned | - |
 | 6. GitHub Integration & Analytics | 3/3 | Complete | 2026-01-25 |
 | 7. Performance & Quality | 0/TBD | Not started | - |
 | 8. Deployment & Validation | 0/TBD | Not started | - |
