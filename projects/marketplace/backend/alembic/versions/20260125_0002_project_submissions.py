@@ -1,7 +1,7 @@
 """add project submissions
 
 Revision ID: 20260125_0002
-Revises: 20260124_0001
+Revises: 0001
 Create Date: 2026-01-25
 """
 
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = "20260125_0002"
-down_revision = "20260124_0001"
+down_revision = "0001"
 branch_labels = None
 depends_on = None
 
