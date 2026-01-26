@@ -49,16 +49,16 @@ def test_brain_webhook():
 
             if status == 200:
                 result = json.loads(body)
-                print(f"\n✅ SUCCESS: Event received!")
+                print(f"\n[SUCCESS] Event received!")
                 print(f"   Event ID: {result.get('event_id', 'N/A')}")
                 print(f"   Processed at: {result.get('processed_at', 'N/A')}")
                 return True
             else:
-                print(f"\n❌ FAILED: Unexpected status code {status}")
+                print(f"\n[FAILED] Unexpected status code {status}")
                 return False
 
     except Exception as e:
-        print(f"\n❌ ERROR: {e}")
+        print(f"\n[ERROR] {e}")
         return False
 
 if __name__ == "__main__":
