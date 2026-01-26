@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-24)
 ## Current Position
 
 Phase: 7 of 8 (Performance & Quality)
-Plan: 1 of 5 in current phase
+Plan: 2 of 5 in current phase
 Status: In progress
-Last activity: 2026-01-26 — Completed plan 07-01 (Route Loading States)
+Last activity: 2026-01-26 — Completed plan 07-02 (Code Splitting)
 
-Progress: [████████▓░] 88%
+Progress: [████████▓░] 89%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 32
-- Average duration: 6.3 minutes
-- Total execution time: 5.1 hours
+- Total plans completed: 33
+- Average duration: 6.2 minutes
+- Total execution time: 5.2 hours
 
 **By Phase:**
 
@@ -33,11 +33,11 @@ Progress: [████████▓░] 88%
 | Phase 4 | 5 | 30 min | 6 min |
 | Phase 5 | 7 | 30 min | 4.3 min |
 | Phase 6 | 3 | 10 min | 3 min |
-| Phase 7 | 1 | 3 min | 3 min |
+| Phase 7 | 2 | 8 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 07-01 (3 min), 05-07 (2 min), 05-06 (4 min), 05-05 (6 min), 05-04 (5 min)
-- Trend: Consistent 3-4 min execution times for straightforward implementation plans
+- Last 5 plans: 07-02 (5 min), 07-01 (3 min), 05-07 (2 min), 05-06 (4 min), 05-05 (6 min)
+- Trend: Steady 3-5 min execution for focused implementation tasks
 
 *Updated after each plan completion*
 
@@ -105,6 +105,9 @@ Recent decisions affecting current work:
 - **SECURITY-001** (2026-01-25): Verify ownership on every download request via database query
 - **LOADING-001** (2026-01-26): Route-level loading.tsx over component-level Suspense boundaries for simpler automatic behavior
 - **SKELETON-001** (2026-01-26): Match actual layout structure in skeleton screens for visual continuity and reduced CLS
+- **LAZY-001** (2026-01-26): Use next/dynamic with ssr: false for file components (browser APIs + heavy libraries)
+- **LAZY-002** (2026-01-26): Show skeleton loading fallbacks during component load to prevent layout shift
+- **BUNDLE-001** (2026-01-26): Use optimizePackageImports for @heroicons/react to tree-shake unused icons
 - Framework validation approach: Task tracker serves as seed data for brain - every working pattern becomes an asset
 - GitHub integration mandatory: Essential for tracking which patterns actually work in real usage
 - Ship quickly for validation: MVP must be deployed and accessible for real user testing to validate brain learning
@@ -115,7 +118,13 @@ None yet.
 
 ### Blockers/Concerns
 
-None currently. (Build issue resolved by upgrading Next.js to 15.5.9.)
+**Production build error (pre-existing):**
+- Production builds fail with "Html should not be imported outside pages/_document" error
+- Error affects /500 error page generation
+- Confirmed to exist before Phase 7 Plan 02 changes
+- Development server works correctly
+- Does not affect lazy loading functionality
+- Should be investigated before production deployment
 
 **User setup still required for testing:**
 - GitHub OAuth app must be created and credentials added to .env
@@ -124,26 +133,23 @@ None currently. (Build issue resolved by upgrading Next.js to 15.5.9.)
 
 ## Session Continuity
 
-Last session: 2026-01-26 (phase 7 plan 01)
-Stopped at: Completed plan 07-01 (Route Loading States)
+Last session: 2026-01-26 (phase 7 plan 02)
+Stopped at: Completed plan 07-02 (Code Splitting)
 Resume file: None
-Next: Continue Phase 7 with plan 07-02 (Code Splitting)
+Next: Continue Phase 7 with plan 07-03 (Image Optimization)
 
-**Phase 7 Plan 01 Complete:**
-- ✅ TaskCardSkeleton component (status, title, tags, description, actions)
-- ✅ TaskListSkeleton component (3 sections with 3 cards each)
-- ✅ Export barrel for skeleton components
-- ✅ loading.tsx for app shell (centered spinner)
-- ✅ loading.tsx for dashboard (header, stats grid, quick actions)
-- ✅ loading.tsx for tasks page (search, filters, task list)
-- ✅ loading.tsx for task edit (breadcrumbs, form fields)
-- ✅ loading.tsx for task new (header, form fields)
-- ✅ loading.tsx for settings (sidebar, content)
-- ✅ loading.tsx for profile settings (avatar, name, bio)
-- ✅ All skeletons match actual page layouts
-- ✅ Dark mode support via Tailwind dark: variants
+**Phase 7 Plan 02 Complete:**
+- ✅ LazyFileDropzone wrapper with loading fallback
+- ✅ LazyFileList wrapper with loading fallback
+- ✅ Export FileDropzoneProps interface
+- ✅ Updated TaskEditFormWithTags to use lazy components
+- ✅ Updated component index exports
+- ✅ Next.js config optimizePackageImports for @heroicons/react
+- ✅ Next.js config serverExternalPackages for sharp
+- ✅ Fixed TypeScript error (storedFilename vs filePath)
 - ✅ TypeScript compilation passes
-- 2 tasks, 2 commits (294430b, 5c6f762)
+- ⚠️ Production build error (pre-existing, documented)
+- 3 tasks, 3 commits (2c46656, e543c86, 6a5284c)
 
 Config (if exists):
 {
