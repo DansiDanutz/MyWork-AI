@@ -13,7 +13,7 @@
 
 [![Marketplace Frontend](https://img.shields.io/website?label=Marketplace%20Frontend&url=https%3A%2F%2Fmywork-marketplace.vercel.app&up_message=up&down_message=down)](https://mywork-marketplace.vercel.app)
 [![Marketplace API](https://img.shields.io/website?label=Marketplace%20API&url=https%3A%2F%2Fmywork-ai-production.up.railway.app%2Fhealth&up_message=healthy&down_message=down)](https://mywork-ai-production.up.railway.app/health)
-[![Task Tracker](https://img.shields.io/website?label=Task%20Tracker&url=https%3A%2F%2Fmywork-task-tracker.vercel.app%2Fapi%2Fhealth&up_message=healthy&down_message=down)](https://mywork-task-tracker.vercel.app)
+[![Task Tracker](https://img.shields.io/website?label=Task%20Tracker&url=https%3A%2F%2Ftask-tracker-weld-delta.vercel.app%2Fapi%2Fhealth&up_message=healthy&down_message=down)](https://task-tracker-weld-delta.vercel.app)
 
 Live status page: https://mywork-marketplace.vercel.app/status
 
@@ -89,6 +89,17 @@ cp .env.example .env
 # Verify installation
 python tools/mw.py status
 ```
+
+### Configure Git Identity
+
+Set your Git author once so commits (including deploy triggers) succeed:
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+```
+
+Prefer repo-specific settings? Run the same commands inside `MyWork-AI` without the `--global` flag.
 
 ### Your First Project
 
