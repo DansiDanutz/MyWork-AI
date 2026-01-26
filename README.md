@@ -190,6 +190,31 @@ python tools/mw.py <command>
 | `mw n8n list` | List n8n workflows |
 | `mw n8n status` | Check n8n connection |
 
+### Autocoder Installation
+
+Install the MyWork-branded Autocoder UI into the repo-managed `.autocoder/` directory:
+
+```bash
+python tools/autocoder_setup.py install
+# (re-run with `update` whenever you want the latest features)
+```
+
+The UI starts at `http://127.0.0.1:8889` by default. Launch it via:
+
+```bash
+python tools/autocoder_api.py ui
+```
+
+Want to use the full launcher (for advanced flags or dev mode)? Run:
+
+```bash
+cd .autocoder
+python start_ui.py            # production build, auto-opens http://127.0.0.1:8889
+python start_ui.py --dev      # Vite dev server + FastAPI backend
+```
+
+Set a different install path or port by editing `.env` (`AUTOCODER_ROOT`, `AUTOCODER_PORT`).
+
 ### Autocoder Access Options
 
 **Option 1: mw CLI (recommended)**
@@ -251,7 +276,7 @@ mw ac service logs -f
 If the server is not running, confirm:
 - `AUTOCODER_ROOT` points to the correct Autocoder folder
 - the Autocoder venv exists (`$AUTOCODER_ROOT/venv`)
-- port `8888` is not already in use
+- port `AUTOCODER_PORT` (default 8889) is not already in use
 
 ---
 
@@ -426,3 +451,5 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 ---
 
 Built with AI, for AI-assisted development.
+-   t r i g g e r   d e p l o y  
+ 
