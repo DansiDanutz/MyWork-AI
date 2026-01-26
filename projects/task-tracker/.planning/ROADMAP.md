@@ -148,10 +148,13 @@ Plans:
   3. Application works responsively on both mobile and desktop devices
   4. Page transitions are smooth and instant
   5. No visual layout shifts during loading
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 07-01: TBD during planning
+- [ ] 07-01-PLAN.md - Skeleton loading screens for all routes
+- [ ] 07-02-PLAN.md - Lazy loading for heavy file components
+- [ ] 07-03-PLAN.md - Mobile responsiveness with swipe gestures
+- [ ] 07-04-PLAN.md - Core Web Vitals monitoring and verification
 
 ### Phase 8: Deployment & Validation
 **Goal**: Application is deployed and accessible for real user testing
@@ -182,5 +185,5 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 4. Task Organization & Discovery | 5/5 | Complete | 2026-01-25 |
 | 5. File Attachments | 7/7 | Complete | 2026-01-26 |
 | 6. GitHub Integration & Analytics | 3/3 | Complete | 2026-01-25 |
-| 7. Performance & Quality | 0/TBD | Not started | - |
+| 7. Performance & Quality | 0/4 | Planned | - |
 | 8. Deployment & Validation | 0/TBD | Not started | - |
