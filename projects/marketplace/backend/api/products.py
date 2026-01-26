@@ -38,6 +38,23 @@ class ProductBase(BaseModel):
     package_size_bytes: Optional[int] = None
 
 
+class ProductPublicBase(BaseModel):
+    title: str = Field(..., min_length=10, max_length=200)
+    description: str = Field(..., min_length=100)
+    short_description: Optional[str] = Field(None, max_length=500)
+    category: str
+    subcategory: Optional[str] = None
+    tags: Optional[List[str]] = None
+    price: float = Field(..., ge=0, le=10000)
+    license_type: str = "standard"
+    tech_stack: Optional[List[str]] = None
+    framework: Optional[str] = None
+    requirements: Optional[str] = None
+    demo_url: Optional[str] = None
+    documentation_url: Optional[str] = None
+    preview_images: Optional[List[str]] = None
+
+
 class ProductCreate(ProductBase):
     pass
 
@@ -81,8 +98,33 @@ class ProductResponse(ProductBase):
         from_attributes = True
 
 
+class ProductPublicResponse(ProductPublicBase):
+    id: str
+    slug: str
+    seller_id: str
+    status: str
+    views: int
+    sales: int
+    rating_average: float
+    rating_count: int
+    version: str
+    preview_images: Optional[List[str]] = None
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class ProductListResponse(BaseModel):
     products: List[ProductResponse]
+    total: int
+    page: int
+    page_size: int
+
+
+class ProductPublicListResponse(BaseModel):
+    products: List[ProductPublicResponse]
     total: int
     page: int
     page_size: int
@@ -113,11 +155,15 @@ def _resolve_preview_images(images: Optional[List[str]]) -> list[str]:
     return resolved
 
 
-def _product_response(product: Product) -> ProductResponse:
+def _public_product_response(product: Product) -> ProductPublicResponse:
+    response = ProductPublicResponse.model_validate(product)
+    response.preview_images = _resolve_preview_images(product.preview_images)
+    return response
+
+
+def _private_product_response(product: Product) -> ProductResponse:
     response = ProductResponse.model_validate(product)
     response.preview_images = _resolve_preview_images(product.preview_images)
-    response.package_url = product.package_url
-    response.package_size_bytes = product.package_size_bytes
     return response
 
 
@@ -143,7 +189,7 @@ async def _require_verified_seller(
 
 
 # Endpoints
-@router.get("", response_model=ProductListResponse)
+@router.get("", response_model=ProductPublicListResponse)
 async def list_products(
     category: Optional[str] = None,
     search: Optional[str] = None,
@@ -202,8 +248,8 @@ async def list_products(
     result = await db.execute(query)
     products = result.scalars().all()
 
-    return ProductListResponse(
-        products=[_product_response(p) for p in products],
+    return ProductPublicListResponse(
+        products=[_public_product_response(p) for p in products],
         total=total or 0,
         page=page,
         page_size=page_size,
@@ -216,7 +262,7 @@ async def list_categories():
     return {"categories": PRODUCT_CATEGORIES}
 
 
-@router.get("/featured", response_model=List[ProductResponse])
+@router.get("/featured", response_model=List[ProductPublicResponse])
 async def list_featured_products(
     limit: int = Query(10, ge=1, le=50),
     db: AsyncSession = Depends(get_db)
@@ -232,10 +278,10 @@ async def list_featured_products(
     result = await db.execute(query)
     products = result.scalars().all()
 
-    return [_product_response(p) for p in products]
+    return [_public_product_response(p) for p in products]
 
 
-@router.get("/{slug}", response_model=ProductResponse)
+@router.get("/{slug}", response_model=ProductPublicResponse)
 async def get_product(
     slug: str,
     db: AsyncSession = Depends(get_db)
@@ -258,7 +304,7 @@ async def get_product(
     product.views += 1
     await db.commit()
 
-    return _product_response(product)
+    return _public_product_response(product)
 
 
 @router.post("", response_model=ProductResponse, status_code=201)
@@ -298,7 +344,7 @@ async def create_product(
     await db.commit()
     await db.refresh(product)
 
-    return _product_response(product)
+    return _private_product_response(product)
 
 
 @router.put("/{product_id}", response_model=ProductResponse)
@@ -336,7 +382,7 @@ async def update_product(
     await db.commit()
     await db.refresh(product)
 
-    return _product_response(product)
+    return _private_product_response(product)
 
 
 @router.delete("/{product_id}", status_code=204)
@@ -394,7 +440,7 @@ async def publish_product(
     await db.commit()
     await db.refresh(product)
 
-    return _product_response(product)
+    return _private_product_response(product)
 
 
 @router.get("/me", response_model=ProductListResponse)
@@ -430,7 +476,7 @@ async def get_my_products(
     products = result.scalars().all()
 
     return ProductListResponse(
-        products=[_product_response(p) for p in products],
+        products=[_private_product_response(p) for p in products],
         total=total or 0,
         page=page,
         page_size=page_size,
