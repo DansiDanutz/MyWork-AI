@@ -1,6 +1,31 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+// Rate limiting (optional - only when Upstash is configured)
+// Note: Middleware must not use top-level await, so we handle this at runtime
+let ratelimit: any = null
+let ratelimitInitialized = false
+
+async function initRatelimit() {
+  if (ratelimitInitialized) return
+  ratelimitInitialized = true
+
+  if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+    try {
+      const { Ratelimit } = await import('@upstash/ratelimit')
+      const { Redis } = await import('@upstash/redis')
+
+      ratelimit = new Ratelimit({
+        redis: Redis.fromEnv(),
+        limiter: Ratelimit.slidingWindow(60, '1 m'), // 60 requests per minute
+        analytics: true,
+      })
+    } catch (error) {
+      console.warn('Rate limiting disabled: Upstash dependencies not available')
+    }
+  }
+}
+
 // Routes that require authentication
 const protectedRoutes = ['/settings', '/dashboard', '/tasks']
 
@@ -9,6 +34,27 @@ const authRoutes = ['/login']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+
+  // Initialize rate limiting on first request (if Upstash is configured)
+  if (!ratelimitInitialized && pathname.startsWith('/api')) {
+    await initRatelimit()
+  }
+
+  // Rate limit API routes (if Upstash is configured)
+  if (ratelimit && pathname.startsWith('/api')) {
+    const ip = request.headers.get('x-forwarded-for') ?? 'anonymous'
+    const { success, remaining, reset } = await ratelimit.limit(ip)
+
+    if (!success) {
+      return new NextResponse('Too Many Requests', {
+        status: 429,
+        headers: {
+          'X-RateLimit-Remaining': remaining.toString(),
+          'X-RateLimit-Reset': reset.toString(),
+        },
+      })
+    }
+  }
 
   // Lightweight session check via cookie only (Edge Runtime compatible)
   const sessionToken = request.cookies.get('authjs.session-token')?.value ||
