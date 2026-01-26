@@ -69,7 +69,7 @@ class CreditLedgerEntry(Base, TimestampMixin):
     )
 
     description: Mapped[Optional[str]] = mapped_column(Text)
-    metadata: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSON)
+    entry_metadata: Mapped[Optional[Dict[str, Any]]] = mapped_column("metadata", JSON)
 
     posted_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
 

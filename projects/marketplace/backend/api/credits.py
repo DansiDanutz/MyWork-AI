@@ -146,8 +146,8 @@ async def create_topup_session(
             idempotency_key=f"credit_topup_{entry.id}",
         )
 
-        entry.metadata = {
-            **(entry.metadata or {}),
+        entry.entry_metadata = {
+            **(entry.entry_metadata or {}),
             "checkout_session_id": checkout_session.id,
         }
         await db.commit()

@@ -36,7 +36,7 @@ async def create_pending_topup(
         currency=currency,
         entry_type="topup",
         status="pending",
-        metadata=metadata,
+        entry_metadata=metadata,
     )
     db.add(entry)
     await db.flush()
@@ -122,7 +122,7 @@ async def apply_credit_purchase(
         status="posted",
         related_order_id=order_id,
         description="Purchase",
-        metadata=metadata,
+        entry_metadata=metadata,
         posted_at=now,
     )
     seller_entry = CreditLedgerEntry(
@@ -133,7 +133,7 @@ async def apply_credit_purchase(
         status="posted",
         related_order_id=order_id,
         description="Sale",
-        metadata=metadata,
+        entry_metadata=metadata,
         posted_at=now,
     )
     db.add_all([buyer_entry, seller_entry])
