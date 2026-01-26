@@ -16,6 +16,12 @@ from models.user import User
 router = APIRouter()
 
 
+def _require_brain_access(user: User) -> None:
+    tier = user.subscription_tier or "free"
+    if tier == "free":
+        raise HTTPException(status_code=403, detail="Active subscription required to use the Brain")
+
+
 # Pydantic schemas
 class BrainEntryCreate(BaseModel):
     title: str
@@ -88,6 +94,7 @@ async def contribute_knowledge(
 ):
     """Contribute knowledge to the Brain."""
     user_id = current_user.id
+    _require_brain_access(current_user)
 
     # Validate entry type
     valid_types = list(BRAIN_ENTRY_TYPES.keys())
@@ -149,9 +156,11 @@ async def search_brain(
     sort: str = Query("relevance", pattern="^(relevance|newest|popular|quality)$"),
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
+    current_user: User = Depends(get_current_db_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Search the Brain knowledge base."""
+    _require_brain_access(current_user)
     # Build query
     query = select(BrainEntry).where(BrainEntry.status == "active")
 
@@ -236,12 +245,14 @@ async def search_brain(
 @router.post("/query", response_model=BrainQueryResponse)
 async def query_brain(
     query_data: BrainQueryRequest,
+    current_user: User = Depends(get_current_db_user),
     db: AsyncSession = Depends(get_db),
 ):
     """
     Query the Brain with natural language.
     Uses semantic search + AI to find and summarize relevant knowledge.
     """
+    _require_brain_access(current_user)
     # TODO: Implement semantic search with Pinecone
     # 1. Generate embedding for query
     # 2. Search Pinecone for similar entries
@@ -314,9 +325,11 @@ async def query_brain(
 
 @router.get("/stats/overview")
 async def get_brain_stats(
+    current_user: User = Depends(get_current_db_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get Brain statistics."""
+    _require_brain_access(current_user)
     # Total entries
     total_query = select(func.count(BrainEntry.id))
     total_result = await db.execute(total_query)
@@ -360,9 +373,11 @@ async def get_brain_stats(
 @router.get("/{entry_id}", response_model=BrainEntryResponse)
 async def get_brain_entry(
     entry_id: str,
+    current_user: User = Depends(get_current_db_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Get a specific Brain entry."""
+    _require_brain_access(current_user)
     query = select(BrainEntry).where(BrainEntry.id == entry_id)
     result = await db.execute(query)
     entry = result.scalar_one_or_none()
@@ -407,6 +422,7 @@ async def update_brain_entry(
 ):
     """Update a Brain entry (contributor only)."""
     user_id = current_user.id
+    _require_brain_access(current_user)
 
     query = select(BrainEntry).where(BrainEntry.id == entry_id)
     result = await db.execute(query)
@@ -459,6 +475,7 @@ async def delete_brain_entry(
 ):
     """Delete a Brain entry (contributor only)."""
     user_id = current_user.id
+    _require_brain_access(current_user)
 
     query = select(BrainEntry).where(BrainEntry.id == entry_id)
     result = await db.execute(query)
@@ -487,6 +504,7 @@ async def vote_on_entry(
 ):
     """Upvote or downvote a Brain entry."""
     _ = current_user.id
+    _require_brain_access(current_user)
 
     if vote_data.vote not in [1, -1]:
         raise HTTPException(status_code=400, detail="Vote must be 1 or -1")

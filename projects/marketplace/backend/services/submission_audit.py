@@ -24,6 +24,7 @@ from database import async_session_maker
 from models.submission import ProjectSubmission
 from models.audit import AuditRun, RepoSnapshot, DeliveryArtifact
 from models.user import SellerProfile
+from services.brain_ingest import queue_brain_ingest
 from services.storage import generate_presigned_get, build_object_key, build_public_url, get_s3_client
 
 
@@ -344,6 +345,7 @@ def _perform_audit(submission: Dict[str, Any]) -> Dict[str, Any]:
 
 async def run_submission_audit(submission_id: str) -> None:
     audit_run_id: Optional[str] = None
+    should_ingest = False
     async with async_session_maker() as session:
         submission = await session.get(ProjectSubmission, submission_id)
         if not submission:
@@ -361,7 +363,11 @@ async def run_submission_audit(submission_id: str) -> None:
 
         submission.status = "auditing"
         submission.audit_started_at = _now()
+        should_ingest = submission.status == "approved" and submission.brain_opt_in
         await session.commit()
+
+    if should_ingest:
+        queue_brain_ingest(submission_id)
         await session.refresh(audit_run)
         audit_run_id = audit_run.id
 
