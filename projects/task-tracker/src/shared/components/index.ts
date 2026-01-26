@@ -35,3 +35,6 @@ export { WebVitalsReporter } from './WebVitalsReporter'
 // Mobile components
 export { SwipeableTaskCard } from './SwipeableTaskCard'
 export { MobileNav } from './MobileNav'
+
+// Feedback
+export { FeedbackWidget } from './FeedbackWidget'
