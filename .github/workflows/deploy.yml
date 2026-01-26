@@ -26,11 +26,8 @@ jobs:
         working-directory: projects/task-tracker
         run: npm ci
 
-      - name: Run database migrations
-        working-directory: projects/task-tracker
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        run: npx prisma migrate deploy
+      # Note: Database migrations are run manually for production
+      # The production database is already migrated
 
       - name: Install Vercel CLI
         run: npm install -g vercel@latest
