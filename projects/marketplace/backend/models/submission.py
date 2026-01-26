@@ -12,6 +12,7 @@ from sqlalchemy import (
     Numeric,
     BigInteger,
     JSON,
+    Boolean,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -77,6 +78,24 @@ class ProjectSubmission(Base, TimestampMixin):
     package_url: Mapped[Optional[str]] = mapped_column(Text)
     package_size_bytes: Mapped[Optional[int]] = mapped_column(BigInteger)
 
+    # Repository delivery (audited snapshot)
+    repo_url: Mapped[Optional[str]] = mapped_column(Text)
+    repo_ref: Mapped[Optional[str]] = mapped_column(String(255))
+    repo_commit_sha: Mapped[Optional[str]] = mapped_column(String(64))
+    repo_provider: Mapped[Optional[str]] = mapped_column(String(50))
+
+    # Audit configuration
+    audit_profile: Mapped[Optional[str]] = mapped_column(String(50))
+    audit_plan_version: Mapped[Optional[str]] = mapped_column(String(50))
+
+    # Brain ingestion
+    brain_opt_in: Mapped[bool] = mapped_column(Boolean, default=True)
+    brain_ingest_status: Mapped[Optional[str]] = mapped_column(String(20))
+    brain_ingested_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True))
+
+    # IP consent (required for audit + brain training)
+    ip_consent: Mapped[bool] = mapped_column(Boolean, default=False)
+
     # Audit
     status: Mapped[str] = mapped_column(
         String(20),
@@ -104,7 +123,16 @@ class ProjectSubmission(Base, TimestampMixin):
     # Relationships
     seller: Mapped["User"] = relationship("User", foreign_keys=[seller_id])
     product: Mapped[Optional["Product"]] = relationship("Product", foreign_keys=[product_id])
+    audit_runs: Mapped[List["AuditRun"]] = relationship(
+        "AuditRun",
+        back_populates="submission",
+        cascade="all, delete-orphan",
+    )
+    repo_snapshots: Mapped[List["RepoSnapshot"]] = relationship(
+        "RepoSnapshot",
+        back_populates="submission",
+        cascade="all, delete-orphan",
+    )
 
     def __repr__(self) -> str:
         return f"<ProjectSubmission {self.title} ({self.status})>"
-

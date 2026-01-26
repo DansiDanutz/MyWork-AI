@@ -15,6 +15,7 @@ from dependencies import get_current_db_user
 from models.product import Product, ProductVersion, PRODUCT_CATEGORIES
 from models.submission import ProjectSubmission, SUBMISSION_STATUSES
 from models.user import User, SellerProfile
+from models.subscription import SUBSCRIPTION_TIERS
 from services.storage import extract_key_from_url
 from services.submission_audit import queue_submission_audit
 
@@ -38,6 +39,12 @@ class SubmissionBase(BaseModel):
     preview_images: Optional[List[str]] = None
     package_url: Optional[str] = None
     package_size_bytes: Optional[int] = None
+    repo_url: Optional[str] = None
+    repo_ref: Optional[str] = None
+    repo_provider: Optional[str] = None
+    audit_profile: Optional[str] = None
+    audit_plan_version: Optional[str] = None
+    ip_consent: Optional[bool] = None
 
 
 class SubmissionCreate(SubmissionBase):
@@ -52,6 +59,10 @@ class SubmissionResponse(SubmissionBase):
     audit_score: Optional[float] = None
     failure_reason: Optional[str] = None
     product_id: Optional[str] = None
+    repo_commit_sha: Optional[str] = None
+    brain_opt_in: Optional[bool] = None
+    brain_ingest_status: Optional[str] = None
+    brain_ingested_at: Optional[datetime] = None
     created_at: datetime
     updated_at: datetime
 
@@ -99,8 +110,19 @@ async def create_submission(
     """Submit a project for audit and approval."""
     await _require_seller_profile(current_user, db)
 
+    tier = current_user.subscription_tier or "free"
+    tier_limits = SUBSCRIPTION_TIERS.get(tier, {}).get("limits", {})
+    if not tier_limits.get("can_sell", False):
+        raise HTTPException(status_code=403, detail="Active subscription required to list projects")
+
     if submission_data.category not in PRODUCT_CATEGORIES:
         raise HTTPException(status_code=400, detail="Invalid category")
+
+    if not submission_data.repo_url:
+        raise HTTPException(status_code=400, detail="Repository URL is required for audit")
+
+    if submission_data.ip_consent is not True:
+        raise HTTPException(status_code=400, detail="IP consent is required for audit and Brain training")
 
     preview_images, package_url = _normalize_media_fields(
         submission_data.preview_images,
@@ -111,6 +133,7 @@ async def create_submission(
     data["preview_images"] = preview_images
     if package_url:
         data["package_url"] = package_url
+    data["brain_opt_in"] = True
 
     submission = ProjectSubmission(
         seller_id=current_user.id,

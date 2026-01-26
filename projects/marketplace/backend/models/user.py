@@ -68,6 +68,18 @@ class User(Base, TimestampMixin):
         DateTime(timezone=True)
     )
 
+    # Credits (stored value)
+    credit_balance: Mapped[float] = mapped_column(
+        Numeric(12, 2),
+        default=0.00,
+        nullable=False,
+    )
+    credit_currency: Mapped[str] = mapped_column(
+        String(3),
+        default="USD",
+        nullable=False,
+    )
+
     # Relationships
     seller_profile: Mapped[Optional["SellerProfile"]] = relationship(
         "SellerProfile",

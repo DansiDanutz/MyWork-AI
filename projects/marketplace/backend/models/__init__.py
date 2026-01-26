@@ -11,6 +11,8 @@ from models.subscription import Subscription
 from models.payout import Payout
 from models.brain import BrainEntry
 from models.submission import ProjectSubmission
+from models.audit import AuditRun, RepoSnapshot, DeliveryArtifact
+from models.credits import CreditLedgerEntry
 
 __all__ = [
     "Base",
@@ -24,4 +26,8 @@ __all__ = [
     "Payout",
     "BrainEntry",
     "ProjectSubmission",
+    "AuditRun",
+    "RepoSnapshot",
+    "DeliveryArtifact",
+    "CreditLedgerEntry",
 ]
