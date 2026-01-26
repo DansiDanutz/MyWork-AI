@@ -1,3 +1,0 @@
-"""
-Backend service utilities.
-"""

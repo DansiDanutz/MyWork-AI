@@ -13,9 +13,9 @@ readiness checks.
 
 ## Examples
 
-- `projects/marketplace` -> product
 - `projects/task-tracker` -> product
 - `projects/ai-dashboard` -> product
 
 Core framework tools live outside of `projects/` in `tools/` and `workflows/`.
 
+Marketplace lives in a private repo: `DansiDanutz/Marketplace`.

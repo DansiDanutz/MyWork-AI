@@ -17,6 +17,8 @@
 
 Live status page: https://mywork-marketplace.vercel.app/status
 
+Marketplace source lives in a private repo: `DansiDanutz/Marketplace`.
+
 ---
 
 ## Overview
@@ -194,10 +196,10 @@ python tools/mw.py <command>
 
 ```bash
 mw ac status
-mw ac start marketplace
-mw ac pause marketplace
-mw ac resume marketplace
-mw ac stop marketplace
+mw ac start <project>
+mw ac pause <project>
+mw ac resume <project>
+mw ac stop <project>
 mw ac ui
 ```
 
@@ -205,7 +207,7 @@ mw ac ui
 
 ```bash
 $AUTOCODER_ROOT/venv/bin/python $MYWORK_ROOT/tools/autocoder_api.py status
-$AUTOCODER_ROOT/venv/bin/python $MYWORK_ROOT/tools/autocoder_api.py start marketplace
+$AUTOCODER_ROOT/venv/bin/python $MYWORK_ROOT/tools/autocoder_api.py start <project>
 ```
 
 **Option 3: Activate Autocoder venv first**

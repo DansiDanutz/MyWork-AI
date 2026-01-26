@@ -1,9 +1,0 @@
-#!/usr/bin/env python3
-import sqlite3
-
-conn = sqlite3.connect('marketplace.db')
-cursor = conn.cursor()
-cursor.execute('SELECT name FROM sqlite_master WHERE type="table"')
-tables = [t[0] for t in cursor.fetchall()]
-print("Tables:", tables)
-conn.close()
