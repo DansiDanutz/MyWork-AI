@@ -31,3 +31,7 @@ export type { FileDropzoneProps } from './FileDropzone'
 
 // Performance monitoring
 export { WebVitalsReporter } from './WebVitalsReporter'
+
+// Mobile components
+export { SwipeableTaskCard } from './SwipeableTaskCard'
+export { MobileNav } from './MobileNav'

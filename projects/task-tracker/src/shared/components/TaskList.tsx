@@ -1,6 +1,8 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { TaskCard } from './TaskCard'
+import { SwipeableTaskCard } from './SwipeableTaskCard'
 import { EmptyState } from './EmptyState'
 
 type Task = {
@@ -11,6 +13,7 @@ type Task = {
   createdAt: Date
   updatedAt: Date
   tags?: { id: string; name: string; color: string | null }[]
+  attachments?: { id: string }[]
 }
 
 type TaskListProps = {
@@ -21,9 +24,10 @@ type TaskSectionProps = {
   title: string
   tasks: Task[]
   status: Task['status']
+  isMobile: boolean
 }
 
-function TaskSection({ title, tasks, status }: TaskSectionProps) {
+function TaskSection({ title, tasks, status, isMobile }: TaskSectionProps) {
   const sectionTasks = tasks.filter((task) => task.status === status)
 
   return (
@@ -37,9 +41,13 @@ function TaskSection({ title, tasks, status }: TaskSectionProps) {
         </p>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sectionTasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
-          ))}
+          {sectionTasks.map((task) =>
+            isMobile ? (
+              <SwipeableTaskCard key={task.id} task={task} />
+            ) : (
+              <TaskCard key={task.id} task={task} />
+            )
+          )}
         </div>
       )}
     </div>
@@ -47,7 +55,22 @@ function TaskSection({ title, tasks, status }: TaskSectionProps) {
 }
 
 export function TaskList({ tasks }: TaskListProps) {
-  // Check if all sections are empty
+  const [isMobile, setIsMobile] = useState(false)
+
+  // Detect mobile/touch device
+  useEffect(() => {
+    const checkMobile = () => {
+      // Check for touch support and screen width
+      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+      const isNarrow = window.innerWidth < 768
+      setIsMobile(hasTouch && isNarrow)
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
   const isEmpty = tasks.length === 0
 
   if (isEmpty) {
@@ -62,9 +85,15 @@ export function TaskList({ tasks }: TaskListProps) {
 
   return (
     <div className="space-y-8">
-      <TaskSection title="To Do" tasks={tasks} status="TODO" />
-      <TaskSection title="In Progress" tasks={tasks} status="IN_PROGRESS" />
-      <TaskSection title="Done" tasks={tasks} status="DONE" />
+      {/* Swipe hint on mobile */}
+      {isMobile && (
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+          Swipe right to complete, left to delete
+        </p>
+      )}
+      <TaskSection title="To Do" tasks={tasks} status="TODO" isMobile={isMobile} />
+      <TaskSection title="In Progress" tasks={tasks} status="IN_PROGRESS" isMobile={isMobile} />
+      <TaskSection title="Done" tasks={tasks} status="DONE" isMobile={isMobile} />
     </div>
   )
 }
