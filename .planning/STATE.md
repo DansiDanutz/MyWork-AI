@@ -8,12 +8,14 @@ Date: 2026-01-26
 - Credits UI and submission audit UX are updated.
 
 ## Current Phase
-- Phase 8 (Payments/Credits/Escrow) is queued for execution.
+- Phase 8 (Payments/Credits/Escrow) is in progress.
 
 ## Recent Decisions
 - Brain access is subscription-gated.
 - Repo snapshots are used for delivery artifacts.
 - Credits top-ups are supported through Stripe checkout.
+- Stripe orders now create ledger entries for reconciliation.
+- Escrow release tooling added for scheduled execution.
 
 ## Blockers
 - None at the moment.
