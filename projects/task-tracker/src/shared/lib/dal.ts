@@ -63,11 +63,17 @@ export const getSession = cache(async () => {
  * Get all tasks for a user, grouped by status and sorted by creation date.
  * Uses React cache() for request deduplication.
  */
-export const getTasksByUser = cache(async (userId: string): Promise<(Task & { tags: Tag[] })[]> => {
+export const getTasksByUser = cache(async (userId: string): Promise<(Task & { tags: Tag[], attachments: { id: string }[] })[]> => {
   try {
     const tasks = await prisma.task.findMany({
       where: { userId },
-      include: { tags: true },
+      include: {
+        tags: true,
+        attachments: {
+          select: { id: true }, // Only need ID for count
+          orderBy: { createdAt: 'desc' }
+        }
+      },
       orderBy: [
         { status: 'asc' }, // TODO first, then IN_PROGRESS, then DONE
         { createdAt: 'desc' } // Newest first within each status
@@ -153,7 +159,7 @@ export const getTagsByUser = cache(async (userId: string): Promise<Tag[]> => {
 export const searchTasks = cache(async (
   userId: string,
   query: string
-): Promise<(Task & { tags: Tag[], rank?: number })[]> => {
+): Promise<(Task & { tags: Tag[], attachments: { id: string }[], rank?: number })[]> => {
   if (!query.trim()) {
     return []
   }
@@ -175,7 +181,13 @@ export const searchTasks = cache(async (
       const taskIds = ftsResults.map(r => r.id)
       const tasksWithTags = await prisma.task.findMany({
         where: { id: { in: taskIds } },
-        include: { tags: true }
+        include: {
+          tags: true,
+          attachments: {
+            select: { id: true },
+            orderBy: { createdAt: 'desc' }
+          }
+        }
       })
 
       // Preserve FTS ranking order
@@ -210,7 +222,13 @@ export const searchTasks = cache(async (
       const taskIds = fuzzyResults.map(r => r.id)
       const tasksWithTags = await prisma.task.findMany({
         where: { id: { in: taskIds } },
-        include: { tags: true }
+        include: {
+          tags: true,
+          attachments: {
+            select: { id: true },
+            orderBy: { createdAt: 'desc' }
+          }
+        }
       })
       const taskMap = new Map(tasksWithTags.map(t => [t.id, t]))
       return fuzzyResults.map(r => taskMap.get(r.id)!)
@@ -235,7 +253,7 @@ export const filterTasks = cache(async (
     dateFrom?: Date
     dateTo?: Date
   }
-): Promise<(Task & { tags: Tag[] })[]> => {
+): Promise<(Task & { tags: Tag[], attachments: { id: string }[] })[]> => {
   try {
     const where: Prisma.TaskWhereInput = {
       userId,
@@ -251,7 +269,13 @@ export const filterTasks = cache(async (
 
     const tasks = await prisma.task.findMany({
       where,
-      include: { tags: true },
+      include: {
+        tags: true,
+        attachments: {
+          select: { id: true },
+          orderBy: { createdAt: 'desc' }
+        }
+      },
       orderBy: [
         { status: 'asc' },
         { createdAt: 'desc' }
@@ -266,20 +290,25 @@ export const filterTasks = cache(async (
 })
 
 /**
- * Get task with tags for display.
+ * Get task with tags and attachments for display.
  */
 export const getTaskWithTags = cache(async (
   taskId: string,
   userId: string
-): Promise<(Task & { tags: Tag[] }) | null> => {
+): Promise<(Task & { tags: Tag[], attachments: FileAttachment[] }) | null> => {
   try {
     const task = await prisma.task.findFirst({
       where: { id: taskId, userId },
-      include: { tags: true }
+      include: {
+        tags: true,
+        attachments: {
+          orderBy: { createdAt: 'desc' }
+        }
+      }
     })
     return task
   } catch (error) {
-    console.error('Error fetching task with tags:', error)
+    console.error('Error fetching task with tags and attachments:', error)
     return null
   }
 })

@@ -4,6 +4,7 @@ import { useOptimistic, useTransition } from 'react'
 import { updateTaskStatus, deleteTask } from '@/app/actions/tasks'
 import Link from 'next/link'
 import { TagBadge } from './TagBadge'
+import { FileCountBadge } from './FileList'
 
 type Task = {
   id: string
@@ -13,6 +14,7 @@ type Task = {
   createdAt: Date
   updatedAt: Date
   tags?: { id: string; name: string; color: string | null }[]
+  attachments?: { id: string }[]
 }
 
 type TaskCardProps = {
@@ -121,10 +123,17 @@ export function TaskCard({ task }: TaskCardProps) {
         </p>
       )}
 
-      {/* Date */}
-      <p className="text-xs text-gray-500 dark:text-gray-500 mb-4">
-        Created {formattedDate}
-      </p>
+      {/* Date and file indicator */}
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-xs text-gray-500 dark:text-gray-500">
+          Created {formattedDate}
+        </p>
+
+        {/* File attachment indicator */}
+        {optimisticTask.attachments && optimisticTask.attachments.length > 0 && (
+          <FileCountBadge count={optimisticTask.attachments.length} />
+        )}
+      </div>
 
       {/* Actions */}
       <div className="flex items-center gap-3">

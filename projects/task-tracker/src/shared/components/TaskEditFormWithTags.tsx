@@ -5,10 +5,15 @@ import { useRouter } from 'next/navigation'
 import { updateTask, deleteTask } from '@/app/actions/tasks'
 import { updateTaskTags, addTagToTask } from '@/app/actions/tags'
 import { TagInput } from './TagInput'
-import { Tag, Task } from '@prisma/client'
+import { FileDropzone } from './FileDropzone'
+import { FileList } from './FileList'
+import { Tag, Task, FileAttachment } from '@prisma/client'
 import Link from 'next/link'
 
-type TaskWithTags = Task & { tags: Tag[] }
+type TaskWithTags = Task & {
+  tags: Tag[]
+  attachments: FileAttachment[]
+}
 
 type TaskEditFormWithTagsProps = {
   task: TaskWithTags
@@ -26,6 +31,7 @@ export function TaskEditFormWithTags({ task, availableTags }: TaskEditFormWithTa
   const [selectedTags, setSelectedTags] = useState<Tag[]>(task.tags)
   const [localTags, setLocalTags] = useState<Tag[]>(availableTags)
   const [formError, setFormError] = useState<string>()
+  const [attachments, setAttachments] = useState<FileAttachment[]>(task.attachments)
 
   const updateTaskWithId = async (prevState: FormState, formData: FormData): Promise<FormState> => {
     return updateTask(task.id, formData)
@@ -90,6 +96,27 @@ export function TaskEditFormWithTags({ task, availableTags }: TaskEditFormWithTa
       setFormError(result.error)
     }
   }, [selectedTags, task.id])
+
+  const handleFileUploadComplete = useCallback((fileId: string, filename: string) => {
+    // Add the new file to the attachments list
+    const newAttachment: FileAttachment = {
+      id: fileId,
+      filename,
+      taskId: task.id,
+      userId: task.userId,
+      mimeType: '', // Will be filled by server
+      size: 0, // Will be filled by server
+      filePath: '', // Internal field
+      thumbnailPath: null,
+      createdAt: new Date(),
+    }
+    setAttachments(prev => [...prev, newAttachment])
+  }, [task.id, task.userId])
+
+  const handleFileDeleted = useCallback((fileId: string) => {
+    // Remove the file from the attachments list
+    setAttachments(prev => prev.filter(file => file.id !== fileId))
+  }, [])
 
   const handleDelete = async () => {
     if (!confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
@@ -210,6 +237,38 @@ export function TaskEditFormWithTags({ task, availableTags }: TaskEditFormWithTa
           onRemoveTag={handleRemoveTag}
           disabled={pending || isPending}
         />
+      </div>
+
+      {/* File attachments */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
+          File Attachments <span className="text-gray-500 text-xs">(optional)</span>
+        </label>
+
+        {/* File upload dropzone */}
+        <div className="mb-4">
+          <FileDropzone
+            taskId={task.id}
+            onUploadComplete={handleFileUploadComplete}
+            disabled={pending || isPending}
+            maxFiles={10}
+          />
+        </div>
+
+        {/* Current attachments list */}
+        {attachments.length > 0 && (
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Current Files ({attachments.length})
+            </h4>
+            <FileList
+              files={attachments}
+              onFileDeleted={handleFileDeleted}
+              editable={true}
+              compact={false}
+            />
+          </div>
+        )}
       </div>
 
       {/* Error message */}
