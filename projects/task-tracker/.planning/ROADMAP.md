@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Authentication & Profiles** - GitHub OAuth login and user profiles
 - [x] **Phase 3: Core Task Management** - Basic task CRUD operations
 - [x] **Phase 4: Task Organization & Discovery** - Categories, search, and filtering
-- [ ] **Phase 5: File Attachments** - Upload and manage task attachments
+- [x] **Phase 5: File Attachments** - Upload and manage task attachments
 - [x] **Phase 6: GitHub Integration & Analytics** - Usage tracking for brain learning
 - [ ] **Phase 7: Performance & Quality** - System performance and polish
 - [ ] **Phase 8: Deployment & Validation** - Ship for real user testing
@@ -112,13 +112,13 @@ Plans:
 **Plans**: 7 plans
 
 Plans:
-- [ ] 05-01-PLAN.md - Database schema (FileAttachment model), file validation utilities, and dependency setup
-- [ ] 05-02-PLAN.md - File storage utilities and TUS upload endpoint for resumable uploads
-- [ ] 05-03-PLAN.md - Thumbnail generator, Server Actions for files, and download endpoint
-- [ ] 05-04-PLAN.md - FileDropzone and FileUploadProgress UI components
-- [ ] 05-05-PLAN.md - FileThumbnail, FileList, FilePreview display components
-- [ ] 05-06-PLAN.md - Task UI integration (TaskCard indicators, edit form file management)
-- [ ] 05-07-PLAN.md - Human verification of complete file attachment system
+- [x] 05-01-PLAN.md - Database schema (FileAttachment model), file validation utilities, and dependency setup
+- [x] 05-02-PLAN.md - File storage utilities and TUS upload endpoint for resumable uploads
+- [x] 05-03-PLAN.md - Thumbnail generator, Server Actions for files, and download endpoint
+- [x] 05-04-PLAN.md - FileDropzone and FileUploadProgress UI components
+- [x] 05-05-PLAN.md - FileThumbnail, FileList, FilePreview display components
+- [x] 05-06-PLAN.md - Task UI integration (TaskCard indicators, edit form file management)
+- [x] 05-07-PLAN.md - Human verification of complete file attachment system
 
 ### Phase 6: GitHub Integration & Analytics
 **Goal**: System captures usage patterns for brain learning without blocking user operations
@@ -180,7 +180,7 @@ Phases execute in numeric order: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8
 | 2. Authentication & Profiles | 5/5 | Complete | 2026-01-25 |
 | 3. Core Task Management | 4/4 | Complete | 2026-01-25 |
 | 4. Task Organization & Discovery | 5/5 | Complete | 2026-01-25 |
-| 5. File Attachments | 0/7 | Planned | - |
+| 5. File Attachments | 7/7 | Complete | 2026-01-26 |
 | 6. GitHub Integration & Analytics | 3/3 | Complete | 2026-01-25 |
 | 7. Performance & Quality | 0/TBD | Not started | - |
 | 8. Deployment & Validation | 0/TBD | Not started | - |
