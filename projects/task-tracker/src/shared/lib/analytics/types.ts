@@ -137,6 +137,19 @@ const ProfileUpdatedEventSchema = z.object({
   })
 })
 
+// Feedback events
+const FeedbackSubmittedEventSchema = z.object({
+  type: z.literal('feedback_submitted'),
+  userId: z.string().nullable(),
+  properties: z.object({
+    feedback: z.string(),
+    feedbackType: z.enum(['bug', 'idea', 'other']),
+    page: z.string(),
+    userAgent: z.string().nullable(),
+    timestamp: z.string(),
+  })
+})
+
 // Discriminated union for type-safe event handling
 export const AnalyticsEventSchema = z.discriminatedUnion('type', [
   PageViewEventSchema,
@@ -153,6 +166,7 @@ export const AnalyticsEventSchema = z.discriminatedUnion('type', [
   LoginEventSchema,
   LogoutEventSchema,
   ProfileUpdatedEventSchema,
+  FeedbackSubmittedEventSchema,
 ])
 
 export type AnalyticsEvent = z.infer<typeof AnalyticsEventSchema>
@@ -174,4 +188,5 @@ export {
   LoginEventSchema,
   LogoutEventSchema,
   ProfileUpdatedEventSchema,
+  FeedbackSubmittedEventSchema,
 }
