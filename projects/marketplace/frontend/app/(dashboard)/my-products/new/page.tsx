@@ -75,6 +75,9 @@ interface FormData {
   preview_images: string[]
   package_url: string
   package_size_bytes: number | null
+  repo_url: string
+  repo_ref: string
+  ip_consent: boolean
 }
 
 const STEP_TITLES = [
@@ -140,6 +143,9 @@ export default function NewProductPage() {
     preview_images: [],
     package_url: "",
     package_size_bytes: null,
+    repo_url: "",
+    repo_ref: "",
+    ip_consent: false,
   })
 
   const [tagInput, setTagInput] = useState("")
@@ -254,6 +260,18 @@ export default function NewProductPage() {
 
       setAuthToken(token)
 
+      if (!isVerifiedSeller && !formData.repo_url.trim()) {
+        setError("Repository URL is required for audit")
+        setCurrentStep(STEP_TITLES.length - 1)
+        return
+      }
+
+      if (!isVerifiedSeller && !formData.ip_consent) {
+        setError("You must confirm IP ownership to submit for audit")
+        setCurrentStep(STEP_TITLES.length - 1)
+        return
+      }
+
       const productData = {
         title: formData.title,
         description: formData.description,
@@ -271,6 +289,9 @@ export default function NewProductPage() {
         ...(formData.preview_images.length > 0 && { preview_images: formData.preview_images }),
         ...(formData.package_url && { package_url: formData.package_url }),
         ...(formData.package_size_bytes && { package_size_bytes: formData.package_size_bytes }),
+        ...(formData.repo_url && { repo_url: formData.repo_url }),
+        ...(formData.repo_ref && { repo_ref: formData.repo_ref }),
+        ...(formData.ip_consent && { ip_consent: formData.ip_consent }),
       }
 
       if (isVerifiedSeller) {
@@ -849,6 +870,51 @@ export default function NewProductPage() {
           {/* Step 4: Files & Media */}
           {currentStep === 3 && (
             <div className="space-y-6">
+              <div className="rounded-lg border border-gray-800 bg-gray-900/60 p-4">
+                <h3 className="text-sm font-semibold text-white mb-2">Repository & IP Consent</h3>
+                <p className="text-xs text-gray-400 mb-4">
+                  We audit your code directly from the repository and use approved projects to train the Brain.
+                  Repository access and IP confirmation are required for submissions.
+                </p>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Repository URL {!isVerifiedSeller && <span className="text-red-400">*</span>}
+                    </label>
+                    <Input
+                      value={formData.repo_url}
+                      onChange={(e) => setFormData({ ...formData, repo_url: e.target.value })}
+                      placeholder="https://github.com/your-org/your-repo"
+                      className="bg-gray-800 border-gray-700 text-white"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Repository Ref (branch or tag)
+                    </label>
+                    <Input
+                      value={formData.repo_ref}
+                      onChange={(e) => setFormData({ ...formData, repo_ref: e.target.value })}
+                      placeholder="main"
+                      className="bg-gray-800 border-gray-700 text-white"
+                    />
+                  </div>
+                  {!isVerifiedSeller && (
+                    <label className="flex items-start gap-3 text-sm text-gray-300">
+                      <input
+                        type="checkbox"
+                        checked={formData.ip_consent}
+                        onChange={(e) => setFormData({ ...formData, ip_consent: e.target.checked })}
+                        className="mt-1"
+                      />
+                      <span>
+                        I confirm I own this code and grant MyWork permission to audit and use it for Brain training.
+                      </span>
+                    </label>
+                  )}
+                </div>
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   Preview Images

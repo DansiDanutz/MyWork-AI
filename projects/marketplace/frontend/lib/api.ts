@@ -298,6 +298,9 @@ export const submissionsApi = {
     preview_images?: string[]
     package_url?: string
     package_size_bytes?: number | null
+    repo_url?: string
+    repo_ref?: string
+    ip_consent?: boolean
   }) => api.post('/submissions', data),
 
   listMine: (params?: { status?: string; page?: number; pageSize?: number }) =>

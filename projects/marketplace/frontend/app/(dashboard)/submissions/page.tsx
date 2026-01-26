@@ -18,6 +18,13 @@ interface Submission {
   status: string
   audit_score?: number | null
   failure_reason?: string | null
+  audit_report?: {
+    errors?: string[]
+    warnings?: string[]
+  } | null
+  repo_commit_sha?: string | null
+  brain_ingest_status?: string | null
+  brain_ingested_at?: string | null
   created_at: string
   product_id?: string | null
 }
@@ -28,6 +35,13 @@ const STATUS_COLORS: Record<string, { text: string; variant: "success" | "warnin
   approved: { text: "Approved", variant: "success" },
   rejected: { text: "Rejected", variant: "destructive" },
   published: { text: "Published", variant: "success" },
+}
+
+const BRAIN_STATUS: Record<string, { text: string; variant: "success" | "warning" | "destructive" | "secondary" | "default" }> = {
+  queued: { text: "Queued", variant: "secondary" },
+  processing: { text: "Processing", variant: "warning" },
+  ingested: { text: "Ingested", variant: "success" },
+  error: { text: "Error", variant: "destructive" },
 }
 
 export default function SubmissionsPage() {
@@ -138,8 +152,40 @@ export default function SubmissionsPage() {
                   {submission.audit_score !== null && submission.audit_score !== undefined && (
                     <p className="text-sm text-gray-400">Audit score: {submission.audit_score}</p>
                   )}
+                  {(submission.audit_report?.errors?.length || submission.audit_report?.warnings?.length) && (
+                    <div className="flex flex-wrap gap-2 text-xs">
+                      {submission.audit_report?.errors && submission.audit_report.errors.length > 0 && (
+                        <span className="px-2 py-1 rounded-full bg-red-900/30 text-red-400 border border-red-700/50">
+                          {submission.audit_report.errors.length} errors
+                        </span>
+                      )}
+                      {submission.audit_report?.warnings && submission.audit_report.warnings.length > 0 && (
+                        <span className="px-2 py-1 rounded-full bg-yellow-900/30 text-yellow-400 border border-yellow-700/50">
+                          {submission.audit_report.warnings.length} warnings
+                        </span>
+                      )}
+                    </div>
+                  )}
                   {submission.failure_reason && (
                     <p className="text-sm text-red-400">Reason: {submission.failure_reason}</p>
+                  )}
+                  {submission.repo_commit_sha && (
+                    <p className="text-xs text-gray-500">
+                      Snapshot commit: <span className="text-gray-300">{submission.repo_commit_sha.slice(0, 8)}</span>
+                    </p>
+                  )}
+                  {submission.brain_ingest_status && (
+                    <div className="flex items-center gap-2 text-xs">
+                      <span className="text-gray-400">Brain:</span>
+                      <Badge variant={BRAIN_STATUS[submission.brain_ingest_status]?.variant || "secondary"}>
+                        {BRAIN_STATUS[submission.brain_ingest_status]?.text || submission.brain_ingest_status}
+                      </Badge>
+                      {submission.brain_ingested_at && (
+                        <span className="text-gray-500">
+                          {formatDate(submission.brain_ingested_at)}
+                        </span>
+                      )}
+                    </div>
                   )}
                   <div className="flex flex-wrap gap-2">
                     {submission.status === "rejected" && (
