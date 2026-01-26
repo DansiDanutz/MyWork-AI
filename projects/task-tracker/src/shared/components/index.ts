@@ -28,3 +28,6 @@ export { FileList, FileCountBadge } from './FileList'
 export { LazyFileDropzone } from './LazyFileDropzone'
 export { LazyFileList } from './LazyFileList'
 export type { FileDropzoneProps } from './FileDropzone'
+
+// Performance monitoring
+export { WebVitalsReporter } from './WebVitalsReporter'

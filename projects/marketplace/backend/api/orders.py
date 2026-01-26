@@ -15,8 +15,10 @@ from dependencies import get_current_db_user
 from models.user import User
 from models.product import Product, LICENSE_TYPES
 from models.order import Order
+from models.audit import DeliveryArtifact
 from config import settings
 from services.credits import apply_credit_purchase
+from services.delivery import ensure_delivery_artifact
 from services.storage import generate_presigned_get
 
 router = APIRouter()
@@ -156,6 +158,7 @@ async def create_order(
                     "license_type": order_data.license_type,
                 },
             )
+            await ensure_delivery_artifact(db, order)
         except ValueError as exc:
             await db.rollback()
             raise HTTPException(status_code=400, detail=str(exc))
@@ -348,17 +351,32 @@ async def download_product(
     product = product_result.scalar_one_or_none()
 
     if not product or not product.package_url:
-        raise HTTPException(status_code=400, detail="Product file not available")
+        product = None
 
-    package_ref = product.package_url
-    if package_ref.startswith("http://") or package_ref.startswith("https://"):
-        download_url = package_ref
+    artifact = await db.scalar(select(DeliveryArtifact).where(DeliveryArtifact.order_id == order.id))
+    if artifact and artifact.artifact_url:
+        artifact_ref = artifact.artifact_url
+        if artifact_ref.startswith("http://") or artifact_ref.startswith("https://"):
+            download_url = artifact_ref
+        else:
+            try:
+                download_url = generate_presigned_get(artifact_ref, filename="repo_snapshot.zip")
+            except ValueError as exc:
+                raise HTTPException(status_code=500, detail=str(exc))
+        artifact.status = "delivered"
+        artifact.delivered_at = datetime.utcnow()
     else:
-        try:
-            filename = package_ref.split("/")[-1]
-            download_url = generate_presigned_get(package_ref, filename=filename)
-        except ValueError as exc:
-            raise HTTPException(status_code=500, detail=str(exc))
+        if not product or not product.package_url:
+            raise HTTPException(status_code=400, detail="Product file not available")
+        package_ref = product.package_url
+        if package_ref.startswith("http://") or package_ref.startswith("https://"):
+            download_url = package_ref
+        else:
+            try:
+                filename = package_ref.split("/")[-1]
+                download_url = generate_presigned_get(package_ref, filename=filename)
+            except ValueError as exc:
+                raise HTTPException(status_code=500, detail=str(exc))
 
     # Increment download count only after we have a URL.
     order.download_count += 1

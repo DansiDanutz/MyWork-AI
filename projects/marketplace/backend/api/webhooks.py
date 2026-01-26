@@ -24,6 +24,7 @@ from services.users import (
     normalize_username,
 )
 from services.credits import finalize_topup, mark_topup_failed
+from services.delivery import ensure_delivery_artifact
 
 router = APIRouter()
 
@@ -155,6 +156,7 @@ async def handle_payment_success(data: dict, db: AsyncSession):
             escrow_release_at=datetime.utcnow() + timedelta(days=settings.ESCROW_DAYS),
         )
         db.add(order)
+        await ensure_delivery_artifact(db, order)
         await db.commit()
         return
 
@@ -169,6 +171,7 @@ async def handle_payment_success(data: dict, db: AsyncSession):
     # Set escrow release date
     order.escrow_release_at = datetime.utcnow() + timedelta(days=settings.ESCROW_DAYS)
 
+    await ensure_delivery_artifact(db, order)
     await db.commit()
 
     # TODO: Send purchase confirmation email to buyer

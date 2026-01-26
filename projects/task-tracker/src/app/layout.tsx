@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { WebVitalsReporter } from "@/shared/components/WebVitalsReporter";
 
 export const metadata: Metadata = {
   title: "Task Tracker",
@@ -14,6 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+        <WebVitalsReporter />
         {children}
       </body>
     </html>

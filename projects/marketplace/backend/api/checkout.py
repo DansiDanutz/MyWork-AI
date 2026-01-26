@@ -18,6 +18,7 @@ from models.user import User
 from models.product import Product
 from models.order import Order
 from config import settings
+from services.delivery import ensure_delivery_artifact
 
 router = APIRouter()
 
@@ -278,6 +279,7 @@ async def verify_and_create_order(
             order.seller_amount = price - platform_fee
             order.license_type = license_type
             order.escrow_release_at = datetime.utcnow() + timedelta(days=settings.ESCROW_DAYS)
+            await ensure_delivery_artifact(db, order)
             await db.commit()
             product_title = "Unknown"
             if order.product_id:
@@ -326,6 +328,7 @@ async def verify_and_create_order(
         )
 
         db.add(order)
+        await ensure_delivery_artifact(db, order)
         await db.commit()
         await db.refresh(order)
 
