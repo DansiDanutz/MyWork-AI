@@ -2,6 +2,12 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { auth, signOut } from '@/shared/lib/auth'
 import { UserMenu } from '@/shared/components/UserMenu'
+import { MobileNav } from '@/shared/components/MobileNav'
+
+const navLinks = [
+  { href: '/dashboard', label: 'Dashboard' },
+  { href: '/tasks', label: 'Tasks' },
+]
 
 export default async function AppLayout({
   children,
@@ -30,23 +36,26 @@ export default async function AppLayout({
             <Link href="/dashboard" className="text-xl font-bold text-gray-900 dark:text-white">
               Task Tracker
             </Link>
+
+            {/* Desktop navigation */}
             <nav className="hidden md:flex items-center gap-4">
-              <Link
-                href="/dashboard"
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/tasks"
-                className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-              >
-                Tasks
-              </Link>
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white px-2 py-2 min-h-[44px] flex items-center"
+                >
+                  {link.label}
+                </Link>
+              ))}
             </nav>
           </div>
 
-          <UserMenu user={session.user} signOutAction={handleSignOut} />
+          <div className="flex items-center gap-2">
+            <UserMenu user={session.user} signOutAction={handleSignOut} />
+            {/* Mobile navigation */}
+            <MobileNav links={navLinks} />
+          </div>
         </div>
       </header>
 
