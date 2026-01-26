@@ -2,29 +2,35 @@ import { prisma } from '@/shared/lib/db'
 import { NextResponse } from 'next/server'
 
 export async function GET() {
-  const checks = {
-    timestamp: new Date().toISOString(),
-    status: 'ok' as 'ok' | 'error',
-    environment: process.env.NODE_ENV || 'unknown',
-    checks: {
-      database: { status: 'pending' as 'ok' | 'error', message: '' },
-      environment: { status: 'ok' as 'ok' | 'error', message: 'Validated' },
-    },
-  }
+  const timestamp = new Date().toISOString()
+  const uptime = process.uptime()
 
-  // Check database connection
+  // Check database connectivity
+  let databaseStatus: 'healthy' | 'unhealthy' = 'healthy'
+  let databaseError: string | undefined
+
   try {
     await prisma.$queryRaw`SELECT 1`
-    checks.checks.database = { status: 'ok', message: 'Connected' }
   } catch (error) {
-    checks.status = 'error'
-    checks.checks.database = {
-      status: 'error',
-      message: error instanceof Error ? error.message : 'Connection failed',
-    }
+    databaseStatus = 'unhealthy'
+    databaseError = error instanceof Error ? error.message : 'Connection failed'
   }
 
-  const statusCode = checks.status === 'ok' ? 200 : 503
+  // Overall status is unhealthy if database is down
+  const overallStatus: 'healthy' | 'unhealthy' =
+    databaseStatus === 'unhealthy' ? 'unhealthy' : 'healthy'
 
-  return NextResponse.json(checks, { status: statusCode })
+  const response = {
+    status: overallStatus,
+    checks: {
+      database: databaseStatus,
+      uptime: Math.floor(uptime), // seconds since process started
+      timestamp,
+    },
+    ...(databaseError && { error: databaseError }),
+  }
+
+  const statusCode = overallStatus === 'healthy' ? 200 : 503
+
+  return NextResponse.json(response, { status: statusCode })
 }
