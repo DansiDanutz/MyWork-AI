@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { formatPrice } from "@/lib/utils"
-import { productsApi, checkoutApi } from "@/lib/api"
+import { productsApi, checkoutApi, creditsApi, ordersApi } from "@/lib/api"
 import type { Product } from "@/types"
 
 type LicenseType = "standard" | "extended"
@@ -44,6 +44,7 @@ export default function CheckoutPage() {
   const [loading, setLoading] = useState(true)
   const [processing, setProcessing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [creditBalance, setCreditBalance] = useState<number | null>(null)
 
   useEffect(() => {
     async function fetchData() {
@@ -57,6 +58,13 @@ export default function CheckoutPage() {
         // Fetch pricing options
         const pricesRes = await checkoutApi.getProductPrices(productId)
         setLicenseOptions(pricesRes.data)
+
+        try {
+          const creditsRes = await creditsApi.getBalance()
+          setCreditBalance(Number(creditsRes.data.balance || 0))
+        } catch (creditErr) {
+          setCreditBalance(null)
+        }
       } catch (err: any) {
         console.error("Failed to fetch checkout data:", err)
         setError(err.response?.data?.detail || "Failed to load product information")
@@ -88,6 +96,25 @@ export default function CheckoutPage() {
     } catch (err: any) {
       console.error("Checkout failed:", err)
       setError(err.response?.data?.detail || "Failed to initiate checkout. Please try again.")
+      setProcessing(false)
+    }
+  }
+
+  const handleCreditCheckout = async () => {
+    if (!product || processing) return
+    setProcessing(true)
+    setError(null)
+
+    try {
+      await ordersApi.create({
+        productId,
+        licenseType: selectedLicense,
+        useCredits: true,
+      })
+      router.push("/dashboard/purchases")
+    } catch (err: any) {
+      console.error("Credit checkout failed:", err)
+      setError(err.response?.data?.detail || "Credit checkout failed. Please try again.")
       setProcessing(false)
     }
   }
@@ -157,6 +184,7 @@ export default function CheckoutPage() {
   ]
 
   const currentPrice = licenses.find((l) => l.type === selectedLicense)?.price || 0
+  const canUseCredits = creditBalance !== null && creditBalance >= currentPrice
 
   return (
     <main className="min-h-screen bg-gray-950">
@@ -310,6 +338,36 @@ export default function CheckoutPage() {
                       </span>
                     </div>
                   </div>
+
+                  {creditBalance !== null && (
+                    <div className="border-t border-gray-700 pt-4 space-y-3">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-gray-400">Credits available</span>
+                        <span className="text-white font-medium">
+                          {formatPrice(creditBalance)}
+                        </span>
+                      </div>
+                      {canUseCredits ? (
+                        <Button
+                          onClick={handleCreditCheckout}
+                          disabled={processing}
+                          variant="secondary"
+                          className="w-full"
+                          size="lg"
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Pay with Credits
+                        </Button>
+                      ) : (
+                        <div className="text-xs text-gray-400">
+                          <p className="mb-2">Not enough credits to cover this purchase.</p>
+                          <Link href="/credits" className="text-blue-400 hover:text-blue-300">
+                            Top up credits →
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Checkout Button */}
                   {error && (

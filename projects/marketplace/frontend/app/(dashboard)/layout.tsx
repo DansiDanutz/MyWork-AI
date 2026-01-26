@@ -10,6 +10,7 @@ import {
   BarChart3,
   Settings,
   Wallet,
+  Coins,
   Brain,
   Menu,
   X,
@@ -55,6 +56,11 @@ const sidebarLinks = [
     href: "/payouts",
     label: "Payouts",
     icon: Wallet,
+  },
+  {
+    href: "/credits",
+    label: "Credits",
+    icon: Coins,
   },
   {
     href: "/brain",
