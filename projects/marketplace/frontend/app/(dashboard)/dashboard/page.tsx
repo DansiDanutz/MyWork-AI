@@ -5,6 +5,7 @@ export const dynamic = "force-dynamic"
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useUser } from "@clerk/nextjs"
+import { useSearchParams } from "next/navigation"
 import {
   DollarSign,
   Package,
@@ -22,6 +23,8 @@ import { formatPrice, formatDate } from "@/lib/utils"
 
 export default function DashboardPage() {
   const { user } = useUser()
+  const searchParams = useSearchParams()
+  const [showTopupNotice, setShowTopupNotice] = useState(false)
   const [stats, setStats] = useState({
     totalRevenue: 2456.80,
     totalSales: 23,
@@ -55,8 +58,32 @@ export default function DashboardPage() {
     },
   ])
 
+  useEffect(() => {
+    if (searchParams?.get("credit_topup") === "success") {
+      setShowTopupNotice(true)
+    }
+  }, [searchParams])
+
   return (
     <div className="p-6 lg:p-8 space-y-8">
+      {showTopupNotice && (
+        <div className="rounded-lg border border-green-700/50 bg-green-900/20 px-4 py-3 text-green-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <p className="font-medium">Credits top-up successful</p>
+            <p className="text-sm text-green-200/80">
+              Your balance has been updated and is ready to use.
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link href="/dashboard/credits">
+              <Button size="sm" variant="secondary">View Credits</Button>
+            </Link>
+            <Button size="sm" variant="ghost" onClick={() => setShowTopupNotice(false)}>
+              Dismiss
+            </Button>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
