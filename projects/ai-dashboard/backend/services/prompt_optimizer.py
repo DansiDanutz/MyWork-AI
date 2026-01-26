@@ -40,9 +40,9 @@ class PromptOptimizer:
         self.api_key = anthropic_api_key or os.getenv("ANTHROPIC_API_KEY")
 
         if self.api_key:
-            # Configure DSPy with Claude
-            self.lm = dspy.Claude(
-                model="claude-3-5-sonnet-20241022",
+            # Configure DSPy with Claude (DSPy 3.x uses LM class)
+            self.lm = dspy.LM(
+                model="anthropic/claude-3-5-sonnet-20241022",
                 api_key=self.api_key,
                 max_tokens=4000
             )
