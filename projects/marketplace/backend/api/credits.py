@@ -140,8 +140,8 @@ async def create_topup_session(
             metadata=metadata,
             payment_intent_data={"metadata": metadata},
             mode="payment",
-            success_url=f"{base_url}/credits/success?session_id={{CHECKOUT_SESSION_ID}}",
-            cancel_url=f"{base_url}/credits",
+            success_url=f"{base_url}/dashboard?credit_topup=success&session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{base_url}/pricing",
             client_reference_id=entry.id,
             idempotency_key=f"credit_topup_{entry.id}",
         )
