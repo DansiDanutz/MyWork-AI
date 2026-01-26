@@ -12,7 +12,7 @@ import {
 } from '@/shared/lib/file-validation'
 import { FileUploadProgress, UploadState } from './FileUploadProgress'
 
-interface FileDropzoneProps {
+export interface FileDropzoneProps {
   taskId: string
   onUploadComplete?: (fileId: string, filename: string) => void
   onUploadError?: (filename: string, error: string) => void

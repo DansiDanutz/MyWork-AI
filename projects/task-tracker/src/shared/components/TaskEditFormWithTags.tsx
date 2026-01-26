@@ -102,11 +102,11 @@ export function TaskEditFormWithTags({ task, availableTags }: TaskEditFormWithTa
     const newAttachment: FileAttachment = {
       id: fileId,
       filename,
+      storedFilename: '', // Will be filled by server
       taskId: task.id,
       userId: task.userId,
       mimeType: '', // Will be filled by server
       size: 0, // Will be filled by server
-      filePath: '', // Internal field
       thumbnailPath: null,
       createdAt: new Date(),
     }
