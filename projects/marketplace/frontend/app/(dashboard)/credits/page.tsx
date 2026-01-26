@@ -29,6 +29,7 @@ export default function CreditsPage() {
   const [error, setError] = useState<string | null>(null)
   const [topupAmount, setTopupAmount] = useState("50")
   const [topupLoading, setTopupLoading] = useState(false)
+  const [showSuccess, setShowSuccess] = useState(false)
 
   useEffect(() => {
     const loadCredits = async () => {
@@ -51,6 +52,13 @@ export default function CreditsPage() {
     }
 
     loadCredits()
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === "undefined") return
+    if (window.location.search.includes("credit_topup=success")) {
+      setShowSuccess(true)
+    }
   }, [])
 
   const formatAmount = (amount: number) =>
@@ -124,6 +132,17 @@ export default function CreditsPage() {
         </div>
       ) : (
         <>
+          {showSuccess && (
+            <div className="bg-green-900/20 border border-green-700/50 rounded-lg p-4 text-green-200 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <div>
+                <p className="font-medium">Top-up completed</p>
+                <p className="text-sm text-green-200/80">Your credits are ready to use.</p>
+              </div>
+              <Button size="sm" variant="ghost" onClick={() => setShowSuccess(false)}>
+                Dismiss
+              </Button>
+            </div>
+          )}
           {error && (
             <div className="bg-red-900/20 border border-red-700/50 rounded-lg p-4 text-red-400 mb-6">
               {error}

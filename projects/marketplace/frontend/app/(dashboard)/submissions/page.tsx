@@ -49,6 +49,7 @@ export default function SubmissionsPage() {
   const [submissions, setSubmissions] = useState<Submission[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [showBrainNotice, setShowBrainNotice] = useState(false)
 
   useEffect(() => {
     loadSubmissions()
@@ -65,7 +66,13 @@ export default function SubmissionsPage() {
       }
       setAuthToken(token)
       const response = await submissionsApi.listMine()
-      setSubmissions(response.data.submissions || [])
+      const loaded = response.data.submissions || []
+      setSubmissions(loaded)
+      setShowBrainNotice(
+        loaded.some((submission: Submission) =>
+          ["queued", "processing"].includes(submission.brain_ingest_status || "")
+        )
+      )
     } catch (err: any) {
       console.error("Failed to load submissions:", err)
       setError(err.response?.data?.detail || "Failed to load submissions")
@@ -108,6 +115,14 @@ export default function SubmissionsPage() {
 
   return (
     <div className="p-6 lg:p-8 space-y-6">
+      {showBrainNotice && (
+        <Card className="border-blue-800 bg-blue-950/30">
+          <CardContent className="p-4 text-sm text-blue-200">
+            Brain ingestion is running for at least one approved submission. You can keep working —
+            entries will appear in the Brain once processing finishes.
+          </CardContent>
+        </Card>
+      )}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Submissions</h1>
