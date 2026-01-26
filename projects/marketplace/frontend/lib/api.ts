@@ -117,10 +117,11 @@ export const usersApi = {
 
 // Orders API
 export const ordersApi = {
-  create: (data: { productId: string; licenseType?: string }) =>
+  create: (data: { productId: string; licenseType?: string; useCredits?: boolean }) =>
     api.post('/orders', {
       product_id: data.productId,
       ...(data.licenseType && { license_type: data.licenseType }),
+      ...(data.useCredits !== undefined && { use_credits: data.useCredits }),
     }),
 
   list: (params?: { role?: 'buyer' | 'seller'; status?: string }) =>
@@ -132,6 +133,17 @@ export const ordersApi = {
 
   requestRefund: (id: string, reason: string) =>
     api.post(`/orders/${id}/refund`, { reason }),
+}
+
+// Credits API
+export const creditsApi = {
+  getBalance: () => api.get('/credits/balance'),
+
+  listLedger: (limit = 50) =>
+    api.get('/credits/ledger', { params: { limit } }),
+
+  createTopupSession: (amount: number) =>
+    api.post('/credits/topup/session', { amount }),
 }
 
 // Reviews API

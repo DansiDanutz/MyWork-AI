@@ -147,6 +147,7 @@ async def root():
             "orders": "/api/orders",
             "brain": "/api/brain",
             "checkout": "/api/checkout",
+            "credits": "/api/credits",
         }
     }
 
@@ -163,6 +164,7 @@ from api.analytics import router as analytics_router
 from api.checkout import router as checkout_router
 from api.uploads import router as uploads_router
 from api.submissions import router as submissions_router
+from api.credits import router as credits_router
 
 app.include_router(products_router, prefix="/api/products", tags=["Products"])
 app.include_router(users_router, prefix="/api/users", tags=["Users"])
@@ -175,6 +177,7 @@ app.include_router(analytics_router, prefix="/api/analytics", tags=["Analytics"]
 app.include_router(checkout_router, prefix="/api/checkout", tags=["Checkout"])
 app.include_router(uploads_router, prefix="/api/uploads", tags=["Uploads"])
 app.include_router(submissions_router, prefix="/api/submissions", tags=["Submissions"])
+app.include_router(credits_router, prefix="/api/credits", tags=["Credits"])
 
 
 if __name__ == "__main__":

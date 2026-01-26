@@ -23,6 +23,7 @@ from services.users import (
     extract_primary_email,
     normalize_username,
 )
+from services.credits import finalize_topup, mark_topup_failed
 
 router = APIRouter()
 
@@ -105,6 +106,12 @@ async def handle_payment_success(data: dict, db: AsyncSession):
     """Handle successful payment for an order."""
     payment_intent_id = data.get("id")
     metadata = data.get("metadata", {})
+    if metadata.get("credit_topup") == "true":
+        ledger_id = metadata.get("credit_ledger_id")
+        if ledger_id:
+            await finalize_topup(db, ledger_id)
+            await db.commit()
+        return
     order_id = metadata.get("order_id")
 
     order = None
@@ -172,6 +179,12 @@ async def handle_payment_success(data: dict, db: AsyncSession):
 async def handle_payment_failed(data: dict, db: AsyncSession):
     """Handle failed payment."""
     metadata = data.get("metadata", {})
+    if metadata.get("credit_topup") == "true":
+        ledger_id = metadata.get("credit_ledger_id")
+        if ledger_id:
+            await mark_topup_failed(db, ledger_id)
+            await db.commit()
+        return
     order_id = metadata.get("order_id")
     payment_intent_id = data.get("id")
 

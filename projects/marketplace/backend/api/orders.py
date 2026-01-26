@@ -16,6 +16,7 @@ from models.user import User
 from models.product import Product, LICENSE_TYPES
 from models.order import Order
 from config import settings
+from services.credits import apply_credit_purchase
 from services.storage import generate_presigned_get
 
 router = APIRouter()
@@ -25,6 +26,7 @@ router = APIRouter()
 class OrderCreate(BaseModel):
     product_id: str
     license_type: str = "standard"  # standard, extended, unlimited
+    use_credits: bool = False
 
 
 class OrderResponse(BaseModel):
@@ -122,23 +124,62 @@ async def create_order(
     platform_fee = amount * (Decimal(str(settings.PLATFORM_FEE_PERCENT)) / Decimal("100"))
     seller_amount = amount - platform_fee
 
-    # Create order
-    order = Order(
-        buyer_id=user_id,
-        seller_id=product.seller_id,
-        product_id=product.id,
-        amount=amount,
-        platform_fee=platform_fee,
-        stripe_fee=Decimal("0"),
-        seller_amount=seller_amount,
-        license_type=_normalize_license_type(order_data.license_type),
-        status="pending",
-        escrow_release_at=datetime.utcnow() + timedelta(days=settings.ESCROW_DAYS),
-    )
+    if order_data.use_credits:
+        order = Order(
+            buyer_id=user_id,
+            seller_id=product.seller_id,
+            product_id=product.id,
+            amount=amount,
+            platform_fee=platform_fee,
+            stripe_fee=Decimal("0"),
+            seller_amount=seller_amount,
+            license_type=_normalize_license_type(order_data.license_type),
+            status="completed",
+            payment_status="completed",
+            escrow_release_at=datetime.utcnow(),
+            escrow_released=True,
+            download_count=0,
+        )
+        db.add(order)
+        await db.flush()
 
-    db.add(order)
-    await db.commit()
-    await db.refresh(order)
+        try:
+            await apply_credit_purchase(
+                db,
+                buyer_id=user_id,
+                seller_id=product.seller_id,
+                amount=amount,
+                platform_fee=platform_fee,
+                order_id=order.id,
+                metadata={
+                    "product_id": product.id,
+                    "license_type": order_data.license_type,
+                },
+            )
+        except ValueError as exc:
+            await db.rollback()
+            raise HTTPException(status_code=400, detail=str(exc))
+
+        await db.commit()
+        await db.refresh(order)
+    else:
+        # Create order (payment pending)
+        order = Order(
+            buyer_id=user_id,
+            seller_id=product.seller_id,
+            product_id=product.id,
+            amount=amount,
+            platform_fee=platform_fee,
+            stripe_fee=Decimal("0"),
+            seller_amount=seller_amount,
+            license_type=_normalize_license_type(order_data.license_type),
+            status="pending",
+            escrow_release_at=datetime.utcnow() + timedelta(days=settings.ESCROW_DAYS),
+        )
+
+        db.add(order)
+        await db.commit()
+        await db.refresh(order)
 
     # TODO: Create Stripe payment intent
     # TODO: Return client_secret for frontend
