@@ -114,6 +114,7 @@ async def apply_credit_purchase(
     seller.credit_balance = _as_decimal(seller.credit_balance) + seller_amount
 
     now = _now()
+    metadata = {**(metadata or {}), "payment_method": "credits", "platform_fee": str(platform_fee)}
     buyer_entry = CreditLedgerEntry(
         user_id=buyer_id,
         amount=-amount,
@@ -138,3 +139,51 @@ async def apply_credit_purchase(
     )
     db.add_all([buyer_entry, seller_entry])
     return buyer_entry, seller_entry
+
+
+async def ensure_order_ledger(
+    db: AsyncSession,
+    *,
+    order_id: str,
+    buyer_id: str,
+    seller_id: str,
+    amount: Decimal,
+    platform_fee: Decimal,
+    seller_amount: Decimal,
+    currency: str = "USD",
+    payment_method: str = "stripe",
+) -> None:
+    existing = await db.scalar(
+        select(CreditLedgerEntry).where(CreditLedgerEntry.related_order_id == order_id)
+    )
+    if existing:
+        return
+
+    metadata = {
+        "payment_method": payment_method,
+        "platform_fee": str(platform_fee),
+    }
+    now = _now()
+    buyer_entry = CreditLedgerEntry(
+        user_id=buyer_id,
+        amount=-_as_decimal(amount),
+        currency=currency,
+        entry_type="purchase",
+        status="posted",
+        related_order_id=order_id,
+        description="Purchase",
+        entry_metadata=metadata,
+        posted_at=now,
+    )
+    seller_entry = CreditLedgerEntry(
+        user_id=seller_id,
+        amount=_as_decimal(seller_amount),
+        currency=currency,
+        entry_type="sale",
+        status="posted",
+        related_order_id=order_id,
+        description="Sale",
+        entry_metadata=metadata,
+        posted_at=now,
+    )
+    db.add_all([buyer_entry, seller_entry])

@@ -23,7 +23,7 @@ from services.users import (
     extract_primary_email,
     normalize_username,
 )
-from services.credits import finalize_topup, mark_topup_failed
+from services.credits import finalize_topup, mark_topup_failed, ensure_order_ledger
 from services.delivery import ensure_delivery_artifact
 
 router = APIRouter()
@@ -156,6 +156,17 @@ async def handle_payment_success(data: dict, db: AsyncSession):
             escrow_release_at=datetime.utcnow() + timedelta(days=settings.ESCROW_DAYS),
         )
         db.add(order)
+        await ensure_order_ledger(
+            db,
+            order_id=order.id,
+            buyer_id=order.buyer_id,
+            seller_id=order.seller_id,
+            amount=order.amount,
+            platform_fee=order.platform_fee,
+            seller_amount=order.seller_amount,
+            currency=order.currency or "USD",
+            payment_method="stripe",
+        )
         await ensure_delivery_artifact(db, order)
         await db.commit()
         return
@@ -171,6 +182,17 @@ async def handle_payment_success(data: dict, db: AsyncSession):
     # Set escrow release date
     order.escrow_release_at = datetime.utcnow() + timedelta(days=settings.ESCROW_DAYS)
 
+    await ensure_order_ledger(
+        db,
+        order_id=order.id,
+        buyer_id=order.buyer_id,
+        seller_id=order.seller_id,
+        amount=order.amount,
+        platform_fee=order.platform_fee,
+        seller_amount=order.seller_amount,
+        currency=order.currency or "USD",
+        payment_method="stripe",
+    )
     await ensure_delivery_artifact(db, order)
     await db.commit()
 

@@ -19,6 +19,7 @@ from models.product import Product
 from models.order import Order
 from config import settings
 from services.delivery import ensure_delivery_artifact
+from services.credits import ensure_order_ledger
 
 router = APIRouter()
 
@@ -279,6 +280,17 @@ async def verify_and_create_order(
             order.seller_amount = price - platform_fee
             order.license_type = license_type
             order.escrow_release_at = datetime.utcnow() + timedelta(days=settings.ESCROW_DAYS)
+            await ensure_order_ledger(
+                db,
+                order_id=order.id,
+                buyer_id=order.buyer_id,
+                seller_id=order.seller_id,
+                amount=order.amount,
+                platform_fee=order.platform_fee,
+                seller_amount=order.seller_amount,
+                currency=order.currency or "USD",
+                payment_method="stripe",
+            )
             await ensure_delivery_artifact(db, order)
             await db.commit()
             product_title = "Unknown"
@@ -328,6 +340,17 @@ async def verify_and_create_order(
         )
 
         db.add(order)
+        await ensure_order_ledger(
+            db,
+            order_id=order.id,
+            buyer_id=order.buyer_id,
+            seller_id=order.seller_id,
+            amount=order.amount,
+            platform_fee=order.platform_fee,
+            seller_amount=order.seller_amount,
+            currency=order.currency or "USD",
+            payment_method="stripe",
+        )
         await ensure_delivery_artifact(db, order)
         await db.commit()
         await db.refresh(order)

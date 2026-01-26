@@ -50,6 +50,23 @@ async def lifespan(app: FastAPI):
     logger.info("marketplace_starting", version=settings.APP_VERSION)
 
     # Initialize database
+    if settings.ENVIRONMENT == "production":
+        missing = []
+        if not settings.DATABASE_URL:
+            missing.append("DATABASE_URL")
+        if not settings.CLERK_SECRET_KEY:
+            missing.append("CLERK_SECRET_KEY")
+        if missing:
+            raise RuntimeError(f"Missing required production env vars: {', '.join(missing)}")
+
+        optional_missing = []
+        if not settings.STRIPE_SECRET_KEY:
+            optional_missing.append("STRIPE_SECRET_KEY")
+        if not settings.R2_BUCKET or not settings.R2_ENDPOINT:
+            optional_missing.append("R2_BUCKET/R2_ENDPOINT")
+        if optional_missing:
+            logger.warning("optional_env_missing", values=optional_missing)
+
     if settings.ENVIRONMENT == "development":
         logger.info("initializing_database")
         await init_db()
