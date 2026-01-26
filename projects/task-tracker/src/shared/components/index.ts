@@ -23,3 +23,8 @@ export type { UploadState, UploadStatus } from './FileUploadProgress'
 export { FileThumbnail, FileTypeIcon } from './FileThumbnail'
 export { FilePreview } from './FilePreview'
 export { FileList, FileCountBadge } from './FileList'
+
+// Lazy-loaded file components
+export { LazyFileDropzone } from './LazyFileDropzone'
+export { LazyFileList } from './LazyFileList'
+export type { FileDropzoneProps } from './FileDropzone'

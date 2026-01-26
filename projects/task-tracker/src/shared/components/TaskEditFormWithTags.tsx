@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation'
 import { updateTask, deleteTask } from '@/app/actions/tasks'
 import { updateTaskTags, addTagToTask } from '@/app/actions/tags'
 import { TagInput } from './TagInput'
-import { FileDropzone } from './FileDropzone'
-import { FileList } from './FileList'
+import { LazyFileDropzone } from './LazyFileDropzone'
+import { LazyFileList } from './LazyFileList'
 import { Tag, Task, FileAttachment } from '@prisma/client'
 import Link from 'next/link'
 
@@ -247,7 +247,7 @@ export function TaskEditFormWithTags({ task, availableTags }: TaskEditFormWithTa
 
         {/* File upload dropzone */}
         <div className="mb-4">
-          <FileDropzone
+          <LazyFileDropzone
             taskId={task.id}
             onUploadComplete={handleFileUploadComplete}
             disabled={pending || isPending}
@@ -261,7 +261,7 @@ export function TaskEditFormWithTags({ task, availableTags }: TaskEditFormWithTa
             <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Current Files ({attachments.length})
             </h4>
-            <FileList
+            <LazyFileList
               files={attachments}
               onFileDeleted={handleFileDeleted}
               editable={true}
