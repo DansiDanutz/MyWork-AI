@@ -1,7 +1,8 @@
 'use client'
 
-// Note: global-error.tsx handles errors in the root layout
-// We use <a> tags instead of <Link> because Next.js components may not be reliable here
+// Note: global-error.tsx must include <html> and <body> tags per Next.js App Router requirements
+// This is because it replaces the root layout when an error occurs
+// See: https://nextjs.org/docs/app/building-your-application/routing/error-handling#global-errorjs
 /* eslint-disable @next/next/no-html-link-for-pages */
 
 import { useEffect } from 'react'
@@ -19,8 +20,8 @@ export default function GlobalError({
   }, [error])
 
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
           <div className="max-w-md w-full text-center">
             <div className="mb-8">
