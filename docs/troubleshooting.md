@@ -561,8 +561,8 @@ If you're still stuck:
    ```
 
 2. **Ask for help:**
-   - 💬 **[GitHub Discussions](https://github.com/MyWork-AI/framework/discussions)** - Attach debug report
-   - 🐛 **[GitHub Issues](https://github.com/MyWork-AI/framework/issues)** - If it's a bug
+   - 💬 **[GitHub Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)** - Attach debug report
+   - 🐛 **[GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)** - If it's a bug
    - 📧 **[Email Support](mailto:support@mywork.ai)** - For urgent issues
 
 3. **Include this info:**

@@ -196,14 +196,14 @@ python ../../tools/mw.py gsd progress
 - **Community Contributors** - Bug reports, feature requests, documentation
 
 #### How to Contribute
-1. **Report Issues**: [GitHub Issues](https://github.com/MyWork-AI/framework/issues)
-2. **Feature Requests**: [GitHub Discussions](https://github.com/MyWork-AI/framework/discussions)
+1. **Report Issues**: [GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
+2. **Feature Requests**: [GitHub Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
 3. **Code Contributions**: Fork, develop, submit PR
 4. **Documentation**: Help improve guides and examples
 
 #### Support Channels
-- 💬 **Community**: [GitHub Discussions](https://github.com/MyWork-AI/framework/discussions)
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/MyWork-AI/framework/issues)
+- 💬 **Community**: [GitHub Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
+- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
 - 📧 **Direct Support**: [support@mywork.ai](mailto:support@mywork.ai)
 - 📺 **Video Guides**: [YouTube Channel](https://youtube.com/@MyWorkAI)
 

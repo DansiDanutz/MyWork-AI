@@ -63,7 +63,7 @@ MyWork gets smarter with every project:
 
 - 📖 **[FAQ →](faq.md)** - Answers to common questions
 - 🐛 **[Troubleshooting →](troubleshooting.md)** - Fix common issues
-- 💬 **[GitHub Discussions](https://github.com/MyWork-AI/framework/discussions)** - Community support
+- 💬 **[GitHub Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)** - Community support
 - 📧 **[Support Email](mailto:support@mywork.ai)** - Direct help
 
 ---

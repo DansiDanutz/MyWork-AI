@@ -13,7 +13,7 @@ Get MyWork framework up and running with your first project in just 5 minutes.
 
 ```bash
 # Clone the framework
-git clone https://github.com/MyWork-AI/framework.git MyWork
+git clone https://github.com/DansiDanutz/MyWork-AI.git MyWork
 cd MyWork
 
 # Run the installer (handles Python deps, Node.js tools, environment setup)
@@ -177,7 +177,7 @@ python tools/mw.py ac start my-big-project --concurrency 3
 
 ### 🌟 **Join the Community**
 
-- 💬 [**GitHub Discussions**](https://github.com/MyWork-AI/framework/discussions) - Ask questions, share projects
+- 💬 [**GitHub Discussions**](https://github.com/DansiDanutz/MyWork-AI/discussions) - Ask questions, share projects
 - 🐦 [**Twitter Updates**](https://twitter.com/MyWorkAI) - Latest features and showcases
 - 📺 [**YouTube Channel**](https://youtube.com/@MyWorkAI) - Video tutorials and demos
 - 📧 [**Newsletter**](https://mywork.ai/newsletter) - Weekly tips and case studies
@@ -215,7 +215,7 @@ python ../../tools/mw.py doctor
 **❌ Need more help?**
 - 📖 [**FAQ →**](faq.md) - Common questions answered
 - 🔧 [**Troubleshooting Guide →**](troubleshooting.md) - Detailed problem-solving
-- 💬 [**Get Support →**](https://github.com/MyWork-AI/framework/discussions) - Community help
+- 💬 [**Get Support →**](https://github.com/DansiDanutz/MyWork-AI/discussions) - Community help
 
 ---
 

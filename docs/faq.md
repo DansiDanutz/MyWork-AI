@@ -368,7 +368,7 @@ MyWork/
 
 **A:** Many ways to help:
 
-1. **Report issues:** [GitHub Issues](https://github.com/MyWork-AI/framework/issues)
+1. **Report issues:** [GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
 2. **Share examples:** Add to `examples/` directory
 3. **Improve docs:** Fix typos, add clarifications
 4. **Create templates:** Add new project templates
@@ -378,8 +378,8 @@ MyWork/
 
 **A:** Support channels:
 
-- 💬 **[GitHub Discussions](https://github.com/MyWork-AI/framework/discussions)** - Community Q&A
-- 🐛 **[GitHub Issues](https://github.com/MyWork-AI/framework/issues)** - Bug reports
+- 💬 **[GitHub Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)** - Community Q&A
+- 🐛 **[GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)** - Bug reports
 - 📧 **[Email Support](mailto:support@mywork.ai)** - Direct help
 - 📺 **[YouTube Channel](https://youtube.com/@MyWorkAI)** - Video tutorials
 - 🐦 **[Twitter](https://twitter.com/MyWorkAI)** - Updates and tips
@@ -405,4 +405,4 @@ MyWork/
 
 ---
 
-*💬 **Still have questions?** Ask in [GitHub Discussions](https://github.com/MyWork-AI/framework/discussions) - the community is helpful and responsive!*
+*💬 **Still have questions?** Ask in [GitHub Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions) - the community is helpful and responsive!*
