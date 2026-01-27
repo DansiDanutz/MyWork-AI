@@ -37,20 +37,28 @@ import hashlib
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
-from dataclasses import dataclass, asdict, field
+from dataclasses import dataclass, asdict, field, fields
 
-# Configuration - Import from shared config
+# Configuration - Import from shared config with fallback
 try:
-    from config import MYWORK_ROOT, BRAIN_DATA_JSON as BRAIN_JSON, BRAIN_MD as BRAIN_FILE
-except ImportError:
-    def _get_mywork_root():
+    from config import get_mywork_root
+except ImportError:  # pragma: no cover - fallback for standalone usage
+    def get_mywork_root() -> Path:
         if env_root := os.environ.get("MYWORK_ROOT"):
             return Path(env_root)
         script_dir = Path(__file__).resolve().parent
         return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
-    MYWORK_ROOT = _get_mywork_root()
-    BRAIN_FILE = MYWORK_ROOT / ".planning" / "BRAIN.md"
-    BRAIN_JSON = MYWORK_ROOT / ".planning" / "brain_data.json"
+
+
+def _resolve_brain_paths(root: Optional[Path] = None) -> tuple[Path, Path, Path]:
+    resolved_root = (root or get_mywork_root()).resolve()
+    brain_file = resolved_root / ".planning" / "BRAIN.md"
+    brain_json = resolved_root / ".planning" / "brain_data.json"
+    return resolved_root, brain_file, brain_json
+
+
+# Backwards-compatible defaults (do not rely on these for dynamic roots)
+MYWORK_ROOT, BRAIN_FILE, BRAIN_JSON = _resolve_brain_paths()
 
 # Entry types and their sections in BRAIN.md
 ENTRY_TYPES = {
@@ -74,6 +82,7 @@ class BrainEntry:
     date_added: str = ""
     date_updated: str = ""
     tags: List[str] = field(default_factory=list)
+    references: int = 0
 
     def __post_init__(self):
         if not self.date_added:
@@ -86,21 +95,24 @@ class BrainEntry:
 
     @classmethod
     def from_dict(cls, data: Dict) -> "BrainEntry":
-        return cls(**data)
+        allowed = {field.name for field in fields(cls)}
+        filtered = {key: value for key, value in data.items() if key in allowed}
+        return cls(**filtered)
 
 
 class BrainManager:
     """Manages the brain knowledge base."""
 
-    def __init__(self):
+    def __init__(self, root: Optional[Path] = None):
+        self.root, self.brain_file, self.brain_json = _resolve_brain_paths(root)
         self.entries: Dict[str, BrainEntry] = {}
         self.load()
 
     def load(self):
         """Load entries from JSON backup if exists."""
-        if BRAIN_JSON.exists():
+        if self.brain_json.exists():
             try:
-                with open(BRAIN_JSON) as f:
+                with open(self.brain_json) as f:
                     data = json.load(f)
                     for entry_data in data.get("entries", []):
                         entry = BrainEntry.from_dict(entry_data)
@@ -110,14 +122,14 @@ class BrainManager:
 
     def save(self):
         """Save entries to JSON backup."""
-        BRAIN_JSON.parent.mkdir(parents=True, exist_ok=True)
+        self.brain_json.parent.mkdir(parents=True, exist_ok=True)
         data = {
             "version": "1.0",
             "last_updated": datetime.now().isoformat(),
             "entry_count": len(self.entries),
             "entries": [e.to_dict() for e in self.entries.values()]
         }
-        with open(BRAIN_JSON, "w") as f:
+        with open(self.brain_json, "w") as f:
             json.dump(data, f, indent=2)
 
     def generate_id(self, entry_type: str) -> str:
@@ -247,10 +259,10 @@ class BrainManager:
     def _update_brain_md(self):
         """Regenerate BRAIN.md from entries."""
         # Read the current BRAIN.md to preserve manual sections
-        if not BRAIN_FILE.exists():
+        if not self.brain_file.exists():
             return
 
-        content = BRAIN_FILE.read_text()
+        content = self.brain_file.read_text()
 
         # For now, we'll append new entries to the changelog
         # A more sophisticated version would rebuild sections
@@ -262,7 +274,7 @@ class BrainManager:
             content
         )
 
-        BRAIN_FILE.write_text(content)
+        self.brain_file.write_text(content)
 
 
 def print_entry(entry: BrainEntry, verbose: bool = False):
@@ -464,7 +476,7 @@ def cmd_export(args: List[str]):
     """Export brain to JSON."""
     brain = BrainManager()
     brain.save()
-    print(f"✅ Exported to: {BRAIN_JSON}")
+    print(f"✅ Exported to: {brain.brain_json}")
 
 
 def cmd_list(args: List[str]):

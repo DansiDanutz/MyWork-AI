@@ -39,17 +39,25 @@ from collections import defaultdict
 
 # Configuration - Import from shared config with fallback
 try:
-    from config import MYWORK_ROOT, PROJECTS_DIR, MODULE_REGISTRY_JSON as REGISTRY_FILE, MODULE_REGISTRY_MD as REGISTRY_MD
-except ImportError:
-    def _get_mywork_root():
+    from config import get_mywork_root
+except ImportError:  # pragma: no cover - fallback for standalone usage
+    def get_mywork_root() -> Path:
         if env_root := os.environ.get("MYWORK_ROOT"):
             return Path(env_root)
         script_dir = Path(__file__).resolve().parent
         return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
-    MYWORK_ROOT = _get_mywork_root()
-    PROJECTS_DIR = MYWORK_ROOT / "projects"
-    REGISTRY_FILE = MYWORK_ROOT / ".planning" / "module_registry.json"
-    REGISTRY_MD = MYWORK_ROOT / ".planning" / "MODULE_REGISTRY.md"
+
+
+def _resolve_registry_paths(root: Optional[Path] = None) -> tuple[Path, Path, Path, Path]:
+    resolved_root = (root or get_mywork_root()).resolve()
+    projects_dir = resolved_root / "projects"
+    registry_file = resolved_root / ".planning" / "module_registry.json"
+    registry_md = resolved_root / ".planning" / "MODULE_REGISTRY.md"
+    return resolved_root, projects_dir, registry_file, registry_md
+
+
+# Backwards-compatible defaults (do not rely on these for dynamic roots)
+MYWORK_ROOT, PROJECTS_DIR, REGISTRY_FILE, REGISTRY_MD = _resolve_registry_paths()
 
 # File patterns to scan
 SCAN_PATTERNS = {
@@ -165,7 +173,8 @@ class Module:
 class ModuleRegistry:
     """Registry for all discovered modules across projects."""
 
-    def __init__(self):
+    def __init__(self, root: Optional[Path] = None):
+        self.root, self.projects_dir, self.registry_file, self.registry_md = _resolve_registry_paths(root)
         self.modules: Dict[str, Module] = {}
         self.index: Dict[str, Set[str]] = defaultdict(set)  # tag -> module_ids
         self.type_index: Dict[str, Set[str]] = defaultdict(set)  # type -> module_ids
@@ -174,9 +183,9 @@ class ModuleRegistry:
 
     def load(self):
         """Load registry from file."""
-        if REGISTRY_FILE.exists():
+        if self.registry_file.exists():
             try:
-                with open(REGISTRY_FILE) as f:
+                with open(self.registry_file) as f:
                     data = json.load(f)
                     for mod_data in data.get("modules", []):
                         mod = Module(**mod_data)
@@ -187,14 +196,14 @@ class ModuleRegistry:
 
     def save(self):
         """Save registry to file."""
-        REGISTRY_FILE.parent.mkdir(parents=True, exist_ok=True)
+        self.registry_file.parent.mkdir(parents=True, exist_ok=True)
         data = {
             "version": "1.0",
             "last_updated": datetime.now().isoformat(),
             "module_count": len(self.modules),
             "modules": [m.to_dict() for m in self.modules.values()]
         }
-        with open(REGISTRY_FILE, "w") as f:
+        with open(self.registry_file, "w") as f:
             json.dump(data, f, indent=2)
 
     def _index_module(self, module: Module):
@@ -291,15 +300,16 @@ class ProjectScanner:
 
     def __init__(self, registry: ModuleRegistry):
         self.registry = registry
+        self.projects_dir = registry.projects_dir
 
     def scan_all_projects(self) -> int:
         """Scan all projects in the projects directory."""
-        if not PROJECTS_DIR.exists():
-            print(f"Projects directory not found: {PROJECTS_DIR}")
+        if not self.projects_dir.exists():
+            print(f"Projects directory not found: {self.projects_dir}")
             return 0
 
         total = 0
-        for project_dir in PROJECTS_DIR.iterdir():
+        for project_dir in self.projects_dir.iterdir():
             if project_dir.is_symlink():
                 continue
             if project_dir.is_dir() and not project_dir.name.startswith((".", "_")):
@@ -316,18 +326,18 @@ class ProjectScanner:
         count = 0
 
         for lang, patterns in SCAN_PATTERNS.items():
-                for pattern in patterns:
-                    for file_path in project_path.rglob(pattern):
-                        if any(parent.is_symlink() for parent in file_path.parents):
-                            continue
-                        # Skip excluded directories
-                        if any(skip in file_path.parts for skip in SKIP_DIRS):
-                            continue
+            for pattern in patterns:
+                for file_path in project_path.rglob(pattern):
+                    if any(parent.is_symlink() for parent in file_path.parents):
+                        continue
+                    # Skip excluded directories
+                    if any(skip in file_path.parts for skip in SKIP_DIRS):
+                        continue
 
                     try:
                         modules = self.scan_file(file_path, project_name, lang)
                         count += len(modules)
-                    except Exception as e:
+                    except Exception:
                         # Skip files that can't be read
                         pass
 
@@ -343,7 +353,7 @@ class ProjectScanner:
             return modules
 
         lines = content.split("\n")
-        relative_path = str(file_path.relative_to(PROJECTS_DIR / project))
+        relative_path = str(file_path.relative_to(self.projects_dir / project))
 
         # Get file modification time
         mtime = datetime.fromtimestamp(file_path.stat().st_mtime).isoformat()
@@ -580,10 +590,10 @@ python tools/module_registry.py list component
             content += f"  - Tags: {', '.join(mod.tags[:5])}\n"
             content += "\n"
 
-    with open(REGISTRY_MD, "w") as f:
+    with open(registry.registry_md, "w") as f:
         f.write(content)
 
-    print(f"✅ Exported to {REGISTRY_MD}")
+    print(f"✅ Exported to {registry.registry_md}")
 
 
 def main():
@@ -600,7 +610,7 @@ def main():
         scanner = ProjectScanner(registry)
         count = scanner.scan_all_projects()
         print(f"\n✅ Scan complete! {count} modules indexed.")
-        print(f"   Registry saved to: {REGISTRY_FILE}")
+        print(f"   Registry saved to: {registry.registry_file}")
 
     elif command == "search":
         if len(sys.argv) < 3:
@@ -657,7 +667,7 @@ def main():
             print(f"   Dependencies: {', '.join(module.dependencies[:5])}")
             print(f"   Last Modified: {module.last_modified}")
             print(f"\n   Open in editor:")
-            full_path = PROJECTS_DIR / module.project / module.file_path
+            full_path = registry.projects_dir / module.project / module.file_path
             print(f"   code -g {full_path}:{module.line_number}")
         else:
             print(f"❌ Module not found: {mod_id}")
