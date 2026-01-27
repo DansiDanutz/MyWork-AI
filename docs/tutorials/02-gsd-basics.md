@@ -449,7 +449,7 @@ mw gsd execute-phase 5  # Advanced Features
 ```
 
 ### **Option B: Try Autocoder for Larger Projects**
-Ready for autonomous coding? → [**Tutorial 3: Autocoder Basics →**](03-autocoder-basics.md)
+Ready for autonomous coding? → **Autocoder tutorial coming soon**
 
 ### **Option C: Explore Advanced Features**
 - **Customize phases:** Add your own requirements
@@ -517,6 +517,6 @@ You now understand the core GSD workflow and can:
 
 ---
 
-**Ready for Tutorial 3?** → [**Autocoder Integration →**](03-autocoder-basics.md)
+**Ready for Tutorial 3?** → **Autocoder integration guide coming soon**
 
 *💡 You've now mastered 40% of MyWork's capabilities. Tutorial 3 will show you how to scale up to larger projects with autonomous coding agents.*

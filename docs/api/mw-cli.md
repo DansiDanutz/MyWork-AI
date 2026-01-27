@@ -548,8 +548,8 @@ Available for all `mw` commands:
 ## 📖 Additional Resources
 
 - [**Python API Reference →**](tools/) - Direct tool usage
-- [**Workflow Schemas →**](workflows/) - Custom workflow creation
-- [**Configuration Guide →**](../guides/configuration.md) - Advanced setup
+- [**Quickstart Guide →**](../quickstart.md) - Practical setup
+- [**Architecture Overview →**](../architecture/overview.md) - System design
 - [**Troubleshooting →**](../troubleshooting.md) - Common issues
 
 ---

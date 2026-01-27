@@ -301,4 +301,4 @@ This example is part of the MyWork framework and follows the same license terms.
 
 ---
 
-*💡 **Next Example:** Ready for web development? Check out the [**Web Todo App Example →**](../web-todo-app/) for full-stack development with authentication and responsive UI.*
+*💡 More examples are planned. For now, focus on mastering this CLI flow and the GSD tutorial series.*

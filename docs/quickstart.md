@@ -157,7 +157,7 @@ python ../../tools/mw.py gsd execute-phase 3
 - 📖 [**Complete Tutorial Series →**](tutorials/01-first-project.md) - 6 comprehensive guides
 - 🏗️ [**Architecture Deep Dive →**](architecture/overview.md) - Understand the 3 layers
 - 💡 [**Example Projects →**](../examples/) - Study working applications
-- 🤖 [**Autocoder Integration →**](tutorials/02-autocoder-basics.md) - For larger projects
+- 🤖 **Autocoder Integration** - Coming soon
 
 ### 🔧 **Explore Advanced Features**
 

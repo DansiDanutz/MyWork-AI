@@ -8,8 +8,6 @@ MyWork is a comprehensive framework for building applications using AI agents, a
 
 *[5-minute video overview coming soon]*
 
-[![MyWork Demo](../assets/images/demo-thumbnail.png)](https://youtu.be/demo-link)
-
 ## 🎯 Quick Navigation
 
 ### 🏁 **Get Started** (5 minutes)
@@ -18,25 +16,25 @@ MyWork is a comprehensive framework for building applications using AI agents, a
 - [**Your First Project →**](tutorials/01-first-project.md) - Complete walkthrough
 
 ### 📚 **Learn the Framework**
-- [**GSD (Get Shit Done) →**](guides/gsd-reference.md) - Project orchestration and planning
-- [**WAT (Workflows/Agents/Tools) →**](guides/wat-reference.md) - Task execution framework
-- [**Automation Engines →**](guides/automation-reference.md) - Autocoder, n8n, and integrations
+- [**Tutorials Overview →**](tutorials/index.md) - Guided learning path
+- [**GSD Basics →**](tutorials/02-gsd-basics.md) - Planning and execution
+- [**Architecture Overview →**](architecture/overview.md) - System design
 
 ### 🛠️ **Reference & Tools**
 - [**CLI Commands →**](api/mw-cli.md) - Complete `mw` command reference
 - [**Python API →**](api/tools/) - All framework tools and functions
-- [**Workflows →**](api/workflows/) - Available automation workflows
 - [**Troubleshooting →**](troubleshooting.md) - Common issues and solutions
+- [**FAQ →**](faq.md) - Common questions answered
 
 ### 💡 **Examples & Tutorials**
 - [**Example Projects →**](../examples/) - Working sample applications
 - [**Step-by-Step Tutorials →**](tutorials/) - Guided learning path
-- [**Case Studies →**](case-studies/) - Real-world usage examples
+- [**Quick Start Guide →**](quickstart.md) - Start building fast
 
 ### 🤝 **Contributing**
 - [**Contributing Guide →**](../CONTRIBUTING.md) - How to contribute
 - [**Framework Architecture →**](architecture/) - Deep technical details
-- [**Writing Workflows →**](guides/writing-workflows.md) - Creating new automation
+- [**Troubleshooting →**](troubleshooting.md) - Development tips
 
 ---
 

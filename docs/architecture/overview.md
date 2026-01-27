@@ -264,4 +264,4 @@ journey
 
 ---
 
-*Next: [GSD Layer Deep Dive →](gsd-layer.md) | [WAT Layer Details →](wat-layer.md) | [Automation Engines →](automation-layer.md)*
+*Next: [Quickstart →](../quickstart.md) | [Tutorials →](../tutorials/index.md) | [CLI Reference →](../api/mw-cli.md)*

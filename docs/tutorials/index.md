@@ -18,12 +18,12 @@
 ### ⚡ **Intermediate** (Familiar with GSD)
 **Goal:** Scale up to larger projects and automation
 
-3. [**Autocoder Integration →**](03-autocoder-basics.md) *(30 minutes)*
+3. **Autocoder Integration** *(30 minutes, coming soon)*
    - When and how to use autonomous coding
    - Hand off GSD plans to Autocoder
    - Monitor multi-session development
 
-4. [**Visual Automation with n8n →**](04-n8n-workflows.md) *(25 minutes)*
+4. **Visual Automation with n8n** *(25 minutes, coming soon)*
    - Create webhook processors
    - Build API integration workflows
    - Combine with GSD for complete solutions
@@ -31,32 +31,32 @@
 ### 🏆 **Advanced** (Ready for Complex Projects)
 **Goal:** Master the full framework ecosystem
 
-5. [**Full-Stack Development →**](05-fullstack-mastery.md) *(45 minutes)*
+5. **Full-Stack Development** *(45 minutes, planned)*
    - Plan and build a complete SaaS application
    - Integrate all framework layers
    - Production deployment and monitoring
 
-6. [**Framework Customization →**](06-framework-extension.md) *(30 minutes)*
+6. **Framework Customization** *(30 minutes, planned)*
    - Write custom WAT workflows
    - Extend the brain with domain knowledge
    - Create reusable project templates
 
 ---
 
-## 📚 **Complete Tutorial Sequence**
+## 📚 **Tutorial Sequence**
 
-Following all 6 tutorials in order provides a comprehensive mastery path from zero to expert in approximately **2.5 hours** of hands-on learning.
+Tutorials 1-2 are available now. Tutorials 3-6 are planned and will be added as they are completed.
 
 ### **What You'll Build:**
 
-| Tutorial | Project | Complexity | Time |
-|----------|---------|------------|------|
-| 1 | Task Manager CLI | Simple | 15 min |
-| 2 | Todo Web App | Medium | 20 min |
-| 3 | Blog Platform | Complex | 30 min |
-| 4 | Webhook Processor | Medium | 25 min |
-| 5 | SaaS Dashboard | Advanced | 45 min |
-| 6 | Custom Framework Extension | Expert | 30 min |
+| Tutorial | Project | Complexity | Time | Status |
+|----------|---------|------------|------|--------|
+| 1 | Task Manager CLI | Simple | 15 min | Available |
+| 2 | Todo Web App | Medium | 20 min | Available |
+| 3 | Autocoder Integration | Complex | 30 min | Planned |
+| 4 | n8n Workflows | Medium | 25 min | Planned |
+| 5 | SaaS Dashboard | Advanced | 45 min | Planned |
+| 6 | Framework Extension | Expert | 30 min | Planned |
 
 ### **Skills You'll Learn:**
 

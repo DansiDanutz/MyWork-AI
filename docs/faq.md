@@ -180,7 +180,7 @@ ls projects/my-project/src/
 
 **Start here:**
 - Browse [2,709 templates](https://n8n.io/workflows/)
-- Try [Tutorial 4: n8n Workflows](tutorials/04-n8n-workflows.md)
+- Practice with [Tutorial 2: GSD Basics](tutorials/02-gsd-basics.md)
 
 ### **Q: How do I connect GSD projects with n8n?**
 
@@ -361,8 +361,8 @@ MyWork/
 
 1. **[Architecture Overview](architecture/overview.md)** - Understand the 3 layers
 2. **[Python API Reference](api/tools/)** - See the actual tools
-3. **[Workflow Examples](workflows/)** - Learn the automation patterns
-4. **[Framework Source Code](https://github.com/MyWork-AI/framework)** - Study the implementation
+3. **[Example Projects](../examples/)** - Learn the automation patterns
+4. **[Framework Source Code](https://github.com/DansiDanutz/MyWork-AI)** - Study the implementation
 
 ### **Q: How can I contribute to MyWork?**
 

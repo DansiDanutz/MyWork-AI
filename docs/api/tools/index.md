@@ -7,30 +7,30 @@ Complete Python API reference for MyWork framework tools. All tools are located 
 ### 🧠 Intelligence & Learning
 | Tool | Purpose | Key Functions |
 |------|---------|---------------|
-| [`brain.py`](brain.md) | Knowledge vault management | `search()`, `add_knowledge()`, `learn_from_project()` |
-| [`brain_learner.py`](brain-learner.md) | Automatic pattern extraction | `analyze_commits()`, `extract_patterns()` |
-| [`module_registry.py`](module-registry.md) | Code module indexing | `scan_projects()`, `search_modules()` |
+| `brain.py` | Knowledge vault management | `search()`, `add_knowledge()`, `learn_from_project()` |
+| `brain_learner.py` | Automatic pattern extraction | `analyze_commits()`, `extract_patterns()` |
+| `module_registry.py` | Code module indexing | `scan_projects()`, `search_modules()` |
 
 ### 🔧 System Management
 | Tool | Purpose | Key Functions |
 |------|---------|---------------|
-| [`mw.py`](mw.md) | Unified CLI interface | `main()`, `route_command()` |
-| [`health_check.py`](health-check.md) | System diagnostics | `check_all()`, `fix_issues()` |
-| [`auto_update.py`](auto-update.md) | Framework updates | `check_updates()`, `update_component()` |
+| `mw.py` | Unified CLI interface | `main()`, `route_command()` |
+| `health_check.py` | System diagnostics | `check_all()`, `fix_issues()` |
+| `auto_update.py` | Framework updates | `check_updates()`, `update_component()` |
 
 ### 🚀 Project & Automation
 | Tool | Purpose | Key Functions |
 |------|---------|---------------|
-| [`scaffold.py`](scaffold.md) | Project creation | `create_project()`, `apply_template()` |
-| [`autocoder_api.py`](autocoder-api.md) | Autocoder control | `start_project()`, `get_progress()` |
-| [`n8n_api.py`](n8n-api.md) | n8n workflow management | `create_workflow()`, `deploy_template()` |
+| `scaffold.py` | Project creation | `create_project()`, `apply_template()` |
+| `autocoder_api.py` | Autocoder control | `start_project()`, `get_progress()` |
+| `n8n_api.py` | n8n workflow management | `create_workflow()`, `deploy_template()` |
 
 ### ⚙️ Configuration & Utilities
 | Tool | Purpose | Key Functions |
 |------|---------|---------------|
-| [`config_manager.py`](config-manager.md) | Configuration handling | `load_config()`, `validate_env()` |
-| [`git_utils.py`](git-utils.md) | Git operations | `commit_changes()`, `create_branch()` |
-| [`file_utils.py`](file-utils.md) | File system operations | `copy_template()`, `safe_write()` |
+| `config_manager.py` | Configuration handling | `load_config()`, `validate_env()` |
+| `git_utils.py` | Git operations | `commit_changes()`, `create_branch()` |
+| `file_utils.py` | File system operations | `copy_template()`, `safe_write()` |
 
 ## 🎯 Quick Examples
 
@@ -326,8 +326,8 @@ workflow = create_workflow_from_template(
     template_id=1234,  # From n8n.io
     name="GitHub Webhook Handler",
     environment_vars={
-        "WEBHOOK_SECRET": "my-secret",
-        "GITHUB_TOKEN": "ghp_xxxx"
+        "WEBHOOK_SECRET": "example-secret",
+        "GITHUB_TOKEN": "github_token_example"
     }
 )
 
@@ -377,27 +377,27 @@ result = tool.custom_operation("./projects/my-app", {"param1": "value"})
 
 ## 📖 Individual Tool Documentation
 
-Click on any tool below for complete API reference, examples, and usage patterns:
+Tool entrypoints inside `tools/`:
 
 ### Intelligence & Learning
-- [🧠 **brain.py →**](brain.md) - Knowledge vault and pattern management
-- [📖 **brain_learner.py →**](brain-learner.md) - Automatic learning from projects
-- [📊 **module_registry.py →**](module-registry.md) - Code module indexing and search
+- 🧠 `brain.py` - Knowledge vault and pattern management
+- 📖 `brain_learner.py` - Automatic learning from projects
+- 📊 `module_registry.py` - Code module indexing and search
 
 ### System Management
-- [⚡ **mw.py →**](mw.md) - Unified command-line interface
-- [🔧 **health_check.py →**](health-check.md) - System diagnostics and repair
-- [🔄 **auto_update.py →**](auto-update.md) - Framework component updates
+- ⚡ `mw.py` - Unified command-line interface
+- 🔧 `health_check.py` - System diagnostics and repair
+- 🔄 `auto_update.py` - Framework component updates
 
 ### Project & Automation
-- [🏗️ **scaffold.py →**](scaffold.md) - Project creation and templating
-- [🤖 **autocoder_api.py →**](autocoder-api.md) - Autonomous coding control
-- [🔗 **n8n_api.py →**](n8n-api.md) - Visual workflow automation
+- 🏗️ `scaffold.py` - Project creation and templating
+- 🤖 `autocoder_api.py` - Autonomous coding control
+- 🔗 `n8n_api.py` - Visual workflow automation
 
 ### Configuration & Utilities
-- [⚙️ **config_manager.py →**](config-manager.md) - Configuration management
-- [📂 **git_utils.py →**](git-utils.md) - Git operation utilities
-- [📁 **file_utils.py →**](file-utils.md) - File system helpers
+- ⚙️ `config_manager.py` - Configuration management
+- 📂 `git_utils.py` - Git operation utilities
+- 📁 `file_utils.py` - File system helpers
 
 ---
 
