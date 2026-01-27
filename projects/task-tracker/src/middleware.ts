@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+type RateLimitResult = { success: boolean; remaining: number; reset: number }
+type RatelimitInstance = { limit: (identifier: string) => Promise<RateLimitResult> }
+
 // Rate limiting (optional - only when Upstash is configured)
 // Note: Middleware must not use top-level await, so we handle this at runtime
-let ratelimit: any = null
+let ratelimit: RatelimitInstance | null = null
 let ratelimitInitialized = false
 
 async function initRatelimit() {
@@ -20,7 +23,7 @@ async function initRatelimit() {
         limiter: Ratelimit.slidingWindow(60, '1 m'), // 60 requests per minute
         analytics: true,
       })
-    } catch (error) {
+    } catch {
       console.warn('Rate limiting disabled: Upstash dependencies not available')
     }
   }

@@ -10,6 +10,17 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
+  {
+    // Ignore build output and generated files to keep lint focused on source.
+    ignores: [
+      ".next/**",
+      "node_modules/**",
+      ".vercel/**",
+      "uploads/**",
+      "next-env.d.ts",
+      "tsconfig.tsbuildinfo",
+    ],
+  },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 ];
 

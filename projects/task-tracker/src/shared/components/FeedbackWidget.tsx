@@ -129,7 +129,7 @@ export function FeedbackWidget() {
             {/* Feedback textarea */}
             <div className="mb-2">
               <label htmlFor="feedback-text" className="mb-2 block text-sm font-medium text-gray-700">
-                What's on your mind?
+                What&apos;s on your mind?
               </label>
               <textarea
                 id="feedback-text"
