@@ -84,12 +84,23 @@ jobs:
           python tools/qa/check_backend_health.py
           python tools/qa/check_frontend_routes.py
 
+      - name: Prepare QA report template
+        id: qa_report
+        working-directory: mywork-ai
+        run: |
+          REPORT_PATH="reports/MARKETPLACE_QA_$(date -u +%Y-%m-%d).md"
+          cp reports/MARKETPLACE_QA_TEMPLATE.md "$REPORT_PATH"
+          echo "report_path=$REPORT_PATH" >> "$GITHUB_OUTPUT"
+
       - name: Publish deploy summary
         env:
           FRONTEND_URL: ${{ steps.deploy_frontend.outputs.url }}
+          QA_REPORT_PATH: ${{ steps.qa_report.outputs.report_path }}
         run: |
           echo "### Marketplace Deploy Summary" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "- Frontend deploy: ${FRONTEND_URL:-n/a}" >> "$GITHUB_STEP_SUMMARY"
           echo "- Smoke tests: ✅" >> "$GITHUB_STEP_SUMMARY"
           echo "- QA scripts: ✅" >> "$GITHUB_STEP_SUMMARY"
+          REPORT_LINK=${QA_REPORT_PATH:-reports/MARKETPLACE_QA_$(date -u +%Y-%m-%d).md}
+          echo "- QA report template: ${REPORT_LINK}" >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,37 @@
+name: Marketplace Smoke Monitor
+
+on:
+  schedule:
+    - cron: "0 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout QA scripts
+        uses: actions/checkout@v4
+        with:
+          repository: DansiDanutz/MyWork-AI
+          path: mywork-ai
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        working-directory: mywork-ai
+        run: python -m pip install -r tools/requirements.txt
+
+      - name: Run production smoke test
+        working-directory: mywork-ai
+        env:
+          MARKETPLACE_FRONTEND_URL: ${{ secrets.MARKETPLACE_FRONTEND_URL }}
+          MARKETPLACE_BACKEND_URL: ${{ secrets.MARKETPLACE_BACKEND_URL }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: python tools/smoke_test_marketplace.py
