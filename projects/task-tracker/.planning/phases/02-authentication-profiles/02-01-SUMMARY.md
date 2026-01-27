@@ -5,45 +5,57 @@ subsystem: auth
 tags: [next-auth, oauth, github, prisma-adapter, database-sessions]
 
 # Dependency graph
+
 requires:
+
   - phase: 01-foundation-setup
+
     provides: Next.js app, Prisma with PostgreSQL, modular architecture
 provides:
+
   - Auth.js v5 with GitHub OAuth provider configured
   - Database models for User, Account, Session, VerificationToken
   - Auth API routes at /api/auth/* (signin, callback, signout, session, csrf, providers)
   - Database-backed sessions with 24h expiry and 1h refresh
   - Type-safe session with user.id access
+
 affects: [02-02-auth-ui, 02-03-profile-management, all-authenticated-features]
 
 # Tech tracking
+
 tech-stack:
   added: [next-auth@5.0.0-beta.30, @auth/prisma-adapter@2.11.1]
   patterns: [database-backed-sessions, oauth-github, session-callbacks, auth-middleware]
 
 key-files:
   created:
+
     - src/shared/lib/auth.ts
     - src/app/api/auth/[...nextauth]/route.ts
     - src/shared/types/next-auth.d.ts
     - prisma/migrations/20260124210303_add_auth_models/migration.sql
+
   modified:
+
     - prisma/schema.prisma
     - package.json
     - .env.example
 
 key-decisions:
+
   - "Use database sessions instead of JWT for better security and revocation capability"
   - "Configure GitHub OAuth with repo read scope for future GitHub integration features"
   - "24-hour session expiry with 1-hour silent refresh for balance between security and UX"
   - "Redirect first-time users to /welcome for onboarding flow"
 
 patterns-established:
+
   - "Auth.js v5 configuration with PrismaAdapter pattern"
   - "Type extension pattern for next-auth Session interface"
   - "Environment variable templates in .env.example with clear generation instructions"
 
 # Metrics
+
 duration: 8min
 completed: 2026-01-24
 ---
@@ -61,6 +73,7 @@ completed: 2026-01-24
 - **Files modified:** 9
 
 ## Accomplishments
+
 - Auth.js v5 installed and configured with GitHub OAuth provider
 - Database schema extended with User, Account, Session, VerificationToken models
 - Auth API routes functional at /api/auth/* with all necessary endpoints
@@ -76,6 +89,7 @@ Each task was committed atomically:
 3. **Task 3: Create Auth API Route Handler** - `bcdabe2` (feat)
 
 ## Files Created/Modified
+
 - `prisma/schema.prisma` - Added User, Account, Session, VerificationToken models with custom profile fields (bio, customAvatar)
 - `prisma/migrations/20260124210303_add_auth_models/migration.sql` - Database migration for auth tables
 - `src/shared/lib/auth.ts` - Auth.js configuration with GitHub provider, database adapter, session callbacks
@@ -85,6 +99,7 @@ Each task was committed atomically:
 - `.env.example` - Added AUTH_GITHUB_ID, AUTH_GITHUB_SECRET, AUTH_SECRET templates
 
 ## Decisions Made
+
 - **Database sessions over JWT:** Chose database-backed sessions for better security (revocation capability) and server-side control per RESEARCH.md findings
 - **GitHub OAuth scopes:** Included `read:user user:email repo` for future GitHub integration features (task tracking from repo issues)
 - **Session timing:** 24-hour expiry with 1-hour silent refresh balances security with user experience
@@ -98,6 +113,7 @@ None - plan executed exactly as written.
 ## Issues Encountered
 
 **1. Shell environment NODE_ENV interference**
+
 - **Issue:** Build failed with "non-standard NODE_ENV value" error due to global shell environment variable
 - **Solution:** Identified that NODE_ENV was set in shell environment (not project). Build succeeds when unsetting NODE_ENV before build command
 - **Impact:** None on production - Next.js manages NODE_ENV automatically in deployment environments
@@ -114,27 +130,35 @@ None - plan executed exactly as written.
    - Copy Client ID and Client Secret
 
 2. **Environment Variables (.env):**
+
    ```
    AUTH_GITHUB_ID=your_github_client_id
    AUTH_GITHUB_SECRET=your_github_client_secret
    AUTH_SECRET=generate_with_npx_auth_secret
+
    ```
 
 3. **Generate AUTH_SECRET:**
+
    ```bash
    npx auth secret
+
    ```
 
 4. **Verification:**
+
    After setup, test endpoints:
+
    ```bash
    curl http://localhost:3000/api/auth/providers
    curl http://localhost:3000/api/auth/csrf
+
    ```
 
 ## Next Phase Readiness
 
 **Ready for Phase 02 Plan 02 (Auth UI - Login/Signup Pages):**
+
 - Auth.js infrastructure complete and verified
 - All API endpoints functional
 - Database models created and migrated
@@ -143,6 +167,7 @@ None - plan executed exactly as written.
 **Blockers:** None
 
 **Pending work:**
+
 - User must configure GitHub OAuth app and environment variables before testing sign-in flow
 - Login/signup UI pages needed (Plan 02)
 - Profile management UI needed (Plan 03)

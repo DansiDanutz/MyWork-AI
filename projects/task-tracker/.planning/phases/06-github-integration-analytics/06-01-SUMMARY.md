@@ -12,17 +12,21 @@ tech-stack:
   patterns: [after-api, discriminated-union, server-only]
 key-files:
   created:
+
     - prisma/schema.prisma (AnalyticsEvent model)
     - src/shared/lib/analytics/types.ts
     - src/shared/lib/analytics/tracker.ts
     - src/shared/lib/analytics/index.ts
+
   modified: []
 decisions:
+
   - ANALYTICS-001: Next.js 15 after() API for non-blocking event tracking
   - ANALYTICS-002: JSONB properties for flexible event schemas
   - ANALYTICS-003: Zod discriminated unions for type-safe event validation
   - ANALYTICS-004: Time-series indexes (userId+createdAt, eventType+createdAt, createdAt)
   - ANALYTICS-005: trackSessionEvent helper auto-injects userId from auth session
+
 metrics:
   duration: 2 minutes
   completed: 2026-01-25
@@ -60,11 +64,13 @@ Created the core analytics infrastructure for the MyWork framework's brain learn
 ## Key Decisions
 
 ### ANALYTICS-001: Next.js 15 after() API for Non-Blocking Tracking
+
 **Decision:** Use Next.js 15's native `after()` API for event tracking instead of external queue systems.
 
 **Context:** Analytics should never impact user experience. Need to defer database writes until after response is sent.
 
 **Rationale:**
+
 - Native Next.js feature specifically designed for this use case
 - No external dependencies (queues, background workers)
 - Eliminates 50-200ms latency from user operations
@@ -73,11 +79,13 @@ Created the core analytics infrastructure for the MyWork framework's brain learn
 **Impact:** All event tracking is non-blocking. Analytics failures never break user features.
 
 ### ANALYTICS-002: JSONB Properties for Flexible Event Schemas
+
 **Decision:** Store event-specific data in JSONB `properties` field instead of creating separate tables per event type.
 
 **Context:** Different event types need different fields. Need flexibility without constant schema migrations.
 
 **Rationale:**
+
 - PostgreSQL JSONB provides schema flexibility with good query performance
 - Avoids 9+ separate tables (one per event type)
 - Zod validation ensures type safety despite dynamic schema
@@ -86,11 +94,13 @@ Created the core analytics infrastructure for the MyWork framework's brain learn
 **Impact:** Can add new event types without database migrations. Properties validated at runtime.
 
 ### ANALYTICS-003: Zod Discriminated Unions for Type-Safe Events
+
 **Decision:** Define all event types as Zod schemas in a discriminated union.
 
 **Context:** TypeScript needs to know the shape of each event type. Runtime validation prevents bad data.
 
 **Rationale:**
+
 - Discriminated union on `type` field enables exhaustive type checking
 - Each event type has its own strict property schema
 - Runtime validation catches malformed events before storage
@@ -99,11 +109,13 @@ Created the core analytics infrastructure for the MyWork framework's brain learn
 **Impact:** Full type safety across the analytics system. Invalid events caught immediately.
 
 ### ANALYTICS-004: Time-Series Indexes for Query Performance
+
 **Decision:** Add three indexes: `[userId, createdAt]`, `[eventType, createdAt]`, `[createdAt]`.
 
 **Context:** Analytics queries are primarily time-series (user timelines, event aggregations).
 
 **Rationale:**
+
 - `userId + createdAt` - Fast user activity timeline queries
 - `eventType + createdAt` - Fast feature usage aggregations
 - `createdAt` alone - Global time-series queries
@@ -112,11 +124,13 @@ Created the core analytics infrastructure for the MyWork framework's brain learn
 **Impact:** Fast queries for brain analysis. Write performance unaffected.
 
 ### ANALYTICS-005: trackSessionEvent Helper Auto-Injects userId
+
 **Decision:** Provide `trackSessionEvent()` helper that automatically gets userId from current session.
 
 **Context:** Most events are tracked in Server Actions where session context is available.
 
 **Rationale:**
+
 - DRY principle - don't require manual `auth()` call in every tracking call
 - Follows existing pattern from `verifySession()` in `dal.ts`
 - Makes event tracking one-liner: `trackSessionEvent('page_view', { path: '/dashboard' })`
@@ -141,6 +155,7 @@ None - plan executed exactly as written.
 ## Next Phase Readiness
 
 **Phase 06 Plan 02** (GitHub API Integration) can proceed immediately with:
+
 - Analytics infrastructure ready for tracking GitHub API calls
 - Event types defined for future GitHub-related events
 - Non-blocking tracker available for logging API rate limit metrics
@@ -148,6 +163,7 @@ None - plan executed exactly as written.
 **Blockers:** None
 
 **Recommendations:**
+
 1. Add GitHub-specific event types in Plan 02 (repo_fetched, pr_analyzed, etc.)
 2. Use `trackEvent()` to log GitHub API calls for rate limit monitoring
 3. Export analytics data for brain learning after Plan 05 completes
@@ -155,6 +171,7 @@ None - plan executed exactly as written.
 ## Validation Notes
 
 **Verified:**
+
 - ✅ Database schema valid: `npx prisma validate`
 - ✅ Schema applied: `npx prisma db push` succeeded
 - ✅ Prisma client regenerated: `npx prisma generate`
@@ -163,6 +180,7 @@ None - plan executed exactly as written.
 - ✅ Files can be imported (server-only context required for after() API)
 
 **Not tested (requires runtime):**
+
 - after() API execution (needs Server Component context)
 - Database insert via trackEventAsync() (needs running PostgreSQL)
 - Session integration via trackSessionEvent() (needs authenticated user)
@@ -193,6 +211,7 @@ None introduced.
    - Extractable: Yes - pattern applicable to any auth-aware utilities
 
 **Brain learning value:**
+
 - Demonstrates production-ready analytics without external dependencies
 - Shows proper use of Next.js 15's after() API
 - Establishes pattern for GDPR-compliant data storage (IDs only, no PII)
@@ -200,11 +219,13 @@ None introduced.
 ## Performance Impact
 
 **Database:**
+
 - +1 table (AnalyticsEvent)
 - +3 indexes (minimal write overhead for time-series queries)
 - Async inserts via after() - zero impact on user operations
 
 **Application:**
+
 - Zero latency added to user-facing operations
 - Event validation is synchronous but happens after response sent
 - Prisma connection pool handles concurrent analytics writes
@@ -227,6 +248,7 @@ None introduced.
 ## Files Changed
 
 **Created:**
+
 - `prisma/schema.prisma` - Added AnalyticsEvent model and User relation
 - `src/shared/lib/analytics/types.ts` - Event type definitions with Zod
 - `src/shared/lib/analytics/tracker.ts` - Non-blocking event tracker
@@ -247,11 +269,13 @@ None introduced.
 ## Next Steps
 
 **Immediate:**
+
 1. Plan 02: GitHub API client with rate limiting and enrichment
 2. Plan 03: Automatic event tracking middleware
 3. Plan 04: Analytics dashboard UI
 
 **Future:**
+
 1. Add data retention job (90-day purge for GDPR compliance)
 2. Create brain export API endpoint
 3. Build brain analysis scripts to consume event data

@@ -11,27 +11,32 @@ MyWork is a comprehensive framework for building applications using AI agents, a
 ## 🎯 Quick Navigation
 
 ### 🏁 **Get Started** (5 minutes)
+
 - [**Quick Start Guide →**](quickstart.md) - Install and create your first project
 - [**Architecture Overview →**](architecture/overview.md) - Understand the 3-layer system
 - [**Your First Project →**](tutorials/01-first-project.md) - Complete walkthrough
 
 ### 📚 **Learn the Framework**
+
 - [**Tutorials Overview →**](tutorials/index.md) - Guided learning path
 - [**GSD Basics →**](tutorials/02-gsd-basics.md) - Planning and execution
 - [**Architecture Overview →**](architecture/overview.md) - System design
 
 ### 🛠️ **Reference & Tools**
+
 - [**CLI Commands →**](api/mw-cli.md) - Complete `mw` command reference
 - [**Python API →**](api/tools/) - All framework tools and functions
 - [**Troubleshooting →**](troubleshooting.md) - Common issues and solutions
 - [**FAQ →**](faq.md) - Common questions answered
 
 ### 💡 **Examples & Tutorials**
+
 - [**Example Projects →**](../examples/) - Working sample applications
 - [**Step-by-Step Tutorials →**](tutorials/) - Guided learning path
 - [**Quick Start Guide →**](quickstart.md) - Start building fast
 
 ### 🤝 **Contributing**
+
 - [**Contributing Guide →**](../CONTRIBUTING.md) - How to contribute
 - [**Framework Architecture →**](architecture/) - Deep technical details
 - [**Troubleshooting →**](troubleshooting.md) - Development tips
@@ -76,6 +81,7 @@ MyWork gets smarter with every project:
 ![License](https://img.shields.io/github/license/MyWork-AI/framework)
 
 **Live Examples:**
+
 - [AI Dashboard](https://ai-dashboard-demo.vercel.app) - Real-time analytics
 - [Task Tracker](https://task-tracker-demo.vercel.app) - Project management
 - [API Explorer](https://api-explorer-demo.vercel.app) - API documentation

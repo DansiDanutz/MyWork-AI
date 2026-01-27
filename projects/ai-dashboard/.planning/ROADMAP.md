@@ -23,6 +23,7 @@
 **Goal:** Set up FastAPI backend with database and scheduler
 
 **Deliverables:**
+
 - [x] FastAPI app structure
 - [x] SQLAlchemy models (YouTubeVideo, AINews, GitHubProject, YouTubeAutomation, ScraperLog)
 - [x] Database initialization
@@ -32,6 +33,7 @@
 - [x] Stats endpoint
 
 **Files:**
+
 - `backend/main.py`
 - `backend/database/__init__.py`
 - `backend/requirements.txt`
@@ -44,6 +46,7 @@
 **Goal:** Implement all three data scrapers
 
 **Deliverables:**
+
 - [x] YouTube scraper with Apify integration
 - [x] Quality scoring algorithm
 - [x] News aggregator (TechCrunch, Verge, HN)
@@ -52,6 +55,7 @@
 - [x] Manual trigger endpoints
 
 **Files:**
+
 - `backend/scrapers/youtube_scraper.py`
 - `backend/scrapers/news_aggregator.py`
 - `backend/scrapers/github_trending.py`
@@ -64,6 +68,7 @@
 **Goal:** Build the prompt-to-video pipeline
 
 **Deliverables:**
+
 - [x] Prompt optimizer with DSPy
 - [x] Claude script generation
 - [x] HeyGen video integration
@@ -72,6 +77,7 @@
 - [x] YouTube upload preparation
 
 **Files:**
+
 - `backend/services/youtube_automation.py`
 - `backend/services/prompt_optimizer.py`
 
@@ -82,6 +88,7 @@
 **Goal:** Set up Next.js with base layout
 
 **Deliverables:**
+
 - [x] Next.js 14 app structure
 - [x] Tailwind CSS configuration
 - [x] Global styles
@@ -89,6 +96,7 @@
 - [x] API client utilities
 
 **Files:**
+
 - `frontend/app/layout.tsx`
 - `frontend/app/globals.css`
 - `frontend/lib/api.ts`
@@ -101,6 +109,7 @@
 **Goal:** Build all dashboard pages
 
 **Deliverables:**
+
 - [x] Dashboard home page with stats
 - [x] Videos page (grid, thumbnails, scrape trigger)
 - [x] News page (list, source filter, trending toggle)
@@ -112,6 +121,7 @@
 - [x] Loading states and error handling
 
 **Files:**
+
 - `frontend/app/page.tsx`
 - `frontend/app/videos/page.tsx`
 - `frontend/app/news/page.tsx`
@@ -132,6 +142,7 @@
 **Goal:** Ensure everything works end-to-end
 
 **Deliverables:**
+
 - [x] Test all API endpoints
 - [x] Test scheduler runs
 - [x] Test YouTube automation flow
@@ -140,6 +151,7 @@
 - [x] Environment variable validation
 
 **Files:**
+
 - `backend/main.py` - CORS updated for production
 - `backend/.env.example` - Production env template
 - `frontend/.env.example` - Frontend env template
@@ -151,6 +163,7 @@
 **Goal:** Deploy to production
 
 **Deliverables:**
+
 - [x] Backend Dockerfile
 - [x] Railway deployment config
 - [x] Vercel frontend config
@@ -159,6 +172,7 @@
 - [x] Procfile for Railway
 
 **Files:**
+
 - `backend/Dockerfile`
 - `backend/.dockerignore`
 - `backend/railway.json`

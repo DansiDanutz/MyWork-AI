@@ -42,25 +42,33 @@
 ## Installation
 
 ```bash
+
 # Create Next.js app with TypeScript and App Router
+
 npx create-next-app@latest task-tracker --typescript --tailwind --app --turbopack
 
 # Core dependencies
+
 npm install prisma @prisma/client zod react-hook-form @hookform/resolvers
 npm install @tanstack/react-query date-fns
 
 # GitHub OAuth
+
 npm install @octokit/oauth-app
 
 # File uploads
+
 npm install uploadthing @uploadthing/react
 
 # shadcn/ui (run after project creation)
+
 npx shadcn@latest init
 npx shadcn@latest add button input label card table dialog form
 
 # Dev dependencies
+
 npm install -D tsx @types/node
+
 ```
 
 ## Alternatives Considered
@@ -91,6 +99,7 @@ npm install -D tsx @types/node
 ## Stack Patterns by Variant
 
 **If building MVP for quick deployment (RECOMMENDED):**
+
 - Use Vercel for hosting (zero-config, auto-deploy from GitHub)
 - Use Vercel Postgres for database (integrated, no separate config)
 - Use uploadthing for files (serverless-friendly, simple setup)
@@ -98,12 +107,14 @@ npm install -D tsx @types/node
 - Authentication: Clerk (10-minute setup) or custom GitHub OAuth (more control)
 
 **If optimizing for cost at scale (>10K users):**
+
 - Use Railway or self-hosted for compute
 - Use managed PostgreSQL (e.g., Supabase, Neon, or AWS RDS)
 - Use AWS S3 + CloudFront for files (costs 60-85% less than Cloudinary at >2TB/month)
 - Authentication: Custom GitHub OAuth implementation (no per-user pricing)
 
 **If prioritizing code ownership and framework portability:**
+
 - Use standard React patterns (avoid Vercel-specific features)
 - Use Prisma with raw SQL escape hatches for complex queries
 - Use vanilla S3 SDK (not uploadthing) for file storage
@@ -126,16 +137,19 @@ npm install -D tsx @types/node
 
 **Next.js + Prisma:**
 Add postinstall script to package.json for Vercel deployments:
+
 ```json
 {
   "scripts": {
     "postinstall": "prisma generate"
   }
 }
+
 ```
 
 **TypeScript Strict Mode:**
 Enable strict mode in tsconfig.json for maximum type safety (critical for brain reusability):
+
 ```json
 {
   "compilerOptions": {
@@ -144,17 +158,21 @@ Enable strict mode in tsconfig.json for maximum type safety (critical for brain 
     "noUncheckedIndexedAccess": true
   }
 }
+
 ```
 
 **ESLint + Prettier:**
 Use Next.js ESLint config with TypeScript:
+
 ```bash
 npm install -D eslint-config-next @typescript-eslint/eslint-plugin
+
 ```
 
 **Environment Variables:**
 Use .env.local for development (gitignored). Vercel auto-loads these in production.
 Required variables:
+
 - `DATABASE_URL` (PostgreSQL connection string)
 - `GITHUB_CLIENT_ID` (OAuth app credentials)
 - `GITHUB_CLIENT_SECRET`
@@ -163,6 +181,7 @@ Required variables:
 ## Sources
 
 ### HIGH Confidence (Official Documentation)
+
 - [Next.js 16.1.4 Documentation](https://nextjs.org/docs) — Current stable version, App Router best practices
 - [Next.js 16 Release Blog](https://nextjs.org/blog/next-16) — Turbopack stable, React 19 support, proxy.ts
 - [React 19.2 Release](https://react.dev/blog/2025/10/01/react-19-2) — Stable release with Server Components
@@ -171,6 +190,7 @@ Required variables:
 - [GitHub OAuth Apps Documentation](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps) — Official OAuth implementation guide
 
 ### MEDIUM Confidence (Verified with Multiple Sources)
+
 - [Strapi: React & Next.js in 2025 Best Practices](https://strapi.io/blog/react-and-nextjs-in-2025-modern-best-practices) — Modern patterns
 - [Vercel: React Best Practices](https://vercel.com/blog/introducing-react-best-practices) — 10+ years optimization knowledge
 - [Talent500: React & Next.js State, Performance](https://talent500.com/blog/modern-frontend-best-practices-with-react-and-next-js-2025/) — 2025 standards
@@ -182,6 +202,7 @@ Required variables:
 - [NextAuth vs Clerk Comparison](https://medium.com/@sagarsangwan/next-js-authentication-showdown-nextauth-free-databases-vs-clerk-vs-auth0-in-2025-e40b3e8b0c45) — Auth stack decision
 
 ### Additional References
+
 - [Vercel Next.js + PostgreSQL Guide](https://vercel.com/kb/guide/nextjs-prisma-postgres) — Deployment patterns
 - [Node.js TypeScript Best Practices 2025](https://medium.com/@chirag.dave/node-js-in-2025-modern-practices-you-should-be-using-65f202c6651d) — Modern Node.js patterns
 - [Prisma Deep Dive 2025](https://dev.to/mihir_bhadak/prisma-deep-dive-handbook-2025-from-zero-to-expert-1761) — ORM best practices

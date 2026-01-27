@@ -5,6 +5,7 @@ This folder contains working example projects that demonstrate how to use the My
 ## Available Now
 
 ### CLI Task Manager (Python)
+
 - Path: `examples/cli-task-manager/`
 - Tutorial: `../docs/tutorials/01-first-project.md`
 - Focus: GSD basics, CLI patterns, JSON persistence
@@ -17,6 +18,7 @@ cp -r examples/cli-task-manager projects/my-task-cli
 cd projects/my-task-cli
 pip install -r requirements.txt
 python src/task_manager.py --help
+
 ```
 
 ## Notes
@@ -26,4 +28,5 @@ python src/task_manager.py --help
 
 ```bash
 mw gsd start my-new-example
+
 ```

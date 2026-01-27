@@ -5,37 +5,48 @@ subsystem: infra
 tags: [nextjs, environment, zod, configuration]
 
 # Dependency graph
+
 requires:
+
   - phase: 01-02
+
     provides: Environment validation with Zod schema
 provides:
+
   - Next.js production builds work without NODE_ENV conflicts
   - Environment validation without NODE_ENV requirement
   - isDev and isProd helper exports for runtime checks
+
 affects: [all future phases requiring production builds]
 
 # Tech tracking
+
 tech-stack:
   added: []
   patterns:
+
     - "Next.js manages NODE_ENV automatically - never set in .env"
     - "Use process.env.NODE_ENV directly for runtime environment checks"
 
 key-files:
   created: []
   modified:
+
     - .env.example
     - src/shared/lib/env.ts
     - src/app/api/health/route.ts
 
 key-decisions:
+
   - "Remove NODE_ENV from environment files - Next.js manages it automatically"
   - "Provide isDev/isProd helper exports for convenience"
 
 patterns-established:
+
   - "Environment variables: User-controlled only in Zod schema, framework-managed accessed directly"
 
 # Metrics
+
 duration: 3min
 completed: 2026-01-24
 ---
@@ -53,6 +64,7 @@ completed: 2026-01-24
 - **Files modified:** 3
 
 ## Accomplishments
+
 - Removed NODE_ENV from .env files to prevent Next.js build conflicts
 - Updated environment schema to validate only user-controlled variables
 - Production builds (`npm run build`) now succeed without workarounds
@@ -67,6 +79,7 @@ Each task was committed atomically:
 3. **Task 3: Update Health Check to Use New Env Helpers** - `c8e4958` (fix)
 
 ## Files Created/Modified
+
 - `.env.example` - Removed NODE_ENV, added documentation explaining Next.js manages it
 - `src/shared/lib/env.ts` - Removed NODE_ENV from Zod schema, added isDev/isProd exports
 - `src/app/api/health/route.ts` - Use process.env.NODE_ENV directly for environment reporting
@@ -74,11 +87,13 @@ Each task was committed atomically:
 ## Decisions Made
 
 **Remove NODE_ENV from environment configuration:**
+
 - Next.js automatically sets NODE_ENV based on the command (`dev` = development, `build`/`start` = production)
 - Having NODE_ENV in .env causes conflicts during builds ("non-standard NODE_ENV value")
 - User should never need to manually set NODE_ENV
 
 **Simplify environment validation:**
+
 - Zod schema validates only user-controlled variables (DATABASE_URL, NEXT_PUBLIC_APP_URL)
 - Framework-managed variables (NODE_ENV) accessed directly via process.env
 - Provides isDev/isProd helpers for convenience
@@ -90,6 +105,7 @@ None - plan executed exactly as written.
 ## Issues Encountered
 
 **Shell environment NODE_ENV persists:**
+
 - Discovery: Shell session had NODE_ENV=development set from previous work
 - Impact: `npm run build` still shows warning if shell has NODE_ENV set
 - Resolution: Not a code issue - shell environment persists between sessions

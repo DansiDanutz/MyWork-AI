@@ -58,15 +58,20 @@ If you discover a security vulnerability in MyWork Framework, please report it r
    - Reference with `os.getenv()`
 
 4. **Run security checks**
+
    ```bash
    python tools/mw.py doctor
+
    ```
+
    - Checks for exposed secrets
    - Validates `.gitignore`
 
 5. **Keep dependencies updated**
+
    ```bash
    python tools/mw.py update check
+
    ```
 
 ### For Contributors
@@ -110,11 +115,15 @@ If you discover a security vulnerability in MyWork Framework, please report it r
 ### API Key Management
 
 ```bash
+
 # Correct: Environment variable
+
 ANTHROPIC_API_KEY=sk-ant-xxxxx  # In .env only
 
 # Wrong: Hardcoded
+
 api_key = "sk-ant-real-key"  # Never do this!
+
 ```
 
 ## Disclosure Policy

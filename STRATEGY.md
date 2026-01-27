@@ -19,11 +19,13 @@ The loop: build -> capture -> package -> sell -> feedback -> improve.
 All projects in `projects/` must be classified as one of:
 
 1) `framework` projects
+
    - Purpose: Improve MyWork core capabilities.
    - Examples: CLI tools, Autocoder, workflow automation, Brain services.
    - Output: Enables faster, more reliable delivery.
 
 2) `product` projects
+
    - Purpose: Standalone products or templates that can be sold.
    - Examples: Marketplace, task-tracker, ai-dashboard, SaaS templates.
    - Output: Revenue and user value.
@@ -49,18 +51,22 @@ This metadata allows indexing, automation, and marketplace readiness checks.
 ## Brain -> Marketplace Pipeline
 
 1) Capture
+
    - Add summaries to `.planning/BRAIN.md`
    - Add reusable patterns to Brain entries
 
 2) Validate
+
    - Minimum tests or smoke checks pass
    - Docs exist (README + usage + setup)
 
 3) Package
+
    - Versioned release notes
    - Stable assets (demo, screenshots, package)
 
 4) Publish
+
    - Marketplace listing meets quality gate
    - Pricing and license defined
 
@@ -96,4 +102,3 @@ To keep the marketplace high quality:
 2) Classify existing projects
 3) Automate project registry generation
 4) Use registry to power marketplace onboarding
-

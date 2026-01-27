@@ -37,20 +37,29 @@ Strategy alignment guide: see `STRATEGY.md`.
 
 ```
 +-------------------------------------------------------------+
+
 |                    MASTER ORCHESTRATOR                       |
 |              (Routes requests to right layer)                |
+
 +-------------------------------------------------------------+
+
                               |
+
         +---------------------+---------------------+
         v                     v                     v
 +---------------+     +---------------+     +---------------+
+
 |     GSD       |     |     WAT       |     |  AUTOMATION   |
 |  Orchestration|     |   Execution   |     |   ENGINES     |
+
 +---------------+     +---------------+     +---------------+
+
 | - Planning    |     | - Workflows   |     | - Autocoder   |
 | - Phases      |     | - Agents      |     | - n8n         |
 | - Verification|     | - Tools       |     | - MCP Servers |
+
 +---------------+     +---------------+     +---------------+
+
 ```
 
 ### When to Use What
@@ -78,16 +87,22 @@ Strategy alignment guide: see `STRATEGY.md`.
 ### Installation
 
 ```bash
+
 # Clone the repository
+
 git clone https://github.com/DansiDanutz/MyWork-AI.git
 cd MyWork-AI
 
 # Set up environment
+
 cp .env.example .env
+
 # Edit .env with your API keys
 
 # Verify installation
+
 python tools/mw.py status
+
 ```
 
 ### Configure Git Identity
@@ -97,6 +112,7 @@ Set your Git author once so commits (including deploy triggers) succeed:
 ```bash
 git config --global user.name "Your Name"
 git config --global user.email "you@example.com"
+
 ```
 
 Prefer repo-specific settings? Run the same commands inside `MyWork-AI` without the `--global` flag.
@@ -104,18 +120,24 @@ Prefer repo-specific settings? Run the same commands inside `MyWork-AI` without 
 ### Your First Project
 
 ```bash
+
 # Create a new project
+
 python tools/mw.py new my-app fastapi
 
 # Navigate to project
+
 cd projects/my-app
 
 # Initialize GSD
+
 /gsd:new-project
 
 # Start first phase
+
 /gsd:plan-phase 1
 /gsd:execute-phase 1
+
 ```
 
 ---
@@ -143,6 +165,7 @@ MyWork/
 +-- CLAUDE.md               # Master Orchestrator instructions
 +-- .env.example            # Environment template
 +-- .mcp.json.example       # MCP config template
+
 ```
 
 ---
@@ -152,8 +175,11 @@ MyWork/
 ### Unified CLI (`mw`)
 
 ```bash
+
 # Run any command
+
 python tools/mw.py <command>
+
 ```
 
 ### Core Commands
@@ -207,13 +233,16 @@ Install the MyWork-branded Autocoder UI into the repo-managed `.autocoder/` dire
 
 ```bash
 python tools/autocoder_setup.py install
+
 # (re-run with `update` whenever you want the latest features)
+
 ```
 
 The UI starts at `http://127.0.0.1:8889` by default. Launch it via:
 
 ```bash
 python tools/autocoder_api.py ui
+
 ```
 
 Want to use the full launcher (for advanced flags or dev mode)? Run:
@@ -222,6 +251,7 @@ Want to use the full launcher (for advanced flags or dev mode)? Run:
 cd .autocoder
 python start_ui.py            # production build, auto-opens http://127.0.0.1:8889
 python start_ui.py --dev      # Vite dev server + FastAPI backend
+
 ```
 
 Set a different install path or port by editing `.env` (`AUTOCODER_ROOT`, `AUTOCODER_PORT`).
@@ -237,6 +267,7 @@ mw ac pause <project>
 mw ac resume <project>
 mw ac stop <project>
 mw ac ui
+
 ```
 
 **Option 2: Explicit venv path (no activation needed)**
@@ -244,6 +275,7 @@ mw ac ui
 ```bash
 $AUTOCODER_ROOT/venv/bin/python $MYWORK_ROOT/tools/autocoder_api.py status
 $AUTOCODER_ROOT/venv/bin/python $MYWORK_ROOT/tools/autocoder_api.py start <project>
+
 ```
 
 **Option 3: Activate Autocoder venv first**
@@ -252,6 +284,7 @@ $AUTOCODER_ROOT/venv/bin/python $MYWORK_ROOT/tools/autocoder_api.py start <proje
 cd $AUTOCODER_ROOT
 source venv/bin/activate
 python $MYWORK_ROOT/tools/autocoder_api.py status
+
 ```
 
 ### Autocoder Always-On (macOS)
@@ -262,6 +295,7 @@ If you want long-running autonomous coding (multi-hour sessions), install the La
 mw ac service setup
 mw ac service install
 mw ac service status
+
 ```
 
 This keeps the Autocoder UI available and restarts the server if it exits.
@@ -271,20 +305,27 @@ This keeps the Autocoder UI available and restarts the server if it exits.
 Common fixes if the service or UI isn't responding:
 
 ```bash
+
 # Check service status
+
 mw ac service status
 
 # Restart the service
+
 mw ac service restart
 
 # View logs (last 50 lines)
+
 mw ac service logs
 
 # Follow logs live
+
 mw ac service logs -f
+
 ```
 
 If the server is not running, confirm:
+
 - `AUTOCODER_ROOT` points to the correct Autocoder folder
 - the Autocoder venv exists (`$AUTOCODER_ROOT/venv`)
 - port `AUTOCODER_PORT` (default 8889) is not already in use
@@ -314,11 +355,15 @@ If the server is not running, confirm:
 Indexes reusable code patterns across all projects:
 
 ```bash
+
 # Search for auth components
+
 mw search "authentication"
 
 # Scan all projects
+
 mw scan
+
 ```
 
 Currently tracking **1,300+ modules** across projects.
@@ -328,14 +373,19 @@ Currently tracking **1,300+ modules** across projects.
 Self-learning system that captures and recalls knowledge:
 
 ```bash
+
 # Search knowledge
+
 mw brain search "api"
 
 # Run auto-learning
+
 mw brain learn
 
 # Check stats
+
 mw brain stats
+
 ```
 
 ### Auto-Updates
@@ -343,14 +393,19 @@ mw brain stats
 Safe dependency management with rollback support:
 
 ```bash
+
 # Check for updates
+
 mw update check
 
 # Update specific component
+
 mw update gsd
 
 # View status
+
 mw update status
+
 ```
 
 ### Health Monitoring
@@ -358,14 +413,19 @@ mw update status
 System diagnostics and auto-fix:
 
 ```bash
+
 # Quick check
+
 mw status
 
 # Full diagnostics
+
 mw doctor
 
 # Auto-fix issues
+
 mw fix
+
 ```
 
 ---
@@ -377,20 +437,26 @@ mw fix
 Copy `.env.example` to `.env` and configure:
 
 ```bash
+
 # Required
+
 ANTHROPIC_API_KEY=sk-ant-xxxxx
 
 # Optional - Other LLM Providers
+
 OPENAI_API_KEY=sk-xxxxx
 OPENROUTER_API_KEY=sk-or-v1-xxxxx
 GROQ_API_KEY=gsk_xxxxx
 
 # Optional - n8n Integration
+
 N8N_API_URL=https://your-instance.app.n8n.cloud
 N8N_API_KEY=your-n8n-api-key
 
 # Optional - GitHub
+
 GITHUB_TOKEN=ghp_xxxxx
+
 ```
 
 ### MCP Servers
@@ -427,8 +493,11 @@ Available templates for new projects:
 | `automation` | n8n workflow project |
 
 ```bash
+
 # Create from template
+
 mw new my-project fastapi
+
 ```
 
 ---
@@ -462,5 +531,6 @@ This project is licensed under the MIT License - see [LICENSE](LICENSE) for deta
 ---
 
 Built with AI, for AI-assisted development.
--   t r i g g e r   d e p l o y  
+-   t r i g g e r   d e p l o y 
+ 
  

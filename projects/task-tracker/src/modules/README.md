@@ -10,6 +10,7 @@ module-name/
 ├── lib/           # Business logic and server actions
 ├── types/         # TypeScript types
 └── index.ts       # Public API (only export what other modules need)
+
 ```
 
 ## Rules

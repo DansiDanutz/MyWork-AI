@@ -5,9 +5,11 @@ subsystem: foundation
 tags: [nextjs, typescript, app-router, modular-architecture]
 
 requires:
+
   - None (first phase)
 
 provides:
+
   - Next.js 15.0.3 application with TypeScript
   - App Router architecture with src/ directory
   - Modular project structure (modules/, shared/)
@@ -15,22 +17,27 @@ provides:
   - Development and build toolchain
 
 affects:
+
   - All future phases (foundation for entire application)
 
 tech-stack:
   added:
+
     - next: 15.0.3
     - react: 18.3.1
     - typescript: 5.x
     - tailwindcss: 4.x
     - eslint: 9.x
+
   patterns:
+
     - App Router (Next.js)
     - Modular monolith architecture
     - Feature-based organization
 
 key-files:
   created:
+
     - package.json: Project dependencies and scripts
     - tsconfig.json: TypeScript configuration with strict mode
     - next.config.ts: Next.js configuration
@@ -39,22 +46,27 @@ key-files:
     - src/app/page.tsx: Homepage component
     - src/modules/README.md: Module conventions documentation
     - src/shared/types/index.ts: Shared TypeScript types
+
   modified: []
 
 decisions:
+
   - id: TECH-001
+
     title: Use Next.js 15.0.3 instead of 16.x
     rationale: Next.js 16.x has React 19 compatibility issues causing build failures; 15.0.3 is stable with React 18
     impact: Delayed upgrade to React 19 until ecosystem stabilizes
     date: 2026-01-24
 
   - id: ARCH-001
+
     title: Modular monolith architecture
     rationale: Enables clean extraction of reusable modules for MyWork framework brain (SYS-06)
     impact: All features organized as self-contained modules with public APIs
     date: 2026-01-24
 
   - id: TECH-002
+
     title: TypeScript strict mode enabled
     rationale: Catch type errors early and enforce type safety across the application
     impact: All code must satisfy strict TypeScript checks
@@ -93,6 +105,7 @@ Established the foundation for the Task Tracker application with:
 **Context**: Initial attempt with `create-next-app@latest` installed Next.js 16.1.4 with React 19.2.3, which caused build failures due to React context errors in the default Geist font configuration and internal error pages.
 
 **Resolution**:
+
 1. Downgraded to Next.js 15.0.3 with React 18.3.1 for stability
 2. Simplified layout.tsx to remove problematic font imports
 3. Verified builds succeed with this configuration
@@ -116,6 +129,7 @@ Established the foundation for the Task Tracker application with:
 **Rationale**: Aligns with MyWork framework goal (SYS-06) to extract reusable patterns as "brain" modules
 
 **Structure**:
+
 ```
 src/
 ├── app/          # Next.js App Router (routing only)
@@ -130,9 +144,11 @@ src/
     ├── components/  # Reusable UI components
     ├── lib/         # Shared utilities
     └── types/       # Shared types (ApiResponse, etc.)
+
 ```
 
 **Benefits**:
+
 - Each module is self-contained with clear boundaries
 - Public APIs prevent tight coupling
 - Easy to extract and reuse in other projects
@@ -143,6 +159,7 @@ src/
 ### Auto-fixed Issues
 
 **1. [Rule 1 - Bug] React 19 compatibility issues**
+
 - **Found during**: Task 1 - Initialize Next.js Application
 - **Issue**: Default `create-next-app@latest` installed Next.js 16.1.4 + React 19.2.3 which caused build failures with Geist fonts and error pages
 - **Fix**: Downgraded to Next.js 15.0.3 + React 18.3.1 for stability
@@ -150,6 +167,7 @@ src/
 - **Commits**: 389baba
 
 **2. [Rule 1 - Bug] NODE_ENV environment variable conflict**
+
 - **Found during**: Task 1 verification
 - **Issue**: Shell environment had NODE_ENV=development which conflicts with production build
 - **Fix**: Documented workaround to unset NODE_ENV before building
@@ -157,6 +175,7 @@ src/
 - **Future**: Should add script wrapper or document in developer guide
 
 **3. [Rule 2 - Missing Critical] ESLint configuration incompatibility**
+
 - **Found during**: Task 1 after Next.js version changes
 - **Issue**: Default ESLint config from Next.js 16 was incompatible with Next.js 15
 - **Fix**: Updated eslint.config.mjs to use FlatCompat pattern compatible with Next.js 15
@@ -168,6 +187,7 @@ src/
 ### TypeScript Configuration
 
 The `tsconfig.json` includes:
+
 - **strict: true** - Full type safety enforcement
 - **paths alias** - `@/*` maps to `./src/*` for clean imports
 - **jsx: "react-jsx"** - Modern JSX transform (updated by Next.js to "preserve")
@@ -176,6 +196,7 @@ The `tsconfig.json` includes:
 ### Shared Types Foundation
 
 Created `src/shared/types/index.ts` with base `ApiResponse<T>` type:
+
 ```typescript
 export type ApiResponse<T> = {
   success: true
@@ -184,6 +205,7 @@ export type ApiResponse<T> = {
   success: false
   error: string
 }
+
 ```
 
 This discriminated union ensures type-safe API response handling across all modules.
@@ -191,6 +213,7 @@ This discriminated union ensures type-safe API response handling across all modu
 ### Module Convention
 
 The `src/modules/README.md` documents the module pattern:
+
 - Each module is a subdirectory under `src/modules/`
 - Modules export only through `index.ts` (enforces public API)
 - Internal implementation details stay private
@@ -209,6 +232,7 @@ The `src/modules/README.md` documents the module pattern:
 **Ready for Phase 1 Plan 02**: ✅
 
 The foundation is complete and ready for:
+
 - Database setup (SQLite configuration)
 - Server-side module development
 - UI component library setup

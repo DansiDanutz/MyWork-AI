@@ -9,6 +9,7 @@
 Phase 7 focuses on optimizing the existing Next.js 15 task tracker to meet production performance standards: 2-second load times, responsive UI across devices, smooth page transitions, and zero layout shifts. The research covers Next.js built-in optimization features, Core Web Vitals measurement (LCP, INP, CLS), code splitting strategies, mobile-first responsive design, and progressive loading patterns.
 
 **Key findings:**
+
 - Next.js 15 provides automatic optimizations (Server Components, route-based code splitting, prefetching) that are already active
 - Core Web Vitals now measure LCP (<2.5s), INP (<200ms), and CLS (<0.1) — note FID was replaced by INP in March 2024
 - The standard stack uses `next/dynamic` for lazy loading, `react-swipeable` for mobile gestures, and built-in `loading.js` for skeleton screens
@@ -21,6 +22,7 @@ Phase 7 focuses on optimizing the existing Next.js 15 task tracker to meet produ
 The established libraries/tools for Next.js performance optimization:
 
 ### Core
+
 | Library | Version | Purpose | Why Standard |
 |---------|---------|---------|--------------|
 | `next` | 15.5.9 | Framework with built-in optimizations | Automatic code splitting, Server Components, prefetching |
@@ -29,6 +31,7 @@ The established libraries/tools for Next.js performance optimization:
 | `sharp` | 0.34.5 (already installed) | Image optimization backend | Required by Next.js Image component for processing |
 
 ### Supporting
+
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
 | `lighthouse` | Latest | Performance auditing | CI/CD integration for automated checks |
@@ -36,6 +39,7 @@ The established libraries/tools for Next.js performance optimization:
 | `@use-gesture/react` | Latest | Advanced gesture library | If react-swipeable is insufficient (not expected) |
 
 ### Alternatives Considered
+
 | Instead of | Could Use | Tradeoff |
 |------------|-----------|----------|
 | `react-swipeable` | Custom `onTouchStart`/`onTouchEnd` handlers | Custom = 50 lines of code, but no library dependency |
@@ -43,14 +47,17 @@ The established libraries/tools for Next.js performance optimization:
 | Built-in Image component | `react-lazy-load-image-component` | Image component is more powerful (automatic WebP/AVIF, responsive srcset) |
 
 **Installation:**
+
 ```bash
 npm install react-swipeable @next/bundle-analyzer
 npm install --save-dev lighthouse web-vitals
+
 ```
 
 ## Architecture Patterns
 
 ### Recommended Project Structure
+
 ```
 src/app/
 ├── (routes)/
@@ -68,12 +75,15 @@ src/app/
 └── lib/
     └── analytics/
         └── web-vitals.ts   # Core Web Vitals reporting
+
 ```
 
 ### Pattern 1: Progressive Loading with loading.js
+
 **What:** Next.js convention file that shows instant loading state while route content streams
 **When to use:** Every major route that fetches data
 **Example:**
+
 ```tsx
 // Source: https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming
 // app/tasks/loading.tsx
@@ -86,17 +96,21 @@ export default function Loading() {
     </div>
   )
 }
+
 ```
 
 **Key points:**
+
 - Automatically wraps `page.tsx` in Suspense boundary
 - Shows immediately on navigation (instant feedback)
 - Works with streaming Server Components
 
 ### Pattern 2: Lazy Load Heavy Client Components
+
 **What:** Use `next/dynamic` to defer loading non-critical Client Components
 **When to use:** File upload UI, charts, modals, rich text editors
 **Example:**
+
 ```tsx
 // Source: https://nextjs.org/docs/app/guides/lazy-loading
 import dynamic from 'next/dynamic'
@@ -119,17 +133,21 @@ export default function TaskEditPage() {
     </div>
   )
 }
+
 ```
 
 **Critical rules:**
+
 - Use `next/dynamic`, NOT `React.lazy()` (SSR compatibility)
 - Set `ssr: false` for browser-dependent code (file APIs, localStorage)
 - Always provide `loading` fallback to prevent blank screens
 
 ### Pattern 3: Mobile Swipe Gestures
+
 **What:** Touch-friendly interactions using react-swipeable hook
 **When to use:** Mobile task management (swipe to complete, swipe to delete)
 **Example:**
+
 ```tsx
 // Source: https://www.npmjs.com/package/react-swipeable
 'use client'
@@ -150,17 +168,21 @@ export function TaskCard({ task, onComplete, onDelete }) {
     </div>
   )
 }
+
 ```
 
 **Configuration options:**
+
 - `delta`: Minimum swipe distance (default 10px, recommend 50px for intentional swipes)
 - `preventScrollOnSwipe`: Prevents page scroll during swipe
 - `trackMouse`: Enable mouse swipes (useful for testing, disable in production)
 
 ### Pattern 4: Responsive Image Optimization
+
 **What:** Next.js Image component with automatic WebP/AVIF and responsive srcset
 **When to use:** All images (file thumbnails, user avatars, any visual content)
 **Example:**
+
 ```tsx
 // Source: https://nextjs.org/docs/app/api-reference/components/image
 import Image from 'next/image'
@@ -179,9 +201,11 @@ export function TaskThumbnail({ file }) {
     />
   )
 }
+
 ```
 
 **For LCP images (hero, first visible content):**
+
 ```tsx
 <Image
   src="/hero.jpg"
@@ -191,12 +215,15 @@ export function TaskThumbnail({ file }) {
   preload={true} // New in Next.js 16 (replaces priority)
   sizes="100vw"
 />
+
 ```
 
 ### Pattern 5: Bundle Analysis and Code Splitting
+
 **What:** Identify large dependencies and split them into separate chunks
 **When to use:** When initial bundle exceeds 100KB or specific features are rarely used
 **Example:**
+
 ```js
 // Source: https://nextjs.org/docs/app/guides/package-bundling
 // next.config.js
@@ -207,21 +234,29 @@ module.exports = {
   },
   serverExternalPackages: ['sharp'] // Don't bundle server-only packages
 }
+
 ```
 
 **Running bundle analyzer:**
+
 ```bash
+
 # Install
+
 npm install @next/bundle-analyzer
 
 # Analyze
+
 ANALYZE=true npm run build
+
 ```
 
 ### Pattern 6: Core Web Vitals Monitoring
+
 **What:** Report real user performance metrics to analytics
 **When to use:** Production monitoring (optional in development)
 **Example:**
+
 ```tsx
 // Source: https://nextjs.org/docs/app/api-reference/functions/use-report-web-vitals
 // app/layout.tsx
@@ -239,9 +274,11 @@ export function WebVitalsReporter() {
 
   return null
 }
+
 ```
 
 **Metric types:**
+
 - `LCP`: Largest Contentful Paint (target: <2.5s)
 - `INP`: Interaction to Next Paint (target: <200ms)
 - `CLS`: Cumulative Layout Shift (target: <0.1)
@@ -275,48 +312,56 @@ Problems that look simple but have existing solutions:
 ## Common Pitfalls
 
 ### Pitfall 1: Using React.lazy() Instead of next/dynamic
+
 **What goes wrong:** Components only render on client-side, breaking SSR and harming SEO
 **Why it happens:** React.lazy() is standard React pattern, but doesn't support SSR
 **How to avoid:** Always use `next/dynamic` in Next.js projects
 **Warning signs:** "Hydration mismatch" errors, blank server-rendered pages, missing content in page source
 
 ### Pitfall 2: Not Setting Image Dimensions
+
 **What goes wrong:** Layout shifts as images load, CLS score increases, poor user experience
 **Why it happens:** Developers forget width/height props or use fill without aspect ratio
 **How to avoid:** Always set `width` and `height` props, or use `fill` with aspect-ratio CSS
 **Warning signs:** Content jumping during page load, CLS > 0.1 in Lighthouse
 
 ### Pitfall 3: Over-Lazy Loading Critical Content
+
 **What goes wrong:** Above-the-fold content loads late, LCP score increases dramatically
 **Why it happens:** Blanket lazy loading strategy without considering viewport
 **How to avoid:** Only lazy load below-the-fold content; mark LCP elements with `preload`
 **Warning signs:** LCP > 2.5s despite small page size, visible "popping in" of hero content
 
 ### Pitfall 4: Lazy Loading Entire Pages
+
 **What goes wrong:** Increases bundle size instead of reducing it, delays rendering
 **Why it happens:** Misunderstanding of code splitting granularity
 **How to avoid:** Lazy load specific heavy components (file upload, charts), not entire routes
 **Warning signs:** Delayed page rendering after navigation, larger bundles than expected
 
 ### Pitfall 5: Missing Loading Fallbacks
+
 **What goes wrong:** Blank screens during component load, poor UX, potential crashes if load fails
 **Why it happens:** Using `next/dynamic` without `loading` option
 **How to avoid:** Always provide `loading` component matching the final UI structure
 **Warning signs:** White flashes during navigation, "Loading..." text appearing unexpectedly
 
 ### Pitfall 6: Ignoring Mobile Touch Targets
+
 **What goes wrong:** Buttons too small on mobile (accessibility issue), hard to tap accurately
 **Why it happens:** Desktop-first design without mobile testing
 **How to avoid:** Minimum 44x44px touch targets (WCAG 2.1), test on real devices
 **Warning signs:** Users struggling to tap buttons, accessibility audits failing
 
 ### Pitfall 7: Not Testing on Real Mobile Devices
+
 **What goes wrong:** Responsive CSS works in DevTools but fails on real phones
 **Why it happens:** Browser DevTools don't simulate touch perfectly, different rendering engines
 **How to avoid:** Test on at least one iOS and one Android device (or BrowserStack)
 **Warning signs:** Swipe gestures not working, layout breaking on certain devices
 
 ### Pitfall 8: Blocking Main Thread with Heavy JavaScript
+
 **What goes wrong:** INP > 200ms, interactions feel sluggish, poor responsiveness
 **Why it happens:** Large bundles, synchronous operations, not using code splitting
 **How to avoid:** Use Server Components for heavy logic, split client bundles, defer non-critical JS
@@ -327,6 +372,7 @@ Problems that look simple but have existing solutions:
 Verified patterns from official sources:
 
 ### Complete Loading.js Pattern
+
 ```tsx
 // Source: https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming
 // app/tasks/loading.tsx
@@ -351,9 +397,11 @@ export default function TasksLoading() {
     </div>
   )
 }
+
 ```
 
 ### Error Boundary Pattern
+
 ```tsx
 // Source: https://nextjs.org/docs/app/getting-started/error-handling
 // app/tasks/error.tsx
@@ -392,9 +440,11 @@ export default function TasksError({
     </div>
   )
 }
+
 ```
 
 ### Dynamic Import with Loading State
+
 ```tsx
 // Source: https://nextjs.org/docs/app/guides/lazy-loading
 import dynamic from 'next/dynamic'
@@ -423,9 +473,11 @@ export default function TaskEditPage() {
     </div>
   )
 }
+
 ```
 
 ### Mobile-First Responsive Design
+
 ```tsx
 // Source: https://tailwindcss.com/docs/responsive-design
 // Mobile-first task card with collapsing actions
@@ -463,9 +515,11 @@ export function TaskCard({ task }) {
     </div>
   )
 }
+
 ```
 
 ### Swipe Gesture Integration
+
 ```tsx
 // Source: https://www.npmjs.com/package/react-swipeable
 'use client'
@@ -505,9 +559,11 @@ export function SwipeableTaskCard({ task, onComplete, onDelete }) {
     </div>
   )
 }
+
 ```
 
 ### Image Optimization Pattern
+
 ```tsx
 // Source: https://nextjs.org/docs/app/api-reference/components/image
 import Image from 'next/image'
@@ -546,9 +602,11 @@ export function HeroImage() {
     />
   )
 }
+
 ```
 
 ### Core Web Vitals Reporting
+
 ```tsx
 // Source: https://nextjs.org/docs/app/api-reference/functions/use-report-web-vitals
 // app/components/WebVitalsReporter.tsx
@@ -584,6 +642,7 @@ export default function RootLayout({ children }) {
     </html>
   )
 }
+
 ```
 
 ## State of the Art
@@ -599,6 +658,7 @@ export default function RootLayout({ children }) {
 | JPEG/PNG images | Automatic WebP/AVIF | Next.js 10+ | 20-50% smaller file sizes |
 
 **Deprecated/outdated:**
+
 - `priority` prop on Image component: Use `preload` instead (Next.js 16+)
 - `onLoadingComplete` callback: Use `onLoad` instead (Next.js 14+)
 - FID (First Input Delay): Now INP (Interaction to Next Paint) in Core Web Vitals
@@ -632,6 +692,7 @@ Things that couldn't be fully resolved:
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - [Next.js Production Checklist](https://nextjs.org/docs/app/guides/production-checklist) - Performance optimization, Core Web Vitals, bundle analysis
 - [Next.js Loading UI and Streaming](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming) - loading.js patterns, Suspense boundaries, streaming
 - [Next.js Error Handling](https://nextjs.org/docs/app/getting-started/error-handling) - Error boundaries, recovery mechanisms, user feedback
@@ -643,18 +704,21 @@ Things that couldn't be fully resolved:
 - [react-swipeable npm](https://www.npmjs.com/package/react-swipeable) - API documentation, configuration options
 
 ### Secondary (MEDIUM confidence)
+
 - [Mastering Lazy Loading in Next.js 15](https://medium.com/@sureshdotariya/mastering-lazy-loading-in-next-js-15-advanced-patterns-for-peak-performance-75e0bd574c76) - Advanced patterns, performance impact (WebSearch verified with official docs)
 - [Core Web Vitals 2026 Guide](https://senorit.de/en/blog/core-web-vitals-2026) - INP replacement of FID, current thresholds (WebSearch verified with Google docs)
 - [Next.js Performance Optimization Guide](https://www.aniq-ui.com/en/blog/performance-optimization-nextjs) - Code splitting strategies (WebSearch verified with official docs)
 - [Best Practices for Loading States in Next.js](https://www.getfishtank.com/insights/best-practices-for-loading-states-in-nextjs) - Skeleton patterns (WebSearch verified with official docs)
 
 ### Tertiary (LOW confidence)
+
 - [47% of websites fail Core Web Vitals](https://nitropack.io/blog/most-important-core-web-vitals-metrics/) - Industry statistics (WebSearch only, not critical for implementation)
 - [React Swipeable Tutorial](https://codingcops.com/react-swipeable/) - Community usage examples (WebSearch only, official docs preferred)
 
 ## Metadata
 
 **Confidence breakdown:**
+
 - Standard stack: HIGH - All libraries verified via official documentation and npm registry
 - Architecture: HIGH - Patterns from official Next.js documentation and established conventions
 - Pitfalls: HIGH - Based on official docs warnings and verified community patterns

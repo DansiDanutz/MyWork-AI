@@ -46,6 +46,7 @@ Before starting any task, determine which layer handles it:
 │  6. Is this DETERMINISTIC execution (API call, data transform)? │
 │     YES → WAT tool from tools/                                  │
 └─────────────────────────────────────────────────────────────────┘
+
 ```
 
 ## Quick Reference Table
@@ -76,11 +77,13 @@ GSD (Get Shit Done) handles project lifecycle management: planning, phased execu
 ### Context Management
 
 **ALWAYS check these files first when starting a session:**
+
 - `.planning/STATE.md` - Current progress, decisions, blockers
 - `.planning/ROADMAP.md` - Phase status and what's next
 - `.planning/PROJECT.md` - Vision and scope (if unclear on goals)
 
 **Update STATE.md when:**
+
 - Making key decisions
 - Hitting blockers
 - Pausing work mid-phase
@@ -141,6 +144,7 @@ GSD (Get Shit Done) handles project lifecycle management: planning, phased execu
 │       └── VERIFICATION.md
 ├── todos/              # Captured ideas for later
 └── quick/              # Ad-hoc task tracking
+
 ```
 
 ### GSD Workflow Cycle
@@ -152,6 +156,7 @@ DISCUSS → PLAN → EXECUTE → VERIFY
    │        │        └─> Parallel waves, atomic commits
    │        └─> Research + XML plans + verification loop
    └─> Capture implementation decisions
+
 ```
 
 ---
@@ -163,16 +168,19 @@ The WAT framework (Workflows, Agents, Tools) handles day-to-day task execution w
 ### The WAT Architecture
 
 **Layer 2a: Workflows (The Instructions)**
+
 - Markdown SOPs stored in `workflows/`
 - Each workflow defines: objective, required inputs, tools to use, expected outputs, edge cases
 - Written in plain language like you'd brief a team member
 
 **Layer 2b: Agents (The Decision-Maker)**
+
 - This is your role within WAT
 - Read workflows, run tools in sequence, handle failures gracefully
 - Connect intent to execution without doing everything directly
 
 **Layer 2c: Tools (The Execution)**
+
 - Python scripts in `tools/` that do the actual work
 - API calls, data transformations, file operations
 - Consistent, testable, fast
@@ -185,6 +193,7 @@ The WAT framework (Workflows, Agents, Tools) handles day-to-day task execution w
 Before building anything new, check `tools/`. Only create new scripts when nothing exists.
 
 **2. Learn and adapt when things fail**
+
 - Read the full error message
 - Fix and retest (check with user before paid API calls)
 - Document learnings in the workflow
@@ -195,6 +204,7 @@ Update workflows when you find better methods. Don't overwrite without asking.
 ### The Self-Improvement Loop
 
 Every failure strengthens the system:
+
 1. Identify what broke
 2. Fix the tool
 3. Verify the fix
@@ -236,27 +246,33 @@ MyWork/                         # Master Framework Root (CLEAN)
 ├── README.md                   # Framework documentation
 ├── .env                        # Master API keys
 └── .mcp.json                   # MCP server config
+
 ```
 
 ### Working with Projects
 
 **Each project is isolated** in `projects/[project-name]/` with its own:
+
 - `.planning/` - Project-specific GSD state
 - Source code (backend, frontend, etc.)
 - Start scripts
 - README.md
 
 **To switch between projects:**
+
 ```bash
 cd /Users/dansidanutz/Desktop/MyWork/projects/[project-name]
+
 ```
 
 **To create a new project:**
+
 1. Copy the template: `cp -r projects/_template projects/my-new-project`
 2. Initialize GSD: `/gsd:new-project` (while in project folder)
 3. Or use Autocoder: Follow `workflows/use_autocoder.md`
 
 **Project-specific vs Framework-level:**
+
 - `.planning/` at root = Framework state (MyWork itself)
 - `projects/[name]/.planning/` = Project state (that specific app)
 
@@ -273,24 +289,31 @@ Access to **n8n-mcp** MCP server with 1,084 nodes and 2,709 workflow templates, 
 **1. n8n-mcp MCP Server** (provides the tools)
 
 Install via npx - no setup required:
+
 ```bash
 npx n8n-mcp
+
 ```
 
 **2. n8n-skills** (provides expert guidance)
 
 Install via Claude Code:
+
 ```bash
 /plugin install czlonkowski/n8n-skills
+
 ```
 
 Or manually:
+
 ```bash
 git clone https://github.com/czlonkowski/n8n-skills.git
 cp -r n8n-skills/skills/* ~/.claude/skills/
+
 ```
 
 **3. MCP Server Configuration (`.mcp.json`):**
+
 ```json
 {
   "mcpServers": {
@@ -306,9 +329,11 @@ cp -r n8n-skills/skills/* ~/.claude/skills/
     }
   }
 }
+
 ```
 
 **When to use n8n:**
+
 - Webhook processing (HTTP trigger → process → respond)
 - API integrations (fetch → transform → store/notify)
 - Scheduled tasks (cron → batch process → report)
@@ -317,6 +342,7 @@ cp -r n8n-skills/skills/* ~/.claude/skills/
 #### Available MCP Tools
 
 **Node Discovery:**
+
 | Tool | Purpose |
 |------|---------|
 | `search_nodes` | Find nodes by keyword, includes examples |
@@ -324,6 +350,7 @@ cp -r n8n-skills/skills/* ~/.claude/skills/
 | `tools_documentation` | Meta-documentation for all tools |
 
 **Validation:**
+
 | Tool | Purpose |
 |------|---------|
 | `validate_node` | Validate node config (modes: minimal, full; profiles: runtime, ai-friendly, strict) |
@@ -332,12 +359,14 @@ cp -r n8n-skills/skills/* ~/.claude/skills/
 | `validate_workflow_expressions` | Expression validation |
 
 **Templates:**
+
 | Tool | Purpose |
 |------|---------|
 | `search_templates` | Search 2,709 templates (modes: keyword, by_nodes, by_task, by_metadata) |
 | `get_template` | Get full template details |
 
 **Workflow Management:**
+
 | Tool | Purpose |
 |------|---------|
 | `n8n_create_workflow` | Create new workflows |
@@ -366,34 +395,43 @@ These skills activate automatically when relevant:
 #### Workflow Building Process
 
 **ALWAYS follow this process:**
+
 ```
+
 1. TEMPLATE FIRST
+
    └─> search_templates({searchMode: 'by_task', task: 'your_task'})
    └─> If found: get_template(templateId) and adapt
    └─> If not: proceed to node discovery
 
 2. NODE DISCOVERY (parallel execution)
+
    └─> search_nodes({query: 'keyword', includeExamples: true})
    └─> get_node({nodeType, detail: 'standard', includeExamples: true})
 
 3. VALIDATION (before building)
+
    └─> validate_node({nodeType, config, mode: 'minimal'})
    └─> validate_node({nodeType, config, mode: 'full', profile: 'runtime'})
 
 4. BUILD WORKFLOW
+
    └─> Explicitly set ALL parameters (never trust defaults!)
    └─> Connect nodes properly
    └─> Add error handling
 
 5. FINAL VALIDATION
+
    └─> validate_workflow(workflow)
    └─> validate_workflow_connections(workflow)
    └─> validate_workflow_expressions(workflow)
 
 6. DEPLOY
+
    └─> n8n_create_workflow(workflow)
    └─> n8n_validate_workflow({id})
    └─> n8n_update_partial_workflow({id, operations: [{type: 'activateWorkflow'}]})
+
 ```
 
 #### Critical Rules
@@ -421,6 +459,7 @@ $json.body      // Webhook request body (IMPORTANT!)
 $node["Name"]   // Access other node's data
 $now            // Current timestamp
 $env.VAR_NAME   // Environment variable
+
 ```
 
 **See `workflows/create_n8n_workflow.md` for full SOP.**
@@ -435,6 +474,7 @@ $env.VAR_NAME   // Environment variable
 #### Safety Warning
 
 **NEVER edit production workflows directly with AI!** Always:
+
 - Make a copy before using AI tools
 - Test in development environment first
 - Export backups of important workflows
@@ -449,6 +489,7 @@ Autocoder is a long-running autonomous coding agent for building complete applic
 **Server:** `http://127.0.0.1:8888`
 
 **When to use Autocoder:**
+
 | Scenario | Use Autocoder |
 |----------|---------------|
 | Complete app from scratch | ✅ |
@@ -467,25 +508,33 @@ Autocoder is a long-running autonomous coding agent for building complete applic
 #### Automatic Mode Commands
 
 ```bash
+
 # Check if server is running
+
 python tools/autocoder_api.py status
 
 # Start server (if needed)
+
 python tools/autocoder_api.py server
 
 # Start agent (automatic mode)
+
 python tools/autocoder_api.py start my-project --concurrency 3
 
 # Check progress
+
 python tools/autocoder_api.py progress my-project
 
 # Control agent
+
 python tools/autocoder_api.py pause my-project
 python tools/autocoder_api.py resume my-project
 python tools/autocoder_api.py stop my-project
 
 # Open UI for visual monitoring
+
 python tools/autocoder_api.py ui
+
 ```
 
 #### Start Options
@@ -500,17 +549,23 @@ python tools/autocoder_api.py ui
 #### Speed Profiles
 
 ```bash
+
 # Conservative: Full testing, 1 agent
+
 python tools/autocoder_api.py start my-app
 
 # Balanced: 3 parallel agents
+
 python tools/autocoder_api.py start my-app --concurrency 3
 
 # Fast: Skip testing, 3 agents
+
 python tools/autocoder_api.py start my-app --concurrency 3 --yolo
 
 # Maximum: Skip testing, 5 agents
+
 python tools/autocoder_api.py start my-app --concurrency 5 --yolo
+
 ```
 
 **See `workflows/gsd_to_autocoder.md` for full SOP.**
@@ -561,6 +616,7 @@ When pausing work mid-phase:
 ### Master .env Keys
 
 All API keys consolidated in root `.env`:
+
 - LLM providers: Anthropic, OpenAI, OpenRouter, Groq, Grok/xAI, Z.ai
 - Google OAuth, Resend, Telegram, ElevenLabs
 - Firecrawl, Apify, Airtable, Figma, GitHub
@@ -583,6 +639,7 @@ All API keys consolidated in root `.env`:
 ### Multi-Project Management
 
 **Each project is fully isolated:**
+
 ```
 projects/
 ├── ai-dashboard/
@@ -601,19 +658,23 @@ projects/
 └── project-c/
     ├── .planning/          # Project C's GSD state
     └── ...
+
 ```
 
 **Switching between projects:**
+
 1. Navigate to project: `cd projects/[project-name]`
 2. Check status: `/gsd:progress`
 3. Continue work: `/gsd:resume-work` (if paused mid-phase)
 
 **Starting a new project:**
+
 1. Create from template: `cp -r projects/_template projects/my-project`
 2. Navigate: `cd projects/my-project`
 3. Initialize: `/gsd:new-project`
 
 **Each project has its own:**
+
 - `.planning/` - GSD state (PROJECT.md, ROADMAP.md, STATE.md)
 - Source code and assets
 - Start scripts
@@ -628,23 +689,31 @@ projects/
 The `mw` command provides a single interface to all MyWork tools:
 
 ```bash
+
 # Quick status check
+
 python tools/mw.py status
 
 # Search for reusable modules
+
 python tools/mw.py search "auth"
 
 # Create new project
+
 python tools/mw.py new my-app fastapi
 
 # Full diagnostics
+
 python tools/mw.py doctor
 
 # List projects
+
 python tools/mw.py projects
 
 # Open project in VS Code
+
 python tools/mw.py open ai-dashboard
+
 ```
 
 ### Auto-Update System
@@ -652,25 +721,33 @@ python tools/mw.py open ai-dashboard
 Keeps GSD, Autocoder, n8n-skills, and n8n-mcp up to date without breaking your system:
 
 ```bash
+
 # Check for available updates
+
 python tools/auto_update.py check
 
 # Update all components
+
 python tools/auto_update.py update
 
 # Update specific component
+
 python tools/auto_update.py update gsd
 python tools/auto_update.py update autocoder
 python tools/auto_update.py update n8n-skills
 
 # Show current versions
+
 python tools/auto_update.py status
 
 # Rollback if something breaks
+
 python tools/auto_update.py rollback autocoder
+
 ```
 
 **Safety features:**
+
 - Creates backup markers before updating
 - Checks for running Autocoder server before update
 - Rebuilds Autocoder UI after update
@@ -681,30 +758,39 @@ python tools/auto_update.py rollback autocoder
 Scans all projects to build a searchable index of reusable code:
 
 ```bash
+
 # Scan all projects and update registry
+
 python tools/module_registry.py scan
 
 # Search for modules
+
 python tools/module_registry.py search "authentication"
 python tools/module_registry.py search "api endpoint"
 python tools/module_registry.py search "react hook"
 
 # List by type
+
 python tools/module_registry.py list api_endpoint
 python tools/module_registry.py list component
 python tools/module_registry.py list service
 
 # Show module details
+
 python tools/module_registry.py show <module_id>
 
 # View statistics
+
 python tools/module_registry.py stats
 
 # Export to markdown
+
 python tools/module_registry.py export
+
 ```
 
 **Detected module types:**
+
 | Type | Examples |
 |------|----------|
 | `api_endpoint` | FastAPI routes, Express endpoints |
@@ -717,6 +803,7 @@ python tools/module_registry.py export
 | `integration` | External API clients |
 
 **Registry files:**
+
 - `.planning/module_registry.json` - Full registry data
 - `.planning/MODULE_REGISTRY.md` - Human-readable export
 
@@ -725,20 +812,27 @@ python tools/module_registry.py export
 Comprehensive diagnostics for all framework components:
 
 ```bash
+
 # Full health check
+
 python tools/health_check.py
 
 # Quick status
+
 python tools/health_check.py quick
 
 # Auto-fix common issues
+
 python tools/health_check.py fix
 
 # Generate detailed report
+
 python tools/health_check.py report
+
 ```
 
 **Checks performed:**
+
 - GSD installation and version
 - Autocoder server status
 - n8n connection and skills
@@ -753,18 +847,23 @@ python tools/health_check.py report
 Quickly create new projects with pre-configured templates:
 
 ```bash
+
 # List available templates
+
 python tools/scaffold.py list
 
 # Create new project
+
 python tools/scaffold.py new my-api fastapi
 python tools/scaffold.py new my-app nextjs
 python tools/scaffold.py new my-fullstack fullstack
 python tools/scaffold.py new my-cli cli
 python tools/scaffold.py new my-automation automation
+
 ```
 
 **Available templates:**
+
 | Template | Description |
 |----------|-------------|
 | `basic` | Empty project with GSD structure |
@@ -783,16 +882,21 @@ The brain is your persistent memory - lessons learned, patterns discovered, mist
 #### Automatic Learning (YOU MUST DO THIS)
 
 **After completing any GSD phase or significant work:**
+
 ```bash
 python tools/mw.py brain learn
+
 ```
 
 **Weekly (deep analysis):**
+
 ```bash
 python tools/mw.py brain learn-deep
+
 ```
 
 The brain automatically discovers knowledge from:
+
 - ✅ Completed GSD phases (summaries, verifications)
 - ✅ Git commit patterns (recurring fixes, features)
 - ✅ Module registry (naming patterns, common types)
@@ -801,24 +905,32 @@ The brain automatically discovers knowledge from:
 #### Searching Your Knowledge
 
 **BEFORE building anything, search the brain:**
+
 ```bash
 python tools/mw.py brain search "what you're about to build"
+
 ```
 
 #### Manual Commands
 
 ```bash
+
 # Search knowledge
+
 python tools/mw.py brain search "authentication"
 
 # Quick add something (use sparingly - prefer auto-learning)
+
 python tools/mw.py remember "What you just learned"
 
 # Review experimental entries
+
 python tools/mw.py brain review
 
 # Statistics
+
 python tools/mw.py brain stats
+
 ```
 
 #### Entry Lifecycle (Automatic)
@@ -829,31 +941,40 @@ python tools/mw.py brain stats
 4. **Cleanup** → Deprecated entries auto-removed
 
 **Brain files:**
+
 - `.planning/BRAIN.md` - Human-readable vault
 - `.planning/brain_data.json` - Structured data
 
 ### Recommended Maintenance Routine
 
 **Daily (before starting work):**
+
 ```bash
 python tools/mw.py status
+
 ```
 
 **After completing work:**
+
 ```bash
 python tools/mw.py brain learn
+
 ```
 
 **Weekly:**
+
 ```bash
 python tools/auto_update.py check
 python tools/module_registry.py scan
 python tools/mw.py brain learn-deep  # Deep learning analysis
+
 ```
 
 **When things feel slow or broken:**
+
 ```bash
 python tools/health_check.py fix
+
 ```
 
 ---
@@ -875,6 +996,7 @@ You are the Master Orchestrator. Your job is to:
 ### Self-Improvement Philosophy
 
 The framework gets stronger with every project:
+
 - **Brain** remembers lessons learned, patterns that work, mistakes to avoid
 - **Module Registry** learns what you've built, making future work faster
 - **Auto-Update** keeps tools current without breaking your system
@@ -882,14 +1004,17 @@ The framework gets stronger with every project:
 - **Scaffolding** captures best practices as reusable templates
 
 **Before building something new, always ask:**
+
 1. Have I solved this before? → `mw brain search "keyword"`
 2. Does code already exist? → `mw search "keyword"`
 3. Is there a template? → `mw new --list`
 4. Can I reuse a pattern? → Check `.planning/MODULE_REGISTRY.md`
 
 **After learning something new, always:**
+
 ```bash
 mw remember "What you just learned"
+
 ```
 
 Stay pragmatic. Stay reliable. Keep improving.

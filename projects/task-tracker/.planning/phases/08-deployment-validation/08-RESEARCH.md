@@ -9,6 +9,7 @@
 Deploying a Next.js 15 application with PostgreSQL to production in 2026 involves choosing between specialized platforms (Vercel for frontend, Railway/Neon for backend+database) or all-in-one solutions. The standard approach is Vercel for Next.js frontend paired with Neon or Supabase for serverless PostgreSQL, with built-in monitoring via Vercel Speed Insights for Core Web Vitals and custom analytics for usage pattern tracking. Feedback collection is achieved through lightweight React components that integrate directly into the application.
 
 Based on the context decisions (open access, direct GitHub login, framework validation focus), the recommended stack is:
+
 - **Hosting**: Vercel (Next.js optimized, zero-config deployment)
 - **Database**: Neon (serverless PostgreSQL with branching, scales to zero)
 - **Monitoring**: Vercel Speed Insights + PostHog (pattern tracking)
@@ -22,6 +23,7 @@ Based on the context decisions (open access, direct GitHub login, framework vali
 The established libraries/tools for this domain:
 
 ### Core
+
 | Library | Version | Purpose | Why Standard |
 |---------|---------|---------|--------------|
 | Vercel | Platform | Next.js hosting | Created by Next.js team, zero-config, edge optimization, best integration |
@@ -30,6 +32,7 @@ The established libraries/tools for this domain:
 | GitHub Actions | Platform | CI/CD automation | Native GitHub integration, free for public repos, extensive ecosystem |
 
 ### Supporting
+
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
 | PostHog | Latest | Product analytics | Framework pattern tracking, user behavior analysis |
@@ -38,6 +41,7 @@ The established libraries/tools for this domain:
 | Prisma Deploy | 7.x | Database migrations | Production migration management |
 
 ### Alternatives Considered
+
 | Instead of | Could Use | Tradeoff |
 |------------|-----------|----------|
 | Vercel | Railway | Railway handles full-stack better but lacks Next.js edge optimization |
@@ -47,20 +51,27 @@ The established libraries/tools for this domain:
 | Upstash Feedback | Happy React | Happy React is commercial with surveys but overkill for simple feedback |
 
 **Installation:**
+
 ```bash
+
 # Production dependencies (already in project)
+
 npm install @upstash/ratelimit
 
 # Feedback widget
+
 npm install @upstash/feedback
 
 # Analytics (if using PostHog)
+
 npm install posthog-js
+
 ```
 
 ## Architecture Patterns
 
 ### Recommended Deployment Architecture
+
 ```
 GitHub Repository
     ↓
@@ -71,12 +82,15 @@ Vercel (Frontend + API Routes)
 Neon (PostgreSQL Database)
     ↓
 Upstash Redis (Rate Limiting + Feedback)
+
 ```
 
 ### Pattern 1: Zero-Downtime Deployment with Health Checks
+
 **What:** Ensure new deployment is healthy before routing traffic
 **When to use:** All production deployments
 **Example:**
+
 ```typescript
 // app/api/health/route.ts
 // Source: https://blog.logrocket.com/how-to-implement-a-health-check-in-node-js/
@@ -100,33 +114,47 @@ export async function GET() {
     );
   }
 }
+
 ```
 
 ### Pattern 2: Environment Variable Management
+
 **What:** Separate build-time and runtime configuration
 **When to use:** All Next.js deployments
 **Example:**
+
 ```bash
+
 # .env.local (development)
+
 DATABASE_URL="postgresql://user:pass@localhost:5432/db"
 NEXTAUTH_SECRET="dev-secret"
 NEXTAUTH_URL="http://localhost:3000"
 
 # Vercel Environment Variables (production)
+
 # DATABASE_URL → Production Neon connection string
+
 # NEXTAUTH_SECRET → Generated secure secret
+
 # NEXTAUTH_URL → https://your-app.vercel.app
+
 ```
 
 **Important:** `NEXT_PUBLIC_*` variables are baked into build, all others are server-only.
 
 ### Pattern 3: Database Migration in Production
+
 **What:** Safe migration deployment using Prisma
 **When to use:** Database schema changes
 **Example:**
+
 ```yaml
+
 # .github/workflows/deploy.yml
+
 # Source: https://www.prisma.io/docs/orm/prisma-client/deployment/deploy-database-changes-with-prisma-migrate
+
 name: Deploy
 
 on:
@@ -137,29 +165,37 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+
       - uses: actions/checkout@v3
 
       - name: Setup Node.js
+
         uses: actions/setup-node@v3
         with:
           node-version: '20'
 
       - name: Install dependencies
+
         run: npm ci
 
       - name: Run migrations
+
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: npx prisma migrate deploy
 
       - name: Deploy to Vercel
+
         run: vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+
 ```
 
 ### Pattern 4: Core Web Vitals Monitoring
+
 **What:** Track real user performance metrics
 **When to use:** All production deployments
 **Example:**
+
 ```typescript
 // app/layout.tsx
 // Source: https://nextjs.org/docs/pages/api-reference/functions/use-report-web-vitals
@@ -174,12 +210,15 @@ export function reportWebVitals(metric: any) {
     console.log(metric);
   }
 }
+
 ```
 
 ### Pattern 5: User Feedback Collection
+
 **What:** In-app feedback widget for validation
 **When to use:** Validation phase, beta testing
 **Example:**
+
 ```typescript
 // components/FeedbackWidget.tsx
 // Source: https://upstash.com/blog/feedback-widget
@@ -196,12 +235,15 @@ export function FeedbackWidget() {
     />
   );
 }
+
 ```
 
 ### Pattern 6: Rate Limiting for Abuse Prevention
+
 **What:** Prevent API abuse during validation period
 **When to use:** Public endpoints, validation phase
 **Example:**
+
 ```typescript
 // lib/rate-limit.ts
 // Source: https://upstash.com/blog/nextjs-ratelimiting
@@ -229,12 +271,15 @@ export async function POST(req: Request) {
 
   // Process request
 }
+
 ```
 
 ### Pattern 7: Framework Pattern Tracking
+
 **What:** Track which MyWork framework patterns users actually use
 **When to use:** Validation phase
 **Example:**
+
 ```typescript
 // lib/pattern-tracker.ts
 import { posthog } from 'posthog-js';
@@ -251,9 +296,11 @@ export function trackPatternUsage(pattern: string, metadata?: Record<string, any
 trackPatternUsage('task_create', { hasAttachments: true });
 trackPatternUsage('search_filter', { filterType: 'status' });
 trackPatternUsage('file_upload', { uploadMethod: 'tus' });
+
 ```
 
 ### Anti-Patterns to Avoid
+
 - **Building at runtime**: Next.js requires `next build` before `next start`, never run dev in production
 - **Hardcoded secrets**: Never commit `.env` files or secrets to git
 - **Direct database access**: Always use Prisma client, never raw connection strings in client code
@@ -281,36 +328,47 @@ Problems that look simple but have existing solutions:
 ## Common Pitfalls
 
 ### Pitfall 1: Build-Time Environment Variables
+
 **What goes wrong:** NEXT_PUBLIC_ variables are baked into the build, changing them in Vercel doesn't update deployed app
 **Why it happens:** Next.js replaces NEXT_PUBLIC_ variables at build time with their values
 **How to avoid:**
+
 - Only use NEXT_PUBLIC_ for truly public values (API endpoints, feature flags)
 - Use server-side environment variables for secrets and dynamic config
 - Rebuild after changing any NEXT_PUBLIC_ variable
+
 **Warning signs:** Changed environment variable but app still shows old value
 
 ### Pitfall 2: Missing Prisma Generation in Production
+
 **What goes wrong:** `prisma` package is in devDependencies, production build fails with "Cannot find module '@prisma/client'"
 **Why it happens:** Production installs only dependencies, not devDependencies
 **How to avoid:**
+
 - Add `"postinstall": "prisma generate"` to package.json scripts
 - Move `prisma` to `dependencies` (not devDependencies)
 - Or add `npm install prisma --save` (not --save-dev)
+
 **Warning signs:** Local works fine, Vercel build fails on Prisma imports
 
 ### Pitfall 3: Database Connection Pooling Exhaustion
+
 **What goes wrong:** "Too many connections" errors in serverless environment
 **Why it happens:** Each serverless function creates new Prisma client, exhausting connection pool
 **How to avoid:**
+
 - Use connection pooling with Neon (built-in) or PgBouncer
 - Configure Prisma connection limit: `connection_limit=10`
 - Use Prisma's recommended singleton pattern for client instantiation
+
 **Warning signs:** Works with low traffic, fails under load
 
 ### Pitfall 4: Missing Security Headers
+
 **What goes wrong:** App vulnerable to XSS, clickjacking, content sniffing attacks
 **Why it happens:** Next.js doesn't set security headers by default
 **How to avoid:**
+
 ```typescript
 // next.config.js
 const securityHeaders = [
@@ -325,35 +383,46 @@ module.exports = {
     return [{ source: '/:path*', headers: securityHeaders }];
   },
 };
+
 ```
+
 **Warning signs:** Security audit tools flag missing headers
 
 ### Pitfall 5: Middleware Authentication Bypass (CVE-2025-29927)
+
 **What goes wrong:** Critical vulnerability allows complete bypass of middleware security checks
 **Why it happens:** Manipulation of `x-middleware-subrequest` header bypasses authentication
 **How to avoid:**
+
 - Upgrade to Next.js 15.2.3+, 14.2.25+, 13.5.9+, or 12.3.5+ immediately
 - Re-verify authorization in Server Actions, don't trust middleware alone
 - Validate user permissions before every sensitive operation
+
 **Warning signs:** CVSS 9.1 critical vulnerability, must patch immediately
 
 ### Pitfall 6: File Upload Without Size Limits
+
 **What goes wrong:** Users upload huge files, exhaust disk space or bandwidth quota
 **Why it happens:** TUS protocol supports resumable uploads but doesn't enforce size limits by default
 **How to avoid:**
+
 - Configure max upload size in TUS server (e.g., 20GB limit)
 - Add rate limiting to upload endpoints
 - Monitor storage usage and set alerts
+
 **Warning signs:** Sudden spike in storage costs or bandwidth
 
 ### Pitfall 7: No Rollback Plan
+
 **What goes wrong:** Bad deployment breaks production, no way to quickly recover
 **Why it happens:** Assumed deployment would always succeed
 **How to avoid:**
+
 - Keep previous deployment accessible (Vercel does this automatically)
 - Test migrations on staging database first
 - Use instant rollback feature on platform (Vercel: redeploy previous version)
 - Implement health checks that auto-fail bad deployments
+
 **Warning signs:** Deployment succeeds but app is broken, no quick recovery path
 
 ## Code Examples
@@ -361,6 +430,7 @@ module.exports = {
 Verified patterns from official sources:
 
 ### Production-Ready Health Check Endpoint
+
 ```typescript
 // app/api/health/route.ts
 // Source: https://blog.logrocket.com/how-to-implement-a-health-check-in-node-js/
@@ -396,23 +466,33 @@ export async function GET() {
     );
   }
 }
+
 ```
 
 ### Safe Database Migration Deployment
+
 ```bash
+
 # Source: https://www.prisma.io/docs/orm/prisma-client/deployment/deploy-database-changes-with-prisma-migrate
 
 # In CI/CD pipeline (GitHub Actions)
+
 npx prisma migrate deploy
 
 # This command:
+
 # - Compares applied migrations against migration history
+
 # - Applies pending migrations in order
+
 # - Warns if any migrations have been modified
+
 # - Does NOT reset database or detect drift
+
 ```
 
 ### Environment Variable Validation at Startup
+
 ```typescript
 // lib/env.ts
 // Source: https://nextjs.org/docs/pages/guides/environment-variables
@@ -429,9 +509,11 @@ const envSchema = z.object({
 });
 
 export const env = envSchema.parse(process.env);
+
 ```
 
 ### Feedback Widget Integration
+
 ```typescript
 // components/FeedbackButton.tsx
 // Source: https://upstash.com/blog/feedback-widget
@@ -455,9 +537,11 @@ export function FeedbackButton() {
     />
   );
 }
+
 ```
 
 ### Rate Limiting Middleware
+
 ```typescript
 // middleware.ts
 // Source: https://upstash.com/blog/edge-rate-limiting
@@ -503,9 +587,11 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: '/api/:path*',
 };
+
 ```
 
 ### Analytics Integration (PostHog)
+
 ```typescript
 // app/providers.tsx
 // Source: https://posthog.com/tutorials/nextjs-analytics
@@ -545,6 +631,7 @@ export function TaskList() {
 
   return <button onClick={handleCreateTask}>Create Task</button>;
 }
+
 ```
 
 ## State of the Art
@@ -560,6 +647,7 @@ export function TaskList() {
 | Client-side auth checks only | Server-side verification required | CVE-2025-29927 (2025) | Re-verify in every Server Action |
 
 **Deprecated/outdated:**
+
 - **next export for static hosting**: Use `output: 'export'` in next.config.js instead
 - **API routes in pages/api**: App Router recommends route handlers (app/api/route.ts)
 - **getServerSideProps**: Use Server Components in App Router instead
@@ -598,6 +686,7 @@ Things that couldn't be fully resolved:
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - [Next.js Official Documentation - Analytics](https://nextjs.org/docs/pages/guides/analytics)
 - [Next.js Official Documentation - Environment Variables](https://nextjs.org/docs/pages/guides/environment-variables)
 - [Next.js Official Documentation - Production Checklist](https://nextjs.org/docs/app/guides/production-checklist)
@@ -608,6 +697,7 @@ Things that couldn't be fully resolved:
 - [TUS Protocol Official Site](https://tus.io/)
 
 ### Secondary (MEDIUM confidence)
+
 - [Vercel vs Railway vs Kuberns Comparison 2026](https://kuberns.com/blogs/post/railway-vs-vercel-vs-kuberns/)
 - [Deploying Full Stack Apps in 2026](https://www.nucamp.co/blog/deploying-full-stack-apps-in-2026-vercel-netlify-railway-and-cloud-options)
 - [Best PostgreSQL Hosting Providers 2026](https://northflank.com/blog/best-postgresql-hosting-providers)
@@ -620,12 +710,14 @@ Things that couldn't be fully resolved:
 - [LogRocket Health Check Implementation](https://blog.logrocket.com/how-to-implement-a-health-check-in-node-js/)
 
 ### Tertiary (LOW confidence)
+
 - [GitHub Actions Next.js Deployment Guide 2025](https://ayyaztech.com/blog/auto-deploy-nextjs-with-github-actions-complete-cicd-guide-2025) - Community guide, not official
 - [TUS Node.js Server 2.0.0 Blog](https://tus.io/blog/2025/03/25/tus-node-server-v200) - Future-dated article (March 2025), may not be released yet
 
 ## Metadata
 
 **Confidence breakdown:**
+
 - Standard stack: HIGH - Vercel and Neon are well-documented, widely adopted for Next.js in 2026
 - Architecture: HIGH - Patterns verified with official Next.js, Prisma, and Vercel documentation
 - Monitoring: HIGH - Vercel Speed Insights is built-in, PostHog has Next.js-specific guides

@@ -20,6 +20,7 @@ Key risks center on integration complexity (GitHub API rate limiting, file uploa
 Modern JavaScript full-stack with production-grade tooling optimized for code reusability. Next.js 16 with React 19 provides server components and automatic optimization (38% faster initial loads vs React 18). TypeScript 5.x is mandatory for maintainable modules that can be extracted as brains. Prisma 6.19+ delivers type-safe database access and is now Rust-free (TypeScript-only). PostgreSQL 16.x handles multi-user concurrency far better than SQLite (required for deployed task management). shadcn/ui provides accessible components you own and customize — critical for brain reusability since you're not locked into npm package versions.
 
 **Core technologies:**
+
 - **Next.js 16+**: Full-stack framework with stable Turbopack, React 19 support, SSR/SSG built-in — industry standard for rapid MVP with production-ready defaults
 - **TypeScript 5.x**: De facto standard for maintainable Node.js, native support in Node.js with experimental flag, critical for brain reusability
 - **Prisma 6.19+**: Type-safe ORM with automatic migrations, visual data explorer, gold standard for database access
@@ -27,12 +28,14 @@ Modern JavaScript full-stack with production-grade tooling optimized for code re
 - **shadcn/ui**: Beautifully designed accessible components you own (copy-paste, not npm), official task management example available
 
 **Supporting libraries:**
+
 - **@octokit/oauth-app**: Official GitHub OAuth toolset for Node.js, better than generic OAuth for GitHub-specific features
 - **uploadthing**: Type-safe file uploads built for Next.js, simpler than AWS S3 for MVP, serverless-friendly
 - **zod**: Runtime validation with TypeScript inference, pairs perfectly with tRPC and Prisma
 - **@tanstack/react-query**: Server state management with cache, background refetching, optimistic updates — critical for responsive task UX
 
 **What NOT to use:**
+
 - Next.js Pages Router (legacy, use App Router)
 - Create React App (unmaintained since 2022)
 - MongoDB (overkill for structured task data, relational fits better)
@@ -44,6 +47,7 @@ Modern JavaScript full-stack with production-grade tooling optimized for code re
 Research identifies clear tiers: table stakes users expect, differentiators for competitive advantage, and anti-features that create problems.
 
 **Must have (table stakes):**
+
 - Task CRUD (create/edit/delete) — absolute minimum for any task manager
 - Task completion toggle — psychological satisfaction is core value prop
 - Due dates — time-bound tasks are fundamental to productivity
@@ -57,6 +61,7 @@ Research identifies clear tiers: table stakes users expect, differentiators for 
 - Basic task lists/projects — organization beyond single list
 
 **Should have (competitive advantage):**
+
 - **File attachments** (REQUIRED for this project) — Todoist offers this premium-only, competitors lack it — context without leaving app
 - **GitHub integration** (REQUIRED for this project) — usage tracking for technical users, unique differentiator
 - Tags/labels — cross-project categorization (defer to v1.1+)
@@ -66,6 +71,7 @@ Research identifies clear tiers: table stakes users expect, differentiators for 
 - Subtasks — complex task breakdown (defer to v1.1+ after validation)
 
 **Defer to v2+ (future consideration):**
+
 - Natural language input — high complexity, questionable ROI for MVP
 - Offline support — architectural complexity, validate online-first first
 - Task templates — unclear value until usage patterns emerge
@@ -73,6 +79,7 @@ Research identifies clear tiers: table stakes users expect, differentiators for 
 - Real-time collaboration — massive complexity for solo/small team use case
 
 **Anti-features (avoid):**
+
 - Real-time collaboration — adds months of engineering for individual productivity tool, simple sharing with refresh-to-update is adequate
 - Gantt charts — project management, not personal task lists, scope creep
 - Time tracking built-in — separate concern, adds UI complexity with unclear value
@@ -85,6 +92,7 @@ Research identifies clear tiers: table stakes users expect, differentiators for 
 Standard layered architecture (N-tier) with modular monolith structure. Three-layer separation: routes handle HTTP concerns, controllers transform requests/responses, services contain business logic and coordinate repositories. This enables brain extraction — each layer has clean interfaces and can be tested independently.
 
 **Major components:**
+
 1. **Presentation Layer (React)** — UI components, routing, client state management with Context API, unidirectional data flow
 2. **Application Layer (Express.js)** — API routes, middleware chain (auth, validation, error handling), request/response transformation
 3. **Business Logic (Services)** — Task operations, validation, authorization, coordination between repositories and external APIs
@@ -92,12 +100,14 @@ Standard layered architecture (N-tier) with modular monolith structure. Three-la
 5. **Integration Services** — GitHub API client with rate limiting, file upload service with security validation
 
 **Key patterns to follow:**
+
 - **Repository Pattern** — abstracts database operations, enables testing and storage backend swapping
 - **Service Layer Pattern** — centralizes business logic for reuse across different entry points (API, CLI, background jobs)
 - **Middleware Chain** — composable processing pipeline for cross-cutting concerns (auth, validation, logging)
 - **DTO (Data Transfer Object)** — separate database schema from API responses, prevents exposing internal fields
 
 **What NOT to do:**
+
 - God controllers — put business logic in services, not controllers
 - Premature microservices — start with modular monolith, extract services only at proven scale
 - Mix database schema with API responses — exposes sensitive fields, couples API to schema
@@ -129,9 +139,11 @@ Research reveals eight critical pitfalls, ranked by impact and frequency in task
 Based on research, suggested phase structure prioritizes foundation quality, addresses pitfalls early, and builds features in dependency order.
 
 ### Phase 1: Foundation & Core Task Management
+
 **Rationale:** Must establish production-quality patterns and infrastructure before any features. Pitfalls research shows prototype code shipped to production is the #1 risk — prevent this by setting standards from day one. Authentication enables all personalized features, task CRUD is the foundation everything builds on.
 
 **Delivers:**
+
 - User registration/login (GitHub OAuth preferred)
 - Production-ready infrastructure (error handling, logging, audit trails)
 - Task CRUD with proper validation
@@ -141,6 +153,7 @@ Based on research, suggested phase structure prioritizes foundation quality, add
 - Database schema designed for modularity
 
 **Addresses features:**
+
 - User accounts (table stakes)
 - Task CRUD (table stakes)
 - Task completion (table stakes)
@@ -149,6 +162,7 @@ Based on research, suggested phase structure prioritizes foundation quality, add
 - Task lists/organization (table stakes)
 
 **Avoids pitfalls:**
+
 - Pitfall #1 (prototype code) — establish code quality standards and automated checks from start
 - Pitfall #2 (tight coupling) — define module boundaries and interfaces upfront
 - Pitfall #3 (database schema) — design tables with clear module responsibilities, plan for extraction
@@ -158,9 +172,11 @@ Based on research, suggested phase structure prioritizes foundation quality, add
 **Research flag:** Standard patterns — skip research-phase. Authentication and CRUD are well-documented with established libraries.
 
 ### Phase 2: Search, Filter & Performance
+
 **Rationale:** With core data model stable, implement discovery features with performance considerations built-in from start. Research shows search/filter is table stakes but often implemented without indexes or pagination, causing performance problems at scale.
 
 **Delivers:**
+
 - Full-text search across task titles and descriptions
 - Multi-dimensional filtering (status, priority, due date, project)
 - Pagination for large task lists
@@ -168,22 +184,27 @@ Based on research, suggested phase structure prioritizes foundation quality, add
 - Performance validation with 10,000+ task dataset
 
 **Addresses features:**
+
 - Search tasks (table stakes)
 - Filter by status/date (table stakes)
 
 **Avoids pitfalls:**
+
 - Pitfall #6 (search performance) — indexes, pagination, database queries from start, test with realistic dataset
 
 **Uses stack:**
+
 - PostgreSQL full-text search capabilities
 - Prisma query builder with filtering
 
 **Research flag:** Standard patterns — skip research-phase. Database search/filter is well-documented.
 
 ### Phase 3: File Attachments
+
 **Rationale:** Required per project spec. File management is its own module with clear boundaries (file storage abstraction). Research shows file uploads are often "complete" without security validation — must include MIME validation, size limits, malware scanning from start.
 
 **Delivers:**
+
 - File upload with drag-and-drop UI
 - File size limits enforced (client and server)
 - MIME type and extension validation server-side
@@ -192,17 +213,21 @@ Based on research, suggested phase structure prioritizes foundation quality, add
 - Storage abstraction supporting local/S3 backends
 
 **Addresses features:**
+
 - File attachments (required differentiator)
 
 **Avoids pitfalls:**
+
 - Pitfall #5 (file security) — validation, limits, security checklist before any uploads go to production
 - Pitfall #2 (tight coupling) — file service abstracted, works independently of task domain
 
 **Uses stack:**
+
 - uploadthing for MVP (serverless-friendly)
 - Design for easy migration to S3 at scale
 
 **Implementation pattern:**
+
 - Repository pattern for file metadata
 - Service layer coordinates file storage + database updates
 - Separate files table with foreign key to tasks
@@ -210,9 +235,11 @@ Based on research, suggested phase structure prioritizes foundation quality, add
 **Research flag:** Needs phase-specific research. File upload security and validation strategies need deeper investigation (virus scanning options, cloud storage migration patterns).
 
 ### Phase 4: GitHub Integration
+
 **Rationale:** Required per project spec. Integration demonstrates external API patterns for brain reusability. Research shows GitHub API rate limiting is frequently mishandled — must implement monitoring, caching, exponential backoff from start.
 
 **Delivers:**
+
 - GitHub OAuth integration for authentication
 - Usage event tracking (task created/completed/deleted)
 - Rate limit monitoring with alerts before hitting limits
@@ -221,16 +248,20 @@ Based on research, suggested phase structure prioritizes foundation quality, add
 - GitHub API client as standalone module
 
 **Addresses features:**
+
 - GitHub integration (required differentiator)
 
 **Avoids pitfalls:**
+
 - Pitfall #4 (GitHub rate limiting) — rate limit handling, caching, batching before production usage
 
 **Uses stack:**
+
 - @octokit/oauth-app for OAuth
 - @octokit/rest for API calls
 
 **Implementation pattern:**
+
 - Service layer wraps GitHub API
 - Event queue for batching
 - Separate integration module
@@ -238,9 +269,11 @@ Based on research, suggested phase structure prioritizes foundation quality, add
 **Research flag:** Needs phase-specific research. GitHub API rate limit strategies, webhook setup, event tracking patterns need investigation.
 
 ### Phase 5: Polish & Refinement
+
 **Rationale:** After core features work, add usability improvements and responsive design polish. These enhance the experience but aren't blocking for launch.
 
 **Delivers:**
+
 - Responsive design optimized for mobile
 - Dark mode support
 - Empty state guidance for new users
@@ -249,6 +282,7 @@ Based on research, suggested phase structure prioritizes foundation quality, add
 - Data export/backup functionality
 
 **Addresses features:**
+
 - Responsive design (table stakes)
 - Dark mode (nice-to-have)
 - Task descriptions enhancement (table stakes improvement)
@@ -305,21 +339,25 @@ All research areas have multiple authoritative sources. Stack recommendations co
 ### Gaps to Address
 
 **Module extraction strategy:** Research covers modular architecture principles but doesn't deeply explore practical extraction patterns for MyWork brains. During implementation, document:
+
 - How to package a module for reuse (directory structure, exports, config)
 - Testing strategy for extracted brains (isolated test suite)
 - Version compatibility handling across projects using same brain
 
 **Scaling thresholds:** Research identifies scaling bottlenecks (database connections ~5k users, file storage ~10k users) but doesn't specify monitoring thresholds or early warning signals. During Phase 1, establish:
+
 - Performance baseline metrics for each component
 - Monitoring alerts for approaching scale limits
 - Load testing strategy to validate scaling assumptions
 
 **GitHub integration specifics:** Research identifies rate limiting as critical but doesn't detail optimal batching intervals or event types to track. During Phase 4 planning, determine:
+
 - Which GitHub events provide most value for usage tracking
 - Optimal sync frequency balancing freshness vs rate limits
 - Local caching strategy for GitHub data
 
 **File storage migration:** Research recommends starting with local storage and migrating to S3 at scale, but doesn't specify migration path. During Phase 3, document:
+
 - Abstraction layer design allowing runtime storage backend selection
 - Migration script approach for moving existing files
 - Rollback plan if cloud storage migration fails
@@ -331,6 +369,7 @@ These gaps are expected — they require implementation context to resolve. Flag
 ### Primary (HIGH confidence)
 
 **Official Documentation:**
+
 - Next.js 16.1.4 Documentation — Current stable version, App Router best practices
 - React 19.2 Release — Stable release with Server Components
 - Prisma Documentation — TypeScript ORM, Rust-free as of 6.16
@@ -340,6 +379,7 @@ These gaps are expected — they require implementation context to resolve. Flag
 - GitHub REST API Best Practices — Rate limiting, error handling
 
 **Research Domain:**
+
 - [Context7] 5 Essential Features of a Productivity App in 2026
 - [Context7] Best task management software in 2026 (features & price compared)
 - [Context7] Todoist vs Microsoft To-Do comparison
@@ -351,6 +391,7 @@ These gaps are expected — they require implementation context to resolve. Flag
 ### Secondary (MEDIUM confidence)
 
 **Stack and Technology:**
+
 - Strapi: React & Next.js in 2025 Best Practices
 - Vercel: React Best Practices (10+ years optimization knowledge)
 - Talent500: React & Next.js State, Performance 2025
@@ -359,12 +400,14 @@ These gaps are expected — they require implementation context to resolve. Flag
 - Cloudinary vs AWS S3 cost analysis (Bytescale)
 
 **Architecture and Patterns:**
+
 - Chapter 2: High-Level Design for Task Management System (Medium)
 - Building a Full-Stack Task Management App with TypeScript/React/Node (DEV)
 - Guide to App Architecture (Android Developers — applicable patterns)
 - Modular Frontend Architecture for Long-Term Maintainability (Medium)
 
 **Pitfalls and Anti-Patterns:**
+
 - Production Ready Code vs Vibe Coded Prototype (Arbisoft)
 - Technical Debt Strategic Guide 2026 (Monday.com)
 - Dark Side of AI Prototyping (Product Release Notes)
@@ -373,6 +416,7 @@ These gaps are expected — they require implementation context to resolve. Flag
 ### Tertiary (LOW confidence)
 
 **Edge Cases and Specific Techniques:**
+
 - No-Code Task Management System (Quixy) — performance considerations
 - Microsoft Planner Filtering Performance — optimization strategies
 - Database Development with AI in 2026 (Brent Ozar) — testing approaches

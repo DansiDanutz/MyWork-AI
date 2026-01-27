@@ -17,6 +17,7 @@ For task organization, the consensus favors a flexible tagging system over rigid
 The established libraries/tools for this domain:
 
 ### Core
+
 | Library | Version | Purpose | Why Standard |
 |---------|---------|---------|--------------|
 | PostgreSQL tsvector | Native | Full-text search with ranking | 99.7% faster than ILIKE, semantic understanding, built into Postgres |
@@ -26,6 +27,7 @@ The established libraries/tools for this domain:
 | react-highlight-words | 2.x | Search result highlighting | Lightweight, uses native `<mark>`, flexible matching |
 
 ### Supporting
+
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
 | use-debounce | 10.x | Debounced search input | Reduce database queries during typing (300-500ms delay) |
@@ -33,6 +35,7 @@ The established libraries/tools for this domain:
 | GIN indexes | PostgreSQL | Index for tsvector and trigrams | Required for production FTS performance |
 
 ### Alternatives Considered
+
 | Instead of | Could Use | Tradeoff |
 |------------|-----------|----------|
 | nuqs | useSearchParams + manual typing | nuqs provides type safety and simpler API, manual requires more boilerplate |
@@ -41,18 +44,23 @@ The established libraries/tools for this domain:
 | Implicit m-n | Explicit join table model | Explicit allows metadata (assignedBy, assignedAt) but complicates API |
 
 **Installation:**
+
 ```bash
 npm install nuqs use-debounce react-highlight-words zod
+
 ```
 
 PostgreSQL extensions (via migration):
+
 ```sql
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
 ```
 
 ## Architecture Patterns
 
 ### Recommended Project Structure
+
 ```
 src/
 ├── app/
@@ -75,12 +83,15 @@ src/
     └── search/
         ├── highlight-utils.ts        # Text highlighting helpers
         └── search-utils.ts           # Query building utilities
+
 ```
 
 ### Pattern 1: PostgreSQL Full-Text Search with TypedSQL
+
 **What:** Use tsvector column with GIN index for fast, ranked full-text search
 **When to use:** Searching task titles, descriptions, and other text content
 **Example:**
+
 ```typescript
 // prisma/schema.prisma
 model Task {
@@ -128,12 +139,15 @@ import { searchTasks } from '@prisma/client/sql';
 export async function searchTasksFTS(userId: string, query: string) {
   return await prisma.$queryRawTyped(searchTasks(query, userId));
 }
+
 ```
 
 ### Pattern 2: URL-Based Filter State with nuqs
+
 **What:** Store filter state in URL params for shareability and bookmarking
 **When to use:** Any filtering UI (search, status, tags, date ranges)
 **Example:**
+
 ```typescript
 // src/app/dashboard/tasks/search-params.ts
 import { parseAsString, parseAsArrayOf, parseAsStringEnum } from 'nuqs';
@@ -165,12 +179,15 @@ export default function TasksPage() {
     />
   );
 }
+
 ```
 
 ### Pattern 3: Debounced Search with Server Actions
+
 **What:** Debounce search input to reduce database queries, use Server Actions for fetching
 **When to use:** Live search that queries on every keystroke
 **Example:**
+
 ```typescript
 // src/app/dashboard/tasks/components/TaskSearchBar.tsx
 'use client';
@@ -214,12 +231,15 @@ export function TaskSearchBar({ value, onChange }: Props) {
     </div>
   );
 }
+
 ```
 
 ### Pattern 4: Many-to-Many Tags with Implicit Relations
+
 **What:** Use Prisma's implicit m-n for tags without extra metadata
 **When to use:** Simple tagging where you don't need to track who/when assigned tags
 **Example:**
+
 ```typescript
 // prisma/schema.prisma
 model Task {
@@ -272,12 +292,15 @@ export async function filterTasksByTags(userId: string, tagIds: string[]) {
     include: { tags: true },
   });
 }
+
 ```
 
 ### Pattern 5: Bulk Operations with useOptimistic
+
 **What:** Instant UI updates during bulk operations using React 19's useOptimistic
 **When to use:** Bulk status changes, bulk tag assignments, bulk deletions
 **Example:**
+
 ```typescript
 // src/app/dashboard/tasks/components/TaskBulkActions.tsx
 'use client';
@@ -316,12 +339,15 @@ export function TaskBulkActions({ selectedIds, tasks }: Props) {
     </DropdownMenu>
   );
 }
+
 ```
 
 ### Pattern 6: Search Result Highlighting
+
 **What:** Highlight matching text in search results with <mark> tags
 **When to use:** Showing why a result matched the query
 **Example:**
+
 ```typescript
 // src/lib/search/highlight-utils.ts
 export function highlightMatches(text: string, query: string): string {
@@ -357,6 +383,7 @@ export function TaskCard({ task, searchQuery }: Props) {
     </div>
   );
 }
+
 ```
 
 ### Anti-Patterns to Avoid
@@ -386,10 +413,12 @@ Problems that look simple but have existing solutions:
 ## Common Pitfalls
 
 ### Pitfall 1: Not Creating GIN Indexes for tsvector
+
 **What goes wrong:** Full-text search works but is slow (sequential scans), queries take seconds instead of milliseconds.
 **Why it happens:** Developers add tsvector columns but forget the GIN index, or create indexes incorrectly.
 **How to avoid:** Always create GIN index on tsvector columns. Test with EXPLAIN ANALYZE to verify index usage.
 **Warning signs:**
+
 - Query times increase linearly with table size
 - EXPLAIN shows "Seq Scan" instead of "Bitmap Index Scan"
 - Queries take >100ms on tables with >10k rows
@@ -401,13 +430,16 @@ ALTER TABLE tasks ADD COLUMN search_vector tsvector;
 -- RIGHT: With GIN index
 ALTER TABLE tasks ADD COLUMN search_vector tsvector;
 CREATE INDEX tasks_search_vector_idx ON tasks USING GIN(search_vector);
+
 ```
 
 ### Pitfall 2: Using ILIKE for Search Instead of Full-Text Search
+
 **What goes wrong:** Search is slow, no relevance ranking, misses variations (running vs run).
 **Why it happens:** ILIKE seems simpler and works well with small datasets during development.
 **How to avoid:** Start with full-text search from the beginning. Only use ILIKE for exact prefix matching (e.g., username autocomplete).
 **Warning signs:**
+
 - Search results aren't ranked by relevance
 - Users complain about "why didn't this match?"
 - Query times increase as data grows
@@ -425,13 +457,16 @@ await prisma.task.findMany({
 
 // RIGHT: Full-text search with ranking
 await prisma.$queryRawTyped(searchTasks(query, userId));
+
 ```
 
 ### Pitfall 3: Storing Filter State Only in React State
+
 **What goes wrong:** Users can't share filtered views, hitting back button loses filters, page refresh resets everything.
 **Why it happens:** React state is familiar and seems easier than URL management.
 **How to avoid:** Use URL params as single source of truth for all filter state. Use nuqs for type-safe management.
 **Warning signs:**
+
 - Users ask "how do I share this filtered view?"
 - Back button doesn't restore previous filter state
 - Page refresh loses all filters
@@ -442,13 +477,16 @@ const [filters, setFilters] = useState({ status: [], tags: [] });
 
 // RIGHT: URL state
 const [filters, setFilters] = useQueryStates(taskSearchParams);
+
 ```
 
 ### Pitfall 4: No Debouncing on Search Input
+
 **What goes wrong:** Excessive database queries, poor performance, rate limiting issues.
 **Why it happens:** Developers implement "live search" without considering query frequency.
 **How to avoid:** Always debounce search input by 300-500ms using use-debounce library.
 **Warning signs:**
+
 - Database shows spike in queries during typing
 - Search feels laggy or unresponsive
 - Backend rate limiting triggers
@@ -465,13 +503,16 @@ const debouncedSearch = useDebouncedCallback(async (query) => {
   const results = await searchTasks(query);
   setResults(results);
 }, 300);
+
 ```
 
 ### Pitfall 5: Using Explicit Many-to-Many When Implicit Would Suffice
+
 **What goes wrong:** More complex API, extra boilerplate, harder to maintain.
 **Why it happens:** Developers assume explicit join tables are always needed or follow outdated patterns.
 **How to avoid:** Use implicit m-n unless you need to store metadata (who assigned, when assigned, etc.) on the relationship.
 **Warning signs:**
+
 - Join table model has no fields beyond the two IDs
 - Queries become verbose with nested includes
 - Simple operations require multiple database calls
@@ -495,13 +536,16 @@ model Tag {
   id    String @id
   tasks Task[]
 }
+
 ```
 
 ### Pitfall 6: Forgetting Empty States for Search/Filters
+
 **What goes wrong:** Users see blank screen with no guidance when filters return no results, confusion about whether something broke.
 **Why it happens:** Developers focus on happy path and forget edge cases.
 **How to avoid:** Always implement empty states with helpful guidance (clear filters, broaden search, suggested alternatives).
 **Warning signs:**
+
 - User reports "the app is broken" when they've filtered everything out
 - No visual indication when search returns zero results
 - Users don't know how to recover from empty state
@@ -520,6 +564,7 @@ model Tag {
 ) : (
   <TaskList tasks={tasks} />
 )}
+
 ```
 
 ## Code Examples
@@ -527,6 +572,7 @@ model Tag {
 Verified patterns from official sources:
 
 ### Full-Text Search with TypedSQL (Prisma Official Docs)
+
 ```typescript
 // Source: https://www.prisma.io/docs/orm/prisma-client/using-raw-sql/typedsql
 
@@ -555,9 +601,11 @@ export async function searchTasksDAL(userId: string, query: string) {
   const results = await prisma.$queryRawTyped(searchTasks(query, userId));
   return results;
 }
+
 ```
 
 ### URL State with nuqs (nuqs Official Docs)
+
 ```typescript
 // Source: https://nuqs.dev/
 
@@ -588,9 +636,11 @@ export default function TasksPage() {
     />
   );
 }
+
 ```
 
 ### Debounced Search (Next.js Official Docs)
+
 ```typescript
 // Source: https://nextjs.org/learn/dashboard-app/adding-search-and-pagination
 
@@ -621,9 +671,11 @@ export default function Search() {
     />
   );
 }
+
 ```
 
 ### Many-to-Many with Connect/Create (Prisma Official Docs)
+
 ```typescript
 // Source: https://www.prisma.io/docs/orm/prisma-client/queries/relation-queries
 
@@ -670,9 +722,11 @@ const tasks = await prisma.task.findMany({
   },
   include: { tags: true },
 });
+
 ```
 
 ### Checkbox Selection with Indeterminate State (React Official Patterns)
+
 ```typescript
 // Source: https://www.patternfly.org/patterns/bulk-selection/
 
@@ -743,9 +797,11 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
     </table>
   );
 }
+
 ```
 
 ### Empty State Component (Design System Best Practices)
+
 ```typescript
 // Source: https://carbondesignsystem.com/patterns/empty-states-pattern/
 
@@ -794,6 +850,7 @@ export function EmptyState({
   description="Create your first task to get started with organizing your work"
   action={<Button onClick={openCreateDialog}>Create Task</Button>}
 />
+
 ```
 
 ## State of the Art
@@ -808,6 +865,7 @@ export function EmptyState({
 | React state for filters | URL state with nuqs | Next.js 13+ era | Shareable URLs, bookmarkable views, SSR-friendly |
 
 **Deprecated/outdated:**
+
 - **Elasticsearch for basic search**: Overkill for most apps. PostgreSQL FTS handles 10M+ rows efficiently with proper indexing.
 - **LIKE/ILIKE for search at scale**: Doesn't use indexes, no ranking, no semantic understanding. Use FTS instead.
 - **useSearchParams with manual parsing**: Error-prone, no type safety. Use nuqs for URL state.
@@ -841,6 +899,7 @@ Things that couldn't be fully resolved:
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - [Prisma TypedSQL Documentation](https://www.prisma.io/docs/orm/prisma-client/using-raw-sql/typedsql) - Official TypedSQL guide
 - [Prisma Many-to-Many Relations](https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations) - Official m-n docs
 - [Next.js Official Tutorial: Search and Pagination](https://nextjs.org/learn/dashboard-app/adding-search-and-pagination) - Debouncing patterns
@@ -850,6 +909,7 @@ Things that couldn't be fully resolved:
 - [React 19 useOptimistic Documentation](https://react.dev/reference/react/useOptimistic) - Official hook docs
 
 ### Secondary (MEDIUM confidence)
+
 - [PostgreSQL Full-Text Search Best Practices](https://www.pedroalonso.net/blog/postgres-full-text-search/) - Production patterns
 - [Bulletproof Full-Text Search with Prisma](https://medium.com/@chauhananubhav16/bulletproof-full-text-search-fts-in-prisma-with-postgresql-tsvector-without-migration-drift-c421f63aaab3) - Migration drift solutions
 - [Managing Advanced Search Param Filtering](https://aurorascharff.no/posts/managing-advanced-search-param-filtering-next-app-router/) - Next.js 15 patterns
@@ -858,6 +918,7 @@ Things that couldn't be fully resolved:
 - [Understanding Postgres GIN Indexes](https://pganalyze.com/blog/gin-index) - Performance characteristics
 
 ### Tertiary (LOW confidence)
+
 - [PostgreSQL FTS Performance Tuning](https://medium.com/@jramcloud1/20-postgresql-17-performance-tuning-full-text-search-index-tsvector-ece3b576a37b) - PostgreSQL 17 specific
 - [Next.js in 2026 Industry Overview](https://www.nucamp.co/blog/next.js-in-2026-the-full-stack-react-framework-that-dominates-the-industry) - Ecosystem trends
 - [Task Management Categories vs Tags](https://clickup.com/blog/task-categories/) - Product design patterns
@@ -865,6 +926,7 @@ Things that couldn't be fully resolved:
 ## Metadata
 
 **Confidence breakdown:**
+
 - Standard stack: HIGH - All recommendations from official docs or widely-adopted libraries with strong community support
 - Architecture: HIGH - Patterns verified in Next.js/Prisma official documentation and production apps
 - Pitfalls: HIGH - Common mistakes documented across multiple sources and design system guides

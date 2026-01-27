@@ -4,6 +4,7 @@
 **Status:** Ready for planning
 
 <domain>
+
 ## Phase Boundary
 
 Users can create, edit, delete, and manage tasks with status tracking (todo/in progress/done). This includes task CRUD operations, status management, and viewing tasks in an organized list. Task organization (categories/search) and file attachments are separate phases.
@@ -11,19 +12,23 @@ Users can create, edit, delete, and manage tasks with status tracking (todo/in p
 </domain>
 
 <decisions>
+
 ## Implementation Decisions
 
 ### Task creation flow
+
 - Dedicated page at /tasks/new for task creation (not inline or modal)
 - Plus button on dashboard provides quick access to create new tasks
 - After creation, user returns to task list to see their new task
 
 ### Task list layout
+
 - Card-based layout with shadow and padding for modern feel
 - Tasks grouped by status (Todo, In Progress, Done sections)
 - Empty state shows friendly illustration with "No tasks yet! Create your first task to get started"
 
 ### Claude's Discretion
+
 - Required fields for task creation (title vs title+description)
 - Information shown on each task card (balance of title/description/date/status)
 - Status change interaction method (dropdown, buttons, or other)
@@ -38,6 +43,7 @@ Users can create, edit, delete, and manage tasks with status tracking (todo/in p
 </decisions>
 
 <specifics>
+
 ## Specific Ideas
 
 No specific requirements — open to standard approaches
@@ -45,6 +51,7 @@ No specific requirements — open to standard approaches
 </specifics>
 
 <deferred>
+
 ## Deferred Ideas
 
 None — discussion stayed within phase scope

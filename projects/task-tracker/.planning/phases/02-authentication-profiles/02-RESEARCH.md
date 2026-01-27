@@ -17,6 +17,7 @@ The research focused on three critical areas: (1) Auth.js v5 implementation with
 The established libraries/tools for this domain:
 
 ### Core
+
 | Library | Version | Purpose | Why Standard |
 |---------|---------|---------|--------------|
 | next-auth | v5 (beta) | Authentication framework | Official Auth.js package for Next.js, 50+ OAuth providers built-in, framework-agnostic design |
@@ -25,6 +26,7 @@ The established libraries/tools for this domain:
 | bcrypt | latest | Password hashing | Industry standard for password hashing, required for credentials fallback |
 
 ### Supporting
+
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
 | @vercel/blob | latest | Avatar storage | File uploads on Vercel (4.5MB server limit, client uploads for larger) |
@@ -33,6 +35,7 @@ The established libraries/tools for this domain:
 | react-hook-form | latest | Form state management | Optional for complex forms, not required for auto-save pattern |
 
 ### Alternatives Considered
+
 | Instead of | Could Use | Tradeoff |
 |------------|-----------|----------|
 | Auth.js v5 | Better Auth | Better Auth is newer (2025+) with cleaner API but smaller ecosystem, less battle-tested |
@@ -40,15 +43,18 @@ The established libraries/tools for this domain:
 | Vercel Blob | Cloudflare R2 / S3 | R2/S3 have no file size limits but require more configuration |
 
 **Installation:**
+
 ```bash
 npm install next-auth@beta @auth/prisma-adapter jose bcrypt
 npm install @vercel/blob  # for avatar uploads
 npm install -D @types/bcrypt
+
 ```
 
 ## Architecture Patterns
 
 ### Recommended Project Structure
+
 ```
 src/
 ├── app/
@@ -72,12 +78,15 @@ src/
 │   ├── dal.ts                        # Data Access Layer (authorization)
 │   └── session.ts                    # Session utilities (if using JWT)
 └── middleware.ts                     # Auth middleware for route protection
+
 ```
 
 ### Pattern 1: Auth.js Configuration with GitHub OAuth
+
 **What:** Central auth configuration with GitHub provider and Prisma adapter
 **When to use:** Always - this is the foundation of the authentication system
 **Example:**
+
 ```typescript
 // lib/auth.ts
 // Source: https://authjs.dev/reference/nextjs
@@ -122,12 +131,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     error: '/login',  // Redirect errors to login (per user context)
   }
 })
+
 ```
 
 ### Pattern 2: Data Access Layer (DAL) with Authorization
+
 **What:** Centralized authorization checks using React cache() to prevent duplicate queries
 **When to use:** Every Server Component, Server Action, and Route Handler that needs auth
 **Example:**
+
 ```typescript
 // lib/dal.ts
 // Source: https://nextjs.org/docs/app/building-your-application/authentication
@@ -162,12 +174,15 @@ export const getUser = cache(async () => {
 
   return user
 })
+
 ```
 
 ### Pattern 3: Auto-Save Profile Pattern with Server Actions
+
 **What:** Debounced auto-save using Server Actions with optimistic UI updates
 **When to use:** Profile editing, any form that auto-saves (per user context)
 **Example:**
+
 ```typescript
 // app/actions/profile.ts
 // Source: https://darius-marlowe.medium.com/smarter-forms-in-react-building-a-useautosave-hook-with-debounce-and-react-query-d4d7f9bb052e
@@ -217,12 +232,15 @@ export function ProfileForm({ user }) {
     </form>
   )
 }
+
 ```
 
 ### Pattern 4: GitHub API Caching with Conditional Requests
+
 **What:** ETags and conditional requests to avoid rate limits (GitHub gives 304 responses for free)
 **When to use:** Any GitHub API calls that fetch profile/repo data
 **Example:**
+
 ```typescript
 // lib/github.ts
 // Source: https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api
@@ -267,12 +285,15 @@ export async function fetchGitHubData(
   cache.set(url, { data, etag, lastModified })
   return data
 }
+
 ```
 
 ### Pattern 5: Middleware for Route Protection
+
 **What:** Optimistic auth checks in middleware for protected routes
 **When to use:** Route-level protection (lightweight cookie checks only, no DB queries)
 **Example:**
+
 ```typescript
 // middleware.ts
 // Source: https://nextjs.org/docs/app/building-your-application/authentication
@@ -306,9 +327,11 @@ export async function middleware(req: NextRequest) {
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
 }
+
 ```
 
 ### Anti-Patterns to Avoid
+
 - **Querying database in middleware:** Middleware runs on every request including prefetches, causing performance issues. Use cookie-based checks only.
 - **Storing sensitive data in session payload:** Never store PII, passwords, or tokens in JWT payload. Store only user ID and minimal metadata.
 - **Not using Data Access Layer:** Calling `auth()` directly in components leads to duplicate queries. Use DAL with `cache()` for deduplication.
@@ -334,48 +357,56 @@ Problems that look simple but have existing solutions:
 ## Common Pitfalls
 
 ### Pitfall 1: Missing AUTH_SECRET in Production
+
 **What goes wrong:** Auth.js throws runtime error "AUTH_SECRET is not set" in production
 **Why it happens:** Environment variable not set in deployment platform (Vercel, etc.)
 **How to avoid:** Generate secret with `npx auth secret`, add to `.env.local` AND deployment environment variables
 **Warning signs:** Works locally but fails in preview/production deployments
 
 ### Pitfall 2: GitHub OAuth Scope Limitations
+
 **What goes wrong:** Can't get read-only access to repos, requesting `repo` scope grants full read/write
 **Why it happens:** GitHub OAuth doesn't offer read-only repo scope (known limitation)
 **How to avoid:** Accept that `repo` scope grants write access, or use GitHub Apps instead of OAuth Apps for fine-grained permissions
 **Warning signs:** Users concerned about granting write access during OAuth flow
 
 ### Pitfall 3: Session Cookie Not Updating in Middleware
+
 **What goes wrong:** Session refresh logic in middleware doesn't persist updated cookies
 **Why it happens:** Server Components can't set cookies during render, middleware cookie updates aren't automatic
 **How to avoid:** Auth.js handles session refresh automatically via `updateAge` - don't try to manually refresh in middleware
 **Warning signs:** Session expires despite user activity, manual cookie setting in middleware
 
 ### Pitfall 4: GitHub API Rate Limit Exhaustion
+
 **What goes wrong:** Hitting 5,000 requests/hour limit, users get stale profile data
 **Why it happens:** Fetching fresh GitHub data on every page load without caching
 **How to avoid:** (1) Use conditional requests with ETags (304 responses are free), (2) Cache GitHub data in database, (3) Refresh only on login (per user context), (4) Use webhooks for repo updates
 **Warning signs:** `x-ratelimit-remaining: 0` in response headers, 403 rate limit errors
 
 ### Pitfall 5: Auto-Save Race Conditions
+
 **What goes wrong:** User types "Hello World" but "Hello" saves last, overwriting "Hello World"
 **Why it happens:** HTTP requests complete out-of-order, last response overwrites latest input
 **How to avoid:** Use queued mutations (React Query) or timestamps with conflict resolution, debounce at least 1-3 seconds
 **Warning signs:** Intermittent data loss, saved state doesn't match last user input
 
 ### Pitfall 6: Vercel Blob 4.5MB Server Upload Limit
+
 **What goes wrong:** Large avatar uploads fail with size limit errors
 **Why it happens:** Vercel limits server-side uploads to 4.5MB (undocumented but consistent)
 **How to avoid:** Use `clientUploads: true` for uploads >4.5MB (uploads directly from browser to Blob storage)
 **Warning signs:** Uploads work locally but fail on Vercel, size-related errors in production
 
 ### Pitfall 7: Not Handling OAuth Errors
+
 **What goes wrong:** User denies OAuth permissions or OAuth fails, gets stuck on blank page
 **Why it happens:** No error handling for OAuth callback failures
 **How to avoid:** Set `pages.error: '/login'` in Auth.js config (per user context), display error message from URL params
 **Warning signs:** Users report "blank page" after clicking "Login with GitHub"
 
 ### Pitfall 8: Prisma Adapter Schema Mismatch
+
 **What goes wrong:** Auth.js fails with "column does not exist" errors
 **Why it happens:** Prisma schema doesn't match Auth.js adapter requirements (missing fields like `emailVerified`, wrong field types)
 **How to avoid:** Copy exact schema from Auth.js Prisma adapter docs, run `prisma migrate dev` after changes
@@ -386,6 +417,7 @@ Problems that look simple but have existing solutions:
 Verified patterns from official sources:
 
 ### Prisma Schema for Auth.js
+
 ```prisma
 // Source: https://authjs.dev/getting-started/adapters/prisma
 
@@ -439,9 +471,11 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
 ```
 
 ### Auth.js Route Handler
+
 ```typescript
 // app/api/auth/[...nextauth]/route.ts
 // Source: https://authjs.dev/reference/nextjs
@@ -449,9 +483,11 @@ model VerificationToken {
 import { handlers } from "@/lib/auth"
 
 export const { GET, POST } = handlers
+
 ```
 
 ### Server Component with DAL
+
 ```typescript
 // app/settings/profile/page.tsx
 // Source: https://nextjs.org/docs/app/building-your-application/authentication
@@ -470,9 +506,11 @@ export default async function ProfilePage() {
     </div>
   )
 }
+
 ```
 
 ### useDebounce Hook
+
 ```typescript
 // hooks/useDebounce.ts
 // Source: https://darius-marlowe.medium.com/smarter-forms-in-react-building-a-useautosave-hook-with-debounce-and-react-query-d4d7f9bb052e
@@ -505,9 +543,11 @@ export function useDebounce<T extends (...args: any[]) => any>(
 
   return debouncedCallback as T
 }
+
 ```
 
 ### GitHub API Rate Limit Monitoring
+
 ```typescript
 // lib/github.ts
 // Source: https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api
@@ -528,6 +568,7 @@ export async function checkRateLimit(accessToken: string) {
     reset: new Date(data.resources.core.reset * 1000),  // UTC timestamp
   }
 }
+
 ```
 
 ## State of the Art
@@ -542,6 +583,7 @@ export async function checkRateLimit(accessToken: string) {
 | Server-side only file uploads | Client-side direct uploads | 2025+ (Vercel 4.5MB limit) | Bypasses server limits, faster uploads, less server load |
 
 **Deprecated/outdated:**
+
 - **`NEXTAUTH_*` environment variables:** Now use `AUTH_*` prefix (Auth.js v5 migration)
 - **Credentials provider without JWT:** Database sessions can't work with credentials provider unless JWT is enabled (Auth.js limitation)
 - **Middleware with database queries:** Next.js App Router middleware should only do cookie checks (performance)
@@ -574,6 +616,7 @@ Things that couldn't be fully resolved:
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - Auth.js Next.js Reference: https://authjs.dev/reference/nextjs
 - Auth.js Prisma Adapter: https://authjs.dev/getting-started/adapters/prisma
 - Next.js Authentication Docs: https://nextjs.org/docs/app/building-your-application/authentication
@@ -582,18 +625,21 @@ Things that couldn't be fully resolved:
 - GitHub API Best Practices: https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api
 
 ### Secondary (MEDIUM confidence)
+
 - Top 5 Authentication Solutions for Next.js 2026: https://workos.com/blog/top-authentication-solutions-nextjs-2026
 - Next.js 15 Tutorial File Upload with Server Actions: https://strapi.io/blog/epic-next-js-15-tutorial-part-5-file-upload-using-server-actions
 - React Auto-Save with Debounce and React Query: https://darius-marlowe.medium.com/smarter-forms-in-react-building-a-useautosave-hook-with-debounce-and-react-query-d4d7f9bb052e
 - React Query Autosave: Preventing Data Loss & Race Conditions: https://www.pz.com.au/avoiding-race-conditions-and-data-loss-when-autosaving-in-react-query
 
 ### Tertiary (LOW confidence)
+
 - Auth.js vs BetterAuth Comparison: https://www.wisp.blog/blog/authjs-vs-betterauth-for-nextjs-a-comprehensive-comparison (WebSearch only, marked for validation)
 - Common Next.js & NextAuth Authentication Pitfalls: https://infinitejs.com/posts/nextjs-nextauth-auth-pitfalls/ (WebSearch only, marked for validation)
 
 ## Metadata
 
 **Confidence breakdown:**
+
 - Standard stack: HIGH - Auth.js is official and widely documented for Next.js 15, Prisma adapter is official
 - Architecture: HIGH - Patterns verified from official Next.js docs and Auth.js reference
 - Pitfalls: MEDIUM - Combination of official docs (rate limits, env vars) and community reports (Vercel upload limit, race conditions)

@@ -5,33 +5,42 @@ Your personal AI command center for tracking top AI content and automating YouTu
 ## Quick Start
 
 ```bash
+
 # From this project folder
+
 ./start.sh  # Mac/Linux
 start.bat   # Windows
 
 # Access
+
 # Dashboard: http://localhost:3000
+
 # API Docs: http://localhost:8000/docs
+
 ```
 
 ## Features
 
 ### 1. YouTube AI Video Scraper
+
 - Scrapes top AI/ML videos from YouTube every 8 hours
 - Quality scoring based on views, likes, engagement
 - Powered by Apify
 
 ### 2. AI News Aggregator
+
 - Aggregates from TechCrunch, The Verge, MIT Tech Review
 - Hacker News AI content integration
 - Updates every 4 hours
 
 ### 3. GitHub Trending Projects
+
 - Tracks top 20 AI/ML open source projects
 - Weekly star growth tracking
 - Updates every 12 hours
 
 ### 4. YouTube Automation Pipeline
+
 - Prompt → DSPy Optimization → Claude Script → HeyGen Video → Upload
 - Full approval workflow before YouTube upload
 
@@ -52,6 +61,7 @@ ai-dashboard/
 ├── start.sh/start.bat  # Start scripts
 ├── RESEARCH.md         # Initial research notes
 └── README.md           # This file
+
 ```
 
 ## API Endpoints
@@ -82,6 +92,7 @@ ai-dashboard/
 ## Environment
 
 Uses API keys from environment (backend `.env` by default via `load_dotenv()`):
+
 - `APIFY_API_KEY` - YouTube scraping
 - `ANTHROPIC_API_KEY` - Claude for scripts
 - `HEYGEN_API_KEY` - AI video creation
@@ -90,14 +101,18 @@ Uses API keys from environment (backend `.env` by default via `load_dotenv()`):
 ## Development
 
 **Backend only:**
+
 ```bash
 cd backend
 source venv/bin/activate
 uvicorn main:app --reload
+
 ```
 
 **Frontend only:**
+
 ```bash
 cd frontend
 npm run dev
+
 ```

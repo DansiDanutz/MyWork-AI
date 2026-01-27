@@ -3,6 +3,7 @@
 ## Problem This Solves
 
 **The Marketplace Bug:** The Autocoder initializer agent created 56 features from a *gaming platform* spec instead of the *marketplace* spec. This caused:
+
 - Agents building wrong features
 - Wasted compute on skipping irrelevant features
 - Confusion about actual progress
@@ -11,6 +12,7 @@
 ## Root Cause
 
 The initializer agent reads `prompts/app_spec.txt` to create features in `features.db`. If:
+
 1. The spec is ambiguous or incomplete
 2. The agent has context from a previous project
 3. The agent hallucinates feature requirements
@@ -45,9 +47,11 @@ Before running Autocoder, ensure `prompts/app_spec.txt` has:
   <feature_count>45</feature_count>
   <!-- Explicit count prevents agent from guessing -->
 </project_specification>
+
 ```
 
 **Anti-patterns to avoid:**
+
 - ❌ Generic descriptions like "users can do things"
 - ❌ Referencing other projects ("like the gaming platform")
 - ❌ Vague feature categories without specifics
@@ -57,6 +61,7 @@ Before running Autocoder, ensure `prompts/app_spec.txt` has:
 
 ```bash
 python tools/autocoder_api.py start {project-name}
+
 ```
 
 The initializer runs first (creates features.db).
@@ -66,20 +71,27 @@ The initializer runs first (creates features.db).
 **CRITICAL: Always verify features.db after initializer completes!**
 
 ```bash
+
 # Check feature count
+
 sqlite3 projects/{name}/features.db "SELECT COUNT(*) FROM features"
 
 # Check feature categories match your project
+
 sqlite3 projects/{name}/features.db "SELECT DISTINCT category FROM features"
 
 # Sample features - do they make sense?
+
 sqlite3 projects/{name}/features.db "SELECT id, name FROM features LIMIT 10"
 
 # Check for wrong-project indicators
+
 sqlite3 projects/{name}/features.db "SELECT * FROM features WHERE name LIKE '%game%' OR name LIKE '%room%' OR name LIKE '%lobby%'"
+
 ```
 
 **Red Flags:**
+
 - ⚠️ Categories don't match your project domain
 - ⚠️ Feature names reference other projects
 - ⚠️ Feature count is way off from spec
@@ -90,13 +102,17 @@ sqlite3 projects/{name}/features.db "SELECT * FROM features WHERE name LIKE '%ga
 If features are wrong, **regenerate before agents start coding:**
 
 ```bash
+
 # Option 1: Delete and re-run initializer
+
 sqlite3 projects/{name}/features.db "DELETE FROM features"
 python tools/autocoder_api.py start {project-name}
 
 # Option 2: Delete database entirely
+
 rm projects/{name}/features.db
 python tools/autocoder_api.py start {project-name}
+
 ```
 
 ### Step 5: Add Verification to Workflow
@@ -113,19 +129,23 @@ def verify_features(project_name: str) -> bool:
         return True  # No features yet
 
     # Read spec
+
     spec = spec_path.read_text()
     project_name_from_spec = extract_project_name(spec)
 
     # Read features
+
     conn = sqlite3.connect(str(db_path))
     features = conn.execute("SELECT name FROM features LIMIT 5").fetchall()
     categories = conn.execute("SELECT DISTINCT category FROM features").fetchall()
     conn.close()
 
     # Basic sanity checks
+
     warnings = []
 
     # Check for gaming-specific terms in non-gaming project
+
     gaming_terms = ['game', 'lobby', 'room', 'player', 'match', 'XP', 'credits']
     for feature in features:
         for term in gaming_terms:
@@ -140,6 +160,7 @@ def verify_features(project_name: str) -> bool:
         return False
 
     return True
+
 ```
 
 ---
@@ -161,8 +182,10 @@ Before letting coding agents run:
 If agents have already started building wrong features:
 
 1. **Stop agents:**
+
    ```bash
    python tools/autocoder_api.py stop {project-name}
+
    ```
 
 2. **Assess damage:**
@@ -176,6 +199,7 @@ If agents have already started building wrong features:
    - **Mark mismatched features as skipped** in database
 
 4. **Update STATE.md:**
+
    Document what happened and decision made.
 
 ---
@@ -205,6 +229,7 @@ Consider adding this to `CLAUDE.md` decision tree:
 │     → Check: sqlite3 features.db "SELECT DISTINCT category..." │
 │     → If wrong: DELETE and re-run initializer                  │
 └─────────────────────────────────────────────────────────────────┘
+
 ```
 
 ---
@@ -222,11 +247,13 @@ Consider adding this to `CLAUDE.md` decision tree:
 | 27 | "Server validates game moves" | "Validate checkout" |
 
 **Why it happened:** Unclear. Possibly:
+
 - Agent had context from GamesAI project
 - Spec wasn't explicit enough
 - Database was copied from another project
 
 **How we recovered:**
+
 1. Agents started skipping gaming features automatically
 2. Agents built correct marketplace pages based on app_spec.txt
 3. We completed manually with GSD when discovered

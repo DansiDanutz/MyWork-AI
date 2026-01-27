@@ -6,42 +6,54 @@ tags: [thumbnail, server-actions, file-download, sharp, authentication]
 
 requires: ["05-01"]
 provides:
+
   - "Thumbnail generation with Sharp"
   - "Server Actions for small file uploads"
   - "Authenticated download endpoint"
   - "DAL file query functions"
+
 affects: ["05-04", "05-05", "05-06"]
 
 tech-stack:
   added:
+
     - "sharp: image thumbnail generation"
+
   patterns:
+
     - "Server Action file upload pattern"
     - "Authenticated file serving pattern"
 
 key-files:
   created:
+
     - "src/shared/lib/thumbnail-generator.ts"
     - "src/shared/lib/file-storage.ts"
     - "src/app/actions/files.ts"
     - "src/app/api/files/download/[id]/route.ts"
+
   modified:
+
     - "src/shared/lib/dal.ts"
 
 decisions:
+
   - id: "THUMB-001"
+
     context: "Thumbnail format and size selection"
     decision: "200px square WebP thumbnails at 80% quality"
     rationale: "WebP provides best compression, 200px sufficient for previews, 80% quality balances size and clarity"
     date: "2026-01-25"
 
   - id: "FILE-001"
+
     context: "File upload size threshold for Server Actions vs TUS"
     decision: "Server Actions handle files < 5MB, TUS for larger files"
     rationale: "Server Actions have payload limits, TUS provides resumable uploads for large files"
     date: "2026-01-25"
 
   - id: "SECURITY-001"
+
     context: "File download authentication approach"
     decision: "Verify ownership on every download request via database query"
     rationale: "Cannot rely on URL security alone - must verify user owns the file before serving"
@@ -63,6 +75,7 @@ metrics:
 **Purpose:** Generate 200px square WebP thumbnails for image attachments
 
 **Implementation:**
+
 - Sharp library for high-quality image processing
 - 200x200px square thumbnails with center crop
 - 80% quality WebP output for optimal compression
@@ -70,6 +83,7 @@ metrics:
 - Error handling that doesn't crash upload flow
 
 **Key functions:**
+
 - `generateThumbnail()` - Creates thumbnail from source file
 - `canGenerateThumbnail()` - Checks if MIME type supports thumbnails (JPEG, PNG, GIF, WebP)
 - `deleteThumbnail()` - Cleanup on file deletion
@@ -84,6 +98,7 @@ metrics:
 **Created as prerequisite:** This was needed by plan 05-03 but defined in plan 05-02. Added here to resolve dependency.
 
 **Key functions:**
+
 - `saveFile()` - Save buffer to user/task directory with UUID filename
 - `readFile()` - Load file for download
 - `deleteFile()` - Remove file and thumbnail
@@ -95,6 +110,7 @@ metrics:
 **Purpose:** Handle small file uploads (< 5MB) without TUS complexity
 
 **uploadFile action:**
+
 1. Authenticate user
 2. Verify task ownership
 3. Check file size against 5MB limit
@@ -106,6 +122,7 @@ metrics:
 9. Revalidate task pages
 
 **deleteFileAction:**
+
 1. Authenticate user
 2. Verify file ownership
 3. Delete from filesystem (file + thumbnail)
@@ -113,10 +130,12 @@ metrics:
 5. Revalidate task pages
 
 **getTaskFiles:**
+
 - Fetch all attachments for a task
 - Ownership verification included
 
 **Analytics integration:**
+
 - `file_uploaded` event tracked with fileId, taskId, fileSize, mimeType
 - No `file_deleted` event (schema doesn't include it)
 
@@ -125,6 +144,7 @@ metrics:
 **Purpose:** Serve files with authentication and ownership verification
 
 **Security flow:**
+
 1. Check session authentication
 2. Query database to verify user owns the file
 3. Return 404 if not found or access denied
@@ -132,6 +152,7 @@ metrics:
 5. Serve with appropriate headers
 
 **Headers:**
+
 - Content-Type: Actual MIME type from database
 - Content-Length: File size
 - Content-Disposition: `inline` for images/PDFs, `attachment` for downloads
@@ -143,6 +164,7 @@ Cannot expose filesystem paths publicly - must verify ownership on every request
 ### 5. DAL File Functions (`dal.ts`)
 
 **Added functions:**
+
 - `getFilesByTask(taskId, userId)` - All files for a task
 - `getFile(fileId, userId)` - Single file with ownership check
 - `getTaskFileCount(taskId, userId)` - Count for UI indicators
@@ -156,10 +178,12 @@ All use React `cache()` for request deduplication.
 
 **Decision:** Generate thumbnails synchronously during upload
 **Alternatives considered:**
+
 1. Generate on-demand (first view)
 2. Background queue processing
 
 **Why synchronous:**
+
 - Immediate feedback to user
 - Simpler error handling
 - Thumbnails small enough that generation is fast
@@ -169,12 +193,14 @@ All use React `cache()` for request deduplication.
 ### File Upload Split: Server Actions vs TUS
 
 **Server Actions (< 5MB):**
+
 - Simple FormData upload
 - No client library needed
 - Instant feedback
 - Good UX for most files
 
 **TUS (>= 5MB, plan 05-02):**
+
 - Resumable uploads
 - Better for large files
 - Handles network interruptions
@@ -184,6 +210,7 @@ All use React `cache()` for request deduplication.
 ### Download Security Model
 
 **Every download requires:**
+
 1. Valid session
 2. Database query to verify ownership
 3. File exists on disk
@@ -211,9 +238,11 @@ export async function uploadFile(formData: FormData) {
   const validation = await validateFileType(buffer)
   // Save and create DB record
 }
+
 ```
 
 **Benefits:**
+
 - No API route needed for small files
 - Type-safe with proper error handling
 - Easy to call from client components
@@ -237,6 +266,7 @@ return new NextResponse(buffer, {
     'Cache-Control': 'private, max-age=3600'
   }
 })
+
 ```
 
 **Reusability:** Can be extracted to shared utility for any file serving scenario.
@@ -244,6 +274,7 @@ return new NextResponse(buffer, {
 ## Testing Notes
 
 **Manual verification needed:**
+
 - Upload small file (< 5MB) via Server Action
 - Verify thumbnail created for images
 - Download file via /api/files/download/[id]
@@ -251,6 +282,7 @@ return new NextResponse(buffer, {
 - Verify ownership checks prevent unauthorized access
 
 **Unit test candidates:**
+
 - `canGenerateThumbnail()` - MIME type detection
 - `getThumbnailUrl()` - URL generation
 - File validation in uploadFile action
@@ -258,17 +290,20 @@ return new NextResponse(buffer, {
 ## Next Phase Readiness
 
 **For 05-04 (UI components):**
+
 - ✅ uploadFile Server Action ready
 - ✅ deleteFileAction ready
 - ✅ getTaskFiles for display
 - ✅ Download endpoint at /api/files/download/[id]
 
 **For 05-05 (Display components):**
+
 - ✅ Thumbnail paths stored in database
 - ✅ getThumbnailUrl() helper
 - ✅ Download URL pattern established
 
 **For 05-06 (Task integration):**
+
 - ✅ getTaskWithFiles() includes attachments
 - ✅ getTaskFileCount() for indicators
 - ✅ Revalidation on upload/delete
@@ -289,6 +324,7 @@ return new NextResponse(buffer, {
 **Impact:** Plan 05-02 will now only need to create the TUS upload endpoint, not the storage utilities.
 
 **Files affected:**
+
 - `src/shared/lib/file-storage.ts` (created in this plan)
 
 ## Brain-Worthy Patterns

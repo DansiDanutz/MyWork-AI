@@ -6,25 +6,31 @@ tags: [mobile, responsiveness, swipe-gestures, navigation, accessibility, touch-
 status: complete
 
 requires:
+
   - 07-01  # Performance monitoring baseline
   - 07-02  # Code splitting for mobile load times
   - 04-02  # Task operations (updateTaskStatus, deleteTask)
   - 04-04  # TaskList component
 
 provides:
+
   - Mobile-optimized task management with native gestures
   - Responsive navigation that adapts to screen size
   - Accessibility-compliant touch targets (44x44px minimum)
 
 affects:
+
   - 07-04  # Image optimization should consider mobile viewport sizes
   - 07-05  # Error boundaries should handle swipe gesture failures
   - 08-XX  # Deployment should test mobile responsiveness
 
 tech-stack:
   added:
+
     - react-swipeable: "^7.0.2"
+
   patterns:
+
     - Mobile detection via touch support + screen width
     - Conditional rendering (mobile vs desktop components)
     - Swipe gesture thresholds (100px to trigger action)
@@ -33,40 +39,49 @@ tech-stack:
 
 key-files:
   created:
+
     - src/shared/components/SwipeableTaskCard.tsx
     - src/shared/components/MobileNav.tsx
+
   modified:
+
     - src/shared/components/TaskList.tsx
     - src/app/(app)/layout.tsx
     - src/shared/components/index.ts
     - package.json
 
 decisions:
+
   - id: MOBILE-001
+
     date: 2026-01-26
     decision: Use react-swipeable over custom gesture implementation
     rationale: Mature library with proper touch event handling and scroll prevention
     alternatives: Custom touch handlers, Framer Motion gestures
 
   - id: GESTURE-001
+
     date: 2026-01-26
     decision: 100px swipe threshold to trigger actions
     rationale: Prevents accidental triggers while keeping gestures responsive
     context: Tested threshold balances safety and UX
 
   - id: UX-001
+
     date: 2026-01-26
     decision: Confirmation dialog for delete gesture, none for complete
     rationale: Completing task is non-destructive (reversible), delete is permanent
     impact: Reduces accidental data loss while keeping complete gesture fluid
 
   - id: NAV-001
+
     date: 2026-01-26
     decision: Hamburger menu over tab bar for mobile navigation
     rationale: Only 2 nav items, hamburger simpler than bottom tab bar
     alternatives: Bottom tab bar, drawer navigation
 
   - id: ACCESSIBILITY-001
+
     date: 2026-01-26
     decision: 44x44px minimum touch targets throughout
     rationale: WCAG 2.1 Level AAA compliance (guideline 2.5.5)
@@ -77,9 +92,11 @@ metrics:
   completed: 2026-01-26
 
 commits:
+
   - cafb533: "Add SwipeableTaskCard with react-swipeable"
   - b55e215: "Add mobile hamburger navigation"
   - 29dbafa: "Integrate SwipeableTaskCard into TaskList"
+
 ---
 
 # Phase 07 Plan 03: Mobile Responsiveness Summary
@@ -89,7 +106,9 @@ commits:
 ## What Was Built
 
 ### 1. SwipeableTaskCard Component
+
 Mobile-optimized task card with swipe gestures for quick actions:
+
 - **Swipe right:** Complete task (green background with checkmark icon)
 - **Swipe left:** Delete task (red background with trash icon)
 - **100px threshold:** Prevents accidental triggers
@@ -98,6 +117,7 @@ Mobile-optimized task card with swipe gestures for quick actions:
 - **Touch-only:** Desktop uses regular TaskCard with buttons
 
 **Implementation details:**
+
 - Uses react-swipeable library for robust gesture handling
 - Prevents scroll blocking (preventScrollOnSwipe: true)
 - Tracks swipe direction and offset for visual feedback
@@ -106,7 +126,9 @@ Mobile-optimized task card with swipe gestures for quick actions:
 - Processing state prevents concurrent actions
 
 ### 2. MobileNav Component
+
 Hamburger menu that replaces desktop navigation on mobile:
+
 - **Hamburger button:** 44x44px touch target, animated icon transition
 - **Overlay menu:** Slides down from header with backdrop
 - **Active route highlighting:** Blue background for current page
@@ -115,6 +137,7 @@ Hamburger menu that replaces desktop navigation on mobile:
 - **Responsive display:** Only shown on `md:hidden` breakpoint
 
 **Implementation details:**
+
 - Uses Next.js `usePathname` for active route detection
 - Backdrop overlay with 50% black opacity
 - Menu positioned below header (top-16)
@@ -122,7 +145,9 @@ Hamburger menu that replaces desktop navigation on mobile:
 - Smooth transitions for open/close
 
 ### 3. Layout Updates
+
 Desktop and mobile navigation coexist harmoniously:
+
 - **navLinks array:** Single source of truth for navigation items
 - **Desktop nav:** `hidden md:flex` - visible on medium screens and above
 - **Mobile nav:** `md:hidden` - visible only on small screens
@@ -130,7 +155,9 @@ Desktop and mobile navigation coexist harmoniously:
 - **Touch target compliance:** All desktop nav links also meet 44px height
 
 ### 4. TaskList Integration
+
 Conditional rendering based on device capabilities:
+
 - **Mobile detection:** Checks for touch support + screen width < 768px
 - **SwipeableTaskCard on mobile:** Native gesture experience
 - **TaskCard on desktop:** Traditional button-based experience
@@ -142,6 +169,7 @@ Conditional rendering based on device capabilities:
 ### Auto-fixed Issues
 
 **1. [Rule 2 - Missing Critical] Better delete icon in SwipeableTaskCard**
+
 - **Found during:** Task 1 implementation
 - **Issue:** Plan showed generic down-arrow icon for delete gesture
 - **Fix:** Used proper trash can icon (SVG path for trash with lid)
@@ -154,6 +182,7 @@ Conditional rendering based on device capabilities:
 ### Manual Testing Checklist
 
 **Mobile Navigation:**
+
 - ✅ Hamburger menu appears on screens < 768px wide
 - ✅ Desktop nav hidden on mobile (verified in DevTools mobile emulation)
 - ✅ Menu opens on hamburger click
@@ -163,6 +192,7 @@ Conditional rendering based on device capabilities:
 - ✅ All touch targets meet 44x44px minimum
 
 **Swipe Gestures:**
+
 - ✅ Swipe right reveals green background with checkmark
 - ✅ Swipe left reveals red background with trash icon
 - ✅ Swipe < 100px snaps back (cancelled gesture)
@@ -175,6 +205,7 @@ Conditional rendering based on device capabilities:
 - ✅ Swipe hint text appears on mobile
 
 **Responsive Behavior:**
+
 - ✅ Desktop shows regular TaskCard (no swipe)
 - ✅ Desktop shows horizontal nav links
 - ✅ Mobile shows SwipeableTaskCard (with swipe)
@@ -183,12 +214,14 @@ Conditional rendering based on device capabilities:
 - ✅ Works on actual touch device (not just narrow viewport)
 
 **TypeScript & Build:**
+
 - ✅ TypeScript compilation passes
 - ⚠️ Production build fails (pre-existing error in error page generation)
 
 ### Known Issues
 
 **Production build error (pre-existing):**
+
 - Error: `<Html> should not be imported outside of pages/_document`
 - Affects: `/404` and `/_error` page generation
 - Status: Documented in STATE.md, exists before Plan 07-03
@@ -198,12 +231,14 @@ Conditional rendering based on device capabilities:
 ## Integration Points
 
 ### Upstream Dependencies
+
 - **updateTaskStatus** (from 04-02): Swipe right completes task
 - **deleteTask** (from 04-02): Swipe left deletes task
 - **TaskCard** (from 04-04): Wrapped by SwipeableTaskCard on desktop fallback
 - **TaskList** (from 04-04): Conditionally renders SwipeableTaskCard vs TaskCard
 
 ### Downstream Impact
+
 - **Image optimization (07-04):** Should consider mobile viewport sizes for srcset
 - **Error boundaries (07-05):** Should handle swipe gesture failures gracefully
 - **Deployment (08-XX):** Must test on real mobile devices, not just DevTools emulation
@@ -211,6 +246,7 @@ Conditional rendering based on device capabilities:
 ## Reusable Patterns for Brain
 
 ### Pattern: Mobile Detection with Touch + Width
+
 ```typescript
 const [isMobile, setIsMobile] = useState(false)
 
@@ -225,9 +261,11 @@ useEffect(() => {
   window.addEventListener('resize', checkMobile)
   return () => window.removeEventListener('resize', checkMobile)
 }, [])
+
 ```
 
 **Why both checks:**
+
 - Width alone: Catches narrow desktop windows (not actually mobile)
 - Touch alone: Catches touch laptops (not the target use case)
 - Combined: Accurately detects phones and tablets
@@ -235,6 +273,7 @@ useEffect(() => {
 **Reusability:** Use anywhere conditional mobile/desktop rendering needed
 
 ### Pattern: Swipe Gesture with Threshold
+
 ```typescript
 const handlers = useSwipeable({
   onSwiping: (eventData) => {
@@ -254,9 +293,11 @@ const handlers = useSwipeable({
   preventScrollOnSwipe: true,
   trackMouse: false,
 })
+
 ```
 
 **Key elements:**
+
 - Horizontal-only detection (deltaX > deltaY)
 - 100px threshold for action trigger
 - Snap-back animation for cancelled swipes
@@ -266,6 +307,7 @@ const handlers = useSwipeable({
 **Reusability:** Adapt for any swipeable card/list item pattern
 
 ### Pattern: Hamburger Menu with Backdrop
+
 ```typescript
 <div className="md:hidden">
   <button className="min-w-[44px] min-h-[44px]" onClick={() => setIsOpen(!isOpen)}>
@@ -281,9 +323,11 @@ const handlers = useSwipeable({
     </>
   )}
 </div>
+
 ```
 
 **Key elements:**
+
 - Backdrop click closes menu (UX best practice)
 - Fixed positioning for overlay
 - Z-index layering (backdrop z-40, menu z-50)
@@ -292,6 +336,7 @@ const handlers = useSwipeable({
 **Reusability:** Standard mobile menu pattern for any navigation
 
 ### Pattern: 44px Touch Targets (WCAG AAA)
+
 ```tsx
 // Button
 <button className="p-2 min-w-[44px] min-h-[44px]">
@@ -301,9 +346,11 @@ const handlers = useSwipeable({
 
 // Desktop nav (also compliant)
 <Link className="px-2 py-2 min-h-[44px] flex items-center">
+
 ```
 
 **Why 44px:**
+
 - WCAG 2.1 Level AAA guideline 2.5.5
 - Apple HIG and Material Design recommend same
 - Reduces mis-taps, improves accessibility
@@ -313,6 +360,7 @@ const handlers = useSwipeable({
 ## Technical Debt
 
 None introduced. All patterns follow best practices:
+
 - ✅ Gesture library instead of custom touch handlers
 - ✅ Proper threshold to prevent accidental actions
 - ✅ Confirmation for destructive operations
@@ -322,15 +370,18 @@ None introduced. All patterns follow best practices:
 ## Next Phase Readiness
 
 **Phase 7 Plan 04 (Image Optimization):**
+
 - ✅ Mobile detection pattern established (reuse for srcset generation)
 - ✅ Viewport-aware rendering (can optimize for mobile screen sizes)
 - ⚠️ Test image optimization on mobile devices with swipeable cards
 
 **Phase 7 Plan 05 (Error Boundaries):**
+
 - ⚠️ Add error boundary around SwipeableTaskCard for gesture failures
 - ⚠️ Handle network errors during swipe actions (updateTaskStatus, deleteTask)
 
 **Phase 8 (Deployment):**
+
 - ⚠️ Test swipe gestures on real iOS and Android devices
 - ⚠️ Verify mobile navigation on various screen sizes
 - ⚠️ Lighthouse mobile score should improve with optimizations
@@ -338,6 +389,7 @@ None introduced. All patterns follow best practices:
 ## Success Criteria
 
 All criteria met:
+
 - ✅ Mobile hamburger menu works correctly
 - ✅ Swipe right completes task (green background with checkmark)
 - ✅ Swipe left deletes task (red background, confirmation required)

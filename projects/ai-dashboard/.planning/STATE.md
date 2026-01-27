@@ -56,6 +56,7 @@
 ## Frontend Pages Summary
 
 All 6 pages + 1 detail view are complete:
+
 - `/` - Dashboard with stats and quick actions
 - `/videos` - YouTube AI videos grid
 - `/news` - AI news aggregator with trending
@@ -79,11 +80,13 @@ All 6 pages + 1 detail view are complete:
 ## Environment
 
 ### Backend (.env)
+
 ```
 APIFY_API_KEY=          # For YouTube scraping
 ANTHROPIC_API_KEY=      # For Claude scripts
 HEYGEN_API_KEY=         # For video generation
 GITHUB_TOKEN=           # For higher rate limits
+
 ```
 
 ### API Keys Status
@@ -100,25 +103,34 @@ GITHUB_TOKEN=           # For higher rate limits
 ## Running Locally
 
 **Backend:**
+
 ```bash
 cd backend
 source venv/bin/activate
 uvicorn main:app --reload
+
 # API: http://localhost:8000
+
 # Docs: http://localhost:8000/docs
+
 ```
 
 **Frontend:**
+
 ```bash
 cd frontend
 npm run dev
+
 # Dashboard: http://localhost:3000
+
 ```
 
 **Both (using start script):**
+
 ```bash
 ./start.sh  # Mac/Linux
 start.bat   # Windows
+
 ```
 
 ---
@@ -179,19 +191,31 @@ start.bat   # Windows
 ## Deploy Instructions
 
 ### Backend → Railway
+
 ```bash
+
 # 1. Push to GitHub
+
 # 2. Connect repo in Railway dashboard
+
 # 3. Set env vars: APIFY_API_KEY, ANTHROPIC_API_KEY, HEYGEN_API_KEY
+
 # 4. Deploy (uses Dockerfile automatically)
+
 ```
 
 ### Frontend → Vercel
+
 ```bash
+
 # 1. Push to GitHub
+
 # 2. Import in Vercel
+
 # 3. Set env var: NEXT_PUBLIC_API_URL=https://your-railway-url
+
 # 4. Deploy
+
 ```
 
 ---
@@ -199,13 +223,19 @@ start.bat   # Windows
 ## Local Development
 
 ```bash
+
 # Backend
+
 cd backend && source venv/bin/activate && uvicorn main:app --reload
+
 # → http://localhost:8000
 
 # Frontend
+
 cd frontend && npm run dev
+
 # → http://localhost:3000
+
 ```
 
 ---

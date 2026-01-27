@@ -3,6 +3,7 @@
 ## Project Overview
 
 Building a comprehensive AI Dashboard with:
+
 1. YouTube AI Video Scraper (every 8 hours)
 2. AI News Aggregator
 3. Top 20 Open Source AI Projects Tracker (every 12 hours)
@@ -15,6 +16,7 @@ Building a comprehensive AI Dashboard with:
 ### Best Approach: Apify YouTube Scraper + APScheduler
 
 **Why Apify:**
+
 - 99.2% success rate
 - No API quotas or limits
 - Extract up to 20,000 videos per URL
@@ -24,11 +26,13 @@ Building a comprehensive AI Dashboard with:
 - Cost: ~$0.005 per video (~$45/month for 3 runs/day)
 
 **Alternative: YouTube Data API v3**
+
 - Free tier: 10,000 units/day
 - Limited metadata (no dislikes)
 - Good for official compliance
 
 **Alternative: yt-dlp (Open Source)**
+
 - Completely free
 - Metadata extraction without downloading
 - More technical setup required
@@ -36,21 +40,26 @@ Building a comprehensive AI Dashboard with:
 ### Scheduling (Every 8 Hours)
 
 **APScheduler (Python) - Recommended:**
+
 ```python
 from apscheduler.schedulers.background import BackgroundScheduler
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(scrape_ai_videos, 'interval', hours=8)
 scheduler.start()
+
 ```
 
 ### Quality Ranking Formula
+
 ```
 Quality Score = (views × 0.3) + (likes × 0.25) + (comments × 0.25) + (subscriber_count × 0.2)
 Engagement Rate = (likes + comments + shares) / views
+
 ```
 
 ### Filters
+
 - Engagement rate > 2%
 - Minimum 10K views
 - Published in last 8 days
@@ -63,6 +72,7 @@ Engagement Rate = (likes + comments + shares) / views
 ### Top AI News Sources
 
 **Primary Sources with RSS:**
+
 - TechCrunch: `https://techcrunch.com/feed/`
 - The Verge: `https://www.theverge.com/rss/index.xml`
 - Hacker News: Via HNRSS (http://hnrss.org/)
@@ -72,6 +82,7 @@ Engagement Rate = (likes + comments + shares) / views
 - Google AI Blog: `https://blog.google/technology/ai`
 
 **Reddit Communities:**
+
 - r/MachineLearning
 - r/artificial
 - r/LocalLLaMA
@@ -79,21 +90,25 @@ Engagement Rate = (likes + comments + shares) / views
 ### Aggregation Tools
 
 **Apify Actors:**
+
 - News Aggregator AI Agent: https://apify.com/harvestlabs/news-aggregator-ai-agent
 - AI News Scraper: https://apify.com/patrikbraborec/ai-news
 - Hacker News API Scraper: https://apify.com/fresh_cliff/hacker-news-api-scraper
 - Reddit Scraper: https://apify.com/macrocosmos/reddit-scraper
 
 **News APIs:**
+
 - NewsData.io - 89+ languages, real-time filtering
 - NewsAPI.ai - 150,000+ sources, 90+ languages
 - Feedly - RSS tracking with AI noise reduction
 
 **Official APIs:**
+
 - Hacker News API: https://github.com/HackerNews/API (free, no rate limits)
 - Reddit API (PRAW): Paid access required
 
 ### Ranking Metrics
+
 - Precision@K, Recall@K
 - Mean Average Precision (MAP@K)
 - NDCG (Normalized Discounted Cumulative Gain)
@@ -104,29 +119,35 @@ Engagement Rate = (likes + comments + shares) / views
 ## 3. TOP 20 OPEN SOURCE AI PROJECTS
 
 ### GitHub API Approach (Free)
+
 ```
 https://api.github.com/search/repositories?q=ai+language:python&sort=stars&order=desc
+
 ```
 
 **Filters:**
+
 - Stars (>, <, >=, <=)
 - Created/pushed dates
 - Language: python, javascript, go, rust
 - Topics: machine-learning, deep-learning, nlp, computer-vision
 
 ### Apify GitHub Trending Scraper
+
 - Pre-built, production-ready
 - Daily/Weekly/Monthly filters
 - Language and topic filtering
 - Fast CheerioCrawler parsing
 
 ### Current Top AI Projects (2026)
+
 - ComfyUI - 101k stars (diffusion model GUI)
 - Supabase - 96.6k stars
 - RAGFlow - 72k stars (RAG engine)
 - Stable Diffusion Web UI - Popular AIGC tool
 
 ### Weekly Aggregation Strategy
+
 - Schedule via GitHub Actions or APScheduler
 - Store in PostgreSQL for historical tracking
 - Categorize: ML, NLP, Computer Vision, Agents, etc.
@@ -146,28 +167,33 @@ https://api.github.com/search/repositories?q=ai+language:python&sort=stars&order
 | **Latitude** | LLMOps Platform | Prompt management | Collaboration, versioning |
 
 ### DSPy (Recommended for Optimization)
+
 - "Programming, not prompting"
 - Automatic prompt generation from signatures
 - Optimization strategies: MIPROv2, SIMBA, GEPA
 - GitHub: https://github.com/stanfordnlp/dspy
 
 ### LangChain (For Application Building)
+
 - PromptTemplate for reusable patterns
 - SequentialChain for multi-step workflows
 - Prompt versioning via LangSmith
 
 ### Anthropic's Guidelines
+
 - Clear, explicit instructions
 - Chain of Thought for complex reasoning
 - XML/Markdown tagging for organization
 - Few-shot examples with diverse cases
 
 ### OpenAI Best Practices
+
 - Iterative refinement approach
 - Model-specific guidance (GPT-4.1 vs GPT-5)
 - Structured tools for coding tasks
 
 ### Prompt Management Platforms
+
 - **Agenta** - Full LLMOps with collaboration
 - **Langfuse** - Deep observability
 - **Latitude** - Open-source for AI agents
@@ -180,25 +206,40 @@ https://api.github.com/search/repositories?q=ai+language:python&sort=stars&order
 ### Workflow Design
 
 ```
+
 1. User Prompt Input
+
        ↓
+
 2. DSPy/LangChain Optimization
+
        ↓
+
 3. Content Generation (Claude/GPT)
+
        ↓
+
 4. Video Creation (AI Video Tools)
+
        ↓
+
 5. Preview & Edit (User Review)
    - Edit image
    - Edit description
    - Edit title
+
        ↓
+
 6. Approval Gate (User confirms)
+
        ↓
+
 7. YouTube Upload (via YouTube Data API)
+
 ```
 
 ### AI Video Generation Tools
+
 - Runway ML - AI video generation
 - Pika Labs - Text-to-video
 - HeyGen - AI avatars
@@ -206,6 +247,7 @@ https://api.github.com/search/repositories?q=ai+language:python&sort=stars&order
 - Synthesia - AI video creation
 
 ### YouTube Upload API
+
 - YouTube Data API v3 for uploads
 - OAuth 2.0 authentication required
 - Metadata: title, description, tags, thumbnail
@@ -246,6 +288,7 @@ https://api.github.com/search/repositories?q=ai+language:python&sort=stars&order
 │  └──────────────────────────────────────────────────┘  │
 │                                                          │
 └─────────────────────────────────────────────────────────┘
+
 ```
 
 ---
@@ -253,26 +296,31 @@ https://api.github.com/search/repositories?q=ai+language:python&sort=stars&order
 ## TECHNOLOGY STACK
 
 ### Backend
+
 - **Framework:** FastAPI (Python)
 - **Scheduler:** APScheduler
 - **Database:** PostgreSQL
 - **Cache:** Redis
 
 ### Frontend
+
 - **Framework:** Next.js 14+
 - **Styling:** Tailwind CSS
 - **Charts:** Recharts or Chart.js
 
 ### Scrapers
+
 - **Primary:** Apify Actors (managed)
 - **Fallback:** yt-dlp, GitHub API, RSS feeds
 
 ### AI Integration
+
 - **Prompting:** DSPy + Anthropic guidelines
 - **LLM:** Claude API
 - **Video:** HeyGen or Synthesia
 
 ### Scheduling
+
 - APScheduler for Python tasks
 - Cron jobs as fallback
 

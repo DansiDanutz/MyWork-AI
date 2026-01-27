@@ -140,6 +140,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SYS-06 | Phase 1 | Complete |
 
 **Coverage:**
+
 - v1 requirements: 32 total
 - Mapped to phases: 32/32 (100%)
 - Unmapped: 0

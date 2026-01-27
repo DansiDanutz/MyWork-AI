@@ -5,29 +5,38 @@ subsystem: ui
 tags: [react, typescript, tags, autocomplete, forms]
 
 # Dependency graph
+
 requires:
+
   - phase: 04-01
+
     provides: Tag database schema, Server Actions, DAL functions
 provides:
+
   - TagBadge component with color-coded display
   - TagInput component with autocomplete and create-on-enter
   - Task creation form with tag support
   - Task edit form with real-time tag management
   - Task cards displaying up to 3 tags with overflow indicator
+
 affects: [tag-management-page, tag-filtering, bulk-tagging]
 
 # Tech tracking
+
 tech-stack:
   added: [@heroicons/react]
   patterns: [optimistic-ui-for-tags, autocomplete-dropdown, color-coded-badges]
 
 key-files:
   created:
+
     - src/shared/components/TagBadge.tsx
     - src/shared/components/TagInput.tsx
     - src/shared/components/TaskFormWithTags.tsx
     - src/shared/components/TaskEditFormWithTags.tsx
+
   modified:
+
     - src/shared/components/TaskCard.tsx
     - src/shared/components/TaskList.tsx
     - src/app/(app)/tasks/new/page.tsx
@@ -35,17 +44,20 @@ key-files:
     - src/shared/lib/dal.ts
 
 key-decisions:
+
   - "UI-010: Tag colors assigned randomly from preset palette for visual variety"
   - "UI-011: Max 3 tags visible on task cards with +N more overflow indicator"
   - "PATTERN-006: Tag input uses autocomplete dropdown with create-on-enter UX"
   - "PATTERN-007: Edit form syncs tags immediately to server with optimistic UI"
 
 patterns-established:
+
   - "Autocomplete pattern: filter existing + create new in single dropdown"
   - "Tag display pattern: color dot + name + optional remove button"
   - "Real-time sync: optimistic update → server action → rollback on error"
 
 # Metrics
+
 duration: 11min
 completed: 2026-01-25
 ---
@@ -63,6 +75,7 @@ completed: 2026-01-25
 - **Files modified:** 11
 
 ## Accomplishments
+
 - TagBadge component displays colored tag pills with optional remove button
 - TagInput autocomplete dropdown filters existing tags and creates new ones on Enter
 - Task cards show up to 3 tags with "+N more" overflow indicator
@@ -80,6 +93,7 @@ Each task was committed atomically:
 5. **Task 5: Update TaskEditForm to include tag management** - `be548ed` + `af8ca06` (feat)
 
 **Auto-fixes:**
+
 - `a7080fc` - Remove unused code and fix linting errors
 - `5119b35` - Fix linting errors blocking build
 - `83d60c3` - Add missing analytics event types
@@ -88,12 +102,14 @@ Each task was committed atomically:
 ## Files Created/Modified
 
 **Created:**
+
 - `src/shared/components/TagBadge.tsx` - Color-coded tag pill with optional remove button
 - `src/shared/components/TagInput.tsx` - Autocomplete tag input with create-on-enter
 - `src/shared/components/TaskFormWithTags.tsx` - Task creation form with tag support
 - `src/shared/components/TaskEditFormWithTags.tsx` - Task edit form with real-time tag sync
 
 **Modified:**
+
 - `src/shared/components/TaskCard.tsx` - Display tags with badges, max 3 visible
 - `src/shared/components/TaskList.tsx` - Accept tasks with tags in type signature
 - `src/app/(app)/tasks/new/page.tsx` - Fetch tags and use TaskFormWithTags
@@ -105,22 +121,26 @@ Each task was committed atomically:
 ## Decisions Made
 
 **UI-010: Tag colors assigned randomly from preset palette**
+
 - Random assignment from 8 preset colors provides visual variety
 - Colors: blue, green, amber, red, purple, pink, cyan, orange
 - Consistent palette ensures readability and accessibility
 
 **UI-011: Max 3 tags visible on task cards**
+
 - Prevents visual clutter on task list cards
 - Shows "+N more" indicator for overflow tags
 - Full tag list visible in edit form
 
 **PATTERN-006: Autocomplete dropdown with create-on-enter**
+
 - Filter existing tags as user types
 - Press Enter to create new tag if no exact match
 - Click existing tag to add it
 - Prevents duplicate tag names via server-side validation
 
 **PATTERN-007: Edit form tag sync pattern**
+
 - Optimistic UI update when adding/removing tags
 - Immediate server action call to persist change
 - Rollback local state if server action fails
@@ -131,6 +151,7 @@ Each task was committed atomically:
 ### Auto-fixed Issues
 
 **1. [Rule 3 - Blocking] Installed @heroicons/react dependency**
+
 - **Found during:** Task 1 (TagBadge component)
 - **Issue:** XMarkIcon import failed - package not installed
 - **Fix:** Ran `npm install @heroicons/react`
@@ -139,6 +160,7 @@ Each task was committed atomically:
 - **Committed in:** 5db8eef (Task 1 commit)
 
 **2. [Rule 1 - Bug] Removed unused code causing lint errors**
+
 - **Found during:** Build verification
 - **Issue:** getRandomColor function defined but never used in TagInput, UpdateTaskTagsSchema unused in tags.ts
 - **Fix:** Removed unused function and schema
@@ -147,6 +169,7 @@ Each task was committed atomically:
 - **Committed in:** a7080fc
 
 **3. [Rule 3 - Blocking] Fixed search.ts linting errors**
+
 - **Found during:** Build verification
 - **Issue:** TypeScript `any[]` types and unescaped apostrophes blocking production build
 - **Fix:** Replaced `any[]` with `unknown[]`, escaped apostrophes in not-found.tsx
@@ -155,6 +178,7 @@ Each task was committed atomically:
 - **Committed in:** 5119b35
 
 **4. [Rule 2 - Missing Critical] Added missing analytics event types**
+
 - **Found during:** Build verification
 - **Issue:** search_performed and filter_applied events used but not defined in analytics schema
 - **Fix:** Added FilterAppliedEventSchema and corrected SearchPerformedEventSchema properties
@@ -163,6 +187,7 @@ Each task was committed atomically:
 - **Committed in:** 83d60c3
 
 **5. [Rule 3 - Blocking] Fixed Next.js 15.0.3 after() compatibility**
+
 - **Found during:** Build verification
 - **Issue:** Next.js 15.0.3 doesn't export `after()` function (known version bug)
 - **Fix:** Replaced `after()` with fire-and-forget pattern using catch()
@@ -171,6 +196,7 @@ Each task was committed atomically:
 - **Committed in:** 4ae0cd6
 
 **6. [Rule 3 - Blocking] Updated DAL to include tags in task queries**
+
 - **Found during:** Task 3 implementation
 - **Issue:** getTasksByUser returned tasks without tags, breaking TaskCard display
 - **Fix:** Added `include: { tags: true }` to getTasksByUser query, updated return type
@@ -186,6 +212,7 @@ Each task was committed atomically:
 ## Issues Encountered
 
 **Next.js 15.0.3 build bug (documented in STATE.md):**
+
 - Production builds fail with webpack bundling error
 - Workaround: Development server works correctly, TypeScript compilation succeeds
 - Impact: Tags UI fully functional in development, production deployment blocked by framework bug
@@ -198,6 +225,7 @@ None - no external service configuration required.
 ## Next Phase Readiness
 
 **Ready for next plans:**
+
 - Tag UI components complete and functional
 - Tags display on all task views (cards, forms)
 - Tag management integrated into task lifecycle
@@ -205,9 +233,11 @@ None - no external service configuration required.
 - Color-coded badges provide visual organization
 
 **Blockers:**
+
 - Production deployment still blocked by Next.js 15.0.3 bug (affects all builds, not tag-specific)
 
 **Concerns:**
+
 - Tag color assignment is random - future plan may need color customization UI
 - No tag management page yet (create/edit/delete tags directly)
 - No bulk tag operations (apply tag to multiple tasks)

@@ -5,20 +5,27 @@ subsystem: ui
 tags: [react, nextjs, client-components, optimistic-ui, server-actions]
 
 # Dependency graph
+
 requires:
+
   - phase: 03-01
+
     provides: Task database schema and Server Actions for CRUD operations
 provides:
+
   - TaskCard component with optimistic status updates
   - TaskList component with status-based grouping
   - TaskForm component for task creation
   - Reusable UI components for task pages
+
 affects: [03-03-task-pages, 03-04-dashboard-integration]
 
 # Tech tracking
+
 tech-stack:
   added: []
   patterns:
+
     - Optimistic UI with useOptimistic hook
     - useActionState for form integration with Server Actions
     - Status-based task grouping
@@ -26,24 +33,29 @@ tech-stack:
 
 key-files:
   created:
+
     - src/shared/components/TaskCard.tsx
     - src/shared/components/TaskList.tsx
     - src/shared/components/TaskForm.tsx
+
   modified: []
 
 key-decisions:
+
   - "UI-006: Optimistic UI for status updates provides instant feedback before server confirmation"
   - "UI-007: Status dropdown for quick inline status changes without navigation"
   - "UI-008: Delete confirmation dialog prevents accidental task deletion"
   - "UI-009: Done tasks faded but visible maintains task history awareness"
 
 patterns-established:
+
   - "Optimistic updates: useOptimistic + useTransition pattern for instant UI feedback"
   - "Form integration: useActionState pattern for Server Action forms with validation"
   - "Status grouping: Separate sections for Todo/In Progress/Done with counts"
   - "Empty states: Helpful illustrations and CTAs when no content exists"
 
 # Metrics
+
 duration: 2min
 completed: 2026-01-25
 ---
@@ -84,21 +96,25 @@ Each task was committed atomically:
 ## Decisions Made
 
 **UI-006: Optimistic UI for status updates**
+
 - Use useOptimistic hook for instant status change feedback
 - Automatically rolls back if server update fails
 - Provides responsive feel without waiting for server
 
 **UI-007: Status dropdown for inline changes**
+
 - Dropdown component allows quick status changes without navigation
 - Shows current status with color-coded badges
 - Disabled during pending state to prevent race conditions
 
 **UI-008: Delete confirmation dialog**
+
 - Browser confirm() dialog before deletion
 - Prevents accidental task removal
 - Shows error alert if deletion fails
 
 **UI-009: Faded done tasks**
+
 - Done tasks rendered with 75% opacity
 - Maintains visibility for task history
 - Visual distinction between active and completed work
@@ -118,12 +134,14 @@ None - no external service configuration required.
 ## Next Phase Readiness
 
 **Ready for 03-03 (Task Pages):**
+
 - All UI components built and ready for integration
 - TaskCard works with Server Actions from 03-01
 - TaskList handles empty states and status grouping
 - TaskForm integrated with createTask Server Action
 
 **Components export cleanly for use in pages:**
+
 - Can import TaskList for /tasks page
 - Can import TaskForm for /tasks/new page
 - Can import TaskCard for individual task display

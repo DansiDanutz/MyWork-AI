@@ -100,6 +100,7 @@ Subtasks
 Offline Support
     └──requires──> All core features working client-side
     └──conflicts with──> Real-time Collaboration
+
 ```
 
 ### Dependency Notes
@@ -192,6 +193,7 @@ Features to defer until product-market fit is established.
 | Recurring Tasks | MEDIUM | HIGH | P3 |
 
 **Priority key:**
+
 - **P1:** Must have for launch (v1.0) - Core task management + required integrations
 - **P2:** Should have, add when possible (v1.1-v1.5) - Usability enhancements based on feedback
 - **P3:** Nice to have, future consideration (v2.0+) - Advanced features after product-market fit
@@ -215,6 +217,7 @@ Features to defer until product-market fit is established.
 | **Design Philosophy** | Flexibility | Microsoft ecosystem | Apple aesthetic | Developer-friendly, reusable modules |
 
 **Our Competitive Position:**
+
 - **Differentiators:** File attachments + GitHub integration = unique combo for technical users
 - **Table Stakes Match:** We match core features (CRUD, search, organization, priorities)
 - **Strategic Omissions:** No collaboration (individual focus), no gamification (anti-feature), no natural language (complexity)
@@ -223,28 +226,33 @@ Features to defer until product-market fit is established.
 ## Sources
 
 ### Feature Landscape & Table Stakes:
+
 - [5 Essential Features of a Productivity App in 2026](https://dev.to/anas_kayssi/5-essential-features-of-a-productivity-app-in-2026-408g)
 - [20 Best Task Management Software Tools in 2026](https://clickup.com/blog/task-management-software/)
 - [Best task management software in 2026 (features & price compared)](https://www.goodday.work/blog/best-task-management-software/)
 - [7 best to do list apps of 2026](https://zapier.com/blog/best-todo-list-apps/)
 
 ### Differentiators & Competitive Analysis:
+
 - [Todoist vs Microsoft To-Do (2026): Full Comparison](https://toolfinder.co/comparisons/todoist-vs-microsoft-todo)
 - [Todoist vs. Microsoft To Do: Which Tool Is Best? [2026]](https://clickup.com/blog/todoist-vs-microsoft-to-do/)
 - [Things 3 Review: Pros, Cons, Features & Pricing](https://thedigitalprojectmanager.com/tools/things-3-review/)
 - [Things3 Vs. Todoist: Which is the Best Task Management App?](https://focuzed.io/blog/things3-vs-todoist/)
 
 ### Anti-Features & Common Mistakes:
+
 - [25+ Anti-patterns of Sprint Planning: Task Creation & More](https://agilemania.com/anti-patterns-of-sprint-planning-task-creation)
 - [Make your team miserable with one of these popular project-management anti-patterns](https://www.rubick.com/three-anti-patterns-for-project-management/)
 - [What is scope creep in project management?](https://www.wrike.com/project-management-guide/faq/what-is-scope-creep-in-project-management/)
 
 ### GitHub Integration:
+
 - [How to use GitHub for project management](https://graphite.com/guides/github-project-management-guide)
 - [Super Productivity - GitHub integration with time tracking](https://github.com/johannesjo/super-productivity)
 - [Planning and tracking work for your team or project - GitHub Docs](https://docs.github.com/en/issues/tracking-your-work-with-issues/learning-about-issues/planning-and-tracking-work-for-your-team-or-project)
 
 ### Individual vs Team Collaboration:
+
 - [What Is Task Management? A Guide to Staying Organized and Aligned](https://slack.com/blog/productivity/what-is-task-management-and-why-it-matters-for-teams)
 - [How to foster collaborative task management](https://blog.box.com/collaborative-task-management)
 

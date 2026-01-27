@@ -38,6 +38,7 @@
 │  │  Storage   │  │  (Primary)  │  │     API      │  │       │
 │  └────────────┘  └─────────────┘  └──────────────┘  │       │
 └─────────────────────────────────────────────────────────────┘
+
 ```
 
 ### Component Responsibilities
@@ -113,6 +114,7 @@ task-tracker/
     ├── migrations/            # Schema migration scripts
     ├── seeds/                 # Seed data
     └── task-tracker.db        # SQLite database file
+
 ```
 
 ### Structure Rationale
@@ -131,11 +133,13 @@ task-tracker/
 **When to use:** Standard pattern for task management apps of all sizes. Provides clear separation of concerns while maintaining simplicity.
 
 **Trade-offs:**
+
 - **Pros:** Easy to understand, test, and maintain. Clear boundaries. Good for small teams.
 - **Cons:** Can become too rigid. Layer coupling can make changes harder.
 - **For this project:** RECOMMENDED - Perfect fit for a task tracker with small team.
 
 **Example:**
+
 ```typescript
 // Layered approach - each layer has single responsibility
 
@@ -163,6 +167,7 @@ async create(taskData, userId) {
 async create(data) {
   return await db.tasks.create(data);
 }
+
 ```
 
 ### Pattern 2: Repository Pattern
@@ -172,11 +177,13 @@ async create(data) {
 **When to use:** When you want to decouple business logic from database implementation details. Essential for testability.
 
 **Trade-offs:**
+
 - **Pros:** Easy to mock for testing. Can swap data sources. Centralizes query logic.
 - **Cons:** Adds extra layer of abstraction. Can be overkill for simple CRUD.
 - **For this project:** RECOMMENDED - Enables reusable brain patterns for data access.
 
 **Example:**
+
 ```typescript
 // Repository pattern - abstracts database operations
 
@@ -216,6 +223,7 @@ class TaskRepository {
 const mockRepo = {
   findByUserId: jest.fn().mockResolvedValue([...]),
 };
+
 ```
 
 ### Pattern 3: Service Layer Pattern
@@ -225,11 +233,13 @@ const mockRepo = {
 **When to use:** When business operations involve multiple repositories, validation, or external services.
 
 **Trade-offs:**
+
 - **Pros:** Centralized business logic. Reusable across different entry points (API, CLI, etc.).
 - **Cons:** Can become bloated if not carefully organized.
 - **For this project:** RECOMMENDED - Critical for GitHub integration and access control logic.
 
 **Example:**
+
 ```typescript
 // Service layer - orchestrates business operations
 
@@ -282,6 +292,7 @@ class TaskService {
     await this.githubService.trackEvent('task_deleted', { taskId });
   }
 }
+
 ```
 
 ### Pattern 4: Middleware Chain (Express)
@@ -291,11 +302,13 @@ class TaskService {
 **When to use:** Standard pattern for Express apps. Excellent for cross-cutting concerns.
 
 **Trade-offs:**
+
 - **Pros:** Modular, composable, easy to add/remove functionality.
 - **Cons:** Order matters. Can be hard to trace execution flow.
 - **For this project:** REQUIRED - Essential for authentication and error handling.
 
 **Example:**
+
 ```typescript
 // Middleware chain - composable processing pipeline
 
@@ -322,6 +335,7 @@ app.post('/api/tasks',
   validateTask,        // 2. Validate input
   taskController.create // 3. Handle request
 );
+
 ```
 
 ### Pattern 5: Unidirectional Data Flow (React)
@@ -331,11 +345,13 @@ app.post('/api/tasks',
 **When to use:** Standard pattern for React apps. Simplifies state management and debugging.
 
 **Trade-offs:**
+
 - **Pros:** Predictable. Easy to debug. Clear data flow.
 - **Cons:** More boilerplate than two-way binding.
 - **For this project:** RECOMMENDED - Use Context API for simple global state.
 
 **Example:**
+
 ```typescript
 // Unidirectional data flow with Context API
 
@@ -385,6 +401,7 @@ function CreateTaskForm() {
 
   return <form onSubmit={handleSubmit}>...</form>;
 }
+
 ```
 
 ## Data Flow
@@ -411,6 +428,7 @@ Response ← transforms data ← returns task object
 React Component ← updates local state ← receives response
     ↓
 UI Re-renders (shows new task)
+
 ```
 
 ### State Management (React Context API)
@@ -439,6 +457,7 @@ UI Re-renders (shows new task)
                   Context updates
                          ↓
                 Components re-render
+
 ```
 
 ### Key Data Flows
@@ -478,12 +497,14 @@ UI Re-renders (shows new task)
 **What people do:** Put all business logic in controller methods, making controllers handle database operations, validation, external API calls, and file operations.
 
 **Why it's wrong:**
+
 - Impossible to reuse logic (e.g., can't create task from CLI or background job)
 - Hard to test - must mock HTTP request/response
 - Violates single responsibility principle
 - Makes controllers bloated and unmaintainable
 
 **Do this instead:**
+
 ```typescript
 // ❌ BAD - God Controller
 class TaskController {
@@ -526,6 +547,7 @@ class TaskService {
     return task;
   }
 }
+
 ```
 
 ### Anti-Pattern 2: Premature Microservices
@@ -533,6 +555,7 @@ class TaskService {
 **What people do:** Split a small task tracker into separate services for tasks, auth, files, notifications from day one.
 
 **Why it's wrong:**
+
 - Massive overhead: service discovery, API versioning, distributed tracing, network calls
 - Harder to debug - errors span multiple services
 - Slower development - changes require coordination across services
@@ -558,6 +581,7 @@ server/
         fileRoutes.js
         fileService.js
     app.js  // Assembles all modules
+
 ```
 
 ### Anti-Pattern 3: No Error Boundaries
@@ -565,12 +589,14 @@ server/
 **What people do:** Let errors bubble up unhandled, crashing the server or showing generic error pages.
 
 **Why it's wrong:**
+
 - Poor user experience - cryptic error messages
 - Security risk - exposes stack traces and internal details
 - Hard to debug - no centralized error logging
 - Server crashes on unhandled rejections
 
 **Do this instead:**
+
 ```typescript
 // ✅ GOOD - Centralized Error Handling
 
@@ -625,6 +651,7 @@ class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
+
 ```
 
 ### Anti-Pattern 4: Mixing Database Schema with API Response
@@ -632,12 +659,14 @@ class ErrorBoundary extends React.Component {
 **What people do:** Return database records directly as API responses, exposing internal schema details and sensitive fields.
 
 **Why it's wrong:**
+
 - Exposes password hashes, internal IDs, soft-delete flags
 - Couples API to database schema - can't change one without the other
 - Returns unnecessary data (over-fetching)
 - Security risk
 
 **Do this instead:**
+
 ```typescript
 // ❌ BAD - Exposes everything
 app.get('/api/users/:id', async (req, res) => {
@@ -663,6 +692,7 @@ app.get('/api/users/:id', async (req, res) => {
   const user = await db.users.findById(req.params.id);
   res.json(UserDTO.fromModel(user));
 });
+
 ```
 
 ### Anti-Pattern 5: No File Size/Type Validation
@@ -670,12 +700,14 @@ app.get('/api/users/:id', async (req, res) => {
 **What people do:** Accept any file upload without validation, leading to security issues and storage problems.
 
 **Why it's wrong:**
+
 - Allows executable files (.exe, .sh) - security risk
 - No size limits - can fill up disk
 - Wrong file types break the app
 - Potential for malicious uploads
 
 **Do this instead:**
+
 ```typescript
 // ✅ GOOD - Validate uploads
 const multer = require('multer');
@@ -708,6 +740,7 @@ app.post('/api/tasks/:id/attachments', upload.array('files'), (req, res) => {
   // Files validated and stored safely
   res.json({ files: req.files.map(f => ({ filename: f.filename, size: f.size })) });
 });
+
 ```
 
 ## Integration Points
@@ -733,32 +766,39 @@ app.post('/api/tasks/:id/attachments', upload.array('files'), (req, res) => {
 ## Sources
 
 **Architecture Patterns:**
+
 - [5+ software architecture patterns you should know in 2026](https://www.sayonetech.com/blog/software-architecture-patterns/)
 - [Chapter 2 — High-Level Design: Architecting the Task Management System](https://medium.com/@natarajanck2/chapter-2-high-level-design-architecting-the-task-management-system-1f82a489ecab)
 - [Guide to app architecture | Android Developers](https://developer.android.com/topic/architecture)
 
 **Task Management Best Practices:**
+
 - [How to Build a Task Management App [2026 Guide]](https://www.freshcodeit.com/blog/how-to-create-task-management-app-mvp)
 - [Task Management for Service Teams: Best Practices for 2026](https://www.luacrm.com/en/blog-detail/task-management-best-practices-for-service-teams-2026)
 - [Chapter 2: Designing a Task Management System - NocoBase](https://www.nocobase.com/en/tutorials/task-tutorial-system-design)
 
 **Database Design:**
+
 - [Guide To Design Database For Task Manager In MySQL](https://www.tutorials24x7.com/mysql/guide-to-design-database-for-task-manager-in-mysql)
 - [Database Design for Workflow Management Systems - GeeksforGeeks](https://www.geeksforgeeks.org/dbms/database-design-for-workflow-management-systems/)
 
 **API Design:**
+
 - [16 REST API design best practices and guidelines](https://www.techtarget.com/searchapparchitecture/tip/16-REST-API-design-best-practices-and-guidelines)
 - [RESTful API Design Guide: Principles & Best Practices](https://strapi.io/blog/restful-api-design-guide-principles-best-practices)
 
 **File Management:**
+
 - [Best Practices for Managing Attachments in Project Management Software](https://ones.com/blog/best-practices-managing-attachments-project-management-software/)
 - [Managing File Attachments: Best Practices for Cloud Security](https://softwaremind.com/blog/managing-file-attachments-best-practices-for-cloud-security/)
 
 **Monolith vs Microservices:**
+
 - [Microservices vs. monolithic architecture | Atlassian](https://www.atlassian.com/microservices/microservices-architecture/microservices-vs-monolith)
 - [Monolithic vs Microservices: Differences, Pros, & Cons in 2026](https://www.superblocks.com/blog/monolithic-vs-microservices)
 
 **React/Node.js Architecture:**
+
 - [Building a full-stack Task Management App with Typescript, React, Nodejs](https://dev.to/jamesoyanna/building-a-full-stack-task-management-app-with-typescriptreactnodejs-29in)
 - [React.js in 2026: Performance Revolution and Secure Architecture](https://medium.com/@expertappdevs/react-js-2026-performance-secure-architecture-84f78ad650ab)
 

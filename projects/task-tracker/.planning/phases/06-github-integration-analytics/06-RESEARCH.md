@@ -9,6 +9,7 @@
 Phase 6 implements a non-blocking analytics system to capture user behavior patterns for the MyWork framework's brain learning system. The implementation leverages Next.js 15's `after()` API for asynchronous event logging, uses GitHub's REST API with proper rate limit handling, and stores analytics events in PostgreSQL with optimized JSONB indexing.
 
 The standard approach is to:
+
 1. Track events using Next.js 15's `after()` API to avoid blocking user operations
 2. Store events in a simple PostgreSQL table with JSONB properties for flexibility
 3. Use GitHub's OAuth access tokens (already available from Phase 2) for API calls
@@ -22,6 +23,7 @@ The standard approach is to:
 The established libraries/tools for this domain:
 
 ### Core
+
 | Library | Version | Purpose | Why Standard |
 |---------|---------|---------|--------------|
 | `next/server` (after API) | 15.0.3+ | Non-blocking task execution | Native Next.js feature specifically designed for analytics/logging without blocking responses |
@@ -29,12 +31,14 @@ The established libraries/tools for this domain:
 | GitHub REST API | v3 | User profile enrichment | Already authenticated via Phase 2 OAuth, no additional libraries needed |
 
 ### Supporting
+
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
 | Zod | 4.3.6 | Event validation | Already in stack, validates event payloads before storage |
 | `@octokit/rest` | 20.x | GitHub API client | Optional - only if complex API interactions needed beyond basic fetch |
 
 ### Alternatives Considered
+
 | Instead of | Could Use | Tradeoff |
 |------------|-----------|----------|
 | `after()` API | PostHog/Amplitude/Plausible | Third-party tools offer dashboards/UI but add external dependencies and data leaves your control |
@@ -42,16 +46,23 @@ The established libraries/tools for this domain:
 | Direct fetch | `@octokit/rest` | Octokit adds 100KB+ bundle size for minimal benefit when only calling 1-2 endpoints |
 
 **Installation:**
+
 ```bash
+
 # No new dependencies needed!
+
 # after() API: Built into Next.js 15.0.3+
+
 # GitHub API: Use native fetch with existing OAuth tokens
+
 # PostgreSQL: Already configured in Phase 1
+
 ```
 
 ## Architecture Patterns
 
 ### Recommended Project Structure
+
 ```
 src/
 ├── app/
@@ -70,12 +81,15 @@ src/
 │       └── queries/
 │           └── analytics.ts    # Analytics-specific database queries
 └── middleware.ts               # Optional: Middleware for automatic page view tracking
+
 ```
 
 ### Pattern 1: Non-Blocking Event Tracking with `after()`
+
 **What:** Use Next.js 15's `after()` API to defer analytics logging until after the response is sent to the user
 **When to use:** All analytics/logging operations that don't need to affect the response
 **Example:**
+
 ```typescript
 // Source: https://nextjs.org/docs/app/api-reference/functions/after
 import { after } from 'next/server'
@@ -98,12 +112,15 @@ export async function POST(request: Request) {
 
   return Response.json({ success: true, id: result.id })
 }
+
 ```
 
 ### Pattern 2: GitHub API Rate Limit Handling
+
 **What:** Monitor rate limit headers and implement exponential backoff with ETag caching
 **When to use:** All GitHub API calls for enrichment data
 **Example:**
+
 ```typescript
 // Source: https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api
 import { headers } from 'next/headers'
@@ -147,12 +164,15 @@ async function fetchGitHubUser(accessToken: string): Promise<GitHubUser> {
 
   return response.json()
 }
+
 ```
 
 ### Pattern 3: Flexible Event Schema with JSONB
+
 **What:** Store event properties as JSONB for schema flexibility while keeping core fields typed
 **When to use:** Analytics events where property structure varies by event type
 **Example:**
+
 ```typescript
 // Prisma schema
 model AnalyticsEvent {
@@ -168,12 +188,15 @@ model AnalyticsEvent {
   @@index([eventType, createdAt]) // Fast event type aggregations
   @@index([createdAt]) // BRIN-like pattern for time-series queries
 }
+
 ```
 
 ### Pattern 4: Event Type System with Zod
+
 **What:** Define strict TypeScript types for each event with runtime validation
 **When to use:** Ensure type safety across analytics system and validate before storage
 **Example:**
+
 ```typescript
 // Source: https://github.com/colinhacks/zod
 import { z } from 'zod'
@@ -206,9 +229,11 @@ export const AnalyticsEventSchema = z.discriminatedUnion('type', [
 ])
 
 export type AnalyticsEvent = z.infer<typeof AnalyticsEventSchema>
+
 ```
 
 ### Anti-Patterns to Avoid
+
 - **Blocking user operations for analytics** - Never await analytics calls in user-facing code paths; always use `after()` or background jobs
 - **Tracking everything without purpose** - Only track events that inform brain learning; more data ≠ more insights
 - **Missing rate limit checks** - Always check GitHub API rate limit headers before making calls; hitting limits breaks user features
@@ -232,55 +257,71 @@ Problems that look simple but have existing solutions:
 ## Common Pitfalls
 
 ### Pitfall 1: Blocking User Operations with Analytics Calls
+
 **What goes wrong:** Awaiting analytics API calls or database inserts in user-facing routes adds 50-200ms latency to every operation
 **Why it happens:** Developers naturally want to ensure events are tracked before responding
 **How to avoid:** Always wrap analytics calls in `after(() => { ... })` so they execute after the response is sent
 **Warning signs:** User complaints about slow task creation; server logs showing analytics queries in request timings
 
 ### Pitfall 2: GitHub API Rate Limit Exhaustion
+
 **What goes wrong:** Application hits GitHub's 5,000 requests/hour limit and user profile enrichment fails
 **Why it happens:** Not caching GitHub user data or making redundant API calls on every event
 **How to avoid:**
+
   - Cache GitHub user data in database with 24-hour TTL
   - Use ETag headers for conditional requests (304 responses don't count against limit)
   - Only enrich data once per user session, not on every event
+
 **Warning signs:** Logs showing 403 errors with "x-ratelimit-remaining: 0"; user profiles not updating
 
 ### Pitfall 3: Unbounded JSONB Growth Killing Performance
+
 **What goes wrong:** Storing large file contents or request bodies in JSONB properties causes query performance to degrade over weeks
 **Why it happens:** Treating JSONB as a dumping ground for "everything that might be useful"
 **How to avoid:**
+
   - Set strict size limits on `properties` JSONB field (e.g., 5KB max)
   - Store large data (file contents, full request bodies) separately or not at all
   - Only store what's needed for brain pattern analysis
+
 **Warning signs:** Analytics queries taking >1s; database storage growing faster than expected
 
 ### Pitfall 4: Missing GDPR Compliance
+
 **What goes wrong:** Storing user email addresses or IP addresses without consent violates GDPR; potential €20M fines
 **Why it happens:** Developers don't realize that "analytics" includes personal data requiring consent
 **How to avoid:**
+
   - Use user IDs instead of emails in events
   - Anonymize IP addresses (store first 3 octets only)
   - Implement configurable retention periods (30-90 days for compliance)
   - Add data export endpoint for user requests
+
 **Warning signs:** Legal team raises concerns; users request data deletion and system can't comply
 
 ### Pitfall 5: Over-Indexing Small Tables
+
 **What goes wrong:** Creating GIN indexes on JSONB columns with <10K rows adds write overhead without read benefits
 **Why it happens:** Premature optimization; developers add indexes "just in case"
 **How to avoid:**
+
   - Start with B-tree indexes on typed columns (userId, eventType, createdAt)
   - Only add JSONB indexes when queries show >100ms execution time
   - Monitor index usage with `pg_stat_user_indexes`
+
 **Warning signs:** Write operations slowing down; database showing high index maintenance time
 
 ### Pitfall 6: Cache Stampede on GitHub API Calls
+
 **What goes wrong:** When cache expires, hundreds of concurrent requests hit GitHub API simultaneously, hitting rate limits
 **Why it happens:** No locking mechanism when cache misses; all requests attempt to refresh simultaneously
 **How to avoid:**
+
   - Use "stale-while-revalidate" pattern: serve cached data while refreshing in background
   - Implement request coalescing: deduplicate concurrent requests for same resource
   - Add jitter to cache TTLs to avoid synchronized expiration
+
 **Warning signs:** Periodic spikes in GitHub API usage; rate limit errors in bursts
 
 ## Code Examples
@@ -288,6 +329,7 @@ Problems that look simple but have existing solutions:
 Verified patterns from official sources:
 
 ### Complete Non-Blocking Event Tracker
+
 ```typescript
 // Source: Next.js 15 documentation + PostgreSQL best practices
 // lib/analytics/tracker.ts
@@ -324,9 +366,11 @@ export async function createTaskAction(formData: FormData) {
 
   return { success: true, task }
 }
+
 ```
 
 ### GitHub User Enrichment with Rate Limiting
+
 ```typescript
 // Source: https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api
 // lib/analytics/github.ts
@@ -400,9 +444,11 @@ export async function enrichUserWithGitHubData(
     return cached?.data || null // Graceful degradation
   }
 }
+
 ```
 
 ### Event Queries for Brain Analysis
+
 ```typescript
 // Source: PostgreSQL documentation + analytics best practices
 // lib/db/queries/analytics.ts
@@ -466,9 +512,11 @@ export async function exportEventsForBrain(
     orderBy: { createdAt: 'asc' }
   })
 }
+
 ```
 
 ### GDPR-Compliant Data Retention
+
 ```typescript
 // Source: https://usercentrics.com/knowledge-hub/gdpr-data-retention/
 // lib/analytics/retention.ts
@@ -492,6 +540,7 @@ export async function purgeExpiredEvents() {
 }
 
 // Run as scheduled job (e.g., daily cron)
+
 ```
 
 ## State of the Art
@@ -505,6 +554,7 @@ export async function purgeExpiredEvents() {
 | Polling GitHub API | ETag-based conditional requests | Always recommended | 304 responses don't count against rate limits; massive savings on quota |
 
 **Deprecated/outdated:**
+
 - **Next.js Middleware for analytics** - While still supported, `after()` API is more efficient and doesn't add middleware overhead to every request
 - **Custom error boundaries for event tracking** - Next.js 15 added `onRequestError` hook for better error tracking integration
 - **@vercel/analytics** - Vercel's analytics package; ties you to Vercel platform and sends data externally (conflicts with brain learning goal)
@@ -537,6 +587,7 @@ Things that couldn't be fully resolved:
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - [Next.js `after()` API Documentation](https://nextjs.org/docs/app/api-reference/functions/after) - Official Next.js 15 feature documentation
 - [Next.js Analytics Guide](https://nextjs.org/docs/pages/guides/analytics) - Official framework analytics guidance
 - [GitHub REST API Rate Limits](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api) - Authoritative GitHub API documentation
@@ -544,6 +595,7 @@ Things that couldn't be fully resolved:
 - [Prisma Documentation](https://www.prisma.io/docs/orm/prisma-schema) - Prisma schema and querying documentation
 
 ### Secondary (MEDIUM confidence)
+
 - [Event Storage in Postgres](https://dev.to/kspeakman/event-storage-in-postgres-4dk2) - Verified PostgreSQL event schema patterns
 - [BRIN Indexes in PostgreSQL](https://www.sqlpassion.at/archive/2026/01/19/brin-indexes-in-postgresql/) - Time-series indexing strategy
 - [GDPR Data Retention Best Practices](https://usercentrics.com/knowledge-hub/gdpr-data-retention/) - Compliance guidance
@@ -551,12 +603,14 @@ Things that couldn't be fully resolved:
 - [API Rate Limiting Best Practices 2025](https://zuplo.com/learning-center/10-best-practices-for-api-rate-limiting-in-2025) - Verified rate limiting patterns
 
 ### Tertiary (LOW confidence)
+
 - [Next.js Server Actions Analytics Patterns](https://medium.com/@beenakumawat002/next-js-app-router-advanced-patterns-for-2026-server-actions-ppr-streaming-edge-first-b76b1b3dcac7) - Community patterns (Medium article)
 - [Event Tracking Schema Design](https://snowplow.io/blog/event-data-structure) - General analytics schema guidance (not Next.js-specific)
 
 ## Metadata
 
 **Confidence breakdown:**
+
 - Standard stack: HIGH - Next.js 15 `after()` API is official, PostgreSQL + Prisma already in use
 - Architecture: HIGH - Patterns verified with official documentation and real-world implementations
 - Pitfalls: MEDIUM - Common issues documented across multiple sources, some inferred from general analytics experience

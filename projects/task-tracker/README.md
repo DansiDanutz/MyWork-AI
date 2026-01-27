@@ -5,21 +5,28 @@ A focused task management app with status tracking, optimistic UI updates, and u
 ## Quick Start
 
 ```bash
+
 # From the project root
+
 cd projects/task-tracker
 
 # Install dependencies
+
 npm install
 
 # Configure environment
+
 cp .env.example .env
 
 # Prisma setup
+
 npx prisma generate
 npx prisma migrate dev --name init
 
 # Run dev server
+
 npm run dev
+
 ```
 
 App runs on `http://localhost:3000` by default.

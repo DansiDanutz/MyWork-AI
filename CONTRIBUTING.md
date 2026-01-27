@@ -19,23 +19,35 @@ Be respectful and constructive. We're all here to build something great together
 
 1. Fork the repository
 2. Clone your fork:
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/MyWork-AI.git
    cd MyWork-AI
+
    ```
+
 3. Set up environment:
+
    ```bash
    cp .env.example .env
+
    # Add your API keys
+
    ```
+
 4. Install pre-commit hooks:
+
    ```bash
    pip install pre-commit
    pre-commit install
+
    ```
+
 5. Verify setup:
+
    ```bash
    python tools/mw.py doctor
+
    ```
 
 ## How to Contribute
@@ -75,9 +87,11 @@ type(scope): description
 [optional body]
 
 [optional footer]
+
 ```
 
 Types:
+
 - `feat` - New feature
 - `fix` - Bug fix
 - `docs` - Documentation
@@ -86,10 +100,12 @@ Types:
 - `chore` - Maintenance
 
 Examples:
+
 ```
 feat(brain): add auto-discovery from git commits
 fix(mw): handle missing projects directory
 docs(readme): update installation instructions
+
 ```
 
 #### Pull Request Process
@@ -97,10 +113,13 @@ docs(readme): update installation instructions
 1. Create a feature branch from `main`
 2. Make your changes
 3. Run checks:
+
    ```bash
    python tools/mw.py doctor
    python tools/mw.py status
+
    ```
+
 4. Update documentation if needed
 5. Submit PR using the template
 6. Wait for review
@@ -127,6 +146,7 @@ def search_modules(query: str, limit: int = 10) -> List[Module]:
         List of matching modules
     """
     pass
+
 ```
 
 #### Documentation
@@ -144,16 +164,20 @@ MyWork/
 +-- projects/        # User projects
 +-- .planning/       # Framework state
 +-- CLAUDE.md        # Orchestrator instructions
+
 ```
 
 ### Adding a New Tool
 
 1. Copy template:
+
    ```bash
    cp tools/_template.py tools/my_tool.py
+
    ```
 
 2. Implement required functions:
+
    ```python
    def main():
        """Main entry point."""
@@ -161,6 +185,7 @@ MyWork/
 
    if __name__ == "__main__":
        main()
+
    ```
 
 3. Add to `mw.py` if user-facing
@@ -170,8 +195,10 @@ MyWork/
 ### Adding a Workflow
 
 1. Copy template:
+
    ```bash
    cp workflows/_template.md workflows/my_workflow.md
+
    ```
 
 2. Fill in sections:
@@ -196,14 +223,19 @@ MyWork/
 Before submitting:
 
 ```bash
+
 # Run health check
+
 python tools/mw.py doctor
 
 # Quick status check
+
 python tools/mw.py status
 
 # Test specific tool
+
 python tools/my_tool.py --help
+
 ```
 
 ## Questions?
@@ -215,6 +247,7 @@ python tools/my_tool.py --help
 ## Recognition
 
 Contributors are recognized in:
+
 - GitHub contributors page
 - Release notes for significant contributions
 

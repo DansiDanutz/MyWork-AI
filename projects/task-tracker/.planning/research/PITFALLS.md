@@ -15,12 +15,14 @@ Prototype-level code shipped into production creates unstable systems with poor 
 AI-accelerated development and time pressure make it tempting to ship fast prototypes directly to production. Teams skip the hardening phase between MVP and production, thinking "it works" is sufficient.
 
 **How to avoid:**
+
 - Establish automated guardrails that prevent merging to production without tests, error handling, and security checks
 - Document hardening requirements explicitly in phase acceptance criteria
 - For MyWork framework: Each module must pass reusability checklist before integration
 - Never skip error handling, input validation, or security controls in initial implementation
 
 **Warning signs:**
+
 - No error boundaries or try-catch blocks
 - Hard-coded values instead of configuration
 - Missing tests for core functionality
@@ -42,6 +44,7 @@ Modules become interdependent with direct imports, shared global state, and fram
 Developers prematurely generalize components with single use cases or take shortcuts by accessing other modules' internals directly instead of defining clean interfaces.
 
 **How to avoid:**
+
 - Define explicit module boundaries and interfaces before implementation
 - Use dependency injection instead of direct imports
 - Keep framework-specific types (React components, database entities) within module boundaries
@@ -50,6 +53,7 @@ Developers prematurely generalize components with single use cases or take short
 - For GitHub integration: Isolate API calls behind service interface
 
 **Warning signs:**
+
 - Import statements reaching across multiple module levels
 - Circular dependencies between modules
 - Database entities exposed in API responses
@@ -71,6 +75,7 @@ Database schema designed too specifically for task tracker prevents reuse. Commo
 Teams ignore database goals beyond immediate requirements, failing to plan for extraction into reusable user management, file storage, or activity tracking modules.
 
 **How to avoid:**
+
 - Design tables with clear single responsibilities that map to reusable modules
 - Separate concerns: users table (auth module), files table (storage module), tasks table (domain-specific)
 - Use foreign keys, not embedded JSON, for relationships between reusable entities
@@ -79,6 +84,7 @@ Teams ignore database goals beyond immediate requirements, failing to plan for e
 - Avoid task queues in database tables - use proper queue service if needed
 
 **Warning signs:**
+
 - User data duplicated across multiple tables
 - File metadata embedded in task records instead of separate table
 - Task-specific fields in user or file tables
@@ -100,6 +106,7 @@ Integration gets banned from GitHub API for continuing requests while rate-limit
 Developers make multiple individual API calls instead of batching, don't implement retry logic with exponential backoff, ignore rate limit response headers, or use unauthenticated requests (60/hour limit).
 
 **How to avoid:**
+
 - Always authenticate requests (5,000 requests/hour for authenticated users)
 - Check `x-ratelimit-remaining` header before each request
 - Implement exponential backoff when `retry-after` header present
@@ -110,6 +117,7 @@ Developers make multiple individual API calls instead of batching, don't impleme
 - For usage tracking: Batch events and sync periodically, not per-action
 
 **Warning signs:**
+
 - Making GitHub API call on every user action
 - No retry logic for rate limit errors (429 status)
 - Not checking response headers
@@ -131,6 +139,7 @@ Large file uploads impact performance and exhaust storage. Malicious files uploa
 Teams prioritize "file upload works" over security and resource management. According to Cisco Talos, 25% of phishing incidents involve malicious attachments.
 
 **How to avoid:**
+
 - Enforce file size limits before upload starts (reject large files client-side)
 - Validate both file extension AND MIME type server-side (don't trust client)
 - Scan uploaded files for malware if handling untrusted user content
@@ -140,6 +149,7 @@ Teams prioritize "file upload works" over security and resource management. Acco
 - For MyWork framework: File storage module must include validation by default
 
 **Warning signs:**
+
 - No file size limits enforced
 - Only checking file extension, not MIME type
 - Files stored in publicly accessible directory
@@ -162,6 +172,7 @@ Search and filter work fine with 100 tasks, then system becomes sluggish at 10,0
 Developers test with small datasets and don't plan for indexing. Filters implemented with client-side JavaScript instead of database queries. No pagination on search results.
 
 **How to avoid:**
+
 - Add database indexes on all filterable columns (status, category, assigned_user, created_at)
 - Implement pagination from day one (limit results to 50-100 per page)
 - Use database query builder for filters, not in-memory filtering
@@ -170,6 +181,7 @@ Developers test with small datasets and don't plan for indexing. Filters impleme
 - Monitor query performance and add EXPLAIN ANALYZE to CI/CD
 
 **Warning signs:**
+
 - No indexes on filterable columns
 - Loading all tasks into memory then filtering in JavaScript
 - No pagination on task lists
@@ -191,6 +203,7 @@ Task states are unclear or overly complex. Users confused about what state means
 Common task management mistake: lack of clear state definitions. Teams implement too many states or allow all state transitions without business logic validation.
 
 **How to avoid:**
+
 - Keep states minimal and clearly defined (e.g., TODO, IN_PROGRESS, DONE)
 - Define valid state transitions explicitly in code
 - Validate state changes server-side (don't trust client)
@@ -199,6 +212,7 @@ Common task management mistake: lack of clear state definitions. Teams implement
 - Document state meanings in user-facing help text
 
 **Warning signs:**
+
 - More than 5 task states
 - Any state can transition to any other state
 - No validation on state changes
@@ -220,6 +234,7 @@ Cannot debug production issues because no logging of who did what when. Cannot t
 Teams focus on happy path functionality and skip audit logging. Logging added as afterthought when first production issue occurs.
 
 **How to avoid:**
+
 - Log all state changes with user_id, timestamp, old_value, new_value
 - For critical operations (delete, assign, status change): Create audit log entries
 - Include request IDs in logs to trace operations across services
@@ -228,6 +243,7 @@ Teams focus on happy path functionality and skip audit logging. Logging added as
 - Log GitHub API calls for rate limit debugging
 
 **Warning signs:**
+
 - No created_by/updated_by columns in tables
 - Hard deletes instead of soft deletes
 - No change history for critical fields
@@ -356,35 +372,42 @@ How roadmap phases should address these pitfalls.
 ## Sources
 
 **Task Management Pitfalls:**
+
 - [Common Task Management Mistakes - Workast](https://www.workast.com/blog/common-task-management-mistakes-and-how-to-avoid-them/)
 - [Task Management Apps: 10 Common Mistakes - Captain Time](https://captaintime.com/task-management-apps-10-common-mistakes/)
 - [LinkedIn: Common Task Management Pitfalls](https://www.linkedin.com/advice/1/what-some-common-task-management-pitfalls-mistakes)
 
 **Architecture Anti-Patterns:**
+
 - [Software Architecture Anti-Patterns in 2026 - Medium](https://medium.com/@Adem_Korkmaz/software-architecture-anti-patterns-10-big-mistakes-we-somehow-still-make-in-2026-aeac8e0841f5)
 - [Modular Frontend Architecture - Medium](https://kodekx-solutions.medium.com/modular-frontend-architecture-long-term-maintainability-tips-a7296ee56b2c)
 - [Building Reusable React Components 2026 - Medium](https://medium.com/@romko.kozak/building-reusable-react-components-in-2026-a461d30f8ce4)
 
 **Database Design Pitfalls:**
+
 - [Database Schema Design Pitfalls - Medium](https://yu-ishikawa.medium.com/database-schema-design-for-data-engineering-essential-pitfalls-and-best-practices-9d3d8e3eba6d)
 - [How to Design Task Management System - Medium](https://medium.com/@koladilip/how-to-design-task-management-system-9349b4152394)
 - [Database Development with AI 2026 - Brent Ozar](https://www.brentozar.com/archive/2026/01/database-development-with-ai-in-2026/)
 
 **GitHub API Integration:**
+
 - [Managing GitHub API Rate Limits - Lunar.dev](https://www.lunar.dev/post/a-developers-guide-managing-rate-limits-for-the-github-api)
 - [Best Practices for GitHub REST API - GitHub Docs](https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api)
 - [Avoiding GitHub Rate Limiting - Kubeblogs](https://www.kubeblogs.com/how-to-avoid-github-token-rate-limiting-issues-complete-guide-for-devops-teams/)
 
 **File Upload Security:**
+
 - [Managing File Attachments Security - SoftwareMind](https://softwaremind.com/blog/managing-file-attachments-best-practices-for-cloud-security/)
 - [File Storage Best Practices - ManageEngine](https://www.manageengine.com/data-security/best-practices/file-storage-best-practices.html)
 
 **Production vs Prototype:**
+
 - [Production Ready Code vs Vibe Coded Prototype - Arbisoft](https://arbisoft.com/blogs/production-ready-code-vs-vibe-coded-prototype-what-s-the-difference)
 - [Technical Debt Strategic Guide 2026 - Monday.com](https://monday.com/blog/rnd/technical-debt/)
 - [Dark Side of AI Prototyping - Product Release Notes](https://www.productreleasenotes.com/p/the-dark-side-of-ai-prototyping-technical)
 
 **Performance and Scale:**
+
 - [Task Management Software Performance - Quixy](https://quixy.com/blog/no-code-task-management-system/)
 - [Microsoft Planner Filtering Performance - Manuel T. Gomes](https://manueltgomes.com/microsoft/planner/filtering-for-optimal-performance/)
 

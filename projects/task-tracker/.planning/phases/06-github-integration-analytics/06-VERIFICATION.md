@@ -87,8 +87,10 @@ score: 6/6 must-haves verified
 #### 3. Test Export API Authentication
 
 **Test:** 
+
 - Call `/api/analytics/export?format=summary` without auth → expect 401
 - Call with valid session → expect summary JSON
+
 **Expected:** Auth check prevents unauthorized access, authenticated requests work
 **Why human:** Requires running dev server and browser session management
 

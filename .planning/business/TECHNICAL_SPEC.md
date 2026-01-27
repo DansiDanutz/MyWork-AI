@@ -13,40 +13,59 @@
 
 ```
                                  +------------------+
+
                                  |   CDN (Cloudflare)|
+
                                  +--------+---------+
+
                                           |
+
                                           v
 +------------------------------------------------------------------+
+
 |                         FRONTEND LAYER                            |
 |  +------------------+  +------------------+  +------------------+ |
 |  |   Marketing      |  |   Marketplace    |  |   Dashboard      | |
 |  |   (Next.js)      |  |   (Next.js)      |  |   (Next.js)      | |
 |  |   mywork.ai      |  |   market.mywork  |  |   app.mywork     | |
 |  +------------------+  +------------------+  +------------------+ |
+
 +------------------------------------------------------------------+
+
                                           |
+
                                           v
 +------------------------------------------------------------------+
+
 |                         API GATEWAY                               |
 |                    (Vercel Edge Functions)                        |
 |  - Rate Limiting    - Auth Verification    - Request Routing      |
+
 +------------------------------------------------------------------+
+
                                           |
+
               +---------------------------+---------------------------+
+
               |                           |                           |
+
               v                           v                           v
 +------------------+          +------------------+          +------------------+
+
 |   AUTH SERVICE   |          | MARKETPLACE API  |          |   BRAIN API      |
 |   (Clerk)        |          | (FastAPI)        |          |   (FastAPI)      |
 |                  |          |                  |          |                  |
 | - OAuth          |          | - Products       |          | - Knowledge      |
 | - Sessions       |          | - Orders         |          | - Embeddings     |
 | - MFA            |          | - Reviews        |          | - Suggestions    |
+
 +------------------+          +------------------+          +------------------+
+
               |                           |                           |
+
               v                           v                           v
 +------------------------------------------------------------------+
+
 |                         DATA LAYER                                |
 |  +------------------+  +------------------+  +------------------+ |
 |  |   PostgreSQL     |  |   Redis          |  |   Pinecone       | |
@@ -57,10 +76,14 @@
 |  | - Orders         |  | - Rate limits    |  | - Solutions      | |
 |  | - Payouts        |  | - Queue          |  |                  | |
 |  +------------------+  +------------------+  +------------------+ |
+
 +------------------------------------------------------------------+
+
               |                           |                           |
+
               v                           v                           v
 +------------------------------------------------------------------+
+
 |                      EXTERNAL SERVICES                            |
 |  +------------------+  +------------------+  +------------------+ |
 |  |   Stripe         |  |   GitHub         |  |   Anthropic      | |
@@ -70,7 +93,9 @@
 |  |   R2/S3          |  |   Resend         |  |   PostHog        | |
 |  |   Storage        |  |   Email          |  |   Analytics      | |
 |  +------------------+  +------------------+  +------------------+ |
+
 +------------------------------------------------------------------+
+
 ```
 
 ---
@@ -313,6 +338,7 @@ CREATE INDEX idx_orders_status ON orders(status);
 CREATE INDEX idx_reviews_product ON reviews(product_id);
 CREATE INDEX idx_brain_type ON brain_entries(type);
 CREATE INDEX idx_brain_tags ON brain_entries USING GIN(tags);
+
 ```
 
 ### Row-Level Security (Supabase)
@@ -344,6 +370,7 @@ CREATE POLICY "Order visible to buyer" ON orders
 
 CREATE POLICY "Order visible to seller" ON orders
     FOR SELECT USING (seller_id = auth.uid());
+
 ```
 
 ---
@@ -353,14 +380,18 @@ CREATE POLICY "Order visible to seller" ON orders
 ### Authentication
 
 All authenticated endpoints require:
+
 ```
 Authorization: Bearer <clerk_session_token>
+
 ```
 
 ### Marketplace API Endpoints
 
 ```yaml
+
 # Products
+
 GET    /api/products                    # List products (public)
 GET    /api/products/:slug              # Get product details (public)
 POST   /api/products                    # Create product (seller)
@@ -369,9 +400,11 @@ DELETE /api/products/:id                # Delete product (seller)
 POST   /api/products/:id/publish        # Publish product (seller)
 
 # Search
+
 GET    /api/search?q=<query>&category=<cat>&min_price=<>&max_price=<>
 
 # Orders
+
 POST   /api/orders                      # Create order (buyer)
 GET    /api/orders                      # List my orders (buyer)
 GET    /api/orders/:id                  # Get order details
@@ -379,12 +412,14 @@ GET    /api/orders/:id/download         # Get download URL
 POST   /api/orders/:id/refund           # Request refund
 
 # Reviews
+
 GET    /api/products/:id/reviews        # List product reviews
 POST   /api/products/:id/reviews        # Create review (verified buyer)
 PUT    /api/reviews/:id                 # Update review (author)
 DELETE /api/reviews/:id                 # Delete review (author)
 
 # Seller Dashboard
+
 GET    /api/seller/products             # My products
 GET    /api/seller/orders               # My sales
 GET    /api/seller/analytics            # Sales analytics
@@ -392,32 +427,40 @@ GET    /api/seller/payouts              # Payout history
 POST   /api/seller/payout               # Request payout
 
 # User
+
 GET    /api/user/profile                # Get my profile
 PUT    /api/user/profile                # Update profile
 GET    /api/user/purchases              # My purchases
 POST   /api/user/become-seller          # Upgrade to seller
 
 # Stripe Webhooks
+
 POST   /api/webhooks/stripe             # Stripe events
+
 ```
 
 ### Brain API Endpoints
 
 ```yaml
+
 # Knowledge
+
 POST   /api/brain/learn                 # Contribute knowledge
 POST   /api/brain/query                 # Query the brain
 GET    /api/brain/suggest?context=<>    # Get suggestions
 GET    /api/brain/patterns?type=<>      # List patterns
 
 # Personal Brain (Pro+)
+
 GET    /api/brain/mine                  # My contributions
 GET    /api/brain/stats                 # My brain stats
+
 ```
 
 ### Example API Responses
 
 **GET /api/products/:slug**
+
 ```json
 {
   "id": "uuid",
@@ -450,9 +493,11 @@ GET    /api/brain/stats                 # My brain stats
   "created_at": "2026-01-15T10:00:00Z",
   "updated_at": "2026-01-20T15:30:00Z"
 }
+
 ```
 
 **POST /api/orders**
+
 ```json
 // Request
 {
@@ -468,6 +513,7 @@ GET    /api/brain/stats                 # My brain stats
   "stripe_client_secret": "pi_xxx_secret_xxx",
   "status": "pending"
 }
+
 ```
 
 ---
@@ -477,35 +523,51 @@ GET    /api/brain/stats                 # My brain stats
 ### Stripe Connect Flow
 
 ```
+
 1. SELLER ONBOARDING
+
    +----------------+     +----------------+     +----------------+
+
    | Seller clicks  | --> | Stripe Connect | --> | Account ready  |
    | "Become Seller"|     | Onboarding     |     | to receive $   |
+
    +----------------+     +----------------+     +----------------+
 
 2. PURCHASE FLOW
+
    +----------------+     +----------------+     +----------------+
+
    | Buyer clicks   | --> | Stripe Payment | --> | Payment Intent |
    | "Buy Now"      |     | Intent created |     | confirmed      |
+
    +----------------+     +----------------+     +----------------+
+
            |
+
            v
    +----------------+     +----------------+     +----------------+
+
    | Webhook:       | --> | Order marked   | --> | Download URL   |
    | payment_intent |     | completed      |     | generated      |
    | .succeeded     |     |                |     |                |
+
    +----------------+     +----------------+     +----------------+
 
 3. PAYOUT FLOW (Weekly)
+
    +----------------+     +----------------+     +----------------+
+
    | Calculate      | --> | Create Stripe  | --> | Transfer to    |
    | seller balance |     | Transfer       |     | seller bank    |
+
    +----------------+     +----------------+     +----------------+
+
 ```
 
 ### Stripe Integration Code
 
 ```python
+
 # services/stripe_service.py
 
 import stripe
@@ -560,7 +622,9 @@ class StripeService:
     @staticmethod
     async def process_payout(seller_id: str, amount: int) -> stripe.Transfer:
         """Transfer funds to seller's connected account."""
+
         # Get seller's connect account
+
         seller = await get_seller(seller_id)
 
         return stripe.Transfer.create(
@@ -569,11 +633,13 @@ class StripeService:
             destination=seller.stripe_connect_id,
             metadata={"seller_id": seller_id}
         )
+
 ```
 
 ### Webhook Handler
 
 ```python
+
 # api/webhooks/stripe.py
 
 from fastapi import APIRouter, Request, HTTPException
@@ -596,6 +662,7 @@ async def stripe_webhook(request: Request):
         raise HTTPException(400, "Invalid signature")
 
     # Handle events
+
     if event.type == "payment_intent.succeeded":
         await handle_payment_success(event.data.object)
 
@@ -616,6 +683,7 @@ async def handle_payment_success(payment_intent):
     order_id = payment_intent.metadata.get("order_id")
 
     # Update order status
+
     order = await update_order(
         order_id,
         status="completed",
@@ -624,18 +692,23 @@ async def handle_payment_success(payment_intent):
     )
 
     # Generate download URL
+
     download_url = await generate_download_url(order.product_id)
     await update_order(order_id, download_url=download_url)
 
     # Update product sales count
+
     await increment_product_sales(order.product_id)
 
     # Update seller stats
+
     await update_seller_stats(order.seller_id, order.seller_amount)
 
     # Send confirmation emails
+
     await send_purchase_confirmation(order)
     await send_sale_notification(order)
+
 ```
 
 ---
@@ -647,6 +720,7 @@ async def handle_payment_success(payment_intent):
 ```
 KNOWLEDGE INGESTION
 +------------------------------------------------------------------+
+
 |                                                                    |
 |  1. User contributes knowledge                                     |
 |     POST /api/brain/learn                                          |
@@ -666,10 +740,12 @@ KNOWLEDGE INGESTION
 |  4. Store in PostgreSQL                                            |
 |     INSERT INTO brain_entries (...)                                |
 |                                                                    |
+
 +------------------------------------------------------------------+
 
 KNOWLEDGE QUERY
 +------------------------------------------------------------------+
+
 |                                                                    |
 |  1. User queries brain                                             |
 |     POST /api/brain/query                                          |
@@ -690,12 +766,15 @@ KNOWLEDGE QUERY
 |  6. Return response                                                |
 |     { "answer": "...", "sources": [...] }                          |
 |                                                                    |
+
 +------------------------------------------------------------------+
+
 ```
 
 ### Brain Service Implementation
 
 ```python
+
 # services/brain_service.py
 
 from anthropic import Anthropic
@@ -714,10 +793,12 @@ class BrainService:
         """Add knowledge to the brain."""
 
         # Generate embedding
+
         text = f"{entry.title}\n{entry.content}"
         embedding = await generate_embedding(text)
 
         # Store in Pinecone
+
         pinecone_id = f"brain_{entry.id}"
         index.upsert(vectors=[{
             "id": pinecone_id,
@@ -731,6 +812,7 @@ class BrainService:
         }])
 
         # Store in PostgreSQL
+
         entry.embedding_id = pinecone_id
         entry.contributor_id = user_id
         await db.brain_entries.insert(entry)
@@ -742,9 +824,11 @@ class BrainService:
         """Query the brain for answers."""
 
         # Generate query embedding
+
         query_embedding = await generate_embedding(question)
 
         # Search Pinecone
+
         results = index.query(
             vector=query_embedding,
             top_k=10,
@@ -752,10 +836,12 @@ class BrainService:
         )
 
         # Fetch full entries
+
         entry_ids = [r.id.replace("brain_", "") for r in results.matches]
         entries = await db.brain_entries.fetch_many(entry_ids)
 
         # Generate response with Claude
+
         context = "\n\n".join([
             f"[{e.type}] {e.title}:\n{e.content}"
             for e in entries
@@ -778,6 +864,7 @@ Provide a helpful, practical answer. Reference specific entries when relevant.""
         )
 
         # Track usage
+
         for entry in entries:
             await db.brain_entries.increment_usage(entry.id)
 
@@ -795,9 +882,11 @@ Provide a helpful, practical answer. Reference specific entries when relevant.""
         """Get contextual suggestions based on current work."""
 
         # Generate embedding from context
+
         embedding = await generate_embedding(context)
 
         # Find similar patterns
+
         results = index.query(
             vector=embedding,
             top_k=5,
@@ -806,6 +895,7 @@ Provide a helpful, practical answer. Reference specific entries when relevant.""
         )
 
         # Format suggestions
+
         suggestions = []
         for r in results.matches:
             if r.score > 0.7:  # Only high-relevance suggestions
@@ -822,8 +912,11 @@ Provide a helpful, practical answer. Reference specific entries when relevant.""
 
 async def generate_embedding(text: str) -> List[float]:
     """Generate embedding using Claude."""
+
     # Using Claude's embedding capability
+
     # In production, might use dedicated embedding model
+
     response = anthropic.messages.create(
         model="claude-sonnet-4-20250514",
         max_tokens=1,
@@ -832,9 +925,13 @@ async def generate_embedding(text: str) -> List[float]:
             "content": f"Generate a semantic embedding for: {text[:1000]}"
         }]
     )
+
     # Parse embedding from response
+
     # (This is simplified - actual implementation would use proper embedding API)
+
     return [0.0] * 1536  # Placeholder
+
 ```
 
 ---
@@ -864,12 +961,15 @@ async def generate_embedding(text: str) -> List[float]:
     }
   ]
 }
+
 ```
 
 ### Railway Configuration
 
 ```toml
+
 # railway.toml
+
 [build]
 builder = "DOCKERFILE"
 dockerfilePath = "./Dockerfile"
@@ -894,61 +994,77 @@ internalPort = 8001
 [[services]]
 name = "worker"
 type = "worker"
+
 ```
 
 ### Docker Configuration
 
 ```dockerfile
+
 # Dockerfile
+
 FROM python:3.11-slim
 
 WORKDIR /app
 
 # Install dependencies
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application
+
 COPY . .
 
 # Run
+
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
 ```
 
 ### Environment Variables
 
 ```bash
+
 # .env.production (example - never commit real values)
 
 # Database
+
 DATABASE_URL=postgresql://user:pass@host:5432/mywork
 REDIS_URL=redis://user:pass@host:6379
 
 # Auth
+
 CLERK_SECRET_KEY=sk_live_xxx
 CLERK_PUBLISHABLE_KEY=pk_live_xxx
 
 # Stripe
+
 STRIPE_SECRET_KEY=sk_live_xxx
 STRIPE_PUBLISHABLE_KEY=pk_live_xxx
 STRIPE_WEBHOOK_SECRET=whsec_xxx
 
 # AI
+
 ANTHROPIC_API_KEY=sk-ant-xxx
 PINECONE_API_KEY=xxx
 PINECONE_ENVIRONMENT=us-east-1
 
 # Storage
+
 R2_ACCESS_KEY_ID=xxx
 R2_SECRET_ACCESS_KEY=xxx
 R2_BUCKET=mywork-files
 R2_ENDPOINT=https://xxx.r2.cloudflarestorage.com
 
 # Email
+
 RESEND_API_KEY=re_xxx
 
 # Analytics
+
 POSTHOG_API_KEY=phc_xxx
+
 ```
 
 ---
@@ -958,6 +1074,7 @@ POSTHOG_API_KEY=phc_xxx
 ### Input Validation
 
 ```python
+
 # schemas/product.py
 
 from pydantic import BaseModel, validator, Field
@@ -973,7 +1090,9 @@ class ProductCreate(BaseModel):
 
     @validator('title')
     def sanitize_title(cls, v):
+
         # Remove potentially dangerous characters
+
         return re.sub(r'[<>\"\';&]', '', v)
 
     @validator('category')
@@ -983,11 +1102,13 @@ class ProductCreate(BaseModel):
         if v not in allowed:
             raise ValueError(f'Category must be one of: {allowed}')
         return v
+
 ```
 
 ### Rate Limiting
 
 ```python
+
 # middleware/rate_limit.py
 
 from fastapi import Request, HTTPException
@@ -1010,11 +1131,13 @@ async def rate_limit(request: Request, limit: int = 100, window: int = 60):
         raise HTTPException(429, "Rate limit exceeded")
     else:
         redis.incr(key)
+
 ```
 
 ### Code Scanning
 
 ```python
+
 # services/security_service.py
 
 import subprocess
@@ -1039,11 +1162,14 @@ class SecurityService:
         issues = []
 
         with tempfile.TemporaryDirectory() as tmpdir:
+
             # Extract package
+
             with zipfile.ZipFile(package_path, 'r') as zip_ref:
                 zip_ref.extractall(tmpdir)
 
             # Scan for dangerous patterns
+
             for root, dirs, files in os.walk(tmpdir):
                 for file in files:
                     if file.endswith(('.py', '.js', '.ts')):
@@ -1052,6 +1178,7 @@ class SecurityService:
                         issues.extend(file_issues)
 
             # Run bandit for Python
+
             result = subprocess.run(
                 ['bandit', '-r', tmpdir, '-f', 'json'],
                 capture_output=True
@@ -1064,6 +1191,7 @@ class SecurityService:
             passed=len(issues) == 0,
             issues=issues
         )
+
 ```
 
 ---
@@ -1073,6 +1201,7 @@ class SecurityService:
 ### Logging
 
 ```python
+
 # utils/logging.py
 
 import structlog
@@ -1088,21 +1217,25 @@ structlog.configure(
 logger = structlog.get_logger()
 
 # Usage
+
 logger.info("order_created",
     order_id=order.id,
     amount=order.amount,
     seller_id=order.seller_id
 )
+
 ```
 
 ### Metrics
 
 ```python
+
 # utils/metrics.py
 
 from prometheus_client import Counter, Histogram
 
 # Counters
+
 orders_total = Counter(
     'orders_total',
     'Total orders',
@@ -1110,6 +1243,7 @@ orders_total = Counter(
 )
 
 # Histograms
+
 order_amount = Histogram(
     'order_amount_dollars',
     'Order amounts',
@@ -1117,13 +1251,16 @@ order_amount = Histogram(
 )
 
 # Usage
+
 orders_total.labels(status='completed').inc()
 order_amount.observe(order.amount)
+
 ```
 
 ### Health Checks
 
 ```python
+
 # api/health.py
 
 from fastapi import APIRouter
@@ -1144,6 +1281,7 @@ async def health_check():
         "status": "healthy" if healthy else "unhealthy",
         "checks": checks
     }
+
 ```
 
 ---

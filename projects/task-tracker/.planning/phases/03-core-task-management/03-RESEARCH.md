@@ -9,6 +9,7 @@
 Core task management in Next.js 15 follows a well-established pattern: Prisma models with user ownership relations, Server Actions for CRUD mutations with Zod validation, and React's useOptimistic for responsive UI updates. The project already has established patterns from Phase 2 (authentication) that should be extended rather than reinvented.
 
 **Key findings:**
+
 - Next.js 15's Server Actions with useActionState provide type-safe form handling and validation
 - Prisma 7's one-to-many relations naturally model user-task ownership
 - React 18's useOptimistic hook enables instant UI feedback before server confirmation
@@ -21,6 +22,7 @@ Core task management in Next.js 15 follows a well-established pattern: Prisma mo
 The project's existing stack already includes all necessary libraries:
 
 ### Core
+
 | Library | Version | Purpose | Why Standard |
 |---------|---------|---------|--------------|
 | Next.js | 15.0.3 | App Router, Server Actions, forms | Industry standard for React SSR, stable release avoiding React 19 |
@@ -29,12 +31,14 @@ The project's existing stack already includes all necessary libraries:
 | React | 18.3.1 | UI with useOptimistic | Stable version with concurrent features (useOptimistic, useTransition) |
 
 ### Supporting
+
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
 | next-auth | 5.0.0-beta.30 | Session verification | Already integrated in DAL (verifySession) |
 | @prisma/adapter-pg | 7.3.0 | PostgreSQL connection pooling | Production-ready connection management |
 
 ### Alternatives Considered
+
 | Instead of | Could Use | Tradeoff |
 |------------|-----------|----------|
 | Prisma | Drizzle ORM | Lighter bundle but less mature, Prisma already integrated |
@@ -42,14 +46,19 @@ The project's existing stack already includes all necessary libraries:
 | Server Actions | tRPC | More ceremony, Server Actions are first-class in Next.js 15 |
 
 **Installation:**
+
 ```bash
+
 # Already installed - no additional packages needed
+
 # Reuse existing patterns from Phase 2
+
 ```
 
 ## Architecture Patterns
 
 ### Project Structure (Extends Existing)
+
 ```
 src/
 ├── app/
@@ -74,12 +83,15 @@ src/
 │       └── TaskList.tsx        # New: Status-grouped list
 └── prisma/
     └── schema.prisma           # Add Task model
+
 ```
 
 ### Pattern 1: Task Model with User Ownership (Prisma)
+
 **What:** One-to-many relationship between User and Task models
 **When to use:** All user-owned entities in the application
 **Example:**
+
 ```typescript
 // Source: Official Prisma docs + existing User model pattern
 model Task {
@@ -102,12 +114,15 @@ model User {
   // ... existing fields ...
   tasks Task[]  // Add relation
 }
+
 ```
 
 ### Pattern 2: Server Action with Zod Validation (Extends profile.ts)
+
 **What:** Field-level and form-level Server Actions with type-safe validation
 **When to use:** All data mutations requiring authentication and validation
 **Example:**
+
 ```typescript
 // Source: Next.js official docs + existing profile.ts pattern
 'use server'
@@ -165,12 +180,15 @@ export async function createTask(
     }
   }
 }
+
 ```
 
 ### Pattern 3: useOptimistic for Instant Status Updates
+
 **What:** Optimistic UI updates for status changes before server confirmation
 **When to use:** User actions that should feel instant (status toggles, quick edits)
 **Example:**
+
 ```typescript
 // Source: React official docs (react.dev)
 'use client'
@@ -206,12 +224,15 @@ function TaskCard({ task }) {
     </div>
   )
 }
+
 ```
 
 ### Pattern 4: DAL Extension with React cache()
+
 **What:** Server-side data access layer functions with request-level caching
 **When to use:** All authenticated database queries
 **Example:**
+
 ```typescript
 // Source: Existing dal.ts pattern
 import 'server-only'
@@ -245,12 +266,15 @@ export const getTask = cache(async (taskId: string) => {
 
   return task
 })
+
 ```
 
 ### Pattern 5: Status-Grouped Task List UI
+
 **What:** Group tasks by status sections per CONTEXT.md decision
 **When to use:** Main task list view
 **Example:**
+
 ```typescript
 // Source: CONTEXT.md decision + React component patterns
 'use client'
@@ -302,9 +326,11 @@ function TaskSection({ title, tasks }: { title: string; tasks: Task[] }) {
     </section>
   )
 }
+
 ```
 
 ### Anti-Patterns to Avoid
+
 - **Don't put session in client state** - Use Server Components and Server Actions, keep sessions server-only
 - **Don't skip revalidatePath after mutations** - UI won't update automatically, causing stale data
 - **Don't fetch tasks in Client Components** - Use Server Components for initial data, Client Components only for interactions
@@ -330,21 +356,27 @@ Problems that look simple but have existing solutions:
 ## Common Pitfalls
 
 ### Pitfall 1: Forgetting revalidatePath After Mutations
+
 **What goes wrong:** After creating/updating/deleting a task, the UI shows stale data because Next.js cached the previous page render.
 **Why it happens:** Next.js aggressively caches Server Component renders. Mutations don't automatically invalidate cache.
 **How to avoid:**
+
 - Always call `revalidatePath('/tasks')` at the end of Server Actions
 - Call before `redirect()` if redirecting (redirect throws, preventing subsequent code)
 - Use `revalidatePath('/tasks', 'page')` for route patterns with dynamic segments
+
 **Warning signs:**
+
 - User creates task but doesn't see it in list
 - Refreshing page shows the change
 - Different users see different data
 
 ### Pitfall 2: Authorization Bypass in Task Queries
+
 **What goes wrong:** User can access other users' tasks by guessing task IDs.
 **Why it happens:** Query filters only by `taskId` without checking `userId`.
 **How to avoid:**
+
 ```typescript
 // ❌ WRONG - No user check
 const task = await prisma.task.findUnique({ where: { id: taskId } })
@@ -353,16 +385,21 @@ const task = await prisma.task.findUnique({ where: { id: taskId } })
 const task = await prisma.task.findFirst({
   where: { id: taskId, userId },
 })
+
 ```
+
 **Warning signs:**
+
 - Security testing reveals cross-user data access
 - No userId in WHERE clause
 - Using findUnique instead of findFirst for multi-field conditions
 
 ### Pitfall 3: Missing Database Indexes on Relations
+
 **What goes wrong:** Task queries become slow as data grows, especially filtered by user and status.
 **Why it happens:** Foreign keys aren't automatically indexed in all databases. Without indexes, queries do full table scans.
 **How to avoid:**
+
 ```typescript
 // Add composite indexes for common query patterns
 model Task {
@@ -372,16 +409,21 @@ model Task {
   @@index([userId, createdAt])   // Fast: User's tasks chronologically
   @@index([userId, updatedAt])   // Fast: Recently modified
 }
+
 ```
+
 **Warning signs:**
+
 - Slow page loads with >100 tasks
 - Database query logs show full table scans
 - Prisma warnings about missing indexes during format/validate
 
 ### Pitfall 4: redirect() Inside try-catch Blocks
+
 **What goes wrong:** Server Action redirects don't work, or errors show "NEXT_REDIRECT" in UI.
 **Why it happens:** `redirect()` throws a special error that Next.js handles. Catch blocks intercept it.
 **How to avoid:**
+
 ```typescript
 // ❌ WRONG - Redirect gets caught
 try {
@@ -398,19 +440,25 @@ try {
   return { success: false, error: 'Failed' }
 }
 redirect('/tasks')  // Outside try-catch
+
 ```
+
 **Warning signs:**
+
 - Redirect doesn't work
 - "NEXT_REDIRECT" error visible to users
 - Console shows uncaught redirect errors
 
 ### Pitfall 5: Exposing Validation Logic Only on Client
+
 **What goes wrong:** Users bypass validation by modifying form data before submission, creating invalid database entries.
 **Why it happens:** Client-side validation (HTML5, JavaScript) can be disabled/bypassed by users.
 **How to avoid:**
+
 - Always validate in Server Actions with Zod
 - Client-side validation is UX enhancement, not security
 - Server is the source of truth
+
 ```typescript
 // ✅ CORRECT - Validate on server
 export async function createTask(formData: FormData) {
@@ -420,16 +468,21 @@ export async function createTask(formData: FormData) {
   }
   // Only proceed with validated data
 }
+
 ```
+
 **Warning signs:**
+
 - Database contains invalid data (empty titles, null when required)
 - Security audit finds validation bypass
 - No Zod schema in Server Action
 
 ### Pitfall 6: Not Handling Empty States
+
 **What goes wrong:** New users see blank page with no guidance, causing confusion.
 **Why it happens:** Forgot to check for empty arrays before rendering lists.
 **How to avoid:**
+
 ```typescript
 // ✅ Show friendly empty state per CONTEXT.md
 {tasks.length === 0 ? (
@@ -444,8 +497,11 @@ export async function createTask(formData: FormData) {
 ) : (
   <TaskList tasks={tasks} />
 )}
+
 ```
+
 **Warning signs:**
+
 - Users report "broken" page on first visit
 - Empty list shows nothing (no message, no CTA)
 
@@ -454,6 +510,7 @@ export async function createTask(formData: FormData) {
 Verified patterns from official sources and existing codebase:
 
 ### Server Action: Create Task (Form Submission)
+
 ```typescript
 // Source: Next.js official docs + existing profile.ts pattern
 'use server'
@@ -506,9 +563,11 @@ export async function createTask(formData: FormData) {
   // Redirect outside try-catch (redirect throws)
   redirect('/tasks')
 }
+
 ```
 
 ### Server Action: Update Task Status (Optimistic)
+
 ```typescript
 // Source: Existing profile.ts field update pattern
 'use server'
@@ -553,9 +612,11 @@ export async function updateTaskStatus(
     return { success: false, error: 'Failed to update status' }
   }
 }
+
 ```
 
 ### Server Action: Delete Task (With Confirmation)
+
 ```typescript
 // Source: Standard CRUD pattern
 'use server'
@@ -589,9 +650,11 @@ export async function deleteTask(
     return { success: false, error: 'Failed to delete task' }
   }
 }
+
 ```
 
 ### Client Component: Task Card with Optimistic Status
+
 ```typescript
 // Source: React official docs + existing ProfileForm pattern
 'use client'
@@ -677,9 +740,11 @@ export function TaskCard({ task }: { task: Task }) {
     </div>
   )
 }
+
 ```
 
 ### Server Component: Task List Page
+
 ```typescript
 // Source: Next.js App Router patterns
 import { Suspense } from 'react'
@@ -743,6 +808,7 @@ function TaskListSkeleton() {
     </div>
   )
 }
+
 ```
 
 ## State of the Art
@@ -758,6 +824,7 @@ function TaskListSkeleton() {
 | Separate CRUD files | Server Actions in app/actions | Next.js 13+ | Colocation with pages, better DX |
 
 **Deprecated/outdated:**
+
 - **API routes for mutations** - Use Server Actions instead (less code, type-safe, no API layer)
 - **getServerSideProps/getStaticProps** - Use Server Components (streaming, better UX)
 - **useFormState** - Renamed to useActionState in Next.js 15 (API unchanged)
@@ -794,6 +861,7 @@ Things that couldn't be fully resolved:
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - [Next.js Forms Guide](https://nextjs.org/docs/app/guides/forms) - Server Actions, useActionState, Zod validation
 - [Next.js revalidatePath API](https://nextjs.org/docs/app/api-reference/functions/revalidatePath) - Cache invalidation after mutations
 - [React useOptimistic Hook](https://react.dev/reference/react/useOptimistic) - Optimistic UI updates
@@ -804,6 +872,7 @@ Things that couldn't be fully resolved:
   - `/src/shared/components/ProfileForm.tsx` - Auto-save pattern with status indicators
 
 ### Secondary (MEDIUM confidence)
+
 - [Next.js 15 Server Actions Complete Guide](https://medium.com/@saad.minhas.codes/next-js-15-server-actions-complete-guide-with-real-examples-2026-6320fbfa01c3) - Real-world examples (Jan 2026)
 - [How to Build a Task Management App Using Next.js 16 and Prisma 7](https://dev.to/myogeshchavan97/how-to-build-a-task-management-app-using-nextjs-16-and-prisma-7-4mcf) - Task model patterns
 - [Server Actions Best Practices](https://medium.com/@lior_amsalem/nextjs-15-actions-best-practice-bf5cc023301e) - Organization and patterns
@@ -813,11 +882,13 @@ Things that couldn't be fully resolved:
 - [React Performance Optimization 2026](https://medium.com/@muhammadshakir4152/react-js-optimization-every-react-developer-must-know-2026-edition-e1c098f55ee9) - Current best practices
 
 ### Tertiary (LOW confidence)
+
 - None - All key findings verified with official documentation
 
 ## Metadata
 
 **Confidence breakdown:**
+
 - Standard stack: HIGH - All libraries already in package.json, versions verified
 - Architecture patterns: HIGH - Extended from existing Phase 2 implementation
 - Pitfalls: HIGH - Sourced from official docs, GitHub discussions, and established anti-patterns
@@ -827,6 +898,7 @@ Things that couldn't be fully resolved:
 **Valid until:** 2026-02-28 (30 days - stable tech stack, minimal churn expected)
 
 **Key constraints from CONTEXT.md:**
+
 - ✅ Dedicated page at /tasks/new (not inline or modal)
 - ✅ Plus button on dashboard for quick access
 - ✅ Card-based layout with shadow and padding

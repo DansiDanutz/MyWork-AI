@@ -3,6 +3,7 @@
 ## 🎯 Learning Paths by Experience Level
 
 ### 🚀 **Beginner** (New to MyWork)
+
 **Goal:** Get comfortable with the basics
 
 1. [**Your First Project →**](01-first-project.md) *(15 minutes)*
@@ -16,6 +17,7 @@
    - Practice with a web app example
 
 ### ⚡ **Intermediate** (Familiar with GSD)
+
 **Goal:** Scale up to larger projects and automation
 
 3. **Autocoder Integration** *(30 minutes, coming soon)*
@@ -29,6 +31,7 @@
    - Combine with GSD for complete solutions
 
 ### 🏆 **Advanced** (Ready for Complex Projects)
+
 **Goal:** Master the full framework ecosystem
 
 5. **Full-Stack Development** *(45 minutes, planned)*
@@ -90,21 +93,25 @@ Before starting, ensure you have:
 Each tutorial follows a consistent structure:
 
 ### **Setup** *(2-3 minutes)*
+
 - Project creation
 - Initial configuration
 - Environment verification
 
 ### **Core Learning** *(10-35 minutes)*
+
 - Step-by-step implementation
 - Framework concepts explained
 - Real-time progress indicators
 
 ### **Testing** *(2-5 minutes)*
+
 - Verify functionality
 - Test key features
 - Troubleshooting common issues
 
 ### **Next Steps** *(1 minute)*
+
 - What you learned
 - How it connects to the next tutorial
 - Optional extensions to explore
@@ -121,6 +128,7 @@ Each tutorial follows a consistent structure:
 4. **Ask the community:** [GitHub Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
 
 **Found an issue?**
+
 - **Report bugs:** [GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
 - **Suggest improvements:** [GitHub Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
 

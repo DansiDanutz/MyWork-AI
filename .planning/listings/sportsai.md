@@ -14,6 +14,7 @@ Real-time sports betting arbitrage detection across 10+ sportsbooks. Find guaran
 **Price:** $399
 
 **What's Included:**
+
 - Full source code (MIT License)
 - Frontend (React Native/TypeScript)
 - Backend (Node.js/NestJS)
@@ -37,6 +38,7 @@ The platform uses a mathematical formula to find guaranteed profit opportunities
 ```
 Arbitrage % = (1/Odds_A) + (1/Odds_B) - 1
 If negative = Guaranteed profit
+
 ```
 
 When sportsbooks have different opinions, you can bet on all outcomes and lock in profit before the event even starts.
@@ -44,18 +46,21 @@ When sportsbooks have different opinions, you can bet on all outcomes and lock i
 ### Core Features
 
 **Real-Time Detection**
+
 - Scans 10+ sportsbooks continuously
 - Sub-2-second latency for live events
 - Supports 2-way, 3-way, and multi-way markets
 
 **Intelligent Scoring**
 Every opportunity is scored on:
+
 - Profit margin (how much you'll make)
 - Bookmaker trust (reliability)
 - Odds stability (how long it'll last)
 - Market liquidity (how much you can stake)
 
 **AI-Powered Insights**
+
 - Predictions and recommendations
 - Pattern recognition
 - Personalized alerts

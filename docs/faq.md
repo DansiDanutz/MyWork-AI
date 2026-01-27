@@ -33,6 +33,7 @@ You'll be productive within 30 minutes.
 - **Deploy and iterate** - Framework handles technical details
 
 However, programming knowledge helps you:
+
 - Customize generated code
 - Debug complex issues
 - Add advanced features
@@ -49,6 +50,7 @@ However, programming knowledge helps you:
 - ✅ **Quality assurance** (verification needed)
 
 **Don't use GSD for:**
+
 - ❌ Quick bug fixes
 - ❌ Single-file changes
 - ❌ Configuration updates
@@ -58,19 +60,25 @@ However, programming knowledge helps you:
 **A:** Yes! Try these approaches:
 
 ```bash
+
 # 1. Skip research if you know the domain
+
 mw gsd plan-phase 1 --skip-research
 
 # 2. Use quick mode for simple tasks
+
 mw gsd quick
 
 # 3. Adjust planning depth in config
+
 # Edit .planning/config.json:
+
 {
   "mode": "fast",        // vs "thorough"
   "research": false,     // Skip automatic research
   "verification": false  // Skip verification loops
 }
+
 ```
 
 ### **Q: How do I know if a phase is too big or too small?**
@@ -82,6 +90,7 @@ mw gsd quick
 - **Large (1-2 days):** 10-15 features, 4-6 plans
 
 **Too big indicators:**
+
 - More than 6 plans in a phase
 - Estimated time over 2 days
 - Multiple independent concerns mixed together
@@ -93,20 +102,27 @@ mw gsd quick
 **A:** Absolutely! GSD is designed for change:
 
 ```bash
+
 # Pause current work
+
 mw gsd pause-work
 
 # Add new requirements
+
 # Edit .planning/REQUIREMENTS.md
 
 # Add new phases
+
 mw gsd add-phase
 
 # Insert urgent work
+
 mw gsd insert-phase 2.5
 
 # Resume with new plan
+
 mw gsd resume-work
+
 ```
 
 ## 🤖 **Autocoder Integration**
@@ -130,6 +146,7 @@ How familiar is the domain?
 ├── Well-known → GSD is fine
 ├── Some unknowns → GSD with research
 └── Lots of unknowns → Autocoder exploration
+
 ```
 
 ### **Q: Autocoder is too slow. How can I speed it up?**
@@ -137,17 +154,23 @@ How familiar is the domain?
 **A:** Several options:
 
 ```bash
+
 # 1. Increase concurrency (more parallel agents)
+
 mw ac start my-project --concurrency 5
 
 # 2. Skip testing for speed (YOLO mode)
+
 mw ac start my-project --concurrency 3 --yolo
 
 # 3. Use faster model
+
 mw ac start my-project --model claude-haiku
 
 # 4. Reduce scope (fewer features)
+
 # Edit your app_spec.txt to focus on core features first
+
 ```
 
 ### **Q: How do I monitor Autocoder progress?**
@@ -155,17 +178,23 @@ mw ac start my-project --model claude-haiku
 **A:** Multiple ways:
 
 ```bash
+
 # 1. Check progress in terminal
+
 mw ac progress my-project
 
 # 2. Follow progress continuously
+
 mw ac progress my-project --follow
 
 # 3. Open web UI for visual monitoring
+
 mw ac ui
 
 # 4. Check project files directly
+
 ls projects/my-project/src/
+
 ```
 
 ## 🔗 **n8n Workflow Automation**
@@ -179,6 +208,7 @@ ls projects/my-project/src/
 - **Think:** "If This Then That" but much more powerful
 
 **Start here:**
+
 - Browse [2,709 templates](https://n8n.io/workflows/)
 - Practice with [Tutorial 2: GSD Basics](tutorials/02-gsd-basics.md)
 
@@ -187,12 +217,17 @@ ls projects/my-project/src/
 **A:** Common patterns:
 
 1. **GSD builds app → n8n handles webhooks:**
+
    ```bash
+
    # GSD builds your API
+
    mw gsd plan-phase 2  # API development
 
    # n8n processes webhooks
+
    # Use create_n8n_workflow.md workflow
+
    ```
 
 2. **n8n triggers GSD deployments:**
@@ -209,20 +244,27 @@ ls projects/my-project/src/
 **A:** Follow this checklist:
 
 ```bash
+
 # 1. Run health check (fixes most issues)
+
 mw doctor
 
 # 2. Check framework status
+
 mw status
 
 # 3. Look at recent work
+
 mw gsd progress
 
 # 4. Check for pending issues
+
 cat .planning/STATE.md
 
 # 5. Verify environment
+
 mw doctor --check dependencies
+
 ```
 
 ### **Q: GSD execution failed. What now?**
@@ -230,18 +272,24 @@ mw doctor --check dependencies
 **A:** Debugging steps:
 
 ```bash
+
 # 1. Check what failed
+
 cat .planning/phases/[phase]/[phase]-VERIFICATION.md
 
 # 2. Look at the last plan that ran
+
 ls .planning/phases/[phase]/
 cat .planning/phases/[phase]/[plan]-SUMMARY.md
 
 # 3. Check git history for clues
+
 git log --oneline -10
 
 # 4. Create gap closure plans
+
 mw gsd plan-phase [phase] --gaps
+
 ```
 
 ### **Q: Generated code doesn't match my style. How do I fix this?**
@@ -249,18 +297,27 @@ mw gsd plan-phase [phase] --gaps
 **A:** Set preferences before planning:
 
 ```bash
+
 # 1. Discuss implementation preferences
+
 mw gsd discuss-phase [next-phase]
 
 # 2. Add coding standards to context
+
 # During discussion, specify:
+
 # - Code formatting preferences
+
 # - Naming conventions
+
 # - Library preferences
+
 # - Architecture patterns
 
 # 3. Plan with your preferences
+
 mw gsd plan-phase [phase]
+
 ```
 
 ### **Q: MyWork is using too much disk space. How do I clean up?**
@@ -268,19 +325,26 @@ mw gsd plan-phase [phase]
 **A:** Cleanup commands:
 
 ```bash
+
 # 1. Clean temporary files
+
 rm -rf .tmp/*
 
 # 2. Clean old planning artifacts
+
 # (Be careful - only if you're sure)
+
 rm -rf .planning/archive/*
 
 # 3. Clean node_modules in projects
+
 find projects/ -name "node_modules" -type d -exec rm -rf {} +
 
 # 4. Clean Python caches
+
 find . -name "__pycache__" -type d -exec rm -rf {} +
 find . -name "*.pyc" -delete
+
 ```
 
 ## 📊 **Best Practices**
@@ -303,6 +367,7 @@ MyWork/
 │       └── tutorials/
 ├── templates/             # Your custom templates
 └── workflows/             # Custom workflows
+
 ```
 
 ### **Q: How do I share projects with my team?**
@@ -310,25 +375,39 @@ MyWork/
 **A:** Team collaboration options:
 
 1. **Share the entire project:**
+
    ```bash
+
    # Project includes all planning and code
+
    git clone <your-project-repo>
    cd project-name
    mw gsd progress  # See current state
+
    ```
 
 2. **Share just the planning:**
+
    ```bash
+
    # Send .planning/ directory
+
    # Others can execute the plans
+
    mw gsd execute-phase [current-phase]
+
    ```
 
 3. **Share templates:**
+
    ```bash
+
    # Create reusable template from project
+
    cp -r projects/my-success templates/my-template
+
    # Others can use: mw new their-project my-template
+
    ```
 
 ### **Q: Should I commit .planning/ files to git?**
@@ -336,6 +415,7 @@ MyWork/
 **A:** **Yes, definitely!**
 
 ✅ **Commit these:**
+
 - `PROJECT.md` - Project vision
 - `ROADMAP.md` - Development phases
 - `REQUIREMENTS.md` - Feature specifications
@@ -343,11 +423,13 @@ MyWork/
 - `STATE.md` - Current progress
 
 ❌ **Don't commit:**
+
 - Temporary files (.tmp)
 - Large binary artifacts
 - API keys in planning docs
 
 **Why commit planning?**
+
 - Team can see project vision and progress
 - New team members understand the roadmap
 - Planning history helps debug issues
@@ -389,16 +471,19 @@ MyWork/
 ## 💡 **Pro Tips**
 
 ### **Speed up development:**
+
 - Use `mw search "keyword"` before building anything new
 - Run `mw brain learn` after completing work to capture patterns
 - Keep `mw status` bookmarked for quick health checks
 
 ### **Avoid common mistakes:**
+
 - Don't skip verification - it catches issues early
 - Don't make phases too large - keep under 2 days of work
 - Don't ignore health check warnings - fix them before they compound
 
 ### **Maximize framework intelligence:**
+
 - Let GSD research for you instead of skipping it
 - Use the brain search before planning new features
 - Review module registry for reusable patterns

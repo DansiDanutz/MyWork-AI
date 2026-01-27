@@ -7,24 +7,30 @@ requires: [02-02, 02-03]
 provides: [profile-settings-ui, auto-save-pattern, user-menu, app-layout]
 affects: [02-05]
 decisions:
+
   - AUTO-SAVE-001: 3-second debounce for profile field updates
   - UI-004: Separate debounced functions per field for TypeScript compatibility
   - PATTERN-004: Server Actions for individual field updates to support auto-save
   - UI-005: Visual status indicators (saving/saved/error) for user feedback
+
 tech-stack:
   added: []
   patterns: [auto-save, debounce, server-actions, field-level-updates]
 key-files:
   created:
+
     - src/app/(app)/layout.tsx
     - src/shared/components/UserMenu.tsx
     - src/app/actions/profile.ts
     - src/shared/components/ProfileForm.tsx
     - src/app/(app)/settings/layout.tsx
     - src/app/(app)/settings/profile/page.tsx
+
   modified:
+
     - src/shared/components/index.ts
     - src/shared/hooks/useDebounce.ts
+
 duration: 4 minutes
 completed: 2026-01-24
 ---
@@ -82,18 +88,21 @@ Created a complete profile management interface with seamless auto-save function
 ### Auto-Save Pattern
 
 **Implementation:**
+
 - 3-second debounce delay (PATTERN-003 decision from phase)
 - Separate debounced save functions for each field (name, bio)
 - Field-level Server Actions instead of form submission
 - Visual feedback: idle → saving → saved/error
 
 **TypeScript Challenge:**
+
 - Initial implementation used single debounced function with field parameter
 - TypeScript generic constraint `unknown[]` prevented proper type inference
 - **Solution:** Changed useDebounce constraint from `unknown[]` to `any[]` for better inference
 - Created separate save functions per field for type safety
 
 **Code Structure:**
+
 ```typescript
 const saveName = useCallback<(value: string) => Promise<void>>(async (value) => {
   const result = await updateProfileField('name', value)
@@ -101,11 +110,13 @@ const saveName = useCallback<(value: string) => Promise<void>>(async (value) => 
 }, [])
 
 const debouncedSaveName = useDebounce<(value: string) => Promise<void>>(saveName, 3000)
+
 ```
 
 ### User Menu Pattern
 
 **Server Action in Client Component:**
+
 ```typescript
 // In server component (layout):
 async function handleSignOut() {
@@ -115,6 +126,7 @@ async function handleSignOut() {
 
 // Passed to client component:
 <UserMenu user={session.user} signOutAction={handleSignOut} />
+
 ```
 
 This pattern keeps auth logic server-side while enabling client interactivity.
@@ -122,6 +134,7 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 ### Route Protection
 
 **App Router Layout:**
+
 - All routes in `(app)` group protected by layout
 - Automatic redirect to /login if no session
 - User menu available on every protected page
@@ -157,6 +170,7 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 ### Auto-fixed Issues
 
 **1. [Rule 1 - Bug] Fixed Zod error property access**
+
 - **Found during:** Task 2 (Profile Server Actions)
 - **Issue:** Used `validation.error.errors[0]` instead of `validation.error.issues[0]`
 - **Fix:** Changed to correct Zod API (`issues` instead of `errors`)
@@ -164,6 +178,7 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 - **Commit:** f9088b6
 
 **2. [Rule 2 - Missing Critical] Fixed useDebounce TypeScript constraint**
+
 - **Found during:** Task 3 (ProfileForm component)
 - **Issue:** Generic constraint `unknown[]` prevented TypeScript from inferring function types
 - **Fix:** Changed constraint to `any[]` for proper inference with typed callbacks
@@ -174,15 +189,18 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 ## Testing Notes
 
 **TypeScript Verification:**
+
 - All files pass `npx tsc --noEmit`
 - No type errors after useDebounce fix
 
 **Build Status:**
+
 - Production build fails due to known Next.js 15.0.3 bug (documented in STATE.md blocker)
 - Development server works correctly
 - Not a regression from this plan
 
 **Runtime Testing Requirements:**
+
 1. OAuth setup needed:
    - GitHub OAuth app credentials in .env
    - AUTH_SECRET generated
@@ -195,11 +213,13 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 ## Integration Points
 
 **Dependencies Used:**
+
 - `src/shared/lib/auth.ts` - Session management, signOut
 - `src/shared/lib/dal.ts` - verifySession, getUser
 - `src/shared/hooks/useDebounce.ts` - Auto-save debouncing
 
 **Provided for Future Plans:**
+
 - App layout with header (used by all authenticated pages)
 - User menu pattern (reusable for other dropdowns)
 - Auto-save pattern (reusable for task editing)
@@ -208,16 +228,19 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 ## Next Phase Readiness
 
 **Ready for 02-05 (Dashboard and OAuth verification):**
+
 - ✅ Protected routes working
 - ✅ User session accessible in layouts
 - ✅ Profile page functional
 - ✅ Logout working
 
 **Blockers:**
+
 - Production build issue persists (Next.js bug, not introduced by this plan)
 - OAuth credentials still required for runtime testing
 
 **Recommendations:**
+
 - Complete 02-05 to have full OAuth flow end-to-end
 - Consider Next.js upgrade or Edge Runtime workaround for build issue
 - Manual QA testing once OAuth configured
@@ -225,9 +248,11 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 ## Reusable Patterns for Brain
 
 ### 1. Auto-Save Pattern
+
 **Pattern:** Field-level debounced auto-save with visual feedback
 
 **Implementation:**
+
 ```typescript
 // Separate save functions per field for type safety
 const saveField = useCallback<(value: string) => Promise<void>>(
@@ -245,23 +270,28 @@ const debouncedSave = useDebounce<(value: string) => Promise<void>>(
 
 // Use in onChange handler
 <input onChange={(e) => debouncedSave(e.target.value)} />
+
 ```
 
 **When to use:**
+
 - Profile editing
 - Task editing
 - Settings pages
 - Any form where manual save buttons are UX friction
 
 **Considerations:**
+
 - 3-second delay is sweet spot (user stops typing)
 - Visual feedback crucial for user trust
 - Field-level saves reduce conflicts vs full form
 
 ### 2. User Menu Dropdown
+
 **Pattern:** Client component receiving Server Action from parent layout
 
 **Implementation:**
+
 ```typescript
 // Server component (layout):
 async function handleAction() {
@@ -273,17 +303,21 @@ async function handleAction() {
 <form action={handleAction}>
   <button type="submit">Action</button>
 </form>
+
 ```
 
 **When to use:**
+
 - Any dropdown menu in header/nav
 - Action buttons in server-rendered layouts
 - Keep auth logic server-side with client interactivity
 
 ### 3. Protected Route Groups
+
 **Pattern:** Route group layout with authentication check
 
 **Implementation:**
+
 ```typescript
 // app/(protected)/layout.tsx
 export default async function ProtectedLayout({ children }) {
@@ -291,31 +325,38 @@ export default async function ProtectedLayout({ children }) {
   if (!session?.user) redirect('/login')
   return <>{children}</>
 }
+
 ```
 
 **When to use:**
+
 - Grouping routes with same auth requirements
 - Shared layouts for authenticated pages
 - Automatic protection without per-page checks
 
 ### 4. TypeScript Generic Constraint Flexibility
+
 **Pattern:** Use `any[]` constraint when `unknown[]` blocks inference
 
 **Implementation:**
+
 ```typescript
 // Instead of:
 function hook<T extends (...args: unknown[]) => unknown>(cb: T) { }
 
 // Use:
 function hook<T extends (...args: any[]) => any>(cb: T) { }
+
 ```
 
 **When to use:**
+
 - Generic hooks/utilities accepting callback functions
 - TypeScript can't infer types from `unknown[]`
 - Still maintains type safety via `Parameters<T>`
 
 **Caveat:**
+
 - Only when inference is genuinely blocked
 - Document why `any` is safe in this context
 
@@ -344,6 +385,7 @@ function hook<T extends (...args: any[]) => any>(cb: T) { }
 ## Production Readiness
 
 **Completed:**
+
 - ✅ Type-safe implementation
 - ✅ Error handling with user-facing messages
 - ✅ Validation with max lengths
@@ -352,6 +394,7 @@ function hook<T extends (...args: any[]) => any>(cb: T) { }
 - ✅ Accessibility (labels, semantic HTML)
 
 **TODO (future phases):**
+
 - Optimistic UI updates (show changes immediately)
 - Conflict resolution (multiple tabs editing)
 - Avatar upload functionality
@@ -359,6 +402,7 @@ function hook<T extends (...args: any[]) => any>(cb: T) { }
 - Account settings tab
 
 **Known Issues:**
+
 - Next.js 15.0.3 build bug (framework issue, tracked in STATE.md)
 - `<img>` tags flagged by linter (consider next/image for optimization)
 

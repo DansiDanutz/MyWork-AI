@@ -83,6 +83,7 @@ graph TB
     class WAT_WORKFLOWS,WAT_AGENTS,WAT_TOOLS watLayer
     class AUTOCODER,N8N,INTEGRATIONS autoLayer
     class BRAIN,REGISTRY,ANALYTICS intLayer
+
 ```
 
 ## 🔄 Data Flow & Decision Tree
@@ -132,6 +133,7 @@ flowchart TD
     class ANALYZE,PLANNING,EXECUTION process
     class GSD_EXECUTION,AUTOCODER_EXECUTION,N8N_EXECUTION execution
     class LEARN,REGISTRY,PATTERNS,IMPROVE intelligence
+
 ```
 
 ## 🧩 Component Interaction
@@ -185,6 +187,7 @@ sequenceDiagram
     B->>W: Improve future workflows
 
     R->>U: Suggest reusable code for new projects
+
 ```
 
 ## 🎯 User Journey Map
@@ -213,31 +216,37 @@ journey
       Framework learns patterns: 5: Brain
       Suggests improvements: 4: Registry
       Accelerates development: 5: All Components
+
 ```
 
 ## 🏛️ Architecture Principles
 
 ### 1. **Separation of Concerns**
+
 - **GSD**: What to build (orchestration, planning)
 - **WAT**: How to build it (execution, tools)
 - **Automation**: Scale the building (AI agents, workflows)
 
 ### 2. **Progressive Enhancement**
+
 - Start simple (GSD phases)
 - Add automation when beneficial (Autocoder for 20+ features)
 - Scale with visual tools (n8n for complex integrations)
 
 ### 3. **Continuous Learning**
+
 - **Brain** captures what works
 - **Registry** indexes reusable code
 - **Analytics** measures effectiveness
 
 ### 4. **Human-AI Collaboration**
+
 - AI handles repetitive tasks
 - Human provides direction and judgment
 - Clear handoff points between human and AI work
 
 ### 5. **Modularity & Reuse**
+
 - Everything is a reusable module
 - Clear interfaces between components
 - Plugin architecture for extensions

@@ -19,11 +19,14 @@ Complete reference for all MyWork command-line interface commands.
 Display comprehensive framework status and health information.
 
 ### Syntax
+
 ```bash
 mw status [options]
+
 ```
 
 ### Options
+
 | Option | Description | Default |
 |--------|-------------|---------|
 | `--verbose, -v` | Show detailed component status | `false` |
@@ -32,9 +35,12 @@ mw status [options]
 ### Examples
 
 **Basic status check:**
+
 ```bash
 mw status
+
 ```
+
 ```
 ✅ MyWork Framework Status
 ├── 🧠 Brain: Ready (253 patterns indexed)
@@ -42,12 +48,16 @@ mw status
 ├── 🔧 Health Check: All systems operational
 ├── 🤖 Autocoder: Available (not running)
 └── 🔗 n8n: MCP server ready
+
 ```
 
 **Verbose output:**
+
 ```bash
 mw status --verbose
+
 ```
+
 ```
 🔍 Detailed Framework Status
 
@@ -66,6 +76,7 @@ mw status --verbose
   └── Version: 2.4.1
   └── Active projects: 0
   └── Total sessions: 47 (avg 2.3h each)
+
 ```
 
 ## 🆕 `mw new`
@@ -73,17 +84,21 @@ mw status --verbose
 Create a new project from templates with optional framework integration.
 
 ### Syntax
+
 ```bash
 mw new <project_name> [template] [options]
+
 ```
 
 ### Parameters
+
 | Parameter | Description | Required |
 |-----------|-------------|----------|
 | `project_name` | Name of the new project | ✅ Yes |
 | `template` | Template type to use | ❌ No (default: `basic`) |
 
 ### Templates
+
 | Template | Description | Technologies |
 |----------|-------------|--------------|
 | `basic` | Empty project with GSD | Markdown, Git |
@@ -94,6 +109,7 @@ mw new <project_name> [template] [options]
 | `automation` | n8n + Python webhooks | n8n, Python, Docker |
 
 ### Options
+
 | Option | Description | Default |
 |--------|-------------|---------|
 | `--no-gsd` | Skip GSD initialization | `false` |
@@ -103,30 +119,43 @@ mw new <project_name> [template] [options]
 ### Examples
 
 **Basic project:**
+
 ```bash
 mw new my-project
+
 # Creates: projects/my-project/ with basic structure
+
 ```
 
 **CLI tool with GSD:**
+
 ```bash
 mw new task-cli cli
+
 # Creates: projects/task-cli/ with Python CLI template
+
 ```
 
 **FastAPI backend ready for Autocoder:**
+
 ```bash
 mw new my-api fastapi --autocoder
+
 # Creates: projects/my-api/ with FastAPI + Autocoder config
+
 ```
 
 **Force overwrite existing:**
+
 ```bash
 mw new existing-project nextjs --force
+
 # Overwrites: projects/existing-project/ with new template
+
 ```
 
 ### Output Structure
+
 ```
 projects/my-project/
 ├── .planning/
@@ -138,6 +167,7 @@ projects/my-project/
 ├── .gitignore              # Template-appropriate ignores
 └── src/                    # Template-specific structure
     └── [template files]
+
 ```
 
 ## 🔍 `mw search`
@@ -145,16 +175,20 @@ projects/my-project/
 Search the module registry for reusable code patterns and components.
 
 ### Syntax
+
 ```bash
 mw search <query> [options]
+
 ```
 
 ### Parameters
+
 | Parameter | Description | Required |
 |-----------|-------------|----------|
 | `query` | Search terms or pattern | ✅ Yes |
 
 ### Options
+
 | Option | Description | Default |
 |--------|-------------|---------|
 | `--type, -t` | Filter by module type | All types |
@@ -164,6 +198,7 @@ mw search <query> [options]
 | `--copy` | Copy result to clipboard | `false` |
 
 ### Module Types
+
 - `api_endpoint` - REST/GraphQL API routes
 - `component` - UI components (React, Vue, etc.)
 - `service` - Business logic classes
@@ -176,34 +211,46 @@ mw search <query> [options]
 ### Examples
 
 **Basic search:**
+
 ```bash
 mw search "authentication"
+
 ```
+
 ```
 🔍 Found 12 modules matching "authentication":
 
 1. 🔐 auth-middleware (Python) - FastAPI JWT middleware
+
    └── projects/task-tracker/src/shared/middleware/auth.ts
    └── Used in: 3 projects | Rating: ⭐⭐⭐⭐⭐
 
 2. 🔐 github-auth-action (TypeScript) - GitHub OAuth Server Action
+
    └── projects/task-tracker/src/shared/lib/auth.ts
    └── Used in: 2 projects | Rating: ⭐⭐⭐⭐⭐
 
 3. 🔐 session-dal (TypeScript) - Database session management
+
    └── projects/ai-dashboard/src/lib/dal/sessions.ts
    └── Used in: 2 projects | Rating: ⭐⭐⭐⭐
+
 ```
 
 **Filtered search:**
+
 ```bash
 mw search "api" --type api_endpoint --language python --limit 5
+
 ```
 
 **Detailed view:**
+
 ```bash
 mw search "auth middleware" --detail
+
 ```
+
 ```
 🔐 auth-middleware (Python)
 Path: projects/task-tracker/src/shared/middleware/auth.ts
@@ -217,16 +264,19 @@ from shared.middleware.auth import AuthMiddleware
 app.add_middleware(AuthMiddleware, secret="your-secret")
 
 Dependencies:
+
 - fastapi
 - python-jose[cryptography]
 - python-multipart
 
 Used in projects:
+
 - task-tracker (primary implementation)
 - api-server (adapted version)
 - auth-service (extended version)
 
 Pattern confidence: ⭐⭐⭐⭐⭐ (5 successful integrations)
+
 ```
 
 ## 🧠 `mw brain`
@@ -234,51 +284,65 @@ Pattern confidence: ⭐⭐⭐⭐⭐ (5 successful integrations)
 Interact with the MyWork knowledge vault and learning system.
 
 ### Syntax
+
 ```bash
 mw brain <command> [options]
+
 ```
 
 ### Commands
 
 #### `mw brain search`
+
 Search accumulated knowledge and patterns.
 
 ```bash
 mw brain search <query> [--type pattern|decision|lesson]
+
 ```
 
 **Examples:**
+
 ```bash
 mw brain search "database migrations"
 mw brain search "React performance" --type pattern
+
 ```
 
 #### `mw brain learn`
+
 Trigger automatic learning from recent work.
 
 ```bash
 mw brain learn [--deep] [--project <name>]
+
 ```
 
 **Options:**
+
 - `--deep` - Perform comprehensive analysis (slower, more thorough)
 - `--project <name>` - Learn from specific project only
 
 **Examples:**
+
 ```bash
 mw brain learn                    # Quick learning from recent activity
 mw brain learn --deep             # Deep analysis (weekly recommended)
 mw brain learn --project my-api   # Learn from specific project
+
 ```
 
 #### `mw brain stats`
+
 Show brain statistics and growth metrics.
 
 ```bash
 mw brain stats [--breakdown]
+
 ```
 
 **Example output:**
+
 ```
 🧠 Brain Statistics
 
@@ -299,19 +363,24 @@ Growth Metrics:
 ├── 🎯 Accuracy: 94% (user validation feedback)
 ├── ♻️ Reuse rate: 67% (patterns used in new projects)
 └── 🚀 Time savings: ~3.2 hours/week average
+
 ```
 
 #### `mw brain remember`
+
 Manually add knowledge to the brain.
 
 ```bash
 mw brain remember "<knowledge>" [--type <type>] [--project <name>]
+
 ```
 
 **Examples:**
+
 ```bash
 mw brain remember "Always validate file uploads with content-based MIME detection"
 mw brain remember "React Context causes re-renders - use zustand for performance" --type pattern
+
 ```
 
 ## 🤖 `mw ac` (Autocoder Control)
@@ -319,59 +388,75 @@ mw brain remember "React Context causes re-renders - use zustand for performance
 Control the Autocoder autonomous coding system.
 
 ### Syntax
+
 ```bash
 mw ac <command> [options]
+
 ```
 
 ### Commands
 
 #### `mw ac start`
+
 Start autonomous coding on a project.
 
 ```bash
 mw ac start <project> [--concurrency <n>] [--model <model>] [--yolo]
+
 ```
 
 **Parameters:**
+
 - `project` - Project name in `projects/` directory
 
 **Options:**
+
 - `--concurrency <n>` - Number of parallel agents (1-5, default: 1)
 - `--model <model>` - AI model to use (default: claude-opus-4-5-20251101)
 - `--yolo` - Skip testing for faster development
 - `--testing-ratio <n>` - Testing agents per coding agent (default: 1)
 
 **Examples:**
+
 ```bash
 mw ac start my-app                           # Conservative: 1 agent, full testing
 mw ac start my-app --concurrency 3          # Balanced: 3 agents with testing
 mw ac start my-app --concurrency 5 --yolo   # Fast: 5 agents, no testing
+
 ```
 
 #### `mw ac status`
+
 Check Autocoder server and project status.
 
 ```bash
 mw ac status [project]
+
 ```
 
 **Examples:**
+
 ```bash
 mw ac status              # Show server status
 mw ac status my-app       # Show specific project status
+
 ```
 
 #### `mw ac progress`
+
 Monitor project development progress.
 
 ```bash
 mw ac progress <project> [--follow]
+
 ```
 
 **Options:**
+
 - `--follow, -f` - Continuously update progress display
 
 **Example output:**
+
 ```
 🤖 Autocoder Progress: my-app
 
@@ -391,22 +476,27 @@ mw ac progress <project> [--follow]
 ├── 🧪 Tests passing: 89/94 (95%)
 
 🎯 Estimated completion: 34 minutes
+
 ```
 
 #### `mw ac pause/resume`
+
 Control project execution.
 
 ```bash
 mw ac pause <project>     # Pause all agents on project
 mw ac resume <project>    # Resume paused project
 mw ac stop <project>      # Stop and cleanup project
+
 ```
 
 #### `mw ac ui`
+
 Launch the Autocoder web interface.
 
 ```bash
 mw ac ui [--port <port>]
+
 ```
 
 Opens browser to `http://localhost:8888` for visual monitoring.
@@ -416,11 +506,14 @@ Opens browser to `http://localhost:8888` for visual monitoring.
 System diagnostics and automatic issue resolution.
 
 ### Syntax
+
 ```bash
 mw doctor [options]
+
 ```
 
 ### Options
+
 | Option | Description |
 |--------|-------------|
 | `--fix` | Automatically fix detected issues |
@@ -428,6 +521,7 @@ mw doctor [options]
 | `--check <component>` | Check specific component only |
 
 ### Components
+
 - `dependencies` - Python/Node.js packages
 - `permissions` - File system access
 - `services` - Autocoder, n8n servers
@@ -437,9 +531,12 @@ mw doctor [options]
 ### Examples
 
 **Basic health check:**
+
 ```bash
 mw doctor
+
 ```
+
 ```
 🔍 MyWork Framework Diagnostics
 
@@ -452,12 +549,16 @@ mw doctor
 
 Issues found: 1 error, 1 warning
 Run 'mw doctor --fix' to attempt automatic repairs.
+
 ```
 
 **Auto-fix issues:**
+
 ```bash
 mw doctor --fix
+
 ```
+
 ```
 🔧 Fixing detected issues...
 
@@ -469,6 +570,7 @@ mw doctor --fix
    └── Updated projects/legacy-app/.gitignore ✅
 
 ✅ All issues resolved! Framework is healthy.
+
 ```
 
 ## 🔄 `mw update`
@@ -476,11 +578,14 @@ mw doctor --fix
 Update framework components and dependencies.
 
 ### Syntax
+
 ```bash
 mw update [component] [options]
+
 ```
 
 ### Components
+
 - `all` - Update everything (default)
 - `gsd` - GSD skills and workflows
 - `autocoder` - Autocoder system
@@ -488,6 +593,7 @@ mw update [component] [options]
 - `n8n-mcp` - n8n MCP server
 
 ### Options
+
 | Option | Description |
 |--------|-------------|
 | `--check` | Check for updates without installing |
@@ -497,9 +603,12 @@ mw update [component] [options]
 ### Examples
 
 **Check for updates:**
+
 ```bash
 mw update --check
+
 ```
+
 ```
 🔍 Update Status:
 
@@ -509,16 +618,21 @@ mw update --check
 🔄 n8n-mcp: Update available (v0.8.3 → v0.8.5)
 
 Run 'mw update' to install available updates.
+
 ```
 
 **Update specific component:**
+
 ```bash
 mw update autocoder
+
 ```
 
 **Rollback if issues:**
+
 ```bash
 mw update --rollback autocoder
+
 ```
 
 ## 🌐 Global Options

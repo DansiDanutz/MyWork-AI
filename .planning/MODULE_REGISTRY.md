@@ -11,18 +11,23 @@ Use it to find existing implementations before building new ones.
 ## Quick Search Commands
 
 ```bash
+
 # Search for modules
+
 python tools/module_registry.py search "auth"
 python tools/module_registry.py search "api endpoint"
 
 # List by type
+
 python tools/module_registry.py list api_endpoint
 python tools/module_registry.py list component
+
 ```
 
 ## Statistics
 
 ### By Type
+
 | Type | Count |
 |------|-------|
 | utility | 779 |
@@ -34,6 +39,7 @@ python tools/module_registry.py list component
 | middleware | 2 |
 
 ### By Project
+
 | Project | Modules |
 |---------|--------|
 | my-games | 1197 |
@@ -235,8 +241,10 @@ python tools/module_registry.py list component
 - **/list** (my-games)
   - File: `autocoder/server/routers/filesystem.py:187`
   - for pattern in HIDDEN_PATTERNS:
+
         if re.match(pattern, name, re.IGNORECASE):
             retur
+
   - Tags: list, autocoder, filesystem.py, api_endpoint, server
 
 - **/models** (my-games)
@@ -1760,6 +1768,7 @@ python tools/module_registry.py list component
         terminal_id: The terminal ID to validate
 
     Return
+
   - Tags: rename, terminal.py, request, autocoder, schema
 
 - **registerSchema** (my-games)
@@ -1800,10 +1809,12 @@ python tools/module_registry.py list component
 - **FeatureBulkCreate** (my-games)
   - File: `autocoder/server/schemas.py:121`
   - id: int
+
     priority: int
     passes: bool
     in_progress: bool
     blocked: bool = False  # Comput
+
   - Tags: feature, bulk, schemas.py, create, autocoder
 
 - **WSLogMessage** (my-games)
@@ -1932,6 +1943,7 @@ python tools/module_registry.py list component
 
 
 # ============================
+
   - Tags: dev, schemas.py, message, autocoder, schema
 
 - **joinTournamentSchema** (my-games)
@@ -1970,6 +1982,7 @@ python tools/module_registry.py list component
         terminal_id: The terminal ID to validate
 
     Return
+
   - Tags: response, terminal.py, info, autocoder, schema
 
 - **forgotPasswordSchema** (my-games)
@@ -2188,6 +2201,7 @@ python tools/module_registry.py list component
 
 
 # ==========================================
+
   - Tags: conversation, message, autocoder, schema, model
 
 - **CreateTerminalRequest** (my-games)
@@ -2198,6 +2212,7 @@ python tools/module_registry.py list component
         terminal_id: The terminal ID to validate
 
     Return
+
   - Tags: terminal.py, request, create, autocoder, schema
 
 - **PathValidationResponse** (my-games)
@@ -2424,7 +2439,9 @@ python tools/module_registry.py list component
 - **DevServerProcessManager** (my-games)
   - File: `autocoder/server/services/dev_server_manager.py:81`
   - for pattern in SENSITIVE_PATTERNS:
+
         line = re.sub(pattern, '[REDACTED]', line, flags=re.IGNOR
+
   - Tags: service, dev, process, manager, services
 
 - **AgentProcessManager** (my-games)
@@ -2500,8 +2517,10 @@ python tools/module_registry.py list component
 - **get_recently_updated** (ai-dashboard)
   - File: `backend/scrapers/github_trending.py:272`
   - return db.query(GitHubProject).filter(
+
             GitHubProject.stars >= min_stars
         ).order_
+
   - Tags: scrapers, backend, get, github_trending.py, updated
 
 - **update_draft** (ai-dashboard)
@@ -3221,6 +3240,7 @@ python tools/module_registry.py list component
   - List available drives (Windows only).
 
     Returns null on non-Windows platforms.
+
   - Tags: get, windows, drives, autocoder, filesystem.py
 
 - **calculateEnPassantTargetAfterMove** (my-games)
@@ -3361,6 +3381,7 @@ python tools/module_registry.py list component
   - base_prompt = get_coding_prompt(project_dir)
 
     # Minimal header - the base prompt already contain
+
   - Tags: prompts.py, get, app, spec, autocoder
 
 - **formatDate** (my-games)
@@ -3461,6 +3482,7 @@ python tools/module_registry.py list component
 **You are assigned to regression test Feature #{testing_feature_id}.**
 
 ### You
+
   - Tags: feature, single, prompts.py, get, autocoder
 
 - **deleteConversation** (my-games)
@@ -3489,9 +3511,11 @@ python tools/module_registry.py list component
 - **get_project_prompts_dir** (my-games)
   - File: `autocoder/prompts.py:19`
   - Prompt Loading Utilities
+
 ========================
 
 Functions for loading prompt templates with proje
+
   - Tags: prompts.py, get, dir, autocoder, project
 
 - **getStateDescription** (my-games)
@@ -3846,6 +3870,7 @@ Functions for loading prompt templates with proje
 
     Returns:
         Dictionary mapping project names to their info di
+
   - Tags: get, info, autocoder, project, registry.py
 
 - **updatedWallet** (my-games)
@@ -4457,8 +4482,10 @@ Functions for loading prompt templates with proje
 - **get_all_passing_features** (my-games)
   - File: `autocoder/progress.py:108`
   - SELECT
+
                     COUNT(*) as total,
                     SUM(CASE WHEN passes = 1 THEN 1 EL
+
   - Tags: get, all, features, passing, progress.py
 
 - **formatCredits** (my-games)
@@ -4587,6 +4614,7 @@ Functions for loading prompt templates with proje
 
     Returns:
         Path to ~/.autocoder/ (created if it d
+
   - Tags: registry, get, path, autocoder, registry.py
 
 - **getCapturedPosition** (my-games)
@@ -4993,6 +5021,7 @@ Functions for loading prompt templates with proje
   - return self.complete
 
     def get_messages(self) -> list[dict]:
+
   - Tags: services, session, create, autocoder, spec_chat_session.py
 
 - **calculateTriviaWinner** (my-games)
@@ -6174,4 +6203,3 @@ Functions for loading prompt templates with proje
   - File: `apps/api/src/routes/wallet.ts:1240`
   - Get or create wallet
   - Tags: api, routes, wallet.ts, wallet, updated
-

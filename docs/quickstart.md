@@ -12,18 +12,24 @@ Get MyWork framework up and running with your first project in just 5 minutes.
 ## ⚡ Step 1: Install MyWork (1 minute)
 
 ```bash
+
 # Clone the framework
+
 git clone https://github.com/DansiDanutz/MyWork-AI.git MyWork
 cd MyWork
 
 # Run the installer (handles Python deps, Node.js tools, environment setup)
+
 chmod +x install.sh && ./install.sh
 
 # Verify installation
+
 python tools/mw.py status
+
 ```
 
 **Expected Output:**
+
 ```
 ✅ MyWork Framework Status
 ├── 🧠 Brain: Ready (253 patterns indexed)
@@ -33,19 +39,27 @@ python tools/mw.py status
 └── 🔗 n8n: MCP server ready
 
 🎯 Ready to create your first project!
+
 ```
 
 ## 🎯 Step 2: Create Your First Project (2 minutes)
 
 ```bash
+
 # Create a simple task manager
+
 python tools/mw.py new task-manager-cli cli
 
 # This will:
+
 # 1. Create projects/task-manager-cli/ directory
+
 # 2. Set up basic project structure
+
 # 3. Initialize GSD planning
+
 # 4. Generate project.yaml metadata
+
 ```
 
 **What just happened?**
@@ -59,6 +73,7 @@ projects/task-manager-cli/
 ├── README.md             # Getting started guide
 ├── project.yaml          # Project metadata
 └── src/                  # Source code (will be created)
+
 ```
 
 ## 🏗️ Step 3: Plan Your Project (1 minute)
@@ -67,15 +82,21 @@ projects/task-manager-cli/
 cd projects/task-manager-cli
 
 # Start GSD planning workflow
+
 python ../../tools/mw.py gsd new-project
 
 # Follow the interactive prompts:
+
 # 1. Project description: "A simple CLI task manager"
+
 # 2. Target audience: "Developers who want quick task tracking"
+
 # 3. Key features: "Add tasks, list tasks, mark complete, search"
+
 ```
 
 **GSD will automatically:**
+
 - Research CLI best practices
 - Generate requirements document
 - Create 3-4 development phases
@@ -84,18 +105,27 @@ python ../../tools/mw.py gsd new-project
 ## ⚙️ Step 4: Build Your Project (1 minute)
 
 ```bash
+
 # Execute the first phase (usually "Foundation & Setup")
+
 python ../../tools/mw.py gsd execute-phase 1
 
 # GSD will:
+
 # ✅ Create CLI argument parser
+
 # ✅ Set up data storage (JSON file)
+
 # ✅ Implement basic commands (add, list)
+
 # ✅ Add tests and documentation
+
 # ✅ Make atomic commits for each task
+
 ```
 
 **Real-time progress:**
+
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  GSD ► EXECUTING WAVE 1
@@ -106,27 +136,36 @@ python ../../tools/mw.py gsd execute-phase 1
 ◆ Task 3: Add basic commands... ✅ (commit ghi789f)
 
 Phase 1 complete! Ready for Phase 2: Advanced Features
+
 ```
 
 ## 🎉 Step 5: Test Your Creation (30 seconds)
 
 ```bash
+
 # Your CLI tool is now working!
+
 python src/task_manager.py add "Learn MyWork framework"
 python src/task_manager.py add "Build my first app"
 python src/task_manager.py list
 
 # Expected output:
+
 # 📋 Your Tasks:
+
 # 1. [ ] Learn MyWork framework
+
 # 2. [ ] Build my first app
 
 python src/task_manager.py complete 1
 python src/task_manager.py list
 
 # 📋 Your Tasks:
+
 # 1. [✅] Learn MyWork framework
+
 # 2. [ ] Build my first app
+
 ```
 
 ## 🎊 Congratulations!
@@ -142,18 +181,25 @@ In 5 minutes, you've:
 ## 🚀 What's Next?
 
 ### 🎯 **Complete Your Project**
+
 ```bash
+
 # Continue with Phase 2 (usually adds search, persistence, etc.)
+
 python ../../tools/mw.py gsd execute-phase 2
 
 # Verify your work with manual testing
+
 python ../../tools/mw.py gsd verify-work
 
 # Deploy or package your application
+
 python ../../tools/mw.py gsd execute-phase 3
+
 ```
 
 ### 🧠 **Level Up Your Skills**
+
 - 📖 [**Complete Tutorial Series →**](tutorials/01-first-project.md) - 6 comprehensive guides
 - 🏗️ [**Architecture Deep Dive →**](architecture/overview.md) - Understand the 3 layers
 - 💡 [**Example Projects →**](../examples/) - Study working applications
@@ -162,17 +208,23 @@ python ../../tools/mw.py gsd execute-phase 3
 ### 🔧 **Explore Advanced Features**
 
 ```bash
+
 # Search the knowledge brain for patterns
+
 python tools/mw.py brain search "CLI best practices"
 
 # Find reusable code modules
+
 python tools/mw.py search "argument parser"
 
 # Create visual automation workflows
+
 python tools/mw.py n8n create-workflow
 
 # Launch autonomous coding for complex projects
+
 python tools/mw.py ac start my-big-project --concurrency 3
+
 ```
 
 ### 🌟 **Join the Community**
@@ -185,34 +237,50 @@ python tools/mw.py ac start my-big-project --concurrency 3
 ## 🆘 Troubleshooting
 
 **❌ Installation fails?**
+
 ```bash
+
 # Check system requirements
+
 python --version  # Should be 3.9+
 node --version    # Should be 18+
 
 # Try manual installation
+
 python tools/health_check.py fix
+
 ```
 
 **❌ GSD command not found?**
+
 ```bash
+
 # Verify you're in the right directory
+
 pwd  # Should show .../MyWork/projects/your-project
 
 # Check framework status
+
 python ../../tools/mw.py status
+
 ```
 
 **❌ Generated code doesn't work?**
+
 ```bash
+
 # Run the verification system
+
 python ../../tools/mw.py gsd verify-work
 
 # Check for common issues
+
 python ../../tools/mw.py doctor
+
 ```
 
 **❌ Need more help?**
+
 - 📖 [**FAQ →**](faq.md) - Common questions answered
 - 🔧 [**Troubleshooting Guide →**](troubleshooting.md) - Detailed problem-solving
 - 💬 [**Get Support →**](https://github.com/DansiDanutz/MyWork-AI/discussions) - Community help

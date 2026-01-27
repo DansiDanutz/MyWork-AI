@@ -9,6 +9,7 @@
 File upload in Next.js 15 has evolved significantly with Server Actions, which now handle FormData natively without additional API routes. However, the context requirements (25MB files, chunked uploads, resume capability) exceed the standard Server Actions body size limit (1MB default, configurable to ~5MB max).
 
 **Key findings:**
+
 - Server Actions work great for small-to-medium files (< 5MB) with simple implementation
 - Chunked uploads with resume capability require dedicated API routes or third-party protocols (TUS)
 - react-dropzone is the de facto standard for drag & drop UI
@@ -23,6 +24,7 @@ File upload in Next.js 15 has evolved significantly with Server Actions, which n
 The established libraries/tools for file upload in Next.js 15:
 
 ### Core
+
 | Library | Version | Purpose | Why Standard |
 |---------|---------|---------|--------------|
 | react-dropzone | 14.x | Drag & drop UI | Most popular (14k+ stars), hook-based, accessible, minimal setup |
@@ -31,6 +33,7 @@ The established libraries/tools for file upload in Next.js 15:
 | @prisma/client | 7.x | File metadata storage | Already in stack, cascade delete support |
 
 ### Supporting
+
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
 | tus-js-client | 4.x | Resumable uploads (client) | Files > 5MB needing resume capability |
@@ -40,6 +43,7 @@ The established libraries/tools for file upload in Next.js 15:
 | image-thumbnail | 1.x | Quick thumbnail generation | Alternative to sharp for simple cases |
 
 ### Alternatives Considered
+
 | Instead of | Could Use | Tradeoff |
 |------------|-----------|----------|
 | react-dropzone | Native drag & drop API | Less code, but misses accessibility, file validation, multi-file handling |
@@ -48,21 +52,28 @@ The established libraries/tools for file upload in Next.js 15:
 | TUS protocol | Custom chunking | More control but must handle resume logic manually |
 
 **Installation:**
+
 ```bash
+
 # Core dependencies
+
 npm install react-dropzone file-type sharp
 
 # For chunked/resumable uploads (25MB requirement)
+
 npm install tus-js-client @tus/server
 
 # For security scanning (choose one)
+
 npm install pompelmi          # In-process scanning
 npm install clamscan          # Requires ClamAV daemon
+
 ```
 
 ## Architecture Patterns
 
 ### Recommended Project Structure
+
 ```
 src/
 ├── app/
@@ -88,6 +99,7 @@ src/
             ├── [fileId].ext
             └── thumbs/
                 └── [fileId].webp
+
 ```
 
 ### Pattern 1: Server Actions for Small Files (< 5MB)
@@ -97,6 +109,7 @@ src/
 **When to use:** Files under 5MB, no chunking/resume required, standard form submission
 
 **Example:**
+
 ```typescript
 // src/app/actions/files.ts
 'use server'
@@ -143,9 +156,11 @@ export async function uploadFileSimple(formData: FormData) {
 
   return { success: true, id: attachment.id }
 }
+
 ```
 
 **Configure body size limit in next.config.ts:**
+
 ```typescript
 const nextConfig: NextConfig = {
   experimental: {
@@ -154,6 +169,7 @@ const nextConfig: NextConfig = {
     },
   },
 }
+
 ```
 
 ### Pattern 2: TUS Protocol for Large Files (> 5MB)
@@ -163,6 +179,7 @@ const nextConfig: NextConfig = {
 **When to use:** Files > 5MB, need resume after network interruption, progress tracking
 
 **Example Server:**
+
 ```typescript
 // src/app/api/files/upload/route.ts
 import { Server } from '@tus/server'
@@ -202,9 +219,11 @@ export async function PATCH(request: NextRequest) {
 export async function OPTIONS(request: NextRequest) {
   return tusServer.handle(request)
 }
+
 ```
 
 **Example Client:**
+
 ```typescript
 // src/components/FileDropzone.tsx
 import { useDropzone } from 'react-dropzone'
@@ -280,6 +299,7 @@ export function FileDropzone({ taskId }: { taskId: string }) {
     </div>
   )
 }
+
 ```
 
 ### Pattern 3: Content-Based File Validation
@@ -289,6 +309,7 @@ export function FileDropzone({ taskId }: { taskId: string }) {
 **When to use:** Every file upload (security-critical)
 
 **Example:**
+
 ```typescript
 // src/lib/file-validation.ts
 import { fileTypeFromBuffer } from 'file-type'
@@ -338,6 +359,7 @@ export function validateFileSize(size: number) {
   }
   return { isValid: true }
 }
+
 ```
 
 ### Pattern 4: Secure File Serving with Authentication
@@ -347,6 +369,7 @@ export function validateFileSize(size: number) {
 **When to use:** All file downloads (enforces task ownership)
 
 **Example:**
+
 ```typescript
 // src/app/api/files/download/[id]/route.ts
 import { auth } from '@/lib/auth'
@@ -402,6 +425,7 @@ export async function GET(
     return new NextResponse('File not found on disk', { status: 404 })
   }
 }
+
 ```
 
 ### Pattern 5: Thumbnail Generation with Sharp
@@ -411,6 +435,7 @@ export async function GET(
 **When to use:** Image files only, after successful upload
 
 **Example:**
+
 ```typescript
 // src/lib/thumbnail-generator.ts
 import sharp from 'sharp'
@@ -459,6 +484,7 @@ export async function generateThumbnail(
     return null
   }
 }
+
 ```
 
 ### Pattern 6: Cascade Delete with Prisma
@@ -468,6 +494,7 @@ export async function generateThumbnail(
 **When to use:** File cleanup on task deletion
 
 **Example:**
+
 ```prisma
 // prisma/schema.prisma
 model Task {
@@ -494,9 +521,11 @@ model FileAttachment {
   @@index([taskId])
   @@index([userId])
 }
+
 ```
 
 **Cleanup middleware:**
+
 ```typescript
 // src/lib/file-cleanup.ts
 import { prisma } from '@/lib/prisma'
@@ -532,6 +561,7 @@ export async function cleanupTaskFiles(taskId: string) {
 
   // Prisma cascade will delete DB records automatically
 }
+
 ```
 
 ### Anti-Patterns to Avoid
@@ -571,11 +601,13 @@ Problems that look simple but have existing solutions:
 **Why it happens:** Next.js Server Actions have configurable body size limits. Vercel enforces stricter limits than local dev. The default is 1MB, configurable to ~5MB, but not more.
 
 **How to avoid:**
+
 - Configure `experimental.serverActions.bodySizeLimit` in next.config.ts
 - For files > 5MB, use dedicated API routes with TUS protocol instead of Server Actions
 - Test with production-sized files in development
 
 **Warning signs:**
+
 - Upload works in dev but fails on Vercel
 - 413 Payload Too Large errors
 - Uploads silently fail with no error
@@ -587,17 +619,20 @@ Problems that look simple but have existing solutions:
 **Why it happens:** File extensions and HTTP Content-Type headers are client-controlled and trivially spoofed. Validating only these checks nothing.
 
 **How to avoid:**
+
 - Use file-type library to read file magic numbers (binary signature)
 - Validate MIME type AFTER reading file content, not before
 - Whitelist allowed types, never blacklist dangerous types
 - Reject files if magic number doesn't match extension
 
 **Warning signs:**
+
 - Using `file.type` from FormData for validation
 - Checking file extension with RegEx
 - Not reading file buffer before validation
 
 **Code example:**
+
 ```typescript
 // ❌ WRONG: Trusts client
 const file = formData.get('file') as File
@@ -611,6 +646,7 @@ const type = await fileTypeFromBuffer(buffer)
 if (!type || !type.mime.startsWith('image/')) {
   throw new Error('Invalid image file')
 }
+
 ```
 
 ### Pitfall 3: Path Traversal Attacks
@@ -620,17 +656,20 @@ if (!type || !type.mime.startsWith('image/')) {
 **Why it happens:** Filenames are user input and can contain directory traversal sequences. Direct concatenation creates vulnerable paths.
 
 **How to avoid:**
+
 - NEVER use user-provided filenames directly in filesystem paths
 - Generate random UUIDs for stored filenames
 - Use path.join() and validate no '..' segments exist
 - Store files in isolated upload directory outside webroot
 
 **Warning signs:**
+
 - Concatenating strings to build file paths
 - Using `file.name` directly in `fs.writeFile`
 - Not sanitizing filenames
 
 **Code example:**
+
 ```typescript
 // ❌ WRONG: Vulnerable to traversal
 const userFilename = file.name // Could be "../../../evil"
@@ -641,6 +680,7 @@ const safeFilename = `${crypto.randomUUID()}.${type.ext}`
 const uploadDir = path.join(process.cwd(), 'uploads', userId, taskId)
 await fs.mkdir(uploadDir, { recursive: true })
 await fs.writeFile(path.join(uploadDir, safeFilename), buffer)
+
 ```
 
 ### Pitfall 4: Missing File Cleanup on Task Deletion
@@ -650,12 +690,14 @@ await fs.writeFile(path.join(uploadDir, safeFilename), buffer)
 **Why it happens:** Prisma cascade delete removes DB records but doesn't trigger filesystem cleanup. Files must be manually deleted.
 
 **How to avoid:**
+
 - Create cleanup middleware called BEFORE task deletion
 - Use Prisma's onDelete: Cascade for DB records
 - Implement background cleanup job for orphaned files
 - Delete both main files and thumbnails
 
 **Warning signs:**
+
 - Uploads directory growing indefinitely
 - Deleting tasks doesn't reduce disk usage
 - No cleanup logic in delete handlers
@@ -667,11 +709,13 @@ await fs.writeFile(path.join(uploadDir, safeFilename), buffer)
 **Why it happens:** Using `fs.readFileSync` or `fs.writeFileSync` blocks Node.js event loop. Single-threaded server freezes.
 
 **How to avoid:**
+
 - Always use `fs.promises` (async/await)
 - Never use synchronous fs methods in request handlers
 - Use streams for large files instead of loading entire buffer
 
 **Warning signs:**
+
 - High response times during uploads
 - Other endpoints slow down during file operations
 - CPU spikes to 100% with single upload
@@ -683,12 +727,14 @@ await fs.writeFile(path.join(uploadDir, safeFilename), buffer)
 **Why it happens:** Not implementing AbortController pattern, no way to signal upload should stop
 
 **How to avoid:**
+
 - Use AbortController with fetch() or TUS client
 - Store upload instances in state for cancellation
 - Provide cancel button with progress bar
 - Clean up partial uploads on cancel
 
 **Warning signs:**
+
 - No cancel button on upload progress UI
 - Uploads continue after user navigates away
 - No way to stop multi-file batch upload
@@ -700,12 +746,14 @@ await fs.writeFile(path.join(uploadDir, safeFilename), buffer)
 **Why it happens:** Misunderstanding Next.js public/ directory behavior—anything there is served directly by web server
 
 **How to avoid:**
+
 - Store uploads outside public/ directory
 - Serve files through authenticated API routes
 - Check task ownership before serving files
 - Use non-guessable UUIDs for filenames
 
 **Warning signs:**
+
 - Files stored in public/uploads/
 - Direct filesystem URLs in image src attributes
 - No authentication checks on file serving
@@ -826,6 +874,7 @@ export async function uploadFile(formData: FormData) {
     size: file.size,
   }
 }
+
 ```
 
 ### Drag & Drop Component with Progress
@@ -1018,6 +1067,7 @@ export function FileUploader({ taskId }: { taskId: string }) {
     </div>
   )
 }
+
 ```
 
 ### File Deletion with Cleanup
@@ -1083,6 +1133,7 @@ export async function deleteFile(fileId: string) {
 
   return { success: true }
 }
+
 ```
 
 ## State of the Art
@@ -1098,6 +1149,7 @@ export async function deleteFile(fileId: string) {
 | Client-side only progress tracking | Server-side progress tracking with TUS | TUS protocol | More reliable, survives page refresh, works across devices |
 
 **Deprecated/outdated:**
+
 - **Multer for Server Actions**: Server Actions handle FormData natively, no middleware needed (still valid for API routes)
 - **Formidable**: Older parsing library, replaced by native FormData support in Next.js App Router
 - **react-beautiful-dnd**: No longer maintained (archived by Atlassian), fork is hello-pangea/dnd
@@ -1129,6 +1181,7 @@ Things that couldn't be fully resolved:
 ## Sources
 
 ### Primary (HIGH confidence)
+
 - [Next.js 15 Tutorial Part 5: File Upload with Server Actions](https://strapi.io/blog/epic-next-js-15-tutorial-part-5-file-upload-using-server-actions) - Official tutorial on Server Actions file upload
 - [file-type npm package](https://www.npmjs.com/package/file-type) - Content-based MIME detection
 - [react-dropzone GitHub](https://github.com/react-dropzone/react-dropzone) - Official documentation
@@ -1137,18 +1190,21 @@ Things that couldn't be fully resolved:
 - [Prisma Referential Actions](https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/referential-actions) - Cascade delete documentation
 
 ### Secondary (MEDIUM confidence)
+
 - [Top 5 Drag-and-Drop Libraries for React in 2026](https://puckeditor.com/blog/top-5-drag-and-drop-libraries-for-react) - Library comparison
 - [pompelmi - Fast File Upload Security](https://pompelmi.github.io/pompelmi/) - In-process malware scanning
 - [How To Get the MIME Type of a File in Node.js](https://dev.to/victrexx2002/how-to-get-the-mime-type-of-a-file-in-nodejs-p6c) - MIME detection methods
 - [File Upload Protection Best Practices - OPSWAT](https://www.opswat.com/blog/file-upload-protection-best-practices) - Security guidelines
 
 ### Tertiary (LOW confidence)
+
 - [GitHub: nextjs-chunk-upload-action](https://github.com/a179346/nextjs-chunk-upload-action) - Community chunking implementation
 - [How to Upload Multiple File With Feature Cancellation & Retry](https://dev.to/devinekadeni/how-to-upload-multiple-file-with-feature-cancellation-retry-using-reactjs-18cd) - Cancellation patterns
 
 ## Metadata
 
 **Confidence breakdown:**
+
 - Standard stack: HIGH - All libraries verified with Context7/official docs, widely used in production
 - Architecture: HIGH - Patterns from official Next.js tutorials, TUS protocol spec, Prisma docs
 - Pitfalls: HIGH - OWASP security guidelines, real CVEs, documented in official sources

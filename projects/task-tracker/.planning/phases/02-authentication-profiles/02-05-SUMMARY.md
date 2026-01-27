@@ -4,30 +4,44 @@ plan: 05
 subsystem: auth
 tags: [nextjs, auth-js, github-oauth, dashboard, route-protection]
 requires:
+
   - phase: 02-01
+
     provides: Auth.js infrastructure with GitHub OAuth and Prisma adapter
+
   - phase: 02-02
+
     provides: Authorization layer with DAL and middleware
+
   - phase: 02-03
+
     provides: Login page, homepage CTA, and welcome/onboarding page
+
   - phase: 02-04
+
     provides: Profile settings with auto-save and user menu
 provides:
+
   - Dashboard placeholder page with personalized greeting and stats cards
   - Complete OAuth flow verification (login → GitHub → welcome → dashboard)
   - End-to-end authentication system ready for Phase 3
+
 affects: [phase-3-task-management, phase-7-performance]
 tech-stack:
   added: []
   patterns: [server-components, user-greeting, placeholder-content]
 key-files:
   created:
+
     - src/app/(app)/dashboard/page.tsx
+
   modified: []
 key-decisions: []
 patterns-established:
+
   - "Dashboard placeholder pattern for future feature development"
   - "Personalized greeting using getUser from DAL"
+
 duration: 5 minutes
 completed: 2026-01-25
 ---
@@ -74,9 +88,11 @@ Each task was committed atomically:
 ## Files Created/Modified
 
 **Created:**
+
 - `src/app/(app)/dashboard/page.tsx` - Dashboard page with personalized greeting, placeholder stats cards, and getting started section
 
 **Modified (auto-fixes):**
+
 - `src/shared/hooks/useDebounce.ts` - TypeScript constraint refinement
 - `src/shared/lib/analytics/tracker.ts` - JSON property type handling
 - `src/shared/lib/analytics/__tests__/github.test.ts` - Type error resolution
@@ -90,6 +106,7 @@ None - plan executed as specified with standard patterns from previous plans.
 ### Auto-fixed Issues
 
 **1. [Rule 1 - Bug] Fixed useDebounce TypeScript constraint precision**
+
 - **Found during:** Task 1 (Post-task TypeScript verification)
 - **Issue:** Generic constraint was too permissive, allowing incorrect usage patterns
 - **Fix:** Refined constraint from `any[]` to proper generic bounds for better type safety
@@ -98,6 +115,7 @@ None - plan executed as specified with standard patterns from previous plans.
 - **Committed in:** 7816388
 
 **2. [Rule 1 - Bug] Fixed analytics tracker JSON property types**
+
 - **Found during:** Task 1 (Post-task TypeScript verification)
 - **Issue:** Prisma JSON type requires explicit casting for custom property structures
 - **Fix:** Added proper type assertions for analytics event properties
@@ -106,6 +124,7 @@ None - plan executed as specified with standard patterns from previous plans.
 - **Committed in:** 7816388
 
 **3. [Rule 1 - Bug] Fixed GitHub API test type errors**
+
 - **Found during:** Task 1 (Post-task TypeScript verification)
 - **Issue:** Test mock types didn't match implementation signatures
 - **Fix:** Updated mock types to align with actual GitHub API client interface
@@ -133,16 +152,20 @@ None - execution proceeded smoothly with all authentication flows working as des
    - Copy Client ID and Client Secret
 
 2. **Environment Variables (.env):**
+
    ```
    AUTH_GITHUB_ID=your_client_id
    AUTH_GITHUB_SECRET=your_client_secret
    AUTH_SECRET=generate_with_npx_auth_secret
    DATABASE_URL=postgresql://dansidanutz@localhost:5432/tasktracker
+
    ```
 
 3. **Generate AUTH_SECRET:**
+
    ```bash
    npx auth secret
+
    ```
 
 4. **Verification:**
@@ -155,6 +178,7 @@ None - execution proceeded smoothly with all authentication flows working as des
 **User approval:** All authentication flows verified working correctly.
 
 **Verification completed:**
+
 - ✅ Homepage displays with "Login with GitHub" hero CTA
 - ✅ Login page shows GitHub OAuth button
 - ✅ GitHub OAuth redirect and consent flow works
@@ -207,6 +231,7 @@ This plan completes Phase 2: Authentication & Profiles. All phase success criter
    - Commits: 2 (dashboard page, bug fixes)
 
 **Total Phase 2:**
+
 - Duration: 77 minutes (1 hour 17 minutes)
 - Plans: 5
 - Commits: 23
@@ -216,6 +241,7 @@ This plan completes Phase 2: Authentication & Profiles. All phase success criter
 ## Next Phase Readiness
 
 **Ready for Phase 3: Core Task Management**
+
 - ✅ Authentication system complete and verified
 - ✅ User sessions working with 24-hour persistence
 - ✅ Protected routes established
@@ -225,12 +251,14 @@ This plan completes Phase 2: Authentication & Profiles. All phase success criter
 - ✅ User menu for profile access
 
 **Blockers:**
+
 - Production build issue persists (Next.js 15.0.3 webpack bug)
   - Development server works correctly
   - Not blocking Phase 3 development
   - Must be resolved before Phase 8 deployment
 
 **Technical Foundation for Phase 3:**
+
 - Database schema ready (User, Account, Session models)
 - Authentication layer proven (DAL, middleware, server actions)
 - UI patterns established (auto-save, visual feedback, server components)
@@ -238,6 +266,7 @@ This plan completes Phase 2: Authentication & Profiles. All phase success criter
 - Session management reliable
 
 **Recommendations:**
+
 1. Begin Phase 3 (Core Task Management) immediately
    - Task CRUD operations
    - Task schema and database model
@@ -253,6 +282,7 @@ This plan completes Phase 2: Authentication & Profiles. All phase success criter
 **Pattern:** Create placeholder pages with future feature indicators
 
 **Implementation:**
+
 ```typescript
 export default async function DashboardPage() {
   const user = await getUser()
@@ -275,15 +305,18 @@ export default async function DashboardPage() {
     </div>
   )
 }
+
 ```
 
 **When to use:**
+
 - MVP development with phased feature rollout
 - Dashboard pages before analytics are implemented
 - Admin interfaces before management features exist
 - User portals in early development
 
 **Benefits:**
+
 - Provides complete user flow before all features exist
 - Clear indication of future functionality
 - Allows testing of layout and navigation early
@@ -294,6 +327,7 @@ export default async function DashboardPage() {
 **Pattern:** Comprehensive human verification checklist for OAuth systems
 
 **Verification Areas:**
+
 - Initial state (unauthenticated homepage)
 - OAuth initiation (login page, OAuth button)
 - Provider consent screen (GitHub authorization)
@@ -305,6 +339,7 @@ export default async function DashboardPage() {
 - Error handling (OAuth failures, network issues)
 
 **When to use:**
+
 - Any OAuth/SSO implementation
 - Authentication system launch
 - Before production deployment
@@ -315,6 +350,7 @@ export default async function DashboardPage() {
 **Pattern:** Comprehensive phase summary documenting all plans
 
 **Contents:**
+
 - All plan summaries linked
 - Total duration and commit counts
 - Success criteria verification
@@ -323,6 +359,7 @@ export default async function DashboardPage() {
 - Reusable patterns discovered
 
 **When to use:**
+
 - After completing final plan in a phase
 - Before starting next phase
 - During project retrospectives
@@ -353,6 +390,7 @@ export default async function DashboardPage() {
 ## Production Readiness
 
 **Completed:**
+
 - ✅ Complete authentication system
 - ✅ User profile management
 - ✅ Session persistence (24 hours)
@@ -364,10 +402,12 @@ export default async function DashboardPage() {
 - ✅ Human verification passed
 
 **Known Issues:**
+
 - Next.js 15.0.3 build bug (framework issue, tracked in STATE.md)
 - Requires OAuth credentials in .env for deployment
 
 **TODO (future phases):**
+
 - Phase 3: Task management features
 - Phase 4: Task organization and search
 - Phase 5: File attachments

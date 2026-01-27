@@ -7,48 +7,62 @@ completed: 2026-01-24
 duration: 34 minutes
 
 requires:
+
   - 02-01 (Auth.js infrastructure)
 
 provides:
+
   - Data Access Layer with React cache() deduplication
   - Route protection middleware
   - Debounce hook for auto-save pattern
 
 affects:
+
   - 02-03 (Login UI will use getSession from DAL)
   - Future protected routes (will use verifySession/getUser)
   - Profile editing (will use useDebounce hook)
 
 key-files:
   created:
+
     - src/shared/lib/dal.ts
     - src/middleware.ts
     - src/shared/hooks/useDebounce.ts
     - src/shared/hooks/index.ts
+
   modified: []
 
 tech-stack:
   added:
+
     - React cache() for request deduplication
     - Next.js middleware for route protection
+
   patterns:
+
     - "Server-only modules with 'server-only' import"
     - "React cache() for deduplication within single request"
     - "Middleware lightweight auth check (no DB query)"
     - "Debounce with callbackRef to prevent stale closures"
 
 decisions:
+
   - id: AUTH-004
+
     date: 2026-01-24
     decision: Use React cache() in DAL for request deduplication
     rationale: Prevents multiple auth checks within single server request without custom memoization
     alternatives: Custom memoization, per-request context
+
   - id: AUTH-005
+
     date: 2026-01-24
     decision: Middleware only checks session cookie, not database
     rationale: Performance - middleware runs on every request, DB query would be too slow
     impact: Full auth validation must be done in Server Components via DAL
+
   - id: PATTERN-003
+
     date: 2026-01-24
     decision: 3000ms debounce delay for auto-save
     rationale: Balance between responsiveness and server load per RESEARCH.md
@@ -84,20 +98,24 @@ Created the authorization foundation that all protected features will use:
 ## Key Architectural Decisions
 
 ### React cache() for Deduplication
+
 Using React's built-in cache() function instead of custom memoization. This ensures that within a single server request, multiple components calling `verifySession()` or `getUser()` only make one auth check and one database query.
 
 ### Two-Tier Auth Validation
+
 - **Middleware:** Fast session cookie check only (no DB query)
 - **DAL:** Full validation with database query in Server Components
 
 This separation provides both speed (middleware) and security (DAL).
 
 ### Debounce Pattern
+
 The useDebounce hook uses `callbackRef` to store the latest callback version, preventing the common stale closure problem where debounced functions reference outdated state.
 
 ## Integration Points
 
 ### For Protected Routes
+
 ```typescript
 import { verifySession } from '@/shared/lib/dal'
 
@@ -105,9 +123,11 @@ export default async function SettingsPage() {
   await verifySession() // Redirects to /login if not auth
   // ... rest of page
 }
+
 ```
 
 ### For Conditional UI
+
 ```typescript
 import { getSession } from '@/shared/lib/dal'
 
@@ -115,9 +135,11 @@ export default async function Header() {
   const session = await getSession()
   return session ? <LogoutButton /> : <LoginButton />
 }
+
 ```
 
 ### For User Data
+
 ```typescript
 import { getUser } from '@/shared/lib/dal'
 
@@ -125,9 +147,11 @@ export default async function ProfilePage() {
   const user = await getUser() // Includes bio, customAvatar, etc.
   return <ProfileForm user={user} />
 }
+
 ```
 
 ### For Auto-Save
+
 ```typescript
 'use client'
 import { useDebounce } from '@/shared/hooks'
@@ -139,6 +163,7 @@ function ProfileEditor() {
 
   return <input onChange={(e) => handleChange(e.target.value)} />
 }
+
 ```
 
 ## Testing Notes
@@ -154,10 +179,12 @@ None - plan executed exactly as written.
 ## Next Phase Readiness
 
 **Ready for 02-03 (Login UI):**
+
 - getSession() available for "Already logged in?" check
 - Middleware will redirect authenticated users away from /login
 
 **Ready for Future Profile Editing:**
+
 - getUser() fetches full profile including bio, customAvatar
 - useDebounce() ready for auto-save implementation
 

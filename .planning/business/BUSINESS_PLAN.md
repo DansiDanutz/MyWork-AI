@@ -133,8 +133,11 @@ MyWork AI is a unified development framework that combines AI-powered project or
 
 ```
 +------------------------------------------------------------------+
+
 |                         MyWork AI Platform                        |
+
 +------------------------------------------------------------------+
+
 |                                                                    |
 |  +-------------------+  +-------------------+  +------------------+|
 |  |    COMMUNITY      |  |       PRO         |  |    ENTERPRISE    ||
@@ -150,7 +153,9 @@ MyWork AI is a unified development framework that combines AI-powered project or
 |  |                   |  | - Custom Branding |  | - API access     ||
 |  +-------------------+  +-------------------+  +------------------+|
 |                                                                    |
+
 +------------------------------------------------------------------+
+
 ```
 
 ### Marketplace Categories
@@ -183,47 +188,66 @@ MyWork AI is a unified development framework that combines AI-powered project or
 
 ```
 +------------------------------------------------------------------+
+
 |                        USERS & CLIENTS                            |
 |     [Builders]        [Buyers]         [Enterprise]               |
+
 +------------------------------------------------------------------+
+
           |                 |                   |
+
           v                 v                   v
 +------------------------------------------------------------------+
+
 |                         WEB LAYER                                 |
 |  +-------------+  +---------------+  +-------------------+        |
 |  | Marketing   |  | Marketplace   |  | Dashboard         |        |
 |  | Site        |  | (Browse/Buy)  |  | (Seller/Buyer)    |        |
 |  | Next.js     |  | Next.js       |  | Next.js           |        |
 |  +-------------+  +---------------+  +-------------------+        |
+
 +------------------------------------------------------------------+
+
           |                 |                   |
+
           v                 v                   v
 +------------------------------------------------------------------+
+
 |                        API LAYER                                  |
 |  +-------------+  +---------------+  +-------------------+        |
 |  | Auth API    |  | Marketplace   |  | Brain API         |        |
 |  | (Clerk/     |  | API           |  | (Knowledge)       |        |
 |  |  Auth0)     |  | (FastAPI)     |  | (FastAPI + AI)    |        |
 |  +-------------+  +---------------+  +-------------------+        |
+
 +------------------------------------------------------------------+
+
           |                 |                   |
+
           v                 v                   v
 +------------------------------------------------------------------+
+
 |                       DATA LAYER                                  |
 |  +-------------+  +---------------+  +-------------------+        |
 |  | PostgreSQL  |  | Redis         |  | Vector DB         |        |
 |  | (Primary)   |  | (Cache/Queue) |  | (Pinecone/Qdrant) |        |
 |  +-------------+  +---------------+  +-------------------+        |
+
 +------------------------------------------------------------------+
+
           |                 |                   |
+
           v                 v                   v
 +------------------------------------------------------------------+
+
 |                    EXTERNAL SERVICES                              |
 |  +-------------+  +---------------+  +-------------------+        |
 |  | Stripe      |  | GitHub        |  | Anthropic         |        |
 |  | (Payments)  |  | (Code Sync)   |  | (AI/Brain)        |        |
 |  +-------------+  +---------------+  +-------------------+        |
+
 +------------------------------------------------------------------+
+
 ```
 
 ### Core Components
@@ -233,8 +257,11 @@ MyWork AI is a unified development framework that combines AI-powered project or
 ```
 Brain API Architecture
 +------------------------------------------------------------------+
+
 |                         BRAIN API                                 |
+
 +------------------------------------------------------------------+
+
 |                                                                    |
 |  +-------------------+     +-------------------+                   |
 |  | Knowledge Ingestion|     | Knowledge Query   |                  |
@@ -257,13 +284,16 @@ Brain API Architecture
 |  |  Claude API for reasoning + generation            |             |
 |  +--------------------------------------------------+             |
 |                                                                    |
+
 +------------------------------------------------------------------+
 
 API Endpoints:
+
 - POST /brain/learn      - Contribute knowledge
 - POST /brain/query      - Ask the Brain
 - GET  /brain/suggest    - Get recommendations
 - GET  /brain/patterns   - Discover patterns
+
 ```
 
 #### 4.2 Marketplace Platform
@@ -271,8 +301,11 @@ API Endpoints:
 ```
 Marketplace Architecture
 +------------------------------------------------------------------+
+
 |                      MARKETPLACE                                  |
+
 +------------------------------------------------------------------+
+
 |                                                                    |
 |  SELLER FLOW:                                                      |
 |  +--------+    +--------+    +--------+    +--------+             |
@@ -286,14 +319,17 @@ Marketplace Architecture
 |  | & Search| ->| & Demo | -> | & Pay  | -> | & Use  |             |
 |  +--------+    +--------+    +--------+    +--------+             |
 |                                                                    |
+
 +------------------------------------------------------------------+
 
 Database Schema (Simplified):
+
 - users (id, email, role, stripe_customer_id)
 - products (id, seller_id, title, description, price, status)
 - purchases (id, buyer_id, product_id, amount, stripe_payment_id)
 - reviews (id, purchase_id, rating, comment)
 - payouts (id, seller_id, amount, status, stripe_transfer_id)
+
 ```
 
 #### 4.3 Payment Flow (Stripe Connect)
@@ -301,6 +337,7 @@ Database Schema (Simplified):
 ```
 Payment Flow
 +------------------------------------------------------------------+
+
 |                                                                    |
 |  BUYER                PLATFORM               SELLER                |
 |    |                     |                     |                   |
@@ -319,13 +356,16 @@ Payment Flow
 |    |                     |                     |                   |
 |    |       Platform keeps $10 (10%)            |                   |
 |    |                     |                     |                   |
+
 +------------------------------------------------------------------+
 
 Stripe Connect Setup:
+
 - Platform: Standard Stripe account
 - Sellers: Connected accounts (Express)
 - Escrow: 7-day hold before payout
 - Fees: 2.9% + $0.30 (Stripe) + 10% (Platform)
+
 ```
 
 ### Infrastructure
@@ -346,6 +386,7 @@ Stripe Connect Setup:
 ```
 Security Layers
 +------------------------------------------------------------------+
+
 |                                                                    |
 |  1. AUTHENTICATION (Clerk)                                         |
 |     - OAuth (GitHub, Google)                                       |
@@ -367,7 +408,9 @@ Security Layers
 |     - Malware scanning on upload                                  |
 |     - License compliance checks                                    |
 |                                                                    |
+
 +------------------------------------------------------------------+
+
 ```
 
 ---
@@ -394,14 +437,17 @@ Security Layers
 ### Pricing Psychology
 
 **Anchoring:**
+
 - Show "Enterprise $499" first
 - Pro at $49 feels like a deal
 
 **Value Metrics:**
+
 - Pay for what matters (sales, not features)
 - 10% fee only when you earn
 
 **Competitor Comparison:**
+
 | Platform | Fee | Our Advantage |
 |----------|-----|---------------|
 | Gumroad | 10% + payment | Same fee, better tools |
@@ -415,12 +461,14 @@ Security Layers
 ### Licensing Structure
 
 **Framework (Open Source):**
+
 ```
 MIT License with Commons Clause
 
 - Free to use, modify, distribute
 - Cannot sell the framework itself
 - Can sell projects built with it
+
 ```
 
 **Marketplace Projects:**
@@ -434,6 +482,7 @@ MIT License with Commons Clause
 ### Terms of Service (Key Points)
 
 **For Sellers:**
+
 1. Must own or have rights to sell
 2. No malware, backdoors, or harmful code
 3. Must provide documentation
@@ -442,6 +491,7 @@ MIT License with Commons Clause
 6. Disputes handled via arbitration
 
 **For Buyers:**
+
 1. License granted upon payment
 2. No redistribution without Extended license
 3. Refund within 14 days if project doesn't work as described
@@ -450,12 +500,14 @@ MIT License with Commons Clause
 ### Privacy Policy (GDPR Compliant)
 
 **Data Collected:**
+
 - Account information (name, email)
 - Payment information (via Stripe)
 - Usage data (analytics)
 - Brain contributions (code patterns)
 
 **Data Rights:**
+
 - Access, correct, delete personal data
 - Export data in standard format
 - Opt-out of non-essential tracking
@@ -463,11 +515,13 @@ MIT License with Commons Clause
 ### Intellectual Property
 
 **Brain Contributions:**
+
 - Contributors grant platform license to use patterns
 - Attribution optional but encouraged
 - No PII or proprietary code in Brain
 
 **Marketplace Projects:**
+
 - Sellers retain copyright
 - Platform gets license to display/distribute
 - Buyers get license per purchase type
@@ -481,6 +535,7 @@ MIT License with Commons Clause
 **Goal:** 1,000 active users, 100 contributors
 
 **Channels:**
+
 | Channel | Action | Target |
 |---------|--------|--------|
 | GitHub | Open source launch, stars | 500 stars |
@@ -491,6 +546,7 @@ MIT License with Commons Clause
 | Hacker News | Launch post | Front page |
 
 **Content Strategy:**
+
 - Weekly: Tutorial video
 - 2x Weekly: Twitter thread
 - Monthly: Case study blog post
@@ -500,12 +556,14 @@ MIT License with Commons Clause
 **Goal:** 100 Pro subscribers, 50 marketplace listings
 
 **Tactics:**
+
 1. **Founder Program**: First 50 sellers get lifetime 5% fee
 2. **Beta Testers**: Free Pro for 3 months
 3. **Influencer Outreach**: 10 dev YouTubers
 4. **ProductHunt Launch**: Coordinated campaign
 
 **Incentives:**
+
 | Program | Benefit | Requirement |
 |---------|---------|-------------|
 | Founder | 5% fee forever | First 50 sellers |
@@ -517,6 +575,7 @@ MIT License with Commons Clause
 **Goal:** $20K MRR, 500 marketplace products
 
 **Channels:**
+
 | Channel | Budget | Expected ROI |
 |---------|--------|--------------|
 | Google Ads | $2K/mo | 3x |
@@ -525,6 +584,7 @@ MIT License with Commons Clause
 | Affiliate | Revenue share | 5x |
 
 **Partnerships:**
+
 - AI companies (Anthropic, OpenAI)
 - Hosting platforms (Vercel, Railway)
 - Dev tools (GitHub, VS Code)
@@ -533,21 +593,32 @@ MIT License with Commons Clause
 
 ```
 Month 1-2: Framework polish, community setup
+
      |
+
      v
 Month 3: Public launch (GitHub, ProductHunt)
+
      |
+
      v
 Month 4-5: Pro tier launch, first sellers
+
      |
+
      v
 Month 6: Marketplace beta
+
      |
+
      v
 Month 7-9: Marketing push, partnerships
+
      |
+
      v
 Month 10-12: Enterprise tier, API access
+
 ```
 
 ---
@@ -559,6 +630,7 @@ Month 10-12: Enterprise tier, API access
 ```
 Revenue Streams:
 +------------------------------------------------------------------+
+
 |                                                                    |
 |  SUBSCRIPTIONS (Recurring)                                         |
 |  +-----------------------------------------------------------+    |
@@ -574,7 +646,9 @@ Revenue Streams:
 |  | Verification badges x $49-499 = Badge revenue              |    |
 |  +-----------------------------------------------------------+    |
 |                                                                    |
+
 +------------------------------------------------------------------+
+
 ```
 
 ### Year 1 Projections (Conservative)
@@ -663,21 +737,25 @@ Revenue Streams:
 ### Mitigation Strategies
 
 **Competition:**
+
 - Move fast, ship weekly
 - Build community loyalty
 - Focus on AI differentiation
 
 **Low Adoption:**
+
 - Free tier with real value
 - Creator incentive programs
 - Partnership distribution
 
 **Payment Fraud:**
+
 - 7-day escrow period
 - Seller verification
 - Buyer protection guarantee
 
 **Code Quality:**
+
 - Automated testing required
 - Manual review for premium
 - Clear refund policy
@@ -689,18 +767,21 @@ Revenue Streams:
 ### Phase 1: Foundation (Q1 2026)
 
 **Month 1:**
+
 - [ ] Polish framework for public release
 - [ ] Set up GitHub, Discord, Twitter
 - [ ] Create documentation site
 - [ ] Record tutorial videos
 
 **Month 2:**
+
 - [ ] Public GitHub launch
 - [ ] ProductHunt preparation
 - [ ] Early adopter outreach
 - [ ] Content marketing start
 
 **Month 3:**
+
 - [ ] ProductHunt launch
 - [ ] Hacker News submission
 - [ ] First 500 GitHub stars
@@ -709,18 +790,21 @@ Revenue Streams:
 ### Phase 2: Platform (Q2 2026)
 
 **Month 4:**
+
 - [ ] Brain API v1 (cloud)
 - [ ] Pro tier launch
 - [ ] Stripe integration
 - [ ] Seller onboarding flow
 
 **Month 5:**
+
 - [ ] Marketplace MVP
 - [ ] First 50 listings
 - [ ] Review system
 - [ ] Search & discovery
 
 **Month 6:**
+
 - [ ] Payment processing live
 - [ ] First transactions
 - [ ] Seller analytics
@@ -729,12 +813,14 @@ Revenue Streams:
 ### Phase 3: Growth (Q3-Q4 2026)
 
 **Month 7-9:**
+
 - [ ] Marketing campaigns
 - [ ] Partnership announcements
 - [ ] Team tier launch
 - [ ] Mobile app (basic)
 
 **Month 10-12:**
+
 - [ ] Enterprise tier
 - [ ] API access
 - [ ] White-label option
