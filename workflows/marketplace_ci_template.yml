@@ -1,0 +1,95 @@
+name: Deploy Marketplace
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Marketplace repo
+        uses: actions/checkout@v4
+
+      - name: Checkout MyWork-AI tools (QA bundle)
+        uses: actions/checkout@v4
+        with:
+          repository: DansiDanutz/MyWork-AI
+          path: mywork-ai
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install CLI dependencies
+        run: |
+          npm install -g vercel@latest
+          npm install -g @railway/cli
+
+      - name: Install QA dependencies
+        working-directory: mywork-ai
+        run: python -m pip install -r tools/requirements.txt
+
+      - name: Pre-deploy smoke test
+        working-directory: mywork-ai
+        env:
+          MARKETPLACE_FRONTEND_URL: ${{ secrets.MARKETPLACE_FRONTEND_URL }}
+          MARKETPLACE_BACKEND_URL: ${{ secrets.MARKETPLACE_BACKEND_URL }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: python tools/smoke_test_marketplace.py
+
+      - name: Deploy Vercel frontend
+        id: deploy_frontend
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+        run: |
+          vercel pull --yes --environment=production
+          vercel build --prod
+          DEPLOY_URL=$(vercel deploy --prebuilt --prod)
+          echo "url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy Railway backend
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service mywork-ai-production
+
+      - name: Post-deploy smoke test
+        working-directory: mywork-ai
+        env:
+          MARKETPLACE_FRONTEND_URL: ${{ secrets.MARKETPLACE_FRONTEND_URL }}
+          MARKETPLACE_BACKEND_URL: ${{ secrets.MARKETPLACE_BACKEND_URL }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: python tools/smoke_test_marketplace.py
+
+      - name: Post-deploy QA checks
+        working-directory: mywork-ai
+        env:
+          MARKETPLACE_FRONTEND_URL: ${{ secrets.MARKETPLACE_FRONTEND_URL }}
+          MARKETPLACE_BACKEND_URL: ${{ secrets.MARKETPLACE_BACKEND_URL }}
+          VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+        run: |
+          python tools/qa/check_backend_health.py
+          python tools/qa/check_frontend_routes.py
+
+      - name: Publish deploy summary
+        env:
+          FRONTEND_URL: ${{ steps.deploy_frontend.outputs.url }}
+        run: |
+          echo "### Marketplace Deploy Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Frontend deploy: ${FRONTEND_URL:-n/a}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Smoke tests: ✅" >> "$GITHUB_STEP_SUMMARY"
+          echo "- QA scripts: ✅" >> "$GITHUB_STEP_SUMMARY"
