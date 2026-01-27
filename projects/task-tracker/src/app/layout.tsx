@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { WebVitalsReporter } from "@/shared/components/WebVitalsReporter";
-import { FeedbackWidget } from "@/shared/components";
+import { FeedbackWidget } from "@/shared/components/FeedbackWidget";
 
 export const metadata: Metadata = {
   title: "Task Tracker",

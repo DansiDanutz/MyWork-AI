@@ -16,6 +16,12 @@ export async function trackEventAsync(event: AnalyticsEvent): Promise<void> {
     // Validate event structure (will throw if invalid)
     const validatedEvent = AnalyticsEventSchema.parse(event)
 
+    if (!validatedEvent.userId) {
+      // AnalyticsEvent requires a real user relation; skip anonymous events.
+      console.warn('[Analytics] Skipping event without userId:', validatedEvent.type)
+      return
+    }
+
     await prisma.analyticsEvent.create({
       data: {
         userId: validatedEvent.userId,
