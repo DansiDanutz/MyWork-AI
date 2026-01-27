@@ -1,17 +1,21 @@
-name: task-tracker
-type: product
-owner: mywork
+name: Task Tracker
+type: framework-tool
+owner: MyWork AI
 status: active
 marketplace: false
+subscription_tier: pro
 brain_contribution: true
 stack:
   - nextjs
   - prisma
   - postgres
+  - authjs
+  - tailwindcss
 tags:
   - productivity
   - tasks
-  - dashboard
-description: "Task tracking app with dashboards and analytics."
+  - developer-tools
+description: "Task management tool for developers. Included with Pro subscription - NOT for sale."
 deployment:
-  status: not_deployed
+  status: live
+  url: "https://task-tracker-weld-delta.vercel.app"

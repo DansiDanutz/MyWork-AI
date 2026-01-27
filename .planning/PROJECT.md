@@ -1,33 +1,82 @@
-# MyWork Framework (Core)
+# MyWork Framework
 
 ## Vision
 
-Build a production-grade framework that helps builders ship audited projects fast, sell them in the marketplace, and grow the collective Brain.
+**You Code. You Build. You Earn. You Sell.**
 
-## Outcomes
+A complete ecosystem where builders can:
 
-- Buyers get reliable, audited projects with clear delivery.
-- Sellers can list and sell with automated audits and revenue tracking.
-- Brain captures verified knowledge from audited repos.
+1. Use powerful tools to build faster (Framework Tools - included with subscription)
+2. Sell their creations on the marketplace (Marketplace Products - for sale)
+3. Grow collective knowledge through the Brain
 
-## Scope (Now)
+---
 
-- Marketplace + Brain + Payments/Credits + Audit pipeline
-- GSD orchestration + Autocoder workflows + n8n/MCP integrations
+## Project Taxonomy
 
-## Scope (Later)
+### Category 1: Framework Tools (Included with Subscription)
 
-- Enterprise SSO
-- Advanced marketplace governance
-- Automated trust scoring and certification
+Tools that help subscribers work better. **NOT for sale** - included with Pro/Enterprise.
 
-## Success Metrics
+| Tool | Purpose | Status |
+| ---- | ------- | ------ |
+| Task Tracker | Simple task management for developers | Live |
+| AI Dashboard | AI content aggregation and automation | Live |
+| GSD Orchestrator | Project lifecycle management | Built-in |
+| Brain | Knowledge vault and pattern recognition | Built-in |
+| Module Registry | Reusable code discovery | Built-in |
+| Autocoder | Autonomous multi-session coding | Available |
+| n8n Workflows | Visual automation builder | Integrated |
 
-- 99% successful audit runs
-- <2% order failures
-- Positive unit economics (10% platform fee)
-- Brain usage growth month-over-month
+**Value:** Subscribe once, get all tools to ship faster.
 
-## Next Milestone: First Marketplace Listing
+### Category 2: Marketplace Products (For Sale)
 
-Plan + checklist: `.planning/MARKETPLACE_FIRST_LISTING_PLAN.md`
+Complete projects built by users that can be listed and sold on the marketplace.
+
+| Product | Description | Price Range |
+| ------- | ----------- | ----------- |
+| SportsAI | Sports betting arbitrage detection | $299-499 |
+| Games Platform | Multiplayer games with WhatsApp invites | $199-399 |
+| User submissions | Community-built projects | Varies |
+
+**Value:** Build once, sell forever. Keep 90% of revenue.
+
+---
+
+## Revenue Model
+
+### Subscription Tiers (Access to Framework Tools)
+
+| Tier | Price | Includes |
+| ---- | ----- | -------- |
+| Community | Free | Framework CLI, Local Brain |
+| Pro | $49/mo | All Framework Tools, Marketplace selling |
+| Enterprise | $499/mo | White-label, Priority support, SLA |
+
+### Marketplace Economics (For Selling Products)
+
+- Sellers keep: 90% of sale price
+- Platform fee: 10%
+- Escrow period: 7 days
+- Verification levels: Basic, Verified, Production, Premium
+
+---
+
+## Current Inventory
+
+### Framework Tools (Live)
+
+- Task Tracker: <https://task-tracker-weld-delta.vercel.app>
+- AI Dashboard: <https://ai-dashboard-production-b046.up.railway.app>
+
+### Marketplace Products (Ready to List)
+
+- SportsAI: Sports betting arbitrage platform
+- Games Platform: Multiplayer gaming framework
+
+---
+
+## Next Milestone
+
+First Marketplace Listing - List SportsAI or Games Platform to validate "You Sell, You Earn".

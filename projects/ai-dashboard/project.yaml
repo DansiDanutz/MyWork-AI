@@ -1,18 +1,20 @@
-name: ai-dashboard
-type: product
-owner: mywork
+name: AI Dashboard
+type: framework-tool
+owner: MyWork AI
 status: active
 marketplace: false
+subscription_tier: pro
 brain_contribution: true
 stack:
-  - nextjs
   - fastapi
-  - postgres
+  - react
+  - sqlite
+  - apify
 tags:
-  - analytics
-  - ai
-  - dashboard
-description: "AI analytics dashboard for tracking usage and insights."
+  - ai-aggregation
+  - content-automation
+  - developer-tools
+description: "AI content aggregation tool. Included with Pro subscription - NOT for sale."
 deployment:
   status: live
-  backend_url: "https://ai-dashboard-backend-production-c40e.up.railway.app"
+  url: "https://ai-dashboard-production-b046.up.railway.app"
