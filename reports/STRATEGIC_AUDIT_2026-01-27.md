@@ -71,7 +71,18 @@ Stop building infrastructure. Start selling.
 
 **$1 in revenue.** One dollar proves the model works.
 
+## Product Inventory (Marketplace Ready)
+
+| Product | Type | Stack | Status | Marketplace Price |
+| --- | --- | --- | --- | --- |
+| Task Tracker | SaaS | Next.js, PostgreSQL, Auth.js | ✅ Deployed | Free / $29 Pro |
+| AI Dashboard | Tool | FastAPI, React, SQLite | ✅ Deployed | $49-99 |
+| SportsAI | Platform | TypeScript, Python, Apify | ✅ Ready | $299-499 |
+| Games Platform | Framework | TypeScript, PostgreSQL, WebSockets | ✅ Ready | $199-399 |
+
+### Total Marketplace-Ready Products: 4
+
 ## Questions
 
-- Do we want to prioritize AI Dashboard deployment or Marketplace product seeding first?
+- Which product should be listed first on the Marketplace?
 - Who is the target first buyer, and what is the smallest product they will pay for?
