@@ -163,16 +163,24 @@ future projects benefit from lessons learned.
 
 ```text
 
-```
+```text
 
-```
+```text
+
 ┌─────────────────────────────────────┐
 │           YOU (Request)             │
 └─────────────────┬───────────────────┘
-                  │
-                  ▼
 
-```
+```text
+
+```text
+
+```text
+
+```text
+
+  │
+  ▼
 
 ```text
 
@@ -184,7 +192,17 @@ future projects benefit from lessons learned.
 
 ```text
 
-```
+```text
+
+```text
+
+```text
+
+```text
+
+```text
+
+```yaml
 
 ┌─────────────────────────────────────────────────────────────────────────────────┐
 │                              MASTER ORCHESTRATOR                                 │
@@ -210,13 +228,29 @@ future projects benefit from lessons learned.
 
 ```text
 
-```
+```text
 
-                  │
+```text
 
-```
+```text
 
-```
+```text
+
+```text
+
+  │
+
+```yaml
+
+```yaml
+
+```yaml
+
+```yaml
+
+```yaml
+
+```yaml
 
 ```yaml
 
@@ -264,14 +298,25 @@ future projects benefit from lessons learned.
 
 ```text
 
-```
+```text
 
-               │
-               ▼
+```text
 
-```
+```text
 
-```
+```text
+   │
+   ▼
+
+```html
+
+```html
+
+```html
+
+```html
+
+```html
 
  ┌─────────────────────────────────────────────┐
  │              SELF-LEARNING                   │
@@ -323,7 +368,7 @@ graph TB
 
 subgraph "Master Orchestrator"
 
-```
+```yaml
 
 MO[CLAUDE.md
 Routes all requests]
