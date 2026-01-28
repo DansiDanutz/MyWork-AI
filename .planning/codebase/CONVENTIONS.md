@@ -88,8 +88,7 @@ varies but generally under 100 chars
 
 **Example from `/Users/dansidanutz/Desktop/MyWork/frontend/app/page.tsx`:**
 
-```
-
+```text
 typescript
 
 import { useEffect, useState } from 'react';
@@ -97,7 +96,7 @@ import Link from 'next/link';
 import { Video, Newspaper, FolderGit2, Bot, RefreshCw, Clock } from 'lucide-react';
 import { getStats, Stats } from '@/lib/api';
 
-```
+```text
 
 text
 
@@ -130,14 +129,13 @@ text
 **Pattern from
 `/Users/dansidanutz/Desktop/MyWork/frontend/app/videos/page.tsx`:**
 
-```
-
+```text
 typescript
 
 const fetchVideos = async () => {
   try {
 
-```
+```text
 
 javascript
 
@@ -146,39 +144,36 @@ const data = await getVideos(50);
 setVideos(data);
 setError(null);
 
-```
-
+```text
 text
 
   } catch (err) {
 
-```
+```text
 
 text
 
 setError('Failed to load videos');
 console.error(err);
 
-```
-
+```text
 text
 
   } finally {
 
-```
+```text
 
 text
 
 setLoading(false);
 
-```
-
+```text
 text
 
   }
 };
 
-```
+```text
 
 text
 
@@ -191,47 +186,43 @@ text
 
 **Pattern from `/Users/dansidanutz/Desktop/MyWork/backend/main.py`:**
 
-```
-
+```text
 python
 @app.post("/api/videos/scrape")
 async def trigger_video_scrape(db: Session = Depends(get_db)):
 
-```
+```text
 
 yaml
 
 try:
 
-```
-
+```text
 text
 
 scraper = YouTubeScraper()
 await scraper.scrape_videos(db)
 return {"status": "success", "message": "YouTube scrape completed"}
 
-```
+```text
 
 text
 
 except Exception as e:
 
-```
-
+```text
 text
 
 raise HTTPException(status_code=500, detail=str(e))
 
-```
+```text
 
 text
 
-```
-
+```text
 text
 
-```
+```text
 
 text
 
@@ -244,26 +235,24 @@ text
 
 - Configured in `main.py` with basicConfig:
 
-```
-
+```text
 python
 logging.basicConfig(
 
-```
+```text
 
 text
 
 level=logging.INFO,
 format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
-```
-
+```text
 text
 
 )
 logger = logging.getLogger(**name**)
 
-```
+```text
 
 text
 
@@ -304,12 +293,11 @@ text
 **Example from
 `/Users/dansidanutz/Desktop/MyWork/backend/scrapers/youtube_scraper.py`:**
 
-```
-
+```text
 python
 def scrape_videos(
 
-```
+```text
 
 yaml
 
@@ -319,13 +307,12 @@ queries: List[str] = None,
 max_results_per_query: int = 20,
 published_after_days: int = 7
 
-```
-
+```text
 text
 
 ) -> List[Dict]:
 
-```
+```text
 
 python
 
@@ -334,8 +321,7 @@ Scrape AI-related videos from YouTube
 
 Args:
 
-```
-
+```text
 text
 
 db: Database session
@@ -343,29 +329,27 @@ queries: List of search queries (defaults to AI_SEARCH_QUERIES)
 max_results_per_query: Max videos per query
 published_after_days: Only get videos from last N days
 
-```
+```text
 
 text
 
 Returns:
 
-```
-
+```text
 text
 
 List of scraped video data
 
-```
+```text
 
 text
 
 """
 
-```
-
+```text
 text
 
-```
+```text
 
 text
 
@@ -398,8 +382,7 @@ text
 
 **Example from `/Users/dansidanutz/Desktop/MyWork/frontend/lib/api.ts`:**
 
-```
-
+```text
 typescript
 
 export async function getVideos(limit = 20): Promise<Video[]> {
@@ -407,7 +390,7 @@ export async function getVideos(limit = 20): Promise<Video[]> {
   return data;
 }
 
-```
+```text
 
 text
 

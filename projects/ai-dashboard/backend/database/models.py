@@ -1,6 +1,6 @@
 # AI Dashboard - Database Models
 
-from sqlalchemy import Column, Integer, String, Float, DateTime, Text, Boolean, JSON
+from sqlalchemy import Column, Integer, String, Float, DateTime, Text, Boolean, JSON, Index
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 
@@ -23,10 +23,10 @@ class YouTubeVideo(Base):
     comment_count = Column(Integer, default=0)
     duration = Column(String(20))
     thumbnail_url = Column(String(500))
-    published_at = Column(DateTime)
-    quality_score = Column(Float, default=0.0)
+    published_at = Column(DateTime, index=True)  # Index for date filtering
+    quality_score = Column(Float, default=0.0, index=True)  # Index for sorting
     search_query = Column(String(200))
-    scraped_at = Column(DateTime, default=datetime.utcnow)
+    scraped_at = Column(DateTime, default=datetime.utcnow, index=True)  # Index for recent queries
 
     def calculate_quality_score(self):
         """Calculate video quality score based on engagement metrics"""
@@ -68,7 +68,13 @@ class AINews(Base):
     comments_count = Column(Integer, default=0)
     category = Column(String(100))  # ML, LLM, Robotics, etc.
     thumbnail_url = Column(String(500))
-    scraped_at = Column(DateTime, default=datetime.utcnow)
+    scraped_at = Column(DateTime, default=datetime.utcnow, index=True)  # Index for recent queries
+
+    # Composite index for trending queries (score + comments)
+    __table_args__ = (
+        Index('ix_ai_news_trending', 'score', 'comments_count'),
+        Index('ix_ai_news_published', 'published_at'),
+    )
 
 
 class GitHubProject(Base):
@@ -91,9 +97,15 @@ class GitHubProject(Base):
     created_at = Column(DateTime)
     updated_at = Column(DateTime)
     pushed_at = Column(DateTime)
-    trending_score = Column(Float, default=0.0)
+    trending_score = Column(Float, default=0.0, index=True)  # Index for trending sort
     weekly_stars = Column(Integer, default=0)
-    scraped_at = Column(DateTime, default=datetime.utcnow)
+    scraped_at = Column(DateTime, default=datetime.utcnow, index=True)  # Index for recent queries
+
+    # Composite index for star-based queries
+    __table_args__ = (
+        Index('ix_github_projects_stars', 'stars'),
+        Index('ix_github_projects_pushed', 'pushed_at'),
+    )
 
     def calculate_trending_score(self, previous_stars=0):
         """Calculate trending score based on stars growth and activity"""

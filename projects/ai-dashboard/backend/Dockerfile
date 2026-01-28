@@ -8,6 +8,7 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8000
+ENV DATABASE_PATH=/data/dashboard.db
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -24,8 +25,10 @@ RUN pip install --no-cache-dir --upgrade pip && \
 # Copy application code
 COPY . .
 
-# Create data directory for SQLite
-RUN mkdir -p /app/data
+# Create persistent data directory for SQLite
+# IMPORTANT: Mount this as a volume in production!
+# docker run -v ai-dashboard-data:/data ...
+RUN mkdir -p /data
 
 # Expose port
 EXPOSE 8000

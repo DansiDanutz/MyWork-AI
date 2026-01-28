@@ -136,8 +136,7 @@ build production-ready projects with AI assistance and monetize their creations.
 
 ### Product Tiers
 
-```
-
+```text
 bash
 +------------------------------------------------------------------+
 
@@ -163,7 +162,7 @@ bash
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 text
 
@@ -195,8 +194,7 @@ text
 
 ### System Overview
 
-```
-
+```text
 text
 
 +------------------------------------------------------------------+
@@ -206,24 +204,22 @@ text
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 text
 
-```
-
+```text
 text
 
   |                 |                   |
 
   v                 v                   v
 
-```
+```text
 
 text
 
-```
-
+```text
 text
 
 +------------------------------------------------------------------+
@@ -237,24 +233,22 @@ text
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 text
 
-```
-
+```text
 text
 
   |                 |                   |
 
   v                 v                   v
 
-```
+```text
 
 text
 
-```
-
+```text
 text
 
 +------------------------------------------------------------------+
@@ -268,24 +262,22 @@ text
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 text
 
-```
-
+```text
 text
 
   |                 |                   |
 
   v                 v                   v
 
-```
+```text
 
 text
 
-```
-
+```text
 text
 
 +------------------------------------------------------------------+
@@ -298,24 +290,22 @@ text
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 text
 
-```
-
+```text
 text
 
   |                 |                   |
 
   v                 v                   v
 
-```
+```text
 
 text
 
-```
-
+```text
 text
 
 +------------------------------------------------------------------+
@@ -328,7 +318,7 @@ text
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 text
 
@@ -336,8 +326,7 @@ text
 
 #### 4.1 Brain API (Centralized Intelligence)
 
-```
-
+```text
 yaml
 Brain API Architecture
 +------------------------------------------------------------------+
@@ -378,14 +367,13 @@ API Endpoints:
 - GET  /brain/suggest    - Get recommendations
 - GET  /brain/patterns   - Discover patterns
 
-```
+```text
 
 text
 
 #### 4.2 Marketplace Platform
 
-```
-
+```text
 text
 
 Marketplace Architecture
@@ -419,14 +407,13 @@ Database Schema (Simplified):
 - reviews (id, purchase_id, rating, comment)
 - payouts (id, seller_id, amount, status, stripe_transfer_id)
 
-```
+```text
 
 text
 
 #### 4.3 Payment Flow (Stripe Connect)
 
-```
-
+```text
 yaml
 Payment Flow
 +------------------------------------------------------------------+
@@ -459,7 +446,7 @@ Stripe Connect Setup:
 - Escrow: 7-day hold before payout
 - Fees: 2.9% + $0.30 (Stripe) + 10% (Platform)
 
-```
+```text
 
 text
 
@@ -478,8 +465,7 @@ text
 
 ### Security Architecture
 
-```
-
+```text
 text
 
 Security Layers
@@ -509,7 +495,7 @@ Security Layers
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 text
 
@@ -562,8 +548,7 @@ text
 
 **Framework (Open Source):**
 
-```
-
+```text
 markdown
 
 MIT License with Commons Clause
@@ -572,7 +557,7 @@ MIT License with Commons Clause
 - Cannot sell the framework itself
 - Can sell projects built with it
 
-```
+```text
 
 text
 
@@ -696,13 +681,12 @@ text
 
 ### Launch Timeline
 
-```
-
+```text
 text
 
 Month 1-2: Framework polish, community setup
 
-```
+```text
 
 text
 
@@ -710,13 +694,12 @@ text
 
  v
 
-```
-
+```text
 text
 
 Month 3: Public launch (GitHub, ProductHunt)
 
-```
+```text
 
 text
 
@@ -724,13 +707,12 @@ text
 
  v
 
-```
-
+```text
 text
 
 Month 4-5: Pro tier launch, first sellers
 
-```
+```text
 
 text
 
@@ -738,13 +720,12 @@ text
 
  v
 
-```
-
+```text
 text
 
 Month 6: Marketplace beta
 
-```
+```text
 
 text
 
@@ -752,13 +733,12 @@ text
 
  v
 
-```
-
+```text
 text
 
 Month 7-9: Marketing push, partnerships
 
-```
+```text
 
 text
 
@@ -766,13 +746,12 @@ text
 
  v
 
-```
-
+```text
 text
 
 Month 10-12: Enterprise tier, API access
 
-```
+```text
 
 text
 
@@ -782,8 +761,7 @@ text
 
 ### Revenue Model
 
-```
-
+```text
 yaml
 Revenue Streams:
 +------------------------------------------------------------------+
@@ -806,7 +784,7 @@ Revenue Streams:
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 text
 

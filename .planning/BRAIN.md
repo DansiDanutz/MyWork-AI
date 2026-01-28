@@ -30,7 +30,7 @@ This file is the Master Orchestrator's persistent memory. It contains:
 ### Project Management
 
 | Lesson | Context | Date |
-|--------|---------|------|
+| -------- | --------- | ------ |
   | [T] Always check `.p... | Prevents duplicate e... | 2026-01-24 |  
   | [T] Run module regis... | Found 1,347 reusable... | 2026-01-24 |  
   | [T] GSD phases shoul... | Large phases cause c... | 2026-01-24 |  
@@ -38,14 +38,14 @@ This file is the Master Orchestrator's persistent memory. It contains:
 ### Code Quality
 
 | Lesson | Context | Date |
-|--------|---------|------|
+| -------- | --------- | ------ |
   | [T] Never hardcode A... | Security vulnerabili... | 2026-01-24 |  
   | [T] Read from .env f... | Secure and configurable | 2026-01-24 |  
 
 ### Tool Usage
 
 | Lesson | Context | Date |
-|--------|---------|------|
+| -------- | --------- | ------ |
   | [T] Use `npx` for n8... | Avoids stale cached ... | 2026-01-24 |  
   | [T] Check Autocoder ... | Prevents corruption | 2026-01-24 |  
 
@@ -55,8 +55,7 @@ This file is the Master Orchestrator's persistent memory. It contains:
 
 ### Project Setup Pattern
 
-```
-
+```text
 bash
 
 1. mw new <name> <template>     # Scaffold with template
@@ -65,7 +64,7 @@ bash
 4. mw search "relevant keywords" # Find reusable modules
 5. /gsd:plan-phase 1           # Plan first phase
 
-```
+```text
 
 text
 
@@ -73,8 +72,7 @@ text
 
 ### Debug Pattern
 
-```
-
+```text
 bash
 
 1. Check error message carefully
@@ -83,7 +81,7 @@ bash
 4. Fix in isolation, test, then integrate
 5. Document fix in BRAIN.md if novel
 
-```
+```text
 
 text
 
@@ -91,8 +89,7 @@ text
 
 ### Context Recovery Pattern
 
-```
-
+```text
 bash
 
 1. Read .planning/STATE.md
@@ -101,7 +98,7 @@ bash
 4. Run mw status for system health
 5. Continue from documented state
 
-```
+```text
 
 text
 
@@ -109,8 +106,7 @@ text
 
 ### Safe Update Pattern
 
-```
-
+```text
 bash
 
 1. python tools/auto_update.py check  # See what's available
@@ -120,7 +116,7 @@ bash
 5. python tools/health_check.py       # Verify nothing broke
 6. python tools/auto_update.py rollback <component> # If needed
 
-```
+```text
 
 text
 
@@ -278,64 +274,58 @@ text
 
 **Adding a lesson:**
 
-```
-
+```text
 bash
 python tools/brain.py add lesson "Your lesson here" \
 
-```
+```text
 
 text
 --context "Where you learned it"
 
-```
-
+```text
 text
 
-```
+```text
 
 text
 
 **Adding a pattern:**
 
-```
-
+```text
 bash
 python tools/brain.py add pattern "Pattern name" --steps "1. First\n2. Second"
 
-```
+```text
 
 text
 
 **Marking something deprecated:**
 
-```
-
+```text
 bash
 python tools/brain.py deprecate "entry identifier"
 
-```
+```text
 
 text
 
 **Cleaning up:**
 
-```
-
+```text
 bash
 python tools/brain.py cleanup  # Removes [DEPRECATED] entries
 
-```
+```text
 
 text
 
 **Reviewing:**
 
-```
-
+```text
 bash
 python tools/brain.py review   # Shows entries needing attention
 
-```
+```text
 
 text

@@ -24,6 +24,7 @@ text
 `backend/services/youtube_automation.py`
 
 ```text
+
 text
 
 - Models: claude-3-5-sonnet-20241022
@@ -55,6 +56,7 @@ yaml
 `https://techcrunch.com/category/artificial-intelligence/feed/`
 
 ```text
+
 text
 
 - The Verge AI:
@@ -64,6 +66,7 @@ yaml
 `https://www.theverge.com/rss/ai-artificial-intelligence/index.xml`
 
 ```text
+
 text
 
 - MIT Technology Review: `https://www.technologyreview.com/feed/`
@@ -112,6 +115,7 @@ markdown
 - `scraper_logs` - Execution logs of scraper jobs
 
 ```text
+
 text
 
 **File Storage:**
@@ -162,6 +166,7 @@ text
 (`/Users/dansidanutz/Desktop/MyWork/frontend/app/page.tsx`)
 
 ```text
+
 text
 
 **Scraper Monitoring:**

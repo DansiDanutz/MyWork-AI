@@ -70,6 +70,7 @@ markdown
 └── README.md                  # Project documentation
 
 ```text
+
 text
 
 ## Directory Purposes

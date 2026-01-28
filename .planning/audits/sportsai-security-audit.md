@@ -61,6 +61,7 @@ git gc --prune=now --aggressive
 git push origin --force --all
 
 ```text
+
 text
 
 **Pros:** Preserves commit history structure
@@ -89,6 +90,7 @@ git remote add origin https://github.com/DansiDanutz/SportsAI-Clean.git
 git push -u origin main
 
 ```text
+
 text
 
 **Pros:** Guaranteed clean, simple

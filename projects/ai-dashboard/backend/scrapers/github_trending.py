@@ -133,7 +133,7 @@ class GitHubTrendingScraper:
         query: str,
         per_page: int = 30
     ) -> List[Dict]:
-        """Search GitHub repositories"""
+        """Search GitHub repositories with rate limit handling"""
         url = f"{GITHUB_API}/search/repositories"
 
         # Add date filter for recent activity
@@ -148,6 +148,15 @@ class GitHubTrendingScraper:
         }
 
         response = await client.get(url, params=params)
+
+        # Check rate limit
+        remaining = int(response.headers.get("X-RateLimit-Remaining", 1))
+        if remaining == 0:
+            reset_time = int(response.headers.get("X-RateLimit-Reset", 0))
+            wait_seconds = max(0, reset_time - int(datetime.utcnow().timestamp()))
+            logger.warning(f"GitHub rate limit exceeded. Resets in {wait_seconds}s")
+            raise Exception(f"GitHub rate limit exceeded. Try again in {wait_seconds} seconds.")
+
         response.raise_for_status()
         data = response.json()
 

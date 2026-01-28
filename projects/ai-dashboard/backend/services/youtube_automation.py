@@ -157,9 +157,25 @@ class YouTubeAutomationService:
             logger.info(f"HeyGen video generation started: {automation.heygen_video_id}")
             return automation
 
-        except Exception as e:
-            logger.error(f"HeyGen video generation failed: {e}")
+        except httpx.HTTPStatusError as e:
+            error_detail = f"HeyGen API error: {e.response.status_code}"
+            try:
+                error_body = e.response.json()
+                error_detail = f"HeyGen API error: {error_body.get('message', e.response.text)}"
+            except:
+                pass
+            logger.error(f"HeyGen video generation failed: {error_detail}")
             automation.status = "failed"
+            automation.user_edits = automation.user_edits or {}
+            automation.user_edits["heygen_error"] = error_detail
+            db.commit()
+            raise ValueError(error_detail)
+        except Exception as e:
+            error_detail = f"HeyGen video generation failed: {type(e).__name__}: {str(e)}"
+            logger.error(error_detail)
+            automation.status = "failed"
+            automation.user_edits = automation.user_edits or {}
+            automation.user_edits["heygen_error"] = error_detail
             db.commit()
             raise
 

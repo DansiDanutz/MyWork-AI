@@ -34,17 +34,43 @@ scheduler = SchedulerService()
 youtube_automation = YouTubeAutomationService()
 
 
+def validate_api_keys():
+    """Validate required API keys on startup"""
+    missing_keys = []
+    optional_keys = []
+
+    # Required for core functionality
+    if not os.getenv("ANTHROPIC_API_KEY"):
+        missing_keys.append("ANTHROPIC_API_KEY")
+
+    # Optional but needed for specific features
+    if not os.getenv("APIFY_API_KEY"):
+        optional_keys.append("APIFY_API_KEY (YouTube scraping)")
+    if not os.getenv("HEYGEN_API_KEY"):
+        optional_keys.append("HEYGEN_API_KEY (video generation)")
+    if not os.getenv("YOUTUBE_API_KEY"):
+        optional_keys.append("YOUTUBE_API_KEY (YouTube upload)")
+
+    if missing_keys:
+        logger.error(f"Missing required API keys: {', '.join(missing_keys)}")
+        raise RuntimeError(f"Missing required API keys: {', '.join(missing_keys)}")
+
+    if optional_keys:
+        logger.warning(f"Optional API keys not set: {', '.join(optional_keys)}")
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Startup and shutdown events"""
     # Startup
     logger.info("Starting AI Dashboard...")
+    validate_api_keys()
     init_db()
     scheduler.start()
     yield
     # Shutdown
     logger.info("Shutting down AI Dashboard...")
-    scheduler.stop()
+    scheduler.stop(wait=True)  # Wait for running jobs to complete
     await youtube_automation.close()
 
 
@@ -57,13 +83,21 @@ app = FastAPI(
 )
 
 # CORS middleware - configured via ALLOWED_ORIGINS env var
+# Production: Set ALLOWED_ORIGINS to your frontend domain(s)
 allowed_origins = os.getenv(
     "ALLOWED_ORIGINS",
-    "http://localhost:3000,http://127.0.0.1:3000,https://*.vercel.app"
+    "http://localhost:3000,http://127.0.0.1:3000"
 ).split(",")
+
+# Validate allowed origins (strip whitespace, remove empty)
+allowed_origins = [origin.strip() for origin in allowed_origins if origin.strip()]
+
+# Log CORS configuration
+logger.info(f"CORS allowed origins: {allowed_origins}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins for public API
+    allow_origins=allowed_origins,  # Use configured origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

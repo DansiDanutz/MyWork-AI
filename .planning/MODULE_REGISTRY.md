@@ -10,8 +10,7 @@ Use it to find existing implementations before building new ones.
 
 ## Quick Search Commands
 
-```
-
+```text
 bash
 
 # Search for modules
@@ -24,7 +23,7 @@ python tools/module_registry.py search "api endpoint"
 python tools/module_registry.py list api_endpoint
 python tools/module_registry.py list component
 
-```
+```text
 
 text
 
@@ -172,12 +171,11 @@ text
   - File: `autocoder/server/routers/agent.py:163`
   - Notify scheduler of manual stop (to prevent auto-start during scheduled
 
-```
-
+```text
 text
 window)
 
-```
+```text
 
 text
 
@@ -256,30 +254,27 @@ text
   - File: `autocoder/server/routers/filesystem.py:187`
   - for pattern in HIDDEN_PATTERNS:
 
-```
-
+```text
 yaml
 
-```
+```text
 
 text
 
 if re.match(pattern, name, re.IGNORECASE):
 
-```
-
+```text
 text
 retur
 
-```
+```text
 
 text
 
-```
-
+```text
 text
 
-```
+```text
 
 text
 
@@ -304,12 +299,11 @@ text
   - File: `autocoder/server/routers/agent.py:142`
   - Notify scheduler of manual start (to prevent auto-stop during scheduled
 
-```
-
+```text
 text
 window)
 
-```
+```text
 
 text
 
@@ -516,12 +510,11 @@ text
   - File: `autocoder/ui/src/components/DevServerControl.tsx:62`
   - DevServerControl provides start/stop controls for a project's development
 
-```
-
+```text
 text
 server.
 
-```
+```text
 
 text
 
@@ -1532,12 +1525,11 @@ text
   - File: `apps/web/src/hooks/usePresence.ts:11`
   - Presence hook for tracking user online status and receiving friend online
 
-```
-
+```text
 text
 notifications
 
-```
+```text
 
 text
 
@@ -1590,12 +1582,11 @@ text
   - File: `autocoder/ui/src/hooks/useCelebration.ts:148`
   - Check if all features are complete (none pending or in progress, at least one
 
-```
-
+```text
 text
 done)
 
-```
+```text
 
 text
 
@@ -1842,23 +1833,21 @@ text
   - File: `autocoder/server/routers/terminal.py:92`
   - Validate terminal ID format.
 
-```
-
+```text
 yaml
 Args:
 
-```
+```text
 
 text
 
 terminal_id: The terminal ID to validate
 
-```
-
+```text
 text
 Return
 
-```
+```text
 
 text
 
@@ -1903,15 +1892,14 @@ text
   - File: `autocoder/server/schemas.py:121`
   - id: int
 
-```
-
+```text
 yaml
 priority: int
 passes: bool
 in_progress: bool
 blocked: bool = False  # Comput
 
-```
+```text
 
 text
 
@@ -2077,23 +2065,21 @@ text
   - File: `autocoder/server/routers/terminal.py:98`
   - Validate terminal ID format.
 
-```
-
+```text
 yaml
 Args:
 
-```
+```text
 
 text
 
 terminal_id: The terminal ID to validate
 
-```
-
+```text
 text
 Return
 
-```
+```text
 
 text
 
@@ -2321,23 +2307,21 @@ text
   - File: `autocoder/server/routers/terminal.py:86`
   - Validate terminal ID format.
 
-```
-
+```text
 yaml
 Args:
 
-```
+```text
 
 text
 
 terminal_id: The terminal ID to validate
 
-```
-
+```text
 text
 Return
 
-```
+```text
 
 text
 
@@ -2568,21 +2552,19 @@ text
   - File: `autocoder/server/services/dev_server_manager.py:81`
   - for pattern in SENSITIVE_PATTERNS:
 
-```
-
+```text
 text
 
-```
+```text
 
 text
 
 line = re.sub(pattern, '[REDACTED]', line, flags=re.IGNOR
 
-```
-
+```text
 text
 
-```
+```text
 
 text
 
@@ -2662,29 +2644,26 @@ text
   - File: `backend/scrapers/github_trending.py:272`
   - return db.query(GitHubProject).filter(
 
-```
+```text
+text
+
+```text
 
 text
 
-```
-
-text
-
-```
-
+```text
 text
 GitHubProject.stars >= min_stars
 
-```
+```text
 
 text
 ).order_
 
-```
-
+```text
 text
 
-```
+```text
 
 text
 
@@ -3406,12 +3385,11 @@ text
   - File: `autocoder/server/routers/filesystem.py:316`
   - List available drives (Windows only).
 
-```
-
+```text
 text
 Returns null on non-Windows platforms.
 
-```
+```text
 
 text
 
@@ -3512,22 +3490,20 @@ text
   - File: `autocoder/server/services/terminal_manager.py:695`
   - Remove a terminal session from the registry.
 
-```
-
+```text
 yaml
 Args:
 
-```
+```text
 
 text
 
 project_name: Name of the project
 
-```
-
+```text
 text
 
-```
+```text
 
 text
 
@@ -3570,13 +3546,12 @@ text
   - File: `autocoder/prompts.py:141`
   - base_prompt = get_coding_prompt(project_dir)
 
-```
-
+```text
 markdown
 
 # Minimal header - the base prompt already contain
 
-```
+```text
 
 text
 
@@ -3657,12 +3632,11 @@ text
   - File: `apps/api/src/game-engines/chess/time-controls.ts:169`
   - Parse time control string (e.g., "10+5" for 10 minutes with 5 second
 
-```
-
+```text
 text
 increment)
 
-```
+```text
 
 text
 
@@ -3965,12 +3939,11 @@ Functions for loading prompt templates with proje
   - File: `apps/api/src/game-engines/chess/rules.ts:68`
   - Get all legal moves for a color (excluding moves that would leave king in
 
-```
-
+```text
 text
 check)
 
-```
+```text
 
 text
 
@@ -3995,12 +3968,11 @@ text
   - File: `apps/web/src/pages/AdminDashboardPage.tsx:366`
   - Helper function to get current datetime in format suitable for datetime-local
 
-```
-
+```text
 text
 input
 
-```
+```text
 
 text
 
@@ -4097,22 +4069,20 @@ text
   - File: `autocoder/registry.py:318`
   - Get all registered projects.
 
-```
-
+```text
 yaml
 Returns:
 
-```
+```text
 
 text
 
 Dictionary mapping project names to their info di
 
-```
-
+```text
 text
 
-```
+```text
 
 text
 
@@ -4489,12 +4459,11 @@ text
   - File: `apps/web/src/pages/AdminDashboardPage.tsx:359`
   - Helper function to get current datetime in format suitable for datetime-local
 
-```
-
+```text
 text
 input
 
-```
+```text
 
 text
 
@@ -4738,29 +4707,30 @@ text
   - File: `autocoder/progress.py:108`
   - SELECT
 
-```
+```text
+text
+
+```text
 
 text
 
-```
-
+```text
 text
 
 ```
-
-text
-        COUNT(*) as total,
-        SUM(CASE WHEN passes = 1 THEN 1 EL
+    COUNT(*) as total,
+    SUM(CASE WHEN passes = 1 THEN 1 EL
 
 ```
 
-text
-
-```
+```text
 
 text
 
-```
+```text
+text
+
+```text
 
 text
 
@@ -4890,22 +4860,20 @@ text
   - File: `autocoder/registry.py:121`
   - Get the config directory: ~/.autocoder/
 
-```
-
+```text
 yaml
 Returns:
 
-```
+```text
 
 text
 
 Path to ~/.autocoder/ (created if it d
 
-```
-
+```text
 text
 
-```
+```text
 
 text
 
@@ -5291,12 +5259,11 @@ text
   - File: `autocoder/server/services/assistant_database.py:82`
   - Use as_posix() for cross-platform compatibility with SQLite connection
 
-```
-
+```text
 text
 strings
 
-```
+```text
 
 text
 
@@ -5324,12 +5291,11 @@ text
   - File: `autocoder/server/services/spec_chat_session.py:465`
   - return self.complete
 
-```
-
+```text
 python
 def get_messages(self) -> list[dict]:
 
-```
+```text
 
 text
 

@@ -96,12 +96,11 @@ testing:
 - Not implemented - no test fixtures exist
 - Backend has hardcoded search queries in `youtube_scraper.py`:
 
-```
-
+```text
 python
 AI_SEARCH_QUERIES = [
 
-```
+```text
 
 markdown
 
@@ -111,13 +110,12 @@ markdown
 
 # ... more queries
 
-```
-
+```text
 text
 
 ]
 
-```
+```text
 
 text
 
@@ -259,30 +257,27 @@ etc.)
 
 **Frontend:**
 
-```
-
+```text
 bash
 npm install --save-dev vitest @vitest/ui jsdom @testing-library/react @testing-library/jest-dom
 
-```
+```text
 
 text
 
 **Backend:**
 
-```
-
+```text
 bash
 pip install pytest pytest-asyncio pytest-cov httpx[http2]
 
-```
+```text
 
 text
 
 **Example Frontend Test Structure (would go in `__tests__/`):**
 
-```
-
+```text
 typescript
 
 // app/__tests__/page.test.tsx
@@ -292,28 +287,26 @@ import Dashboard from '@/app/page';
 describe('Dashboard', () => {
   it('displays loading state initially', () => {
 
-```
+```text
 
 text
 
 render(<Dashboard />);
 expect(screen.getByRole('status')).toBeInTheDocument();
 
-```
-
+```text
 text
 
   });
 });
 
-```
+```text
 
 text
 
 **Example Backend Test Structure (would go in `tests/`):**
 
-```
-
+```text
 python
 
 # tests/test_youtube_scraper.py
@@ -324,22 +317,21 @@ from database.models import YouTubeVideo
 @pytest.mark.asyncio
 async def test_parse_apify_video():
 
-```
+```text
 
 yaml
 
 scraper = YouTubeScraper()
 item = {
 
-```
-
+```text
 text
 
 "id": "video123",
 "title": "Test Video",
 "channelName": "Test Channel"
 
-```
+```text
 
 text
 
@@ -347,11 +339,10 @@ text
 result = scraper._parse_apify_video(item, "test query")
 assert result["video_id"] == "video123"
 
-```
-
+```text
 text
 
-```
+```text
 
 text
 

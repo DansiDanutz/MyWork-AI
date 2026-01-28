@@ -72,6 +72,7 @@ yaml
   env:
 
 ```text
+
 yaml
 
 MARKETPLACE_FRONTEND_URL: <https://frontend-hazel-ten-17.vercel.app>
@@ -84,6 +85,7 @@ text
   run: |
 
 ```text
+
 bash
 
 python tools/smoke_test_marketplace.py
@@ -92,6 +94,7 @@ python tools/smoke_test_marketplace.py
 text
 
 ```text
+
 text
 
 ## 4. Deployment Targets
@@ -137,6 +140,7 @@ yaml
    All smoke checks passed.
 
 ```text
+
 text
 
 4. [ ] Update `.planning/STATE.md` with deployment timestamp and any incidents.
@@ -173,6 +177,7 @@ text
 <https://vercel.com/irises-projects-ce549f63/frontend/settings/environment-variables>
 
 ```text
+
 yaml
 
   - Add variable: `BRAIN_WEBHOOK_URL`
@@ -184,6 +189,7 @@ text
 `https://mywork-ai-production.up.railway.app/api/analytics/brain/ingest`
 
 ```text
+
 yaml
 
 - [ ] **PENDING:** Test webhook by triggering Task Tracker events and verifying

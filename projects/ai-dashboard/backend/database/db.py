@@ -8,8 +8,18 @@ import os
 
 from .models import Base
 
-# Database path
-DB_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), "dashboard.db")
+# Database path - configurable via DATABASE_PATH env var for Docker persistence
+# In production/Docker: Set DATABASE_PATH=/data/dashboard.db and mount /data as a volume
+DB_PATH = os.getenv(
+    "DATABASE_PATH",
+    os.path.join(os.path.dirname(os.path.dirname(__file__)), "dashboard.db")
+)
+
+# Ensure parent directory exists (for Docker volumes)
+db_dir = os.path.dirname(DB_PATH)
+if db_dir and not os.path.exists(db_dir):
+    os.makedirs(db_dir, exist_ok=True)
+
 DATABASE_URL = f"sqlite:///{DB_PATH}"
 ASYNC_DATABASE_URL = f"sqlite+aiosqlite:///{DB_PATH}"
 

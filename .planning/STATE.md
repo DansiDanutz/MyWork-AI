@@ -13,6 +13,7 @@ yaml
 <https://frontend-hazel-ten-17.vercel.app/products/sportsai-sports-betting-arbitrage-platform>
 
 ```text
+
 text
 
 - Demo: <https://sports-ai-one.vercel.app>
@@ -45,6 +46,7 @@ text
 validated
 
 ```text
+
 text
 
 - Production UI loads with "Task Tracker" branding confirmed
@@ -56,6 +58,7 @@ text
 subscription, seller verification)
 
 ```text
+
 text
 
 - Webhook idempotency tracking added (Stripe + Clerk) with migration
@@ -76,6 +79,7 @@ yaml
 `https://mywork-ai-production.up.railway.app/api/analytics/brain/ingest`
 
 ```text
+
 text
 
 - Status: Live, awaiting Task Tracker Vercel env var configuration

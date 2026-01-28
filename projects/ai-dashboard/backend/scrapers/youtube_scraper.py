@@ -6,11 +6,16 @@ from datetime import datetime, timedelta
 from typing import List, Dict, Optional
 import httpx
 from apify_client import ApifyClient
+from apify_client.clients.resource_clients import ActorClient
 from sqlalchemy.orm import Session
 
 from database.models import YouTubeVideo, ScraperLog
 
 logger = logging.getLogger(__name__)
+
+# Request timeout in seconds
+REQUEST_TIMEOUT = 60
+APIFY_TIMEOUT = 300  # 5 minutes for Apify actor runs
 
 # AI-related search queries
 AI_SEARCH_QUERIES = [
@@ -133,7 +138,18 @@ class YouTubeScraper:
             }
 
             try:
-                run = self.client.actor("streamers/youtube-scraper").call(run_input=run_input)
+                # Run with timeout
+                run = self.client.actor("streamers/youtube-scraper").call(
+                    run_input=run_input,
+                    timeout_secs=APIFY_TIMEOUT
+                )
+
+                # Check run status
+                if run.get("status") != "SUCCEEDED":
+                    logger.warning(f"Apify run status: {run.get('status')} for '{query}'")
+                    if run.get("status") == "FAILED":
+                        logger.error(f"Apify run failed: {run.get('statusMessage', 'Unknown error')}")
+                        continue
 
                 # Fetch results
                 for item in self.client.dataset(run["defaultDatasetId"]).iterate_items():
@@ -141,8 +157,11 @@ class YouTubeScraper:
                     if video:
                         all_videos.append(video)
 
+            except TimeoutError:
+                logger.error(f"Apify scrape timed out for '{query}' after {APIFY_TIMEOUT}s")
+                continue
             except Exception as e:
-                logger.error(f"Apify scrape failed for '{query}': {e}")
+                logger.error(f"Apify scrape failed for '{query}': {type(e).__name__}: {e}")
                 continue
 
         return all_videos
@@ -157,7 +176,7 @@ class YouTubeScraper:
         all_videos = []
         published_after = (datetime.utcnow() - timedelta(days=published_after_days)).isoformat() + "Z"
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=REQUEST_TIMEOUT) as client:
             for query in queries:
                 logger.info(f"Searching YouTube API for: {query}")
 

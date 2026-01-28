@@ -11,41 +11,39 @@
 
 ### High-Level Overview
 
-```
+```text
+text
+
+```text
 
 text
 
-```
+```text
+text
+
+```text
 
 text
 
-```
+```text                 +------------------+
+
+                 |   CDN (Cloudflare)|
+
+                 +--------+---------+
+
+                          |
+
+                          v
+
+```text
+```text
+text
+
+```text
 
 text
 
-```
-
-text
-                     +------------------+
-
-                     |   CDN (Cloudflare)|
-
-                     +--------+---------+
-
-                              |
-
-                              v
-
-```
-
-text
-
-```
-
-text
-
-```
-
+```text
 text
 +------------------------------------------------------------------+
 
@@ -58,31 +56,30 @@ text
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 text
 
-```
+```text
+text
+
+```text
 
 text
 
-```
+```text                          |
 
-text
-                              |
+                          v
 
-                              v
-
-```
-
+```text
+```text
 text
 
-```
+```text
 
 text
 
-```
-
+```text
 text
 +------------------------------------------------------------------+
 
@@ -92,35 +89,33 @@ text
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 text
 
-```
+```text
+text
+
+```text
 
 text
 
-```
+```text                          |
 
-text
-                              |
-
-  +---------------------------+---------------------------+
+```text  +---------------------------+---------------------------+
 
   |                           |                           |
 
   v                           v                           v
 
-```
+```text
+text
+
+```text
 
 text
 
-```
-
-text
-
-```
-
+```text
 text
 +------------------+          +------------------+          +------------------+
 
@@ -133,31 +128,29 @@ text
 
 +------------------+          +------------------+          +------------------+
 
-```
+```text
 
 text
 
-```
+```text
+text
+
+```text
 
 text
 
-```
-
-text
   |                           |                           |
 
   v                           v                           v
 
-```
+```text
+text
+
+```text
 
 text
 
-```
-
-text
-
-```
-
+```text
 text
 +------------------------------------------------------------------+
 
@@ -174,31 +167,29 @@ text
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 text
 
-```
+```text
+text
+
+```text
 
 text
 
-```
-
-text
   |                           |                           |
 
   v                           v                           v
 
-```
+```text
+text
+
+```text
 
 text
 
-```
-
-text
-
-```
-
+```text
 markdown
 
 +------------------------------------------------------------------+
@@ -215,7 +206,7 @@ markdown
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 text
 
@@ -225,14 +216,13 @@ text
 
 ### Core Tables
 
-```
-
+```text
 sql
 
 -- Users & Authentication
 CREATE TABLE users (
 
-```
+```text
 
 text
 
@@ -251,15 +241,14 @@ verified_seller BOOLEAN DEFAULT FALSE,
 created_at TIMESTAMP DEFAULT NOW(),
 updated_at TIMESTAMP DEFAULT NOW()
 
-```
-
+```text
 text
 );
 
 -- Seller Profiles
 CREATE TABLE seller_profiles (
 
-```
+```text
 
 text
 
@@ -277,15 +266,14 @@ payout_schedule VARCHAR(20) DEFAULT 'weekly', -- weekly, monthly
 created_at TIMESTAMP DEFAULT NOW(),
 updated_at TIMESTAMP DEFAULT NOW()
 
-```
-
+```text
 text
 );
 
 -- Products
 CREATE TABLE products (
 
-```
+```text
 
 text
 
@@ -333,15 +321,14 @@ last_updated_at TIMESTAMP,
 created_at TIMESTAMP DEFAULT NOW(),
 updated_at TIMESTAMP DEFAULT NOW()
 
-```
-
+```text
 text
 );
 
 -- Product Versions (for updates)
 CREATE TABLE product_versions (
 
-```
+```text
 
 text
 
@@ -353,15 +340,14 @@ package_url VARCHAR(255) NOT NULL,
 package_size_bytes BIGINT,
 created_at TIMESTAMP DEFAULT NOW()
 
-```
-
+```text
 text
 );
 
 -- Orders
 CREATE TABLE orders (
 
-```
+```text
 
 text
 
@@ -397,15 +383,14 @@ refunded_at TIMESTAMP,
 created_at TIMESTAMP DEFAULT NOW(),
 updated_at TIMESTAMP DEFAULT NOW()
 
-```
-
+```text
 text
 );
 
 -- Payouts
 CREATE TABLE payouts (
 
-```
+```text
 
 text
 
@@ -431,15 +416,14 @@ period_end TIMESTAMP NOT NULL,
 processed_at TIMESTAMP,
 created_at TIMESTAMP DEFAULT NOW()
 
-```
-
+```text
 text
 );
 
 -- Reviews
 CREATE TABLE reviews (
 
-```
+```text
 
 text
 
@@ -463,15 +447,14 @@ seller_response_at TIMESTAMP,
 created_at TIMESTAMP DEFAULT NOW(),
 updated_at TIMESTAMP DEFAULT NOW()
 
-```
-
+```text
 text
 );
 
 -- Brain Knowledge
 CREATE TABLE brain_entries (
 
-```
+```text
 
 text
 
@@ -498,15 +481,14 @@ status VARCHAR(20) DEFAULT 'active', -- active, deprecated, merged
 created_at TIMESTAMP DEFAULT NOW(),
 updated_at TIMESTAMP DEFAULT NOW()
 
-```
-
+```text
 text
 );
 
 -- Subscriptions
 CREATE TABLE subscriptions (
 
-```
+```text
 
 text
 
@@ -528,8 +510,7 @@ canceled_at TIMESTAMP,
 created_at TIMESTAMP DEFAULT NOW(),
 updated_at TIMESTAMP DEFAULT NOW()
 
-```
-
+```text
 markdown
 
 );
@@ -546,14 +527,13 @@ CREATE INDEX idx_reviews_product ON reviews(product_id);
 CREATE INDEX idx_brain_type ON brain_entries(type);
 CREATE INDEX idx_brain_tags ON brain_entries USING GIN(tags);
 
-```
+```text
 
 text
 
 ### Row-Level Security (Supabase)
 
-```
-
+```text
 sql
 
 -- Users can only see their own data
@@ -561,78 +541,72 @@ ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view own profile" ON users
 
-```
+```text
 
 text
 
 FOR SELECT USING (auth.uid() = clerk_id);
 
-```
-
+```text
 text
 CREATE POLICY "Users can update own profile" ON users
 
-```
+```text
 
 text
 
 FOR UPDATE USING (auth.uid() = clerk_id);
 
-```
-
+```text
 text
 -- Products are public to view, but only seller can edit
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Products are viewable by everyone" ON products
 
-```
+```text
 
 text
 
 FOR SELECT USING (status = 'active');
 
-```
-
+```text
 text
 CREATE POLICY "Sellers can manage own products" ON products
 
-```
+```text
 
 text
 
 FOR ALL USING (seller_id = auth.uid());
 
-```
-
+```text
 text
 -- Orders visible to buyer and seller
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Order visible to buyer" ON orders
 
-```
+```text
 
 text
 
 FOR SELECT USING (buyer_id = auth.uid());
 
-```
-
+```text
 text
 CREATE POLICY "Order visible to seller" ON orders
 
-```
+```text
 
 text
 
 FOR SELECT USING (seller_id = auth.uid());
 
-```
-
+```text
 markdown
 
-```
+```text
 
 text
 
@@ -644,20 +618,18 @@ text
 
 All authenticated endpoints require:
 
-```
-
+```text
 text
 
 Authorization: Bearer <clerk_session_token>
 
-```
+```text
 
 text
 
 ### Marketplace API Endpoints
 
-```
-
+```text
 yaml
 
 # Products
@@ -707,14 +679,13 @@ POST   /api/user/become-seller          # Upgrade to seller
 
 POST   /api/webhooks/stripe             # Stripe events
 
-```
+```text
 
 text
 
 ### Brain API Endpoints
 
-```
-
+```text
 yaml
 
 # Knowledge
@@ -729,7 +700,7 @@ GET    /api/brain/patterns?type=<>      # List patterns
 GET    /api/brain/mine                  # My contributions
 GET    /api/brain/stats                 # My brain stats
 
-```
+```text
 
 text
 
@@ -737,8 +708,7 @@ text
 
 **GET /api/products/:slug**
 
-```
-
+```text
 json
 {
   "id": "uuid",
@@ -751,21 +721,20 @@ json
   "tech_stack": ["Next.js", "FastAPI", "PostgreSQL"],
   "preview_images": [
 
-```
+```text
 
 yaml
 
 "<https://r2.mywork.ai/products/uuid/preview-1.png">
 
-```
-
+```text
 text
 
   ],
   "demo_url": "<https://demo.mywork.ai/ai-dashboard>",
   "seller": {
 
-```
+```text
 
 yaml
 
@@ -777,14 +746,13 @@ yaml
 "rating": 4.8,
 "total_sales": 142
 
-```
-
+```text
 text
 
   },
   "stats": {
 
-```
+```text
 
 yaml
 
@@ -793,8 +761,7 @@ yaml
 "rating_average": 4.7,
 "rating_count": 32
 
-```
-
+```text
 text
 
   },
@@ -802,14 +769,13 @@ text
   "updated_at": "2026-01-20T15:30:00Z"
 }
 
-```
+```text
 
 text
 
 **POST /api/orders**
 
-```
-
+```text
 json
 // Request
 {
@@ -826,7 +792,7 @@ json
   "status": "pending"
 }
 
-```
+```text
 
 text
 
@@ -836,8 +802,7 @@ text
 
 ### Stripe Connect Flow
 
-```
-
+```text
 text
 
 1. SELLER ONBOARDING
@@ -858,24 +823,22 @@ text
 
    +----------------+     +----------------+     +----------------+
 
-```
+```text
 
 text
 
-```
-
+```text
 text
 
    |
 
    v
 
-```
+```text
 
 text
 
-```
-
+```text
 text
 
    +----------------+     +----------------+     +----------------+
@@ -895,14 +858,13 @@ text
 
    +----------------+     +----------------+     +----------------+
 
-```
+```text
 
 text
 
 ### Stripe Integration Code
 
-```
-
+```text
 python
 
 # services/stripe_service.py
@@ -914,52 +876,51 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 class StripeService:
 
-```
+```text
 
 javascript
 
 @staticmethod
 async def create_connect_account(user_id: str, email: str) -> str:
 
-```
-
+```text
 text
 
 """Create Stripe Connect Express account for seller."""
 account = stripe.Account.create(
 
-```
+```text
 
 text
 type="express",
 email=email,
 capabilities={
-    "card_payments": {"requested": True},
-    "transfers": {"requested": True},
-},
+
+```text"card_payments": {"requested": True},
+"transfers": {"requested": True},
+
+```text},
 metadata={"user_id": user_id}
 
-```
-
+```text
 text
 )
 return account.id
 
-```
+```text
 
 text
 
 @staticmethod
 async def create_onboarding_link(account_id: str) -> str:
 
-```
-
+```text
 text
 
 """Generate Stripe Connect onboarding URL."""
 link = stripe.AccountLink.create(
 
-```
+```text
 
 text
 account=account_id,
@@ -967,21 +928,19 @@ refresh_url=f"{settings.APP_URL}/seller/onboarding/refresh",
 return_url=f"{settings.APP_URL}/seller/onboarding/complete",
 type="account_onboarding",
 
-```
-
+```text
 text
 )
 return link.url
 
-```
+```text
 
 text
 
 @staticmethod
 async def create_payment_intent(
 
-```
-
+```text
 text
 
 amount: int,  # cents
@@ -989,20 +948,19 @@ seller_connect_id: str,
 platform_fee: int,  # cents (10%)
 metadata: dict
 
-```
+```text
 
 text
 
 ) -> stripe.PaymentIntent:
 
-```
-
+```text
 text
 
 """Create payment with automatic split to seller."""
 return stripe.PaymentIntent.create(
 
-```
+```text
 
 text
 amount=amount,
@@ -1012,20 +970,18 @@ application_fee_amount=platform_fee,
 transfer_data={"destination": seller_connect_id},
 metadata=metadata
 
-```
-
+```text
 text
 )
 
-```
+```text
 
 text
 
 @staticmethod
 async def process_payout(seller_id: str, amount: int) -> stripe.Transfer:
 
-```
-
+```text
 text
 
 """Transfer funds to seller's connected account."""
@@ -1036,7 +992,7 @@ seller = await get_seller(seller_id)
 
 return stripe.Transfer.create(
 
-```
+```text
 
 text
 amount=amount,
@@ -1044,27 +1000,24 @@ currency="usd",
 destination=seller.stripe_connect_id,
 metadata={"seller_id": seller_id}
 
-```
-
+```text
 text
 )
 
-```
+```text
 
 text
 
-```
-
+```text
 text
 
-```
+```text
 
 text
 
 ### Webhook Handler
 
-```
-
+```text
 python
 
 # api/webhooks/stripe.py
@@ -1077,7 +1030,7 @@ router = APIRouter()
 @router.post("/webhooks/stripe")
 async def stripe_webhook(request: Request):
 
-```
+```text
 
 yaml
 
@@ -1086,47 +1039,43 @@ sig_header = request.headers.get("stripe-signature")
 
 try:
 
-```
-
+```text
 text
 
 event = stripe.Webhook.construct_event(
 
-```
+```text
 
 text
 payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
 
-```
-
+```text
 text
 )
 
-```
+```text
 
 text
 
 except ValueError:
 
-```
-
+```text
 text
 
 raise HTTPException(400, "Invalid payload")
 
-```
+```text
 
 text
 
 except stripe.error.SignatureVerificationError:
 
-```
-
+```text
 text
 
 raise HTTPException(400, "Invalid signature")
 
-```
+```text
 
 text
 
@@ -1134,62 +1083,57 @@ text
 
 if event.type == "payment_intent.succeeded":
 
-```
-
+```text
 text
 
 await handle_payment_success(event.data.object)
 
-```
+```text
 
 text
 
 elif event.type == "payment_intent.payment_failed":
 
-```
-
+```text
 text
 
 await handle_payment_failed(event.data.object)
 
-```
+```text
 
 text
 
 elif event.type == "account.updated":
 
-```
-
+```text
 text
 
 await handle_account_updated(event.data.object)
 
-```
+```text
 
 text
 
 elif event.type == "payout.paid":
 
-```
-
+```text
 text
 
 await handle_payout_completed(event.data.object)
 
-```
+```text
 
 text
 
 return {"status": "success"}
 
 
-```
-
+```text
 text
 
 async def handle_payment_success(payment_intent):
 
-```
+```text
 
 markdown
 
@@ -1200,8 +1144,7 @@ order_id = payment_intent.metadata.get("order_id")
 
 order = await update_order(
 
-```
-
+```text
 text
 
 order_id,
@@ -1209,7 +1152,7 @@ status="completed",
 payment_status="completed",
 stripe_charge_id=payment_intent.latest_charge
 
-```
+```text
 
 text
 
@@ -1233,11 +1176,10 @@ await update_seller_stats(order.seller_id, order.seller_amount)
 await send_purchase_confirmation(order)
 await send_sale_notification(order)
 
-```
-
+```text
 text
 
-```
+```text
 
 text
 
@@ -1247,8 +1189,7 @@ text
 
 ### Embedding & Search Flow
 
-```
-
+```text
 yaml
 KNOWLEDGE INGESTION
 +------------------------------------------------------------------+
@@ -1301,14 +1242,13 @@ KNOWLEDGE QUERY
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 text
 
 ### Brain Service Implementation
 
-```
-
+```text
 python
 
 # services/brain_service.py
@@ -1324,15 +1264,14 @@ index = pinecone.Index("mywork-brain")
 
 class BrainService:
 
-```
+```text
 
 text
 
 @staticmethod
 async def learn(entry: BrainEntry, user_id: str) -> BrainEntry:
 
-```
-
+```text
 text
 """Add knowledge to the brain."""
 
@@ -1346,20 +1285,21 @@ embedding = await generate_embedding(text)
 pinecone_id = f"brain_{entry.id}"
 index.upsert(vectors=[{
 
-```
+```text
 
 text
 "id": pinecone_id,
 "values": embedding,
 "metadata": {
-    "type": entry.type,
-    "title": entry.title,
-    "tags": entry.tags,
-    "contributor_id": user_id
-}
 
-```
+```text"type": entry.type,
+"title": entry.title,
+"tags": entry.tags,
+"contributor_id": user_id
 
+```text}
+
+```text
 text
 }])
 
@@ -1371,15 +1311,14 @@ await db.brain_entries.insert(entry)
 
 return entry
 
-```
+```text
 
 text
 
 @staticmethod
 async def query(question: str, user_id: str) -> BrainResponse:
 
-```
-
+```text
 text
 """Query the brain for answers."""
 
@@ -1391,15 +1330,14 @@ query_embedding = await generate_embedding(question)
 
 results = index.query(
 
-```
+```text
 
 text
 vector=query_embedding,
 top_k=10,
 include_metadata=True
 
-```
-
+```text
 text
 )
 
@@ -1412,39 +1350,38 @@ entries = await db.brain_entries.fetch_many(entry_ids)
 
 context = "\n\n".join([
 
-```
+```text
 
 text
 f"[{e.type}] {e.title}:\n{e.content}"
 for e in entries
 
-```
-
+```text
 text
 ])
 
 response = anthropic.messages.create(
 
-```
+```text
 
 text
 model="claude-sonnet-4-20250514",
 max_tokens=1024,
 messages=[{
-    "role": "user",
-    "content": f"""Based on the following knowledge base entries, answer
-    the question.
 
-```
+```text"role": "user",
+"content": f"""Based on the following knowledge base entries, answer
+the question.
+
+```text
+```text
+text
+
+```text
 
 text
 
-```
-
-text
-
-```
-
+```text
 yaml
 KNOWLEDGE BASE:
 {context}
@@ -1453,21 +1390,19 @@ QUESTION: {question}
 
 Provide a helpful, practical answer. Reference specific entries when relevant."""
 
-```
+```text
 
 text
 
-```
-
+```text
 text
 
-```
+```text
 
 text
 }]
 
-```
-
+```text
 text
 )
 
@@ -1475,40 +1410,39 @@ text
 
 for entry in entries:
 
-```
+```text
 
 text
 await db.brain_entries.increment_usage(entry.id)
 
-```
-
+```text
 text
 return BrainResponse(
 
-```
+```text
 
 text
 answer=response.content[0].text,
 sources=[{
-    "id": e.id,
-    "title": e.title,
-    "type": e.type
-} for e in entries[:5]]
 
-```
+```text"id": e.id,
+"title": e.title,
+"type": e.type
 
+```text} for e in entries[:5]]
+
+```text
 text
 )
 
-```
+```text
 
 text
 
 @staticmethod
 async def suggest(context: str, user_id: str) -> List[Suggestion]:
 
-```
-
+```text
 text
 """Get contextual suggestions based on current work."""
 
@@ -1520,7 +1454,7 @@ embedding = await generate_embedding(context)
 
 results = index.query(
 
-```
+```text
 
 text
 vector=embedding,
@@ -1528,8 +1462,7 @@ top_k=5,
 filter={"type": {"$in": ["pattern", "tip"]}},
 include_metadata=True
 
-```
-
+```text
 text
 )
 
@@ -1538,34 +1471,38 @@ text
 suggestions = []
 for r in results.matches:
 
-```
+```text
 
 text
 if r.score > 0.7:  # Only high-relevance suggestions
-    entry = await db.brain_entries.fetch(r.id.replace("brain_", ""))
-    suggestions.append(Suggestion(
-        title=entry.title,
-        content=entry.content[:200] + "...",
-        relevance=r.score,
-        type=entry.type
-    ))
 
-```
+```textentry = await db.brain_entries.fetch(r.id.replace("brain_", ""))
+suggestions.append(Suggestion(
+```text
+title=entry.title,
+```text
+content=entry.content[:200] + "...",
+```text
+relevance=r.score,
+```text
+type=entry.type
+))
 
+```text
+```text
 text
 return suggestions
 
 
-```
+```text
 
 text
 
-```
-
+```text
 javascript
 async def generate_embedding(text: str) -> List[float]:
 
-```
+```text
 
 text
 
@@ -1577,25 +1514,23 @@ text
 
 response = anthropic.messages.create(
 
-```
-
+```text
 text
 model="claude-sonnet-4-20250514",
 max_tokens=1,
 messages=[{
 
-```
+```text
 
 text
 "role": "user",
 "content": f"Generate a semantic embedding for: {text[:1000]}"
 
-```
-
+```text
 text
 }]
 
-```
+```text
 
 text
 
@@ -1607,11 +1542,10 @@ text
 
 return [0.0] * 1536  # Placeholder
 
-```
-
+```text
 markdown
 
-```
+```text
 
 text
 
@@ -1621,8 +1555,7 @@ text
 
 ### Vercel Configuration
 
-```
-
+```text
 json
 // vercel.json
 {
@@ -1630,7 +1563,7 @@ json
   "regions": ["iad1", "sfo1", "cdg1"],
   "functions": {
 
-```
+```text
 
 text
 
@@ -1638,13 +1571,12 @@ text
   "maxDuration": 30
 }
 
-```
-
+```text
 yaml
   },
   "crons": [
 
-```
+```text
 
 text
 
@@ -1657,21 +1589,19 @@ text
   "schedule": "0 ** **"
 }
 
-```
-
+```text
 markdown
 
   ]
 }
 
-```
+```text
 
 text
 
 ### Railway Configuration
 
-```
-
+```text
 toml
 
 # railway.toml
@@ -1701,14 +1631,13 @@ internalPort = 8001
 name = "worker"
 type = "worker"
 
-```
+```text
 
 text
 
 ### Docker Configuration
 
-```
-
+```text
 dockerfile
 
 # Dockerfile
@@ -1730,14 +1659,13 @@ COPY . .
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
-```
+```text
 
 text
 
 ### Environment Variables
 
-```
-
+```text
 bash
 
 # .env.production (example - never commit real values)
@@ -1779,7 +1707,7 @@ RESEND_API_KEY=re_xxx
 
 POSTHOG_API_KEY=phc_xxx
 
-```
+```text
 
 text
 
@@ -1789,8 +1717,7 @@ text
 
 ### Input Validation
 
-```
-
+```text
 python
 
 # schemas/product.py
@@ -1801,7 +1728,7 @@ import re
 
 class ProductCreate(BaseModel):
 
-```
+```text
 
 text
 
@@ -1814,62 +1741,58 @@ tech_stack: List[str] = Field(..., max_items=10)
 @validator('title')
 def sanitize_title(cls, v):
 
-```
-
+```text
 text
 
 # Remove potentially dangerous characters
 
 return re.sub(r'[<>\"\';&]', '', v)
 
-```
+```text
 
 text
 
 @validator('category')
 def validate_category(cls, v):
 
-```
-
+```text
 text
 allowed = ['saas-starters', 'api-services', 'automation',
 
-```
+```text
 
 text
-       'mobile-apps', 'full-applications', 'components']
 
-```
+```text   'mobile-apps', 'full-applications', 'components']
 
+```text
+```text
 text
 if v not in allowed:
 
-```
+```text
 
 text
 raise ValueError(f'Category must be one of: {allowed}')
 
-```
-
+```text
 text
 return v
 
-```
+```text
 
 text
 
-```
-
+```text
 markdown
 
-```
+```text
 
 text
 
 ### Rate Limiting
 
-```
-
+```text
 python
 
 # middleware/rate_limit.py
@@ -1882,7 +1805,7 @@ redis = Redis.from_url(settings.REDIS_URL)
 
 async def rate_limit(request: Request, limit: int = 100, window: int = 60):
 
-```
+```text
 
 text
 
@@ -1895,49 +1818,44 @@ current = redis.get(key)
 
 if current is None:
 
-```
-
+```text
 text
 redis.setex(key, window, 1)
 
-```
+```text
 
 text
 
 elif int(current) >= limit:
 
-```
-
+```text
 text
 raise HTTPException(429, "Rate limit exceeded")
 
-```
+```text
 
 text
 
 else:
 
-```
-
+```text
 text
 redis.incr(key)
 
-```
+```text
 
 text
 
-```
-
+```text
 markdown
 
-```
+```text
 
 text
 
 ### Code Scanning
 
-```
-
+```text
 python
 
 # services/security_service.py
@@ -1948,14 +1866,13 @@ import zipfile
 
 class SecurityService:
 
-```
+```text
 
 text
 
 DANGEROUS_PATTERNS = [
 
-```
-
+```text
 text
 r'eval\s*\(',
 r'exec\s*\(',
@@ -1964,7 +1881,7 @@ r'subprocess\.',
 r'os\.system\s*\(',
 r'os\.popen\s*\(',
 
-```
+```text
 
 text
 
@@ -1973,8 +1890,7 @@ text
 @staticmethod
 async def scan_package(package_path: str) -> ScanResult:
 
-```
-
+```text
 text
 """Scan uploaded package for security issues."""
 
@@ -1982,58 +1898,63 @@ issues = []
 
 with tempfile.TemporaryDirectory() as tmpdir:
 
-```
+```text
 
 text
+
 # Extract package
 
 with zipfile.ZipFile(package_path, 'r') as zip_ref:
-    zip_ref.extractall(tmpdir)
 
-# Scan for dangerous patterns
+```textzip_ref.extractall(tmpdir)
+
+```text# Scan for dangerous patterns
 
 for root, dirs, files in os.walk(tmpdir):
-    for file in files:
-        if file.endswith(('.py', '.js', '.ts')):
-            filepath = os.path.join(root, file)
-            file_issues = await scan_file(filepath)
-            issues.extend(file_issues)
 
-# Run bandit for Python
+```textfor file in files:
+```text
+if file.endswith(('.py', '.js', '.ts')):
+        filepath = os.path.join(root, file)
+        file_issues = await scan_file(filepath)
+        issues.extend(file_issues)
+
+```text# Run bandit for Python
 
 result = subprocess.run(
-    ['bandit', '-r', tmpdir, '-f', 'json'],
-    capture_output=True
-)
+
+```text['bandit', '-r', tmpdir, '-f', 'json'],
+capture_output=True
+
+```text)
 if result.returncode != 0:
-    bandit_issues = json.loads(result.stdout)
-    issues.extend(bandit_issues.get('results', []))
 
-```
+```textbandit_issues = json.loads(result.stdout)
+issues.extend(bandit_issues.get('results', []))
 
+```text
+```text
 text
 return ScanResult(
 
-```
+```text
 
 text
 passed=len(issues) == 0,
 issues=issues
 
-```
-
+```text
 text
 )
 
-```
+```text
 
 text
 
-```
-
+```text
 markdown
 
-```
+```text
 
 text
 
@@ -2043,8 +1964,7 @@ text
 
 ### Logging
 
-```
-
+```text
 python
 
 # utils/logging.py
@@ -2054,26 +1974,24 @@ from config import settings
 
 structlog.configure(
 
-```
+```text
 
 text
 
 processors=[
 
-```
-
+```text
 text
 structlog.processors.TimeStamper(fmt="iso"),
 structlog.processors.JSONRenderer()
 
-```
+```text
 
 text
 
 ]
 
-```
-
+```text
 markdown
 
 )
@@ -2084,7 +2002,7 @@ logger = structlog.get_logger()
 
 logger.info("order_created",
 
-```
+```text
 
 text
 
@@ -2092,20 +2010,18 @@ order_id=order.id,
 amount=order.amount,
 seller_id=order.seller_id
 
-```
-
+```text
 markdown
 
 )
 
-```
+```text
 
 text
 
 ### Metrics
 
-```
-
+```text
 python
 
 # utils/metrics.py
@@ -2116,7 +2032,7 @@ from prometheus_client import Counter, Histogram
 
 orders_total = Counter(
 
-```
+```text
 
 text
 
@@ -2124,8 +2040,7 @@ text
 'Total orders',
 ['status']
 
-```
-
+```text
 markdown
 
 )
@@ -2134,7 +2049,7 @@ markdown
 
 order_amount = Histogram(
 
-```
+```text
 
 text
 
@@ -2142,8 +2057,7 @@ text
 'Order amounts',
 buckets=[10, 50, 100, 250, 500, 1000, 5000]
 
-```
-
+```text
 markdown
 
 )
@@ -2153,14 +2067,13 @@ markdown
 orders_total.labels(status='completed').inc()
 order_amount.observe(order.amount)
 
-```
+```text
 
 text
 
 ### Health Checks
 
-```
-
+```text
 python
 
 # api/health.py
@@ -2172,20 +2085,19 @@ router = APIRouter()
 @router.get("/health")
 async def health_check():
 
-```
+```text
 
 text
 
 checks = {
 
-```
-
+```text
 text
 "database": await check_database(),
 "redis": await check_redis(),
 "stripe": await check_stripe(),
 
-```
+```text
 
 text
 
@@ -2195,23 +2107,21 @@ healthy = all(checks.values())
 
 return {
 
-```
-
+```text
 text
 "status": "healthy" if healthy else "unhealthy",
 "checks": checks
 
-```
+```text
 
 text
 
 }
 
-```
-
+```text
 markdown
 
-```
+```text
 
 text
 
