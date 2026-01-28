@@ -9,7 +9,7 @@
 ### REQ-1: YouTube Video Scraper
 
 | ID | Requirement | Priority | Status |
-|----|-------------|----------|--------|
+| ---- | ------------- | ---------- | -------- |
 | REQ-1.1 | Scrape AI/ML videos from YouTube | P0 | Done |
 | REQ-1.2 | Calculate quality score (views, likes, engagement) | P0 | Done |
 | REQ-1.3 | Store videos in database | P0 | Done |
@@ -22,7 +22,7 @@
 ### REQ-2: AI News Aggregator
 
 | ID | Requirement | Priority | Status |
-|----|-------------|----------|--------|
+| ---- | ------------- | ---------- | -------- |
 | REQ-2.1 | Aggregate from TechCrunch | P0 | Done |
 | REQ-2.2 | Aggregate from The Verge | P0 | Done |
 | REQ-2.3 | Aggregate from Hacker News | P0 | Done |
@@ -36,7 +36,7 @@
 ### REQ-3: GitHub Trending Projects
 
 | ID | Requirement | Priority | Status |
-|----|-------------|----------|--------|
+| ---- | ------------- | ---------- | -------- |
 | REQ-3.1 | Fetch trending AI repositories | P0 | Done |
 | REQ-3.2 | Track star count and weekly growth | P0 | Done |
 | REQ-3.3 | Store projects in database | P0 | Done |
@@ -50,7 +50,7 @@
 ### REQ-4: YouTube Automation Pipeline
 
 | ID | Requirement | Priority | Status |
-|----|-------------|----------|--------|
+| ---- | ------------- | ---------- | -------- |
 | REQ-4.1 | Accept user prompt input | P0 | Done |
 | REQ-4.2 | Optimize prompt with DSPy/LangChain | P1 | Done |
 | REQ-4.3 | Generate video script with Claude | P0 | Done |
@@ -70,7 +70,7 @@
 ### REQ-5: Dashboard UI
 
 | ID | Requirement | Priority | Status |
-|----|-------------|----------|--------|
+| ---- | ------------- | ---------- | -------- |
 | REQ-5.1 | Dashboard home with stats | P0 | Done |
 | REQ-5.2 | Videos page with list/grid view | P0 | Partial |
 | REQ-5.3 | News page with filtering | P0 | Partial |
@@ -84,7 +84,7 @@
 ### REQ-6: Infrastructure
 
 | ID | Requirement | Priority | Status |
-|----|-------------|----------|--------|
+| ---- | ------------- | ---------- | -------- |
 | REQ-6.1 | FastAPI backend setup | P0 | Done |
 | REQ-6.2 | SQLite database with models | P0 | Done |
 | REQ-6.3 | APScheduler integration | P0 | Done |
@@ -99,7 +99,7 @@
 ## v2 Requirements (Future)
 
 | ID | Requirement | Priority |
-|----|-------------|----------|
+| ---- | ------------- | ---------- |
 | REQ-F1 | Email notifications for trending content | P2 |
 | REQ-F2 | RSS feed generation | P2 |
 | REQ-F3 | Content bookmarking | P2 |
@@ -122,7 +122,7 @@
 ## Summary
 
 | Category | Total | Done | Pending |
-|----------|-------|------|---------|
+| ---------- | ------- | ------ | --------- |
 | YouTube Scraper | 8 | 8 | 0 |
 | News Aggregator | 9 | 9 | 0 |
 | GitHub Projects | 9 | 8 | 1 |

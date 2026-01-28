@@ -48,12 +48,13 @@
 
 ## 📚 **Tutorial Sequence**
 
-Tutorials 1-2 are available now. Tutorials 3-6 are planned and will be added as they are completed.
+Tutorials 1-2 are available now. Tutorials 3-6 are planned and will be added as
+they are completed.
 
 ### **What You'll Build:**
 
 | Tutorial | Project | Complexity | Time | Status |
-|----------|---------|------------|------|--------|
+| ---------- | --------- | ------------ | ------ | -------- |
 | 1 | Task Manager CLI | Simple | 15 min | Available |
 | 2 | Todo Web App | Medium | 20 min | Available |
 | 3 | Autocoder Integration | Complex | 30 min | Planned |
@@ -84,7 +85,8 @@ Before starting, ensure you have:
 - **Text editor or IDE** (VS Code recommended)
 - **15 minutes** for your first tutorial
 
-**No programming experience required** — tutorials are designed for all skill levels.
+**No programming experience required** — tutorials are designed for all skill
+levels.
 
 ---
 
@@ -125,13 +127,18 @@ Each tutorial follows a consistent structure:
 1. **Check the troubleshooting section** in each tutorial
 2. **Run diagnostics:** `mw doctor`
 3. **View your progress:** `mw status`
-4. **Ask the community:** [GitHub Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
+4. **Ask the community:** [GitHub
+Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
 
 **Found an issue?**
 
-- **Report bugs:** [GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
-- **Suggest improvements:** [GitHub Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
+- **Report bugs:** [GitHub
+  Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
+- **Suggest improvements:** [GitHub
+  Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
 
 ---
 
-*💡 **Pro Tip:** Each tutorial builds on the previous one, but they're designed to be standalone. Feel free to jump to any tutorial that matches your current needs.*
+*💡 **Pro Tip:** Each tutorial builds on the previous one, but they're designed
+to be standalone. Feel free to jump to any tutorial that matches your current
+needs.*

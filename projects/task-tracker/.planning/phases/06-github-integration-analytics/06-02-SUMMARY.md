@@ -14,25 +14,38 @@ provides:
 affects: [06-03]
 decisions:
 
-  - CACHE-001: 24-hour in-memory cache for GitHub user data (validation project scale)
-  - RATE-001: Warn at 100 remaining requests, graceful degradation on exhaustion
-  - PATTERN-005: ETag-based conditional requests to minimize rate limit consumption
+  - CACHE-001: 24-hour in-memory cache for GitHub user data (validation project
 
+```
+scale)
+
+```
+  - RATE-001: Warn at 100 remaining requests, graceful degradation on exhaustion
+  - PATTERN-005: ETag-based conditional requests to minimize rate limit
+
+```
+consumption
+
+```
 tech-stack:
   added: []
   patterns:
 
-    - In-memory Map cache with TTL for API responses
-    - ETag caching pattern for GitHub API
-    - Graceful degradation with stale data fallback
+```
+- In-memory Map cache with TTL for API responses
+- ETag caching pattern for GitHub API
+- Graceful degradation with stale data fallback
 
+```
 key-files:
   created:
 
-    - src/shared/lib/analytics/github.ts
-    - src/shared/lib/analytics/index.ts
-    - src/shared/lib/analytics/__tests__/github.test.ts
+```
+- src/shared/lib/analytics/github.ts
+- src/shared/lib/analytics/index.ts
+- src/shared/lib/analytics/__tests__/github.test.ts
 
+```
   modified: []
 metrics:
   duration: 3 min
@@ -41,17 +54,23 @@ metrics:
 
 # Phase 06 Plan 02: GitHub API Integration Summary
 
-**One-liner:** GitHub API client with rate limit monitoring, ETag caching, and graceful degradation for user enrichment data.
+**One-liner:** GitHub API client with rate limit monitoring, ETag caching, and
+graceful degradation for user enrichment data.
 
 ## What Was Built
 
-Created a production-ready GitHub API integration for fetching enriched user data (repos, activity patterns) with comprehensive rate limit handling:
+Created a production-ready GitHub API integration for fetching enriched user
+data (repos, activity patterns) with comprehensive rate limit handling:
 
-1. **Rate Limit Monitoring**: Parse `x-ratelimit-*` headers, warn when low, graceful degradation on exhaustion
-2. **ETag Caching**: Support `If-None-Match` headers - 304 responses don't count against rate limits
-3. **24-Hour Cache**: In-memory Map cache reduces API calls for validation project scale
+1. **Rate Limit Monitoring**: Parse `x-ratelimit-*` headers, warn when low,
+graceful degradation on exhaustion
+2. **ETag Caching**: Support `If-None-Match` headers - 304 responses don't count
+against rate limits
+3. **24-Hour Cache**: In-memory Map cache reduces API calls for validation
+project scale
 4. **Timeout Protection**: 5-second timeout prevents hanging requests
-5. **Helper Functions**: Token retrieval from Prisma, user enrichment convenience wrapper
+5. **Helper Functions**: Token retrieval from Prisma, user enrichment
+convenience wrapper
 
 ### Key Implementation Details
 
@@ -79,7 +98,7 @@ Created a production-ready GitHub API integration for fetching enriched user dat
 ## Commits
 
 | Commit | Type | Description |
-|--------|------|-------------|
+| -------- | ------ | ------------- |
 | d332fd8 | feat | Implement GitHub API client with rate limit handling |
 | 2f0c583 | feat | Add analytics barrel export for GitHub functions |
 | a3812f8 | test | Add type-checking test for GitHub API client |
@@ -104,13 +123,16 @@ Created a production-ready GitHub API integration for fetching enriched user dat
 - Database cache: Adds query overhead without benefit at this scale
 - Shorter TTL: More API calls without meaningful freshness gain
 
-**Outcome:** In-memory Map is sufficient for validation project, easily upgraded to Redis if scale requires
+**Outcome:** In-memory Map is sufficient for validation project, easily upgraded
+to Redis if scale requires
 
 ### RATE-001: Rate Limit Warning Threshold
 
 **Decision:** Log warning when remaining requests drop below 100
-**Context:** GitHub allows 5,000 requests/hour; need early warning before exhaustion
-**Rationale:** 100 requests = 2% of limit, provides buffer to investigate/adjust before hitting zero
+**Context:** GitHub allows 5,000 requests/hour; need early warning before
+exhaustion
+**Rationale:** 100 requests = 2% of limit, provides buffer to investigate/adjust
+before hitting zero
 **Outcome:** Proactive monitoring without false alarms during normal operation
 
 ### PATTERN-005: ETag-Based Conditional Requests
@@ -118,7 +140,8 @@ Created a production-ready GitHub API integration for fetching enriched user dat
 **Decision:** Always send `If-None-Match` header with cached ETag
 **Context:** GitHub API spec: 304 responses don't count against rate limit
 **Impact:** Massive rate limit savings - cache validation is free
-**Implementation:** Store ETag from response headers, send with subsequent requests
+**Implementation:** Store ETag from response headers, send with subsequent
+requests
 
 ## Next Phase Readiness
 
@@ -126,8 +149,14 @@ Created a production-ready GitHub API integration for fetching enriched user dat
 
 **Risks:**
 
-- Cache stampede: If cache expires during high traffic, many requests hit API simultaneously
-  - Mitigation: Add jitter to TTL in production (not needed for validation project)
+- Cache stampede: If cache expires during high traffic, many requests hit API
+  simultaneously
+  - Mitigation: Add jitter to TTL in production (not needed for validation
+
+```
+project)
+
+```
 - Memory usage: Map cache grows unbounded if many users
   - Mitigation: Add LRU eviction or max size limit if needed
 
@@ -138,7 +167,8 @@ Created a production-ready GitHub API integration for fetching enriched user dat
 
 **Ready for:**
 
-- Plan 06-03: Export API endpoint can now fetch enriched GitHub data for brain analysis
+- Plan 06-03: Export API endpoint can now fetch enriched GitHub data for brain
+  analysis
 
 ## Brain Learning Opportunities
 
@@ -148,8 +178,12 @@ Created a production-ready GitHub API integration for fetching enriched user dat
    - Parse `x-ratelimit-*` headers
    - Warn at threshold, degrade gracefully on exhaustion
    - Use ETag caching for free cache validation
-   - Applicable to: Any GitHub API integration, similar to other rate-limited APIs
+   - Applicable to: Any GitHub API integration, similar to other rate-limited
 
+```
+ APIs
+
+```
 2. **In-Memory Cache with TTL** (MEDIUM value)
    - Map-based cache with timestamp tracking
    - Stale-while-revalidate pattern (return old data on error)
@@ -163,7 +197,8 @@ Created a production-ready GitHub API integration for fetching enriched user dat
 **Known Limitations:**
 
 - In-memory cache doesn't survive server restarts (Redis would)
-- No request coalescing (multiple concurrent requests for same user duplicate API calls)
+- No request coalescing (multiple concurrent requests for same user duplicate API
+  calls)
 - No cache warming strategy (first request always hits API)
 
 **Production Considerations:**

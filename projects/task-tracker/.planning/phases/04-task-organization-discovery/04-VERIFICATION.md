@@ -17,63 +17,65 @@ score: 5/5 must-haves verified
 ### Observable Truths
 
 | # | Truth | Status | Evidence |
-|---|-------|--------|----------|
-| 1 | User can organize tasks into categories or projects | ✓ VERIFIED | Tag model exists with many-to-many relation, Tag UI components functional, tags display on TaskCards |
-| 2 | User can search tasks by title, description, or content | ✓ VERIFIED | PostgreSQL FTS with weighted search (title=A, desc=B), fuzzy trigram fallback, TaskSearchBar with debounce |
-| 3 | User can filter tasks by status, category, or date | ✓ VERIFIED | TaskFilters component with status/tag multi-select, filterTasks DAL function, URL state persistence |
-| 4 | Search and filter results update instantly | ✓ VERIFIED | Debounced search (500ms), URL state via nuqs, React Server Components with Suspense streaming |
-| 5 | Empty states show helpful guidance when no tasks match filters | ✓ VERIFIED | Context-aware EmptyState component (no tasks vs no results), clear filters button |
+| --- | ------- | -------- | ---------- |
+  | 1 | User can or... | ✓ VERIFIED | Tag model e... |  
+  | 2 | User can se... | ✓ VERIFIED | PostgreSQL ... |  
+  | 3 | User can fi... | ✓ VERIFIED | TaskFilters... |  
+  | 4 | Search and ... | ✓ VERIFIED | Debounced s... |  
+| 5 | Empty state... | ✓ VERIFIED | Context-awa... |
 
 **Score:** 5/5 truths verified
 
 ### Required Artifacts
 
 | Artifact | Expected | Status | Details |
-|----------|----------|--------|---------|
-| `prisma/schema.prisma` | Tag model with Task relation | ✓ VERIFIED | Tag model exists, implicit many-to-many via _TagToTask join table, unique constraint on [userId, name] |
-| `prisma/migrations/20260125200020_add_tags_and_search/migration.sql` | Search infrastructure | ✓ VERIFIED | pg_trgm extension, generated tsvector column, 3 GIN indexes (FTS, title trigram, desc trigram) |
-| `src/shared/lib/dal.ts` | Search and filter functions | ✓ VERIFIED | 285 lines, exports searchTasks (FTS + fuzzy fallback), filterTasks, getTagsByUser |
-| `src/app/actions/tags.ts` | Tag management Server Actions | ✓ VERIFIED | 5.5KB, 4 actions: createTag, deleteTag, updateTaskTags, addTagToTask |
-| `src/app/actions/search.ts` | Search Server Actions | ✓ VERIFIED | 5.1KB, 3 actions: searchTasksAction, filterTasksAction, getFilteredTasksAction |
-| `src/shared/components/TagBadge.tsx` | Tag display component | ✓ VERIFIED | 65 lines, color-coded badges with optional remove button |
-| `src/shared/components/TagInput.tsx` | Tag autocomplete input | ✓ VERIFIED | 191 lines, autocomplete dropdown with create-on-enter |
-| `src/shared/components/TaskSearchBar.tsx` | Search UI | ✓ VERIFIED | 133 lines, debounced input with URL state sync via nuqs |
-| `src/shared/components/TaskFilters.tsx` | Filter sidebar | ✓ VERIFIED | 161 lines, status/tag multi-select with URL state |
-| `src/shared/components/EmptyState.tsx` | Reusable empty state | ✓ VERIFIED | 86 lines, customizable icon/title/description/CTA |
-| `src/shared/components/TaskListWithFilters.tsx` | Integrated wrapper | ✓ VERIFIED | 101 lines, combines search, filters, and list with context-aware empty states |
-| `src/app/(app)/tasks/search-params.ts` | nuqs URL state parsers | ✓ VERIFIED | 24 lines, defines q/status/tags parsers with cache |
-| `src/app/(app)/tasks/page.tsx` | Tasks page with search/filter | ✓ VERIFIED | 202 lines, Server Component fetching data based on URL params |
+| ---------- | ---------- | -------- | --------- |
+  | `prisma/sch... | Tag model w... | ✓ VERIFIED | Tag model e... |  
+  | `prisma/mig... | Search infr... | ✓ VERIFIED | pg_trgm ext... |  
+  | `src/shared... | Search and ... | ✓ VERIFIED | 285 lines, ... |  
+  | `src/app/ac... | Tag managem... | ✓ VERIFIED | 5.5KB, 4 ac... |  
+  | `src/app/ac... | Search Serv... | ✓ VERIFIED | 5.1KB, 3 ac... |  
+  | `src/shared... | Tag display... | ✓ VERIFIED | 65 lines, c... |  
+  | `src/shared... | Tag autocom... | ✓ VERIFIED | 191 lines, ... |  
+  | `src/shared... | Search UI | ✓ VERIFIED | 133 lines, ... |  
+  | `src/shared... | Filter sidebar | ✓ VERIFIED | 161 lines, ... |  
+  | `src/shared... | Reusable em... | ✓ VERIFIED | 86 lines, c... |  
+  | `src/shared... | Integrated ... | ✓ VERIFIED | 101 lines, ... |  
+  | `src/app/(a... | nuqs URL st... | ✓ VERIFIED | 24 lines, d... |  
+  | `src/app/(a... | Tasks page ... | ✓ VERIFIED | 202 lines, ... |  
 
 ### Key Link Verification
 
 | From | To | Via | Status | Details |
-|------|-----|-----|--------|---------|
-| TaskSearchBar | URL state | nuqs useQueryState | ✓ WIRED | Debounced input syncs to URL after 500ms, immediate local state update |
-| TaskFilters | URL state | nuqs useQueryStates | ✓ WIRED | Multi-select filters sync to URL immediately |
-| Tasks page | DAL search | searchTasks() function | ✓ WIRED | Server Component calls searchTasks(userId, query) when q param present |
-| Tasks page | DAL filter | filterTasks() function | ✓ WIRED | Server Component calls filterTasks(userId, filterObj) when status/tags present |
-| searchTasks | PostgreSQL FTS | ts_rank + websearch_to_tsquery | ✓ WIRED | Raw SQL query with full-text search, falls back to trigram similarity |
-| TaskCard | TagBadge | JSX render | ✓ WIRED | TaskCard renders up to 3 TagBadge components with "+N more" overflow |
-| TagInput | createTag action | addTagToTask Server Action | ✓ WIRED | Autocomplete creates tags on-the-fly via connectOrCreate pattern |
+| ------ | ----- | ----- | -------- | --------- |
+  | TaskSearc... | URL state | nuqs useQ... | ✓ WIRED | Debounced... |  
+| TaskFilters | URL state | nuqs useQ... | ✓ WIRED | Multi-sel... |
+  | Tasks page | DAL search | searchTas... | ✓ WIRED | Server Co... |  
+  | Tasks page | DAL filter | filterTas... | ✓ WIRED | Server Co... |  
+  | searchTasks | PostgreSQ... | ts_rank +... | ✓ WIRED | Raw SQL q... |  
+  | TaskCard | TagBadge | JSX render | ✓ WIRED | TaskCard ... |  
+  | TagInput | createTag... | addTagToT... | ✓ WIRED | Autocompl... |  
 
 ### Requirements Coverage
 
 | Requirement | Status | Blocking Issue |
-|-------------|--------|----------------|
-| TASK-05: User can organize tasks into categories or projects | ✓ SATISFIED | None — Tag model, UI, and persistence fully functional |
-| TASK-07: User can search tasks by title, description, or content | ✓ SATISFIED | None — FTS with fuzzy fallback working |
-| TASK-08: User can filter tasks by status, category, or date | ✓ SATISFIED | None — Status and tag filters working, date not required for phase goal |
+| ------------- | -------- | ---------------- |
+| TASK-05: User can ... | ✓ SATISFIED | None — Tag model, ... |
+| TASK-07: User can ... | ✓ SATISFIED | None — FTS with fu... |
+| TASK-08: User can ... | ✓ SATISFIED | None — Status and ... |
 
 ### Anti-Patterns Found
 
 | File | Line | Pattern | Severity | Impact |
-|------|------|---------|----------|--------|
+| ------ | ------ | --------- | ---------- | -------- |
 | N/A | N/A | None | N/A | No anti-patterns detected |
 
 **Notes:**
 
-- 4 instances of "TODO" found but all were CSS classes (`TODO` status) or documentation comments, not stub markers
-- No `return null`, `return {}`, or `return []` stub patterns found in key components
+- 4 instances of "TODO" found but all were CSS classes (`TODO` status) or
+  documentation comments, not stub markers
+- No `return null`, `return {}`, or `return []` stub patterns found in key
+  components
 - All components have substantive implementations (60-191 lines each)
 - All functions have real logic (not console.log stubs)
 
@@ -84,13 +86,15 @@ Based on SUMMARY 04-05, human verification was completed successfully:
 #### 1. Tag Management System
 
 **Test:** Create task with tags, edit tags, use autocomplete
-**Expected:** Tags persist, autocomplete suggests existing tags, no duplicates created
+**Expected:** Tags persist, autocomplete suggests existing tags, no duplicates
+created
 **Status:** ✅ PASSED (verified in 04-05-SUMMARY.md)
 
 #### 2. Full-Text Search
 
 **Test:** Search by title, search by description, test fuzzy matching
-**Expected:** Finds tasks by title/description, handles typos, ranks by relevance
+**Expected:** Finds tasks by title/description, handles typos, ranks by
+relevance
 **Status:** ✅ PASSED (verified in 04-05-SUMMARY.md)
 
 #### 3. Multi-Criteria Filtering
@@ -102,7 +106,8 @@ Based on SUMMARY 04-05, human verification was completed successfully:
 #### 4. Empty States
 
 **Test:** Clear all tasks, apply filter with no matches
-**Expected:** Different messages for "no tasks" vs "no results", helpful guidance
+**Expected:** Different messages for "no tasks" vs "no results", helpful
+guidance
 **Status:** ✅ PASSED (verified in 04-05-SUMMARY.md)
 
 #### 5. URL Persistence
@@ -119,7 +124,8 @@ Based on SUMMARY 04-05, human verification was completed successfully:
 
 ### Gaps Summary
 
-None — all must-haves verified, all truths achievable with existing infrastructure.
+None — all must-haves verified, all truths achievable with existing
+infrastructure.
 
 ---
 
@@ -133,7 +139,8 @@ All required files exist:
 - ✅ Migration with search infrastructure (pg_trgm, tsvector, GIN indexes)
 - ✅ DAL functions (searchTasks, filterTasks, getTagsByUser)
 - ✅ Server Actions (tags.ts with 4 actions, search.ts with 3 actions)
-- ✅ UI components (TagBadge, TagInput, TaskSearchBar, TaskFilters, EmptyState, TaskListWithFilters)
+- ✅ UI components (TagBadge, TagInput, TaskSearchBar, TaskFilters, EmptyState,
+  TaskListWithFilters)
 - ✅ URL state management (search-params.ts with nuqs parsers)
 - ✅ Integrated tasks page
 
@@ -185,7 +192,7 @@ All artifacts are substantive (not stubs):
 
 **Critical data flow:**
 
-```
+```text
 User types in TaskSearchBar
   → Debounced update to URL (nuqs)
   → page.tsx re-renders
@@ -204,13 +211,14 @@ All steps verified functional ✅
 ✅ Verified in migration.sql lines 44-50
 
 ```sql
+
 ADD COLUMN search_vector tsvector
 GENERATED ALWAYS AS (
   setweight(to_tsvector('english', coalesce(title, '')), 'A') ||
   setweight(to_tsvector('english', coalesce(description, '')), 'B')
 ) STORED;
 
-```
+```yaml
 
 **Pattern: Two-tier search (FTS + fuzzy fallback)**
 ✅ Verified in dal.ts searchTasks function:
@@ -244,6 +252,7 @@ GENERATED ALWAYS AS (
 **Tag model:**
 
 ```prisma
+
 model Tag {
   id        String   @id @default(cuid())
   name      String   @db.VarChar(50)

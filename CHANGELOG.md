@@ -3,7 +3,8 @@
 All notable changes to the MyWork Framework will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+and this project adheres to [Semantic
+Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
@@ -177,7 +178,7 @@ python tools/mw.py doctor --fix
 cd projects/your-project/
 python ../../tools/mw.py gsd progress
 
-```
+```markdown
 
 #### From 1.0.x to 1.1.x
 
@@ -228,18 +229,23 @@ python ../../tools/mw.py gsd progress
 
 #### How to Contribute
 
-1. **Report Issues**: [GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
-2. **Feature Requests**: [GitHub Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
+1. **Report Issues**: [GitHub
+Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
+2. **Feature Requests**: [GitHub
+Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
 3. **Code Contributions**: Fork, develop, submit PR
 4. **Documentation**: Help improve guides and examples
 
 #### Support Channels
 
-- 💬 **Community**: [GitHub Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
-- 🐛 **Bug Reports**: [GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
+- 💬 **Community**: [GitHub
+  Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
+- 🐛 **Bug Reports**: [GitHub
+  Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
 - 📧 **Direct Support**: [support@mywork.ai](mailto:support@mywork.ai)
 - 📺 **Video Guides**: [YouTube Channel](https://youtube.com/@MyWorkAI)
 
 ---
 
-*For detailed migration guides, see the [Migration Documentation](docs/migration/).*
+*For detailed migration guides, see the [Migration
+Documentation](docs/migration/).*

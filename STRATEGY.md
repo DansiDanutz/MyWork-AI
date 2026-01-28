@@ -1,15 +1,19 @@
 # MyWork Strategy Alignment
 
-This document aligns the MyWork Framework, Brain, and Marketplace into one system.
-It defines the project taxonomy, the Brain contribution pipeline, and the path from
+This document aligns the MyWork Framework, Brain, and Marketplace into one
+system.
+It defines the project taxonomy, the Brain contribution pipeline, and the path
+from
 project to marketplace product.
 
 ## Core System
 
 MyWork is composed of three engines:
 
-- Framework Engine: tooling, workflows, and automation that improve delivery speed.
-- Brain Engine: knowledge vault that captures patterns, fixes, and reusable solutions.
+- Framework Engine: tooling, workflows, and automation that improve delivery
+  speed.
+- Brain Engine: knowledge vault that captures patterns, fixes, and reusable
+  solutions.
 - Marketplace Engine: distribution and monetization of production-ready projects.
 
 The loop: build -> capture -> package -> sell -> feedback -> improve.

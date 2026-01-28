@@ -11,7 +11,8 @@ dependencies: ["05-04", "05-05"]
 
 ## Objective
 
-Integrated file attachment functionality into the main task management UI, enabling users to upload, view, and manage files directly within task workflows.
+Integrated file attachment functionality into the main task management UI,
+enabling users to upload, view, and manage files directly within task workflows.
 
 ## What Was Built
 
@@ -29,6 +30,7 @@ Integrated file attachment functionality into the main task management UI, enabl
 **Integration Points:**
 
 ```typescript
+
 type Task = {
   // ... existing fields
   attachments?: { id: string }[]
@@ -39,7 +41,7 @@ type Task = {
   <FileCountBadge count={optimisticTask.attachments.length} />
 )}
 
-```
+```markdown
 
 ### 2. TaskEditFormWithTags Enhancement (`src/shared/components/TaskEditFormWithTags.tsx`)
 
@@ -57,6 +59,7 @@ type Task = {
 **File Management Features:**
 
 ```typescript
+
 // State management
 const [attachments, setAttachments] = useState<FileAttachment[]>(task.attachments)
 
@@ -120,15 +123,31 @@ const handleFileDeleted = useCallback((fileId: string) => {
 
 ### Data Flow
 
-```
+```text
 TaskCard → Shows FileCountBadge if attachments exist
-    ↓
+
+```
+↓
+
+```
 Edit Task → TaskEditFormWithTags with full file management
-    ↓
+
+```
+↓
+
+```
 FileDropzone → Upload files → handleFileUploadComplete
-    ↓
+
+```
+↓
+
+```
 FileList → View/Delete files → handleFileDeleted
-    ↓
+
+```
+↓
+
+```
 DAL Updates → All task queries include attachment data
 
 ```
@@ -188,7 +207,8 @@ DAL Updates → All task queries include attachment data
 ## Files Created/Modified
 
 - `src/shared/components/TaskCard.tsx` - Added FileCountBadge integration
-- `src/shared/components/TaskEditFormWithTags.tsx` - Added file management UI and logic
+- `src/shared/components/TaskEditFormWithTags.tsx` - Added file management UI and
+  logic
 - `src/shared/lib/dal.ts` - Updated all task queries to include attachments
 
 ## Success Criteria Met
@@ -234,11 +254,13 @@ DAL Updates → All task queries include attachment data
 
 ## Testing Verification
 
-The integration successfully connects all file attachment components into a cohesive user experience. Users can now:
+The integration successfully connects all file attachment components into a
+cohesive user experience. Users can now:
 
 1. **See** which tasks have attachments (FileCountBadge on cards)
 2. **Upload** files to tasks (FileDropzone in edit form)
 3. **Manage** attachments (FileList with download/delete in edit form)
 4. **Navigate** between tasks while maintaining file attachment context
 
-All database queries properly include attachment information, ensuring the UI always has access to current file data.
+All database queries properly include attachment information, ensuring the UI
+always has access to current file data.

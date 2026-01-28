@@ -79,11 +79,19 @@ Complete task management CRUD system with editing and deletion capabilities:
 
 ## Navigation Flow Verified
 
-```
+```text
 Dashboard → "New Task" → /tasks/new → (create) → /tasks
-    ↓
+
+```
+↓
+
+```
 /tasks → "Edit" → /tasks/[id]/edit → (update) → /tasks
-    ↓
+
+```
+↓
+
+```
 /tasks/[id]/edit → "Delete" → (confirm) → /tasks
 
 ```
@@ -100,7 +108,7 @@ Dashboard → "New Task" → /tasks/new → (create) → /tasks
 
 **OAuth App Settings:**
 
-```
+```yaml
 Application name: Task Tracker Dev
 Homepage URL: http://localhost:3000
 Authorization callback URL: http://localhost:3000/api/auth/callback/github
@@ -128,7 +136,7 @@ Client ID: Ov23liMCzfZTEsScZv8Y
 All 4 plans in Phase 3 (Core Task Management) have been executed:
 
 | Plan | Description | Status |
-|------|-------------|---------|
+| ------ | ------------- | --------- |
 | 03-01 | Database schema & Server Actions | ✅ Complete |
 | 03-02 | TaskCard, TaskList, TaskForm UI | ✅ Complete |
 | 03-03 | Pages, routes & dashboard integration | ✅ Complete |
@@ -160,9 +168,11 @@ All 4 plans in Phase 3 (Core Task Management) have been executed:
 ## Key Patterns Established
 
 1. **Edit page pattern:** Dedicated routes for editing vs inline forms
-2. **Pre-populated forms:** Server-side data fetching with client-side form state
+2. **Pre-populated forms:** Server-side data fetching with client-side form
+state
 3. **Security-first:** Ownership verification and proper 404 handling
 4. **Optimistic UI:** Instant feedback with automatic rollback on errors
 5. **Confirmation patterns:** Destructive actions require user confirmation
 
-These patterns are now validated and ready for extraction to the MyWork framework brain.
+These patterns are now validated and ready for extraction to the MyWork
+framework brain.

@@ -5,12 +5,12 @@ Complete reference for all MyWork command-line interface commands.
 ## 📋 Command Overview
 
 | Command | Purpose | Example |
-|---------|---------|---------|
+| --------- | --------- | --------- |
 | [`mw status`](#mw-status) | Framework health check | `mw status` |
 | [`mw new`](#mw-new) | Create new project | `mw new my-app fastapi` |
 | [`mw search`](#mw-search) | Search module registry | `mw search "auth"` |
 | [`mw brain`](#mw-brain) | Knowledge management | `mw brain learn` |
-| [`mw ac`](#mw-ac) | Autocoder control | `mw ac start my-project` |
+| [`mw ac`](#mw-ac-autocoder-control) | Autocoder control | `mw ac start my-project` |
 | [`mw doctor`](#mw-doctor) | System diagnostics | `mw doctor --fix` |
 | [`mw update`](#mw-update) | Update framework | `mw update --check` |
 
@@ -23,12 +23,12 @@ Display comprehensive framework status and health information.
 ```bash
 mw status [options]
 
-```
+```markdown
 
 ### Options
 
 | Option | Description | Default |
-|--------|-------------|---------|
+| -------- | ------------- | --------- |
 | `--verbose, -v` | Show detailed component status | `false` |
 | `--json` | Output in JSON format | `false` |
 
@@ -41,7 +41,7 @@ mw status
 
 ```
 
-```
+```yaml
 ✅ MyWork Framework Status
 ├── 🧠 Brain: Ready (253 patterns indexed)
 ├── 📊 Module Registry: Ready (1,300+ modules)
@@ -56,7 +56,7 @@ mw status
 ```bash
 mw status --verbose
 
-```
+```text
 
 ```
 🔍 Detailed Framework Status
@@ -77,7 +77,7 @@ mw status --verbose
   └── Active projects: 0
   └── Total sessions: 47 (avg 2.3h each)
 
-```
+```markdown
 
 ## 🆕 `mw new`
 
@@ -93,14 +93,14 @@ mw new <project_name> [template] [options]
 ### Parameters
 
 | Parameter | Description | Required |
-|-----------|-------------|----------|
+| ----------- | ------------- | ---------- |
 | `project_name` | Name of the new project | ✅ Yes |
 | `template` | Template type to use | ❌ No (default: `basic`) |
 
 ### Templates
 
 | Template | Description | Technologies |
-|----------|-------------|--------------|
+| ---------- | ------------- | -------------- |
 | `basic` | Empty project with GSD | Markdown, Git |
 | `cli` | Command-line tool | Python, Click, Pytest |
 | `fastapi` | REST API backend | Python, FastAPI, SQLite |
@@ -111,7 +111,7 @@ mw new <project_name> [template] [options]
 ### Options
 
 | Option | Description | Default |
-|--------|-------------|---------|
+| -------- | ------------- | --------- |
 | `--no-gsd` | Skip GSD initialization | `false` |
 | `--autocoder` | Set up for Autocoder use | `false` |
 | `--force, -f` | Overwrite existing directory | `false` |
@@ -125,7 +125,7 @@ mw new my-project
 
 # Creates: projects/my-project/ with basic structure
 
-```
+```yaml
 
 **CLI tool with GSD:**
 
@@ -143,7 +143,7 @@ mw new my-api fastapi --autocoder
 
 # Creates: projects/my-api/ with FastAPI + Autocoder config
 
-```
+```yaml
 
 **Force overwrite existing:**
 
@@ -156,7 +156,7 @@ mw new existing-project nextjs --force
 
 ### Output Structure
 
-```
+```python
 projects/my-project/
 ├── .planning/
 │   ├── PROJECT.md          # Generated from user input
@@ -166,7 +166,11 @@ projects/my-project/
 ├── project.yaml            # Metadata and dependencies
 ├── .gitignore              # Template-appropriate ignores
 └── src/                    # Template-specific structure
-    └── [template files]
+
+```
+└── [template files]
+
+```
 
 ```
 
@@ -179,18 +183,18 @@ Search the module registry for reusable code patterns and components.
 ```bash
 mw search <query> [options]
 
-```
+```markdown
 
 ### Parameters
 
 | Parameter | Description | Required |
-|-----------|-------------|----------|
+| ----------- | ------------- | ---------- |
 | `query` | Search terms or pattern | ✅ Yes |
 
 ### Options
 
 | Option | Description | Default |
-|--------|-------------|---------|
+| -------- | ------------- | --------- |
 | `--type, -t` | Filter by module type | All types |
 | `--language, -l` | Filter by programming language | All languages |
 | `--limit, -n` | Maximum results to show | `20` |
@@ -217,7 +221,7 @@ mw search "authentication"
 
 ```
 
-```
+```yaml
 🔍 Found 12 modules matching "authentication":
 
 1. 🔐 auth-middleware (Python) - FastAPI JWT middleware
@@ -242,7 +246,7 @@ mw search "authentication"
 ```bash
 mw search "api" --type api_endpoint --language python --limit 5
 
-```
+```yaml
 
 **Detailed view:**
 
@@ -251,7 +255,7 @@ mw search "auth middleware" --detail
 
 ```
 
-```
+```yaml
 🔐 auth-middleware (Python)
 Path: projects/task-tracker/src/shared/middleware/auth.ts
 Type: middleware | Language: python | Size: 187 lines
@@ -288,7 +292,7 @@ Interact with the MyWork knowledge vault and learning system.
 ```bash
 mw brain <command> [options]
 
-```
+```markdown
 
 ### Commands
 
@@ -307,7 +311,7 @@ mw brain search <query> [--type pattern|decision|lesson]
 mw brain search "database migrations"
 mw brain search "React performance" --type pattern
 
-```
+```markdown
 
 #### `mw brain learn`
 
@@ -330,7 +334,7 @@ mw brain learn                    # Quick learning from recent activity
 mw brain learn --deep             # Deep analysis (weekly recommended)
 mw brain learn --project my-api   # Learn from specific project
 
-```
+```markdown
 
 #### `mw brain stats`
 
@@ -343,7 +347,7 @@ mw brain stats [--breakdown]
 
 **Example output:**
 
-```
+```yaml
 🧠 Brain Statistics
 
 Knowledge Base:
@@ -373,7 +377,7 @@ Manually add knowledge to the brain.
 ```bash
 mw brain remember "<knowledge>" [--type <type>] [--project <name>]
 
-```
+```yaml
 
 **Examples:**
 
@@ -392,7 +396,7 @@ Control the Autocoder autonomous coding system.
 ```bash
 mw ac <command> [options]
 
-```
+```markdown
 
 ### Commands
 
@@ -423,7 +427,7 @@ mw ac start my-app                           # Conservative: 1 agent, full testi
 mw ac start my-app --concurrency 3          # Balanced: 3 agents with testing
 mw ac start my-app --concurrency 5 --yolo   # Fast: 5 agents, no testing
 
-```
+```markdown
 
 #### `mw ac status`
 
@@ -440,7 +444,7 @@ mw ac status [project]
 mw ac status              # Show server status
 mw ac status my-app       # Show specific project status
 
-```
+```markdown
 
 #### `mw ac progress`
 
@@ -457,7 +461,7 @@ mw ac progress <project> [--follow]
 
 **Example output:**
 
-```
+```yaml
 🤖 Autocoder Progress: my-app
 
 📊 Overall Progress: [████████░░] 82% complete
@@ -488,7 +492,7 @@ mw ac pause <project>     # Pause all agents on project
 mw ac resume <project>    # Resume paused project
 mw ac stop <project>      # Stop and cleanup project
 
-```
+```markdown
 
 #### `mw ac ui`
 
@@ -510,12 +514,12 @@ System diagnostics and automatic issue resolution.
 ```bash
 mw doctor [options]
 
-```
+```markdown
 
 ### Options
 
 | Option | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `--fix` | Automatically fix detected issues |
 | `--report` | Generate detailed diagnostic report |
 | `--check <component>` | Check specific component only |
@@ -537,7 +541,7 @@ mw doctor
 
 ```
 
-```
+```yaml
 🔍 MyWork Framework Diagnostics
 
 ✅ Python Dependencies: All required packages installed
@@ -557,7 +561,7 @@ Run 'mw doctor --fix' to attempt automatic repairs.
 ```bash
 mw doctor --fix
 
-```
+```text
 
 ```
 🔧 Fixing detected issues...
@@ -571,7 +575,7 @@ mw doctor --fix
 
 ✅ All issues resolved! Framework is healthy.
 
-```
+```markdown
 
 ## 🔄 `mw update`
 
@@ -595,7 +599,7 @@ mw update [component] [options]
 ### Options
 
 | Option | Description |
-|--------|-------------|
+| -------- | ------------- |
 | `--check` | Check for updates without installing |
 | `--force` | Force update even if no changes detected |
 | `--rollback <component>` | Rollback to previous version |
@@ -607,7 +611,7 @@ mw update [component] [options]
 ```bash
 mw update --check
 
-```
+```text
 
 ```
 🔍 Update Status:
@@ -619,7 +623,7 @@ mw update --check
 
 Run 'mw update' to install available updates.
 
-```
+```yaml
 
 **Update specific component:**
 
@@ -633,14 +637,14 @@ mw update autocoder
 ```bash
 mw update --rollback autocoder
 
-```
+```markdown
 
 ## 🌐 Global Options
 
 Available for all `mw` commands:
 
 | Option | Description | Example |
-|--------|-------------|---------|
+| -------- | ------------- | --------- |
 | `--help, -h` | Show command help | `mw search --help` |
 | `--version, -v` | Show version info | `mw --version` |
 | `--quiet, -q` | Minimal output | `mw status --quiet` |
@@ -651,7 +655,7 @@ Available for all `mw` commands:
 ## 🔗 Exit Codes
 
 | Code | Meaning |
-|------|---------|
+| ------ | --------- |
 | `0` | Success |
 | `1` | General error |
 | `2` | Invalid arguments |
@@ -668,4 +672,5 @@ Available for all `mw` commands:
 
 ---
 
-*💡 **Pro Tip:** Use `mw <command> --help` for detailed help on any command, including examples and advanced options.*
+*💡 **Pro Tip:** Use `mw <command> --help` for detailed help on any command,
+including examples and advanced options.*

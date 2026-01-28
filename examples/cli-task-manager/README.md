@@ -1,6 +1,7 @@
 # CLI Task Manager Example
 
-A simple command-line task manager built with the MyWork framework. Perfect for learning GSD basics and CLI development patterns.
+A simple command-line task manager built with the MyWork framework. Perfect for
+learning GSD basics and CLI development patterns.
 
 ## 🎯 **What This Example Teaches**
 
@@ -37,7 +38,7 @@ python task_manager.py edit 3 --title "Updated task title"
 python task_manager.py search "framework"
 python task_manager.py stats
 
-```
+```markdown
 
 ## ⚡ **Quick Start**
 
@@ -55,7 +56,7 @@ cd projects/my-task-cli
 ```bash
 pip install -r requirements.txt
 
-```
+```markdown
 
 ### **3. Try it out:**
 
@@ -71,7 +72,7 @@ python src/task_manager.py list
 ```bash
 python -m pytest tests/ -v
 
-```
+```markdown
 
 ## 📊 **Example Usage**
 
@@ -153,7 +154,7 @@ This example was created using the MyWork GSD workflow:
 
 ## 📁 **Project Structure**
 
-```
+```text
 cli-task-manager/
 ├── .planning/                  # GSD planning documents
 │   ├── PROJECT.md              # Project vision and goals
@@ -198,7 +199,7 @@ python -m pytest tests/ --cov=src
 
 python -m pytest tests/test_models.py::test_task_creation -v
 
-```
+```yaml
 
 **Test coverage includes:**
 
@@ -219,19 +220,26 @@ import click
 @click.group()
 @click.pass_context
 def cli(ctx):
-    """Simple task manager CLI."""
-    ctx.ensure_object(dict)
-    ctx.obj['storage'] = TaskStorage()
 
+```
+"""Simple task manager CLI."""
+ctx.ensure_object(dict)
+ctx.obj['storage'] = TaskStorage()
+
+```
 @cli.command()
 @click.argument('title')
 @click.option('--priority', type=click.Choice(['low', 'normal', 'high']), default='normal')
 @click.option('--due', type=click.DateTime(formats=['%Y-%m-%d']))
 @click.pass_context
 def add(ctx, title, priority, due):
-    """Add a new task."""
 
-    # Implementation here
+```
+"""Add a new task."""
+
+# Implementation here
+
+```
 
 ```
 
@@ -243,20 +251,26 @@ from datetime import datetime
 from enum import Enum
 
 class Priority(Enum):
-    LOW = "low"
-    NORMAL = "normal"
-    HIGH = "high"
-
-@dataclass
-class Task:
-    id: int
-    title: str
-    priority: Priority = Priority.NORMAL
-    completed: bool = False
-    created_at: datetime = datetime.now()
-    due_date: datetime = None
 
 ```
+LOW = "low"
+NORMAL = "normal"
+HIGH = "high"
+
+```
+@dataclass
+class Task:
+
+```
+id: int
+title: str
+priority: Priority = Priority.NORMAL
+completed: bool = False
+created_at: datetime = datetime.now()
+due_date: datetime = None
+
+```
+```markdown
 
 ### **JSON Storage Pattern**
 
@@ -266,13 +280,17 @@ from pathlib import Path
 from typing import List, Optional
 
 class TaskStorage:
-    def __init__(self, file_path: str = "tasks.json"):
-        self.file_path = Path(file_path)
-        self.ensure_file_exists()
 
-    def save_tasks(self, tasks: List[Task]) -> None:
-        with open(self.file_path, 'w') as f:
-            json.dump([asdict(task) for task in tasks], f, indent=2, default=str)
+```
+def __init__(self, file_path: str = "tasks.json"):
+    self.file_path = Path(file_path)
+    self.ensure_file_exists()
+
+def save_tasks(self, tasks: List[Task]) -> None:
+    with open(self.file_path, 'w') as f:
+        json.dump([asdict(task) for task in tasks], f, indent=2, default=str)
+
+```
 
 ```
 
@@ -283,22 +301,25 @@ from rich.console import Console
 from rich.table import Table
 
 def display_tasks(tasks: List[Task]) -> None:
-    console = Console()
-    table = Table(title="📋 Your Tasks")
-
-    table.add_column("ID", justify="right", style="cyan")
-    table.add_column("Status", justify="center")
-    table.add_column("Title", style="white")
-    table.add_column("Priority", justify="center")
-
-    for task in tasks:
-        status = "✅" if task.completed else "[ ]"
-        priority_color = {"high": "red", "normal": "white", "low": "dim"}[task.priority.value]
-        table.add_row(str(task.id), status, task.title, task.priority.value, style=priority_color)
-
-    console.print(table)
 
 ```
+console = Console()
+table = Table(title="📋 Your Tasks")
+
+table.add_column("ID", justify="right", style="cyan")
+table.add_column("Status", justify="center")
+table.add_column("Title", style="white")
+table.add_column("Priority", justify="center")
+
+for task in tasks:
+    status = "✅" if task.completed else "[ ]"
+    priority_color = {"high": "red", "normal": "white", "low": "dim"}[task.priority.value]
+    table.add_row(str(task.id), status, task.title, task.priority.value, style=priority_color)
+
+console.print(table)
+
+```
+```markdown
 
 ## 🔧 **Customization Ideas**
 
@@ -328,9 +349,13 @@ Extend this example for your needs:
 
 ## 📚 **Related Tutorials**
 
-- [**Tutorial 1: Your First Project →**](../../docs/tutorials/01-first-project.md) - Step-by-step guide to building this exact example
-- [**Tutorial 2: GSD Basics →**](../../docs/tutorials/02-gsd-basics.md) - Advanced planning techniques
-- [**CLI Reference →**](../../docs/api/mw-cli.md) - Complete MyWork CLI documentation
+- [**Tutorial 1: Your First Project
+  →**](../../docs/tutorials/01-first-project.md) - Step-by-step guide to building
+  this exact example
+- [**Tutorial 2: GSD Basics →**](../../docs/tutorials/02-gsd-basics.md) -
+  Advanced planning techniques
+- [**CLI Reference →**](../../docs/api/mw-cli.md) - Complete MyWork CLI
+  documentation
 
 ## 🤝 **Contributing**
 
@@ -350,7 +375,7 @@ Found a bug or want to add a feature?
    mw gsd plan-phase [phase]
    mw gsd execute-phase [phase]
 
-   ```
+```markdown
 
 3. **Submit a pull request** with your improvements!
 
@@ -360,4 +385,5 @@ This example is part of the MyWork framework and follows the same license terms.
 
 ---
 
-*💡 More examples are planned. For now, focus on mastering this CLI flow and the GSD tutorial series.*
+*💡 More examples are planned. For now, focus on mastering this CLI flow and the
+GSD tutorial series.*

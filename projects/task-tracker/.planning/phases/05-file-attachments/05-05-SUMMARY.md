@@ -11,7 +11,8 @@ dependencies: ["05-02", "05-03"]
 
 ## Objective
 
-Created comprehensive file display components for viewing thumbnails, file lists, and preview functionality with rich visual feedback.
+Created comprehensive file display components for viewing thumbnails, file
+lists, and preview functionality with rich visual feedback.
 
 ## What Was Built
 
@@ -114,17 +115,21 @@ Created comprehensive file display components for viewing thumbnails, file lists
 
 ### Component Hierarchy
 
-```
+```text
 FileList
 ├── FileThumbnail
 │   └── FileTypeIcon (fallback)
 └── FilePreview (modal)
-    ├── Download action
-    ├── Delete action (optional)
-    └── Content display
-        ├── Image preview
-        ├── PDF iframe
-        └── Download prompt
+
+```
+├── Download action
+├── Delete action (optional)
+└── Content display
+    ├── Image preview
+    ├── PDF iframe
+    └── Download prompt
+
+```
 
 ```
 

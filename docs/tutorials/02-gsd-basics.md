@@ -1,6 +1,7 @@
 # Tutorial 2: Understanding GSD Workflow
 
-**Goal:** Master the GSD planning and execution system by building a todo web app with authentication.
+**Goal:** Master the GSD planning and execution system by building a todo web
+app with authentication.
 
 **What you'll learn:**
 
@@ -36,7 +37,7 @@ Before we start building, let's understand what makes GSD different:
 
 ### **Traditional Approach:**
 
-```
+```text
 💭 "I want a todo app"
    ↓
 🔨 Start coding immediately
@@ -51,7 +52,7 @@ Before we start building, let's understand what makes GSD different:
 
 ### **GSD Approach:**
 
-```
+```text
 💭 "I want a todo app"
    ↓
 🧠 Research domain and best practices
@@ -79,7 +80,7 @@ cd /Users/dansidanutz/Desktop/MyWork
 mw new todo-web-app nextjs
 cd projects/todo-web-app
 
-```
+```markdown
 
 ### **1.2 Initialize GSD planning**
 
@@ -92,28 +93,28 @@ mw gsd new-project
 
 **Project description:**
 
-```
+```text
 A modern web-based todo application with user authentication, task categories, and responsive design. Users can sign up, create tasks, organize them by category, and manage their personal productivity.
 
 ```
 
 **Target audience:**
 
-```
+```python
 Individual users who want a clean, fast todo app accessible from any device. Power users who need categories and organization features.
 
 ```
 
 **Key features:**
 
-```
+```text
 User registration and authentication, task CRUD operations, task categories/projects, responsive mobile-first design, data persistence, search and filtering, task due dates, priority levels.
 
 ```
 
 **Success criteria:**
 
-```
+```text
 Users can register, log in, create and manage tasks with categories, and use the app effectively on both desktop and mobile devices. App should be fast, intuitive, and reliable.
 
 ```
@@ -123,11 +124,12 @@ Users can register, log in, create and manage tasks with categories, and use the
 ```bash
 cat .planning/ROADMAP.md
 
-```
+```yaml
 
 **Expected roadmap structure:**
 
 ```markdown
+
 Phase 1: Foundation & Authentication (5-7 features)
 Phase 2: Core Task Management (6-8 features)
 Phase 3: Categories & Organization (4-6 features)
@@ -141,7 +143,7 @@ Phase 5: Advanced Features (3-5 features)
 ```bash
 cat .planning/REQUIREMENTS.md
 
-```
+```markdown
 
 ---
 
@@ -177,7 +179,7 @@ mw gsd discuss-phase 1
 ```bash
 mw gsd plan-phase 1
 
-```
+```yaml
 
 **Watch GSD work:**
 
@@ -188,7 +190,7 @@ mw gsd plan-phase 1
 
 ◆ Spawning researcher...
 
-```
+```yaml
 
 **The researcher will:**
 
@@ -204,7 +206,7 @@ mw gsd plan-phase 1
 
 ◆ Spawning planner...
 
-```
+```yaml
 
 **The planner will create specific plans like:**
 
@@ -221,7 +223,7 @@ mw gsd execute-phase 1
 
 **Watch parallel execution:**
 
-```
+```yaml
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  GSD ► EXECUTING WAVE 1
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -251,7 +253,7 @@ npm run dev
 
 # Try registration and login flows
 
-```
+```yaml
 
 **Verification checks:**
 
@@ -287,7 +289,7 @@ mw gsd execute-phase 2  # Build core task management
 ```bash
 cat .planning/STATE.md
 
-```
+```yaml
 
 **You'll see:**
 
@@ -323,7 +325,7 @@ Complete Phase 2 execution, then move to Phase 3 (Categories)
 ```bash
 mw gsd pause-work
 
-```
+```yaml
 
 **This creates a handoff document with:**
 
@@ -343,7 +345,7 @@ mw gsd resume-work
 ```bash
 mw gsd progress
 
-```
+```yaml
 
 **Shows:**
 
@@ -365,7 +367,7 @@ tree src/ -I node_modules  # See the generated structure
 
 **You'll find:**
 
-```
+```text
 src/
 ├── app/
 │   ├── api/auth/           # Authentication endpoints
@@ -381,7 +383,11 @@ src/
 │   ├── db.ts               # Database connection
 │   └── validations.ts      # Form validation schemas
 └── types/
-    └── index.ts            # TypeScript type definitions
+
+```
+└── index.ts            # TypeScript type definitions
+
+```
 
 ```
 
@@ -411,7 +417,7 @@ cat src/app/api/tasks/route.ts
 
 cat src/app/dashboard/page.tsx
 
-```
+```markdown
 
 ---
 
@@ -463,15 +469,17 @@ npm run dev
 
 ### **4.1 Phase dependencies**
 
-Some phases must complete before others can start. GSD automatically handles this:
+Some phases must complete before others can start. GSD automatically handles
+this:
 
 ```markdown
+
 Phase 1: Authentication (prerequisite for all others)
 Phase 2: Core tasks (depends on Phase 1)
 Phase 3: Categories (depends on Phase 2)
 Phase 4: UI polish (depends on Phases 1-3)
 
-```
+```markdown
 
 ### **4.2 Parallel execution**
 
@@ -482,7 +490,7 @@ Wave 1: Database setup + API routes (parallel)
 Wave 2: UI components (after Wave 1)
 Wave 3: Integration tests (after Wave 2)
 
-```
+```markdown
 
 ### **4.3 Adaptive planning**
 
@@ -542,7 +550,7 @@ mw gsd execute-phase 3  # Categories & Organization
 mw gsd execute-phase 4  # UI/UX Polish
 mw gsd execute-phase 5  # Advanced Features
 
-```
+```markdown
 
 ### **Option B: Try Autocoder for Larger Projects**
 
@@ -593,7 +601,7 @@ mw gsd add-phase
 
 mw gsd resume-work
 
-```
+```markdown
 
 ### **❌ "Generated code doesn't match my preferences"**
 
@@ -624,7 +632,7 @@ You now understand the core GSD workflow and can:
 ### **Time Comparison:**
 
 | Traditional Web App Dev | GSD Approach |
-|------------------------|--------------|
+| ------------------------ | -------------- |
 | ⏱️ **1-2 weeks** planning + coding | ⚡ **2-3 hours** guided execution |
 | 🐛 **Debug auth issues** for days | ✅ **Proven patterns** auto-applied |
 | 📝 **Write tests** manually | 🧪 **Auto-generated** test coverage |
@@ -634,4 +642,5 @@ You now understand the core GSD workflow and can:
 
 **Ready for Tutorial 3?** → **Autocoder integration guide coming soon**
 
-*💡 You've now mastered 40% of MyWork's capabilities. Tutorial 3 will show you how to scale up to larger projects with autonomous coding agents.*
+*💡 You've now mastered 40% of MyWork's capabilities. Tutorial 3 will show you
+how to scale up to larger projects with autonomous coding agents.*

@@ -48,7 +48,7 @@ scheduler = BackgroundScheduler()
 scheduler.add_job(scrape_ai_videos, 'interval', hours=8)
 scheduler.start()
 
-```
+```markdown
 
 ### Quality Ranking Formula
 
@@ -56,7 +56,7 @@ scheduler.start()
 Quality Score = (views × 0.3) + (likes × 0.25) + (comments × 0.25) + (subscriber_count × 0.2)
 Engagement Rate = (likes + comments + shares) / views
 
-```
+```markdown
 
 ### Filters
 
@@ -91,10 +91,11 @@ Engagement Rate = (likes + comments + shares) / views
 
 **Apify Actors:**
 
-- News Aggregator AI Agent: https://apify.com/harvestlabs/news-aggregator-ai-agent
-- AI News Scraper: https://apify.com/patrikbraborec/ai-news
-- Hacker News API Scraper: https://apify.com/fresh_cliff/hacker-news-api-scraper
-- Reddit Scraper: https://apify.com/macrocosmos/reddit-scraper
+- News Aggregator AI Agent:
+  <https://apify.com/harvestlabs/news-aggregator-ai-agent>
+- AI News Scraper: <https://apify.com/patrikbraborec/ai-news>
+- Hacker News API Scraper: <https://apify.com/fresh_cliff/hacker-news-api-scraper>
+- Reddit Scraper: <https://apify.com/macrocosmos/reddit-scraper>
 
 **News APIs:**
 
@@ -104,7 +105,7 @@ Engagement Rate = (likes + comments + shares) / views
 
 **Official APIs:**
 
-- Hacker News API: https://github.com/HackerNews/API (free, no rate limits)
+- Hacker News API: <https://github.com/HackerNews/API> (free, no rate limits)
 - Reddit API (PRAW): Paid access required
 
 ### Ranking Metrics
@@ -123,7 +124,7 @@ Engagement Rate = (likes + comments + shares) / views
 ```
 https://api.github.com/search/repositories?q=ai+language:python&sort=stars&order=desc
 
-```
+```yaml
 
 **Filters:**
 
@@ -159,19 +160,19 @@ https://api.github.com/search/repositories?q=ai+language:python&sort=stars&order
 ### Framework Comparison
 
 | Framework | Type | Best For | Key Feature |
-|-----------|------|----------|-------------|
-| **DSPy** | Compiler/Optimizer | Systematic optimization | Auto-generates & optimizes prompts |
-| **LangChain** | Application Framework | Building LLM apps | Extensible chains & agents |
-| **Mirascope** | Lightweight Toolkit | Developer-friendly | Simple, type-safe prompting |
-| **Haystack** | RAG Framework | Retrieval-augmented gen | Document processing pipelines |
-| **Latitude** | LLMOps Platform | Prompt management | Collaboration, versioning |
+| ----------- | ------ | ---------- | ------------- |
+| **DSPy** | Compiler/Op... | Systematic ... | Auto-genera... |
+  | **LangChain** | Application... | Building LL... | Extensible ... |  
+| **Mirascope** | Lightweight... | Developer-f... | Simple, typ... |
+| **Haystack** | RAG Framework | Retrieval-a... | Document pr... |
+  | **Latitude** | LLMOps Plat... | Prompt mana... | Collaborati... |  
 
 ### DSPy (Recommended for Optimization)
 
 - "Programming, not prompting"
 - Automatic prompt generation from signatures
 - Optimization strategies: MIPROv2, SIMBA, GEPA
-- GitHub: https://github.com/stanfordnlp/dspy
+- GitHub: <https://github.com/stanfordnlp/dspy>
 
 ### LangChain (For Application Building)
 
@@ -209,34 +210,46 @@ https://api.github.com/search/repositories?q=ai+language:python&sort=stars&order
 
 1. User Prompt Input
 
-       ↓
+```
+   ↓
 
+```
 2. DSPy/LangChain Optimization
 
-       ↓
+```
+   ↓
 
+```
 3. Content Generation (Claude/GPT)
 
-       ↓
+```
+   ↓
 
+```
 4. Video Creation (AI Video Tools)
 
-       ↓
+```
+   ↓
 
+```
 5. Preview & Edit (User Review)
    - Edit image
    - Edit description
    - Edit title
 
-       ↓
-
-6. Approval Gate (User confirms)
-
-       ↓
-
-7. YouTube Upload (via YouTube Data API)
+```
+   ↓
 
 ```
+6. Approval Gate (User confirms)
+
+```
+   ↓
+
+```
+7. YouTube Upload (via YouTube Data API)
+
+```markdown
 
 ### AI Video Generation Tools
 
@@ -289,7 +302,7 @@ https://api.github.com/search/repositories?q=ai+language:python&sort=stars&order
 │                                                          │
 └─────────────────────────────────────────────────────────┘
 
-```
+```markdown
 
 ---
 
@@ -329,7 +342,7 @@ https://api.github.com/search/repositories?q=ai+language:python&sort=stars&order
 ## COST ESTIMATE (Monthly)
 
 | Service | Cost |
-|---------|------|
+| --------- | ------ |
 | Apify (YouTube + News) | ~$50-100 |
 | Claude API | ~$20-50 |
 | Video Generation | ~$30-100 |
@@ -340,10 +353,12 @@ https://api.github.com/search/repositories?q=ai+language:python&sort=stars&order
 
 ## SOURCES
 
-- [YouTube Data API v3](https://developers.google.com/youtube/v3/docs/search/list)
+- [YouTube Data API
+  v3](https://developers.google.com/youtube/v3/docs/search/list)
 - [Apify YouTube Scraper](https://apify.com/streamers/youtube-scraper)
 - [DSPy Documentation](https://dspy.ai/)
 - [LangChain Prompts](https://www.langchain.com/)
-- [Anthropic Prompt Engineering](https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/)
+- [Anthropic Prompt
+  Engineering](https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/)
 - [GitHub Trending](https://github.com/trending)
 - [FeedSpot AI RSS Feeds](https://rss.feedspot.com/ai_rss_feeds/)

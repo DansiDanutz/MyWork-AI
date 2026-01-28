@@ -2,7 +2,8 @@
 
 ## Objective
 
-Preserve context when pausing work mid-phase and restore it seamlessly when resuming.
+Preserve context when pausing work mid-phase and restore it seamlessly when
+resuming.
 
 ## When to Use
 
@@ -29,7 +30,7 @@ Preserve context when pausing work mid-phase and restore it seamlessly when resu
 
 When you need to stop mid-phase:
 
-```
+```yaml
 /gsd:pause-work
 
 ```
@@ -81,7 +82,7 @@ The command updates `.planning/STATE.md` with:
 - Using jose library for JWT (not jsonwebtoken)
 - Token stored in httpOnly cookie
 
-```
+```markdown
 
 ### Step 3: Confirm Save
 
@@ -109,7 +110,7 @@ Now you can:
 
 When starting a new session:
 
-```
+```yaml
 /gsd:resume-work
 
 ```
@@ -170,7 +171,7 @@ If GSD commands unavailable, manually update STATE.md:
 
 - `path/to/file.ts` - [description]
 
-```
+```markdown
 
 ## Expected Outputs
 

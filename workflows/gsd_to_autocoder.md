@@ -2,7 +2,8 @@
 
 ## Objective
 
-Convert a GSD phase plan into an Autocoder app specification when the phase has 20+ features, enabling autonomous multi-session development.
+Convert a GSD phase plan into an Autocoder app specification when the phase has
+20+ features, enabling autonomous multi-session development.
 
 ## When to Use
 
@@ -30,7 +31,7 @@ Convert a GSD phase plan into an Autocoder app specification when the phase has 
 ### Choose Your Mode
 
 | Mode | When to Use | How |
-|------|-------------|-----|
+| ------ | ------------- | ----- |
 | **Automatic** | Hands-off, let it run | API-triggered, monitor via tool |
 | **Manual** | Want UI control | Start via Autocoder UI |
 
@@ -50,7 +51,7 @@ ls .planning/phases/phase-N/PLAN.md
 
 grep -c "feature\|task" .planning/phases/phase-N/PLAN.md
 
-```
+```markdown
 
 If feature count > 20, proceed with handoff.
 
@@ -59,7 +60,7 @@ If feature count > 20, proceed with handoff.
 ```
 /gsd-to-autocoder-spec
 
-```
+```yaml
 
 This skill:
 
@@ -105,7 +106,7 @@ python tools/autocoder_api.py start {project-name} --concurrency 3
 
 python tools/autocoder_api.py start {project-name} --yolo --concurrency 3
 
-```
+```markdown
 
 ### A3. Monitor Progress
 
@@ -151,7 +152,7 @@ python tools/autocoder_api.py resume {project-name}
 
 python tools/autocoder_api.py stop {project-name}
 
-```
+```markdown
 
 ### A5. Open UI for Visual Monitoring (Optional)
 
@@ -180,7 +181,7 @@ python tools/autocoder_api.py ui
 cd /Users/dansidanutz/Desktop/GamesAI/autocoder
 python start_ui.py
 
-```
+```markdown
 
 ### B2. In the Autocoder UI:
 
@@ -223,7 +224,7 @@ python tools/autocoder_api.py progress {project-name}
 
 watch -n 30 "python tools/autocoder_api.py progress {project-name}"
 
-```
+```yaml
 
 **Manual Mode:**
 
@@ -244,7 +245,7 @@ When Autocoder finishes:
    ```
    /gsd:verify-work N
 
-   ```
+```markdown
 
 4. Mark phase complete in ROADMAP.md
 
@@ -255,7 +256,7 @@ When Autocoder finishes:
 ### Available Commands
 
 | Command | Description |
-|---------|-------------|
+| --------- | ------------- |
 | `status` | Check if Autocoder server is running |
 | `server` | Start Autocoder server |
 | `ui` | Open Autocoder UI in browser |
@@ -269,7 +270,7 @@ When Autocoder finishes:
 ### Start Options
 
 | Option | Description | Default |
-|--------|-------------|---------|
+| -------- | ------------- | --------- |
 | `--model` | Model to use | claude-opus-4-5-20251101 |
 | `--concurrency` | Parallel coding agents | 1 |
 | `--yolo` | Skip testing (faster) | false |
@@ -317,7 +318,7 @@ python tools/autocoder_api.py start my-app --concurrency 5 --yolo
 ## Notes
 
 - Autocoder uses Claude Opus 4.5 by default
-- Server runs at http://127.0.0.1:8888
+- Server runs at <http://127.0.0.1:8888>
 - First session: Initializer creates features (takes several minutes)
 - Each feature: 5-15 minutes depending on complexity
 - WebSocket available at ws://127.0.0.1:8888/ws/projects/{name}

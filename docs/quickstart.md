@@ -26,7 +26,7 @@ chmod +x install.sh && ./install.sh
 
 python tools/mw.py status
 
-```
+```yaml
 
 **Expected Output:**
 
@@ -40,7 +40,7 @@ python tools/mw.py status
 
 🎯 Ready to create your first project!
 
-```
+```markdown
 
 ## 🎯 Step 2: Create Your First Project (2 minutes)
 
@@ -64,7 +64,7 @@ python tools/mw.py new task-manager-cli cli
 
 **What just happened?**
 
-```
+```text
 projects/task-manager-cli/
 ├── .planning/
 │   ├── PROJECT.md        # Vision and goals
@@ -93,7 +93,7 @@ python ../../tools/mw.py gsd new-project
 
 # 3. Key features: "Add tasks, list tasks, mark complete, search"
 
-```
+```yaml
 
 **GSD will automatically:**
 
@@ -126,7 +126,7 @@ python ../../tools/mw.py gsd execute-phase 1
 
 **Real-time progress:**
 
-```
+```yaml
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  GSD ► EXECUTING WAVE 1
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -166,7 +166,7 @@ python src/task_manager.py list
 
 # 2. [ ] Build my first app
 
-```
+```markdown
 
 ## 🎊 Congratulations!
 
@@ -200,8 +200,10 @@ python ../../tools/mw.py gsd execute-phase 3
 
 ### 🧠 **Level Up Your Skills**
 
-- 📖 [**Complete Tutorial Series →**](tutorials/01-first-project.md) - 6 comprehensive guides
-- 🏗️ [**Architecture Deep Dive →**](architecture/overview.md) - Understand the 3 layers
+- 📖 [**Complete Tutorial Series →**](tutorials/01-first-project.md) - 6
+  comprehensive guides
+- 🏗️ [**Architecture Deep Dive →**](architecture/overview.md) - Understand the 3
+  layers
 - 💡 [**Example Projects →**](../examples/) - Study working applications
 - 🤖 **Autocoder Integration** - Coming soon
 
@@ -225,13 +227,17 @@ python tools/mw.py n8n create-workflow
 
 python tools/mw.py ac start my-big-project --concurrency 3
 
-```
+```markdown
 
 ### 🌟 **Join the Community**
 
-- 💬 [**GitHub Discussions**](https://github.com/DansiDanutz/MyWork-AI/discussions) - Ask questions, share projects
-- 🐦 [**Twitter Updates**](https://twitter.com/MyWorkAI) - Latest features and showcases
-- 📺 [**YouTube Channel**](https://youtube.com/@MyWorkAI) - Video tutorials and demos
+- 💬 [**GitHub
+  Discussions**](https://github.com/DansiDanutz/MyWork-AI/discussions) - Ask
+  questions, share projects
+- 🐦 [**Twitter Updates**](https://twitter.com/MyWorkAI) - Latest features and
+  showcases
+- 📺 [**YouTube Channel**](https://youtube.com/@MyWorkAI) - Video tutorials and
+  demos
 - 📧 [**Newsletter**](https://mywork.ai/newsletter) - Weekly tips and case studies
 
 ## 🆘 Troubleshooting
@@ -263,7 +269,7 @@ pwd  # Should show .../MyWork/projects/your-project
 
 python ../../tools/mw.py status
 
-```
+```markdown
 
 **❌ Generated code doesn't work?**
 
@@ -283,14 +289,15 @@ python ../../tools/mw.py doctor
 
 - 📖 [**FAQ →**](faq.md) - Common questions answered
 - 🔧 [**Troubleshooting Guide →**](troubleshooting.md) - Detailed problem-solving
-- 💬 [**Get Support →**](https://github.com/DansiDanutz/MyWork-AI/discussions) - Community help
+- 💬 [**Get Support →**](https://github.com/DansiDanutz/MyWork-AI/discussions) -
+  Community help
 
 ---
 
 ## 📈 What You Just Experienced
 
 | Traditional Development | MyWork Framework |
-|------------------------|------------------|
+| ------------------------ | ------------------ |
 | ⏱️ **1-2 hours** manual setup | ⚡ **5 minutes** guided setup |
 | 📝 Write project plan manually | 🧠 AI generates structured roadmap |
 | 🔨 Code everything from scratch | 🤖 Intelligent code generation |
@@ -303,4 +310,6 @@ python ../../tools/mw.py doctor
 
 ---
 
-*🎯 **Ready for more?** Continue with [**Your First Real Project →**](tutorials/01-first-project.md) or explore [**Example Applications →**](../examples/)*
+*🎯 **Ready for more?** Continue with [**Your First Real Project
+→**](tutorials/01-first-project.md) or explore [**Example Applications
+→**](../examples/)*

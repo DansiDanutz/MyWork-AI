@@ -1,6 +1,7 @@
 # AI Dashboard - Project Definition
 
-> Personal AI command center for tracking top AI content and automating YouTube video creation
+> Personal AI command center for tracking top AI content and automating YouTube
+video creation
 
 ---
 
@@ -8,8 +9,10 @@
 
 A comprehensive dashboard that:
 
-1. Automatically aggregates the best AI content from YouTube, news sources, and GitHub
-2. Provides a YouTube automation pipeline for creating and publishing AI-focused videos
+1. Automatically aggregates the best AI content from YouTube, news sources, and
+GitHub
+2. Provides a YouTube automation pipeline for creating and publishing AI-focused
+videos
 3. Runs on scheduled intervals with minimal maintenance
 
 ---
@@ -80,7 +83,7 @@ An automated dashboard that:
 ## Tech Stack
 
 | Layer | Technology |
-|-------|------------|
+| ------- | ------------ |
 | Backend | FastAPI, SQLAlchemy, SQLite |
 | Scheduler | APScheduler |
 | Frontend | Next.js 14, TypeScript, Tailwind |
@@ -112,7 +115,7 @@ An automated dashboard that:
 ## Dependencies
 
 | Service | Purpose | Required |
-|---------|---------|----------|
+| --------- | --------- | ---------- |
 | Apify | YouTube scraping | Yes |
 | Anthropic | Claude for scripts | Yes |
 | HeyGen | Video generation | For YouTube Bot |

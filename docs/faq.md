@@ -6,10 +6,14 @@
 
 **A:** Follow this exact path:
 
-1. **5-minute start:** [Quick Start Guide](quickstart.md) - Install and create your first project
-2. **Learn the basics:** [Tutorial 1: Your First Project](tutorials/01-first-project.md) - Build a CLI task manager
-3. **Understand the system:** [Architecture Overview](architecture/overview.md) - Learn the 3 layers
-4. **Try a web app:** [Tutorial 2: GSD Basics](tutorials/02-gsd-basics.md) - Build a todo web app
+1. **5-minute start:** [Quick Start Guide](quickstart.md) - Install and create
+your first project
+2. **Learn the basics:** [Tutorial 1: Your First
+Project](tutorials/01-first-project.md) - Build a CLI task manager
+3. **Understand the system:** [Architecture Overview](architecture/overview.md)
+- Learn the 3 layers
+4. **Try a web app:** [Tutorial 2: GSD Basics](tutorials/02-gsd-basics.md) -
+Build a todo web app
 
 You'll be productive within 30 minutes.
 
@@ -18,10 +22,10 @@ You'll be productive within 30 minutes.
 **A:** MyWork is **AI-first development infrastructure**:
 
 | Traditional Frameworks | MyWork Framework |
-|------------------------|------------------|
-| 🔧 **Tools** - You write all the code | 🧠 **Intelligence** - AI writes most code |
-| 📝 **Documentation** - You plan manually | 🗺️ **Roadmaps** - AI generates structured plans |
-| 🐛 **Debug** - You fix issues manually | ✅ **Verification** - Built-in quality gates |
+| ------------------------ | ------------------ |
+| 🔧 **Tools** - You write all the... | 🧠 **Intelligence** - AI writes ... |
+| 📝 **Documentation** - You plan ... | 🗺️ **Roadmaps** - AI generates ... |
+| 🐛 **Debug** - You fix issues ma... | ✅ **Verification** - Built-in q... |
 | 🔄 **Refactor** - Expensive to change | 🎯 **Adaptive** - Changes are easy |
 
 ### **Q: Do I need to know programming to use MyWork?**
@@ -79,7 +83,7 @@ mw gsd quick
   "verification": false  // Skip verification loops
 }
 
-```
+```markdown
 
 ### **Q: How do I know if a phase is too big or too small?**
 
@@ -131,7 +135,7 @@ mw gsd resume-work
 
 **A:** Decision tree:
 
-```
+```text
 How many features?
 ├── < 10 features → Use GSD
 ├── 10-20 features → GSD with Autocoder for complex parts
@@ -171,7 +175,7 @@ mw ac start my-project --model claude-haiku
 
 # Edit your app_spec.txt to focus on core features first
 
-```
+```markdown
 
 ### **Q: How do I monitor Autocoder progress?**
 
@@ -228,7 +232,7 @@ ls projects/my-project/src/
 
    # Use create_n8n_workflow.md workflow
 
-   ```
+```yaml
 
 2. **n8n triggers GSD deployments:**
    - GitHub webhook → n8n → trigger deployment
@@ -290,7 +294,7 @@ git log --oneline -10
 
 mw gsd plan-phase [phase] --gaps
 
-```
+```markdown
 
 ### **Q: Generated code doesn't match my style. How do I fix this?**
 
@@ -345,7 +349,7 @@ find projects/ -name "node_modules" -type d -exec rm -rf {} +
 find . -name "__pycache__" -type d -exec rm -rf {} +
 find . -name "*.pyc" -delete
 
-```
+```markdown
 
 ## 📊 **Best Practices**
 
@@ -368,7 +372,7 @@ MyWork/
 ├── templates/             # Your custom templates
 └── workflows/             # Custom workflows
 
-```
+```markdown
 
 ### **Q: How do I share projects with my team?**
 
@@ -396,7 +400,7 @@ MyWork/
 
    mw gsd execute-phase [current-phase]
 
-   ```
+```yaml
 
 3. **Share templates:**
 
@@ -441,16 +445,19 @@ MyWork/
 
 **A:** Technical deep dive path:
 
-1. **[Architecture Overview](architecture/overview.md)** - Understand the 3 layers
+1. **[Architecture Overview](architecture/overview.md)** - Understand the 3
+layers
 2. **[Python API Reference](api/tools/)** - See the actual tools
 3. **[Example Projects](../examples/)** - Learn the automation patterns
-4. **[Framework Source Code](https://github.com/DansiDanutz/MyWork-AI)** - Study the implementation
+4. **[Framework Source Code](https://github.com/DansiDanutz/MyWork-AI)** - Study
+the implementation
 
 ### **Q: How can I contribute to MyWork?**
 
 **A:** Many ways to help:
 
-1. **Report issues:** [GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
+1. **Report issues:** [GitHub
+Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
 2. **Share examples:** Add to `examples/` directory
 3. **Improve docs:** Fix typos, add clarifications
 4. **Create templates:** Add new project templates
@@ -460,8 +467,11 @@ MyWork/
 
 **A:** Support channels:
 
-- 💬 **[GitHub Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)** - Community Q&A
-- 🐛 **[GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)** - Bug reports
+- 💬 **[GitHub
+  Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)** -
+  Community Q&A
+- 🐛 **[GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)** - Bug
+  reports
 - 📧 **[Email Support](mailto:support@mywork.ai)** - Direct help
 - 📺 **[YouTube Channel](https://youtube.com/@MyWorkAI)** - Video tutorials
 - 🐦 **[Twitter](https://twitter.com/MyWorkAI)** - Updates and tips
@@ -490,4 +500,6 @@ MyWork/
 
 ---
 
-*💬 **Still have questions?** Ask in [GitHub Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions) - the community is helpful and responsive!*
+*💬 **Still have questions?** Ask in [GitHub
+Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions) - the
+community is helpful and responsive!*

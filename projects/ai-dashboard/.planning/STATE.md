@@ -7,7 +7,7 @@
 ## Quick Status
 
 | Metric | Value |
-|--------|-------|
+| -------- | ------- |
 | **Current Phase** | 7 - Deployment ✅ |
 | **Phase Progress** | 100% |
 | **Overall Progress** | **100%** |
@@ -21,7 +21,7 @@
 **Full audit completed - see FULL_AUDIT_REPORT.md**
 
 | Issue | Status |
-|-------|--------|
+| ------- | -------- |
 | DSPy API change (v3) | ✅ Fixed - Updated to `dspy.LM()` |
 | Broken venv interpreter | ✅ Fixed - Recreated venv |
 | Missing error.tsx | ✅ Added |
@@ -34,7 +34,7 @@
 ## What's Working
 
 | Component | Status | Notes |
-|-----------|--------|-------|
+| ----------- | -------- | ------- |
 | Backend | ✅ Ready | FastAPI with all endpoints |
 | Database | ✅ Ready | SQLite with 61KB data |
 | YouTube Scraper | ✅ Implemented | Apify integration |
@@ -69,7 +69,9 @@ All 6 pages + 1 detail view are complete:
 
 ## Known Issues
 
-1. **Build SSG Error** - `npm run build` fails during static generation due to lucide-react/useContext incompatibility. **Dev mode works perfectly** (`npm run dev`). Vercel deployments may handle this better.
+1. **Build SSG Error** - `npm run build` fails during static generation due to
+lucide-react/useContext incompatibility. **Dev mode works perfectly** (`npm run
+dev`). Vercel deployments may handle this better.
 
 2. **YouTube Upload** - Not yet implemented (needs OAuth setup)
 
@@ -81,7 +83,7 @@ All 6 pages + 1 detail view are complete:
 
 ### Backend (.env)
 
-```
+```text
 APIFY_API_KEY=          # For YouTube scraping
 ANTHROPIC_API_KEY=      # For Claude scripts
 HEYGEN_API_KEY=         # For video generation
@@ -92,7 +94,7 @@ GITHUB_TOKEN=           # For higher rate limits
 ### API Keys Status
 
 | Key | Status | Source |
-|-----|--------|--------|
+| ----- | -------- | -------- |
 | APIFY_API_KEY | Needs setup | apify.com |
 | ANTHROPIC_API_KEY | Available | Root .env |
 | HEYGEN_API_KEY | Needs setup | heygen.com |
@@ -113,7 +115,7 @@ uvicorn main:app --reload
 
 # Docs: http://localhost:8000/docs
 
-```
+```yaml
 
 **Frontend:**
 
@@ -131,14 +133,14 @@ npm run dev
 ./start.sh  # Mac/Linux
 start.bat   # Windows
 
-```
+```markdown
 
 ---
 
 ## API Endpoints
 
 | Endpoint | Method | Status |
-|----------|--------|--------|
+| ---------- | -------- | -------- |
 | `/` | GET | ✅ |
 | `/api/videos` | GET | ✅ |
 | `/api/videos/scrape` | POST | ✅ |
@@ -161,7 +163,7 @@ start.bat   # Windows
 ## Decisions Made
 
 | Date | Decision | Rationale |
-|------|----------|-----------|
+| ------ | ---------- | ----------- |
 | 2026-01-24 | Use Apify for YouTube | Higher success rate than official API |
 | 2026-01-24 | SQLite for database | Simple, no external deps |
 | 2026-01-24 | APScheduler | Python-native, easy integration |
@@ -177,7 +179,7 @@ start.bat   # Windows
 ## Deployment Files Created
 
 | File | Purpose |
-|------|---------|
+| ------ | --------- |
 | `backend/Dockerfile` | Docker build for Railway |
 | `backend/.dockerignore` | Clean Docker builds |
 | `backend/railway.json` | Railway configuration |
@@ -216,7 +218,7 @@ start.bat   # Windows
 
 # 4. Deploy
 
-```
+```markdown
 
 ---
 

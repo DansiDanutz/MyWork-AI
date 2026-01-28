@@ -7,7 +7,10 @@
 
 ## Phase Boundary
 
-Users can create, edit, delete, and manage tasks with status tracking (todo/in progress/done). This includes task CRUD operations, status management, and viewing tasks in an organized list. Task organization (categories/search) and file attachments are separate phases.
+Users can create, edit, delete, and manage tasks with status tracking (todo/in
+progress/done). This includes task CRUD operations, status management, and
+viewing tasks in an organized list. Task organization (categories/search) and
+file attachments are separate phases.
 
 </domain>
 
@@ -25,7 +28,8 @@ Users can create, edit, delete, and manage tasks with status tracking (todo/in p
 
 - Card-based layout with shadow and padding for modern feel
 - Tasks grouped by status (Todo, In Progress, Done sections)
-- Empty state shows friendly illustration with "No tasks yet! Create your first task to get started"
+- Empty state shows friendly illustration with "No tasks yet! Create your first
+  task to get started"
 
 ### Claude's Discretion
 

@@ -13,18 +13,25 @@ tech-stack:
 key-files:
   created:
 
-    - prisma/schema.prisma (AnalyticsEvent model)
-    - src/shared/lib/analytics/types.ts
-    - src/shared/lib/analytics/tracker.ts
-    - src/shared/lib/analytics/index.ts
+```
+- prisma/schema.prisma (AnalyticsEvent model)
+- src/shared/lib/analytics/types.ts
+- src/shared/lib/analytics/tracker.ts
+- src/shared/lib/analytics/index.ts
 
+```
   modified: []
 decisions:
 
   - ANALYTICS-001: Next.js 15 after() API for non-blocking event tracking
   - ANALYTICS-002: JSONB properties for flexible event schemas
   - ANALYTICS-003: Zod discriminated unions for type-safe event validation
-  - ANALYTICS-004: Time-series indexes (userId+createdAt, eventType+createdAt, createdAt)
+  - ANALYTICS-004: Time-series indexes (userId+createdAt, eventType+createdAt,
+
+```
+createdAt)
+
+```
   - ANALYTICS-005: trackSessionEvent helper auto-injects userId from auth session
 
 metrics:
@@ -34,11 +41,13 @@ metrics:
 
 # Phase 06 Plan 01: Analytics Foundation Summary
 
-**One-liner:** Non-blocking analytics system with JSONB event storage, Zod validation, and Next.js 15 after() API for brain learning data collection
+**One-liner:** Non-blocking analytics system with JSONB event storage, Zod
+validation, and Next.js 15 after() API for brain learning data collection
 
 ## What Was Built
 
-Created the core analytics infrastructure for the MyWork framework's brain learning system:
+Created the core analytics infrastructure for the MyWork framework's brain
+learning system:
 
 1. **Database Schema** - Added AnalyticsEvent model to Prisma with:
    - JSONB `properties` field for flexible event-specific data
@@ -65,9 +74,11 @@ Created the core analytics infrastructure for the MyWork framework's brain learn
 
 ### ANALYTICS-001: Next.js 15 after() API for Non-Blocking Tracking
 
-**Decision:** Use Next.js 15's native `after()` API for event tracking instead of external queue systems.
+**Decision:** Use Next.js 15's native `after()` API for event tracking instead
+of external queue systems.
 
-**Context:** Analytics should never impact user experience. Need to defer database writes until after response is sent.
+**Context:** Analytics should never impact user experience. Need to defer
+database writes until after response is sent.
 
 **Rationale:**
 
@@ -76,13 +87,16 @@ Created the core analytics infrastructure for the MyWork framework's brain learn
 - Eliminates 50-200ms latency from user operations
 - Research shows this is the state-of-the-art approach for Next.js 15+
 
-**Impact:** All event tracking is non-blocking. Analytics failures never break user features.
+**Impact:** All event tracking is non-blocking. Analytics failures never break
+user features.
 
 ### ANALYTICS-002: JSONB Properties for Flexible Event Schemas
 
-**Decision:** Store event-specific data in JSONB `properties` field instead of creating separate tables per event type.
+**Decision:** Store event-specific data in JSONB `properties` field instead of
+creating separate tables per event type.
 
-**Context:** Different event types need different fields. Need flexibility without constant schema migrations.
+**Context:** Different event types need different fields. Need flexibility
+without constant schema migrations.
 
 **Rationale:**
 
@@ -91,13 +105,15 @@ Created the core analytics infrastructure for the MyWork framework's brain learn
 - Zod validation ensures type safety despite dynamic schema
 - Research shows this is standard for analytics event storage
 
-**Impact:** Can add new event types without database migrations. Properties validated at runtime.
+**Impact:** Can add new event types without database migrations. Properties
+validated at runtime.
 
 ### ANALYTICS-003: Zod Discriminated Unions for Type-Safe Events
 
 **Decision:** Define all event types as Zod schemas in a discriminated union.
 
-**Context:** TypeScript needs to know the shape of each event type. Runtime validation prevents bad data.
+**Context:** TypeScript needs to know the shape of each event type. Runtime
+validation prevents bad data.
 
 **Rationale:**
 
@@ -106,44 +122,51 @@ Created the core analytics infrastructure for the MyWork framework's brain learn
 - Runtime validation catches malformed events before storage
 - Existing codebase already uses Zod for validation
 
-**Impact:** Full type safety across the analytics system. Invalid events caught immediately.
+**Impact:** Full type safety across the analytics system. Invalid events caught
+immediately.
 
 ### ANALYTICS-004: Time-Series Indexes for Query Performance
 
-**Decision:** Add three indexes: `[userId, createdAt]`, `[eventType, createdAt]`, `[createdAt]`.
+**Decision:** Add three indexes: `[userId, createdAt]`, `[eventType,
+createdAt]`, `[createdAt]`.
 
-**Context:** Analytics queries are primarily time-series (user timelines, event aggregations).
+**Context:** Analytics queries are primarily time-series (user timelines, event
+aggregations).
 
 **Rationale:**
 
 - `userId + createdAt` - Fast user activity timeline queries
 - `eventType + createdAt` - Fast feature usage aggregations
 - `createdAt` alone - Global time-series queries
-- Research recommends avoiding JSONB GIN indexes until proven necessary (high write overhead)
+- Research recommends avoiding JSONB GIN indexes until proven necessary (high
+  write overhead)
 
 **Impact:** Fast queries for brain analysis. Write performance unaffected.
 
 ### ANALYTICS-005: trackSessionEvent Helper Auto-Injects userId
 
-**Decision:** Provide `trackSessionEvent()` helper that automatically gets userId from current session.
+**Decision:** Provide `trackSessionEvent()` helper that automatically gets
+userId from current session.
 
-**Context:** Most events are tracked in Server Actions where session context is available.
+**Context:** Most events are tracked in Server Actions where session context is
+available.
 
 **Rationale:**
 
 - DRY principle - don't require manual `auth()` call in every tracking call
 - Follows existing pattern from `verifySession()` in `dal.ts`
-- Makes event tracking one-liner: `trackSessionEvent('page_view', { path: '/dashboard' })`
+- Makes event tracking one-liner: `trackSessionEvent('page_view', { path:
+  '/dashboard' })`
 
 **Impact:** Simpler event tracking code. Less boilerplate in Server Actions.
 
 ## Task Completion
 
 | Task | Commit | Status | Notes |
-|------|--------|--------|-------|
-| 1. Add AnalyticsEvent model | 465275f | ✅ Complete | Schema applied with `prisma db push` |
-| 2. Create event type definitions | 0cabd00 | ✅ Complete | 9 event types with Zod validation |
-| 3. Create non-blocking tracker | cea7b72 | ✅ Complete | Uses after() API, includes session helper |
+| ------ | -------- | -------- | ------- |
+  | 1. Add Anal... | 465275f | ✅ Complete | Schema appl... |  
+  | 2. Create e... | 0cabd00 | ✅ Complete | 9 event typ... |  
+  | 3. Create n... | cea7b72 | ✅ Complete | Uses after(... |  
 
 **Total commits:** 3
 **All tasks completed successfully.**
@@ -176,7 +199,8 @@ None - plan executed exactly as written.
 - ✅ Schema applied: `npx prisma db push` succeeded
 - ✅ Prisma client regenerated: `npx prisma generate`
 - ✅ Event types validate correctly: Tested with `AnalyticsEventSchema.parse()`
-- ✅ Tracker exports correctly: `import { trackEvent } from '@/shared/lib/analytics'`
+- ✅ Tracker exports correctly: `import { trackEvent } from
+  '@/shared/lib/analytics'`
 - ✅ Files can be imported (server-only context required for after() API)
 
 **Not tested (requires runtime):**
@@ -185,7 +209,8 @@ None - plan executed exactly as written.
 - Database insert via trackEventAsync() (needs running PostgreSQL)
 - Session integration via trackSessionEvent() (needs authenticated user)
 
-These will be validated in integration testing during Plan 05 (Dashboard with Analytics).
+These will be validated in integration testing during Plan 05 (Dashboard with
+Analytics).
 
 ## Technical Debt
 
@@ -195,7 +220,8 @@ None introduced.
 
 **Reusable patterns added to framework brain:**
 
-1. **Non-blocking analytics with after() API** (`src/shared/lib/analytics/tracker.ts`)
+1. **Non-blocking analytics with after() API**
+(`src/shared/lib/analytics/tracker.ts`)
    - Pattern: Defer database writes until after response sent
    - Use case: Any logging/analytics that shouldn't block users
    - Extractable: Yes - can be framework module with minimal changes
@@ -241,7 +267,8 @@ None introduced.
 - [x] trackEvent() uses after() API for non-blocking execution
 - [x] trackSessionEvent() helper auto-injects userId from session
 - [x] No TypeScript errors in the analytics module
-- [x] Pattern follows existing codebase conventions (server-only, module structure)
+- [x] Pattern follows existing codebase conventions (server-only, module
+  structure)
 
 **All success criteria met.**
 
@@ -260,11 +287,16 @@ None introduced.
 
 ## Lessons Learned
 
-1. **Next.js 15's after() API is perfect for analytics** - Native, simple, no external dependencies
-2. **JSONB + Zod = flexible yet type-safe** - Best of both worlds for event storage
-3. **Time-series indexes matter** - User timeline queries will be common for brain learning
-4. **Session helpers reduce boilerplate** - Auto-injecting userId makes tracking trivial
-5. **Gitignore can block lib/ directories** - Had to use `git add -f` due to parent repo's ignore rules
+1. **Next.js 15's after() API is perfect for analytics** - Native, simple, no
+external dependencies
+2. **JSONB + Zod = flexible yet type-safe** - Best of both worlds for event
+storage
+3. **Time-series indexes matter** - User timeline queries will be common for
+brain learning
+4. **Session helpers reduce boilerplate** - Auto-injecting userId makes tracking
+trivial
+5. **Gitignore can block lib/ directories** - Had to use `git add -f` due to
+parent repo's ignore rules
 
 ## Next Steps
 
@@ -280,4 +312,5 @@ None introduced.
 2. Create brain export API endpoint
 3. Build brain analysis scripts to consume event data
 
-**Dependencies satisfied:** Phase 02 (Auth & Profiles) provided User model and session management, which analytics foundation depends on.
+**Dependencies satisfied:** Phase 02 (Auth & Profiles) provided User model and
+session management, which analytics foundation depends on.

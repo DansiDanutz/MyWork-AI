@@ -1,6 +1,7 @@
 # AI Dashboard
 
-Your personal AI command center for tracking top AI content and automating YouTube video creation.
+Your personal AI command center for tracking top AI content and automating
+YouTube video creation.
 
 ## Quick Start
 
@@ -17,7 +18,7 @@ start.bat   # Windows
 
 # API Docs: http://localhost:8000/docs
 
-```
+```markdown
 
 ## Features
 
@@ -62,12 +63,12 @@ ai-dashboard/
 ├── RESEARCH.md         # Initial research notes
 └── README.md           # This file
 
-```
+```markdown
 
 ## API Endpoints
 
 | Endpoint | Method | Description |
-|----------|--------|-------------|
+| ---------- | -------- | ------------- |
 | `/api/videos` | GET | Get top AI videos |
 | `/api/videos/scrape` | POST | Trigger video scrape |
 | `/api/news` | GET | Get latest AI news |
@@ -79,7 +80,7 @@ ai-dashboard/
 ## Scheduler
 
 | Task | Interval | Description |
-|------|----------|-------------|
+| ------ | ---------- | ------------- |
 | YouTube Scraper | 8 hours | Fetches top AI videos |
 | News Aggregator | 4 hours | Aggregates AI news |
 | GitHub Trending | 12 hours | Tracks trending projects |
@@ -115,4 +116,4 @@ uvicorn main:app --reload
 cd frontend
 npm run dev
 
-```
+```text

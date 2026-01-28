@@ -4,7 +4,7 @@ Each subdirectory is a self-contained business domain module.
 
 ## Module Structure
 
-```
+```text
 module-name/
 ├── components/    # Module-specific UI components
 ├── lib/           # Business logic and server actions
@@ -15,6 +15,7 @@ module-name/
 
 ## Rules
 
-- Import from module index only: `@/modules/tasks` not `@/modules/tasks/lib/internal`
+- Import from module index only: `@/modules/tasks` not
+  `@/modules/tasks/lib/internal`
 - Each module owns its data and logic
 - Shared code goes in `@/shared/`

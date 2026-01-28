@@ -18,63 +18,63 @@ re_verification: false
 ### Observable Truths
 
 | # | Truth | Status | Evidence |
-|---|-------|--------|----------|
-| 1 | User can log in using their GitHub account | ✓ VERIFIED | Login page exists with GitHub OAuth button, signIn action wired, API routes functional |
-| 2 | User session persists across browser sessions | ✓ VERIFIED | Database sessions configured (24h expiry), Session model in schema, middleware protects routes |
-| 3 | User can log out from any page | ✓ VERIFIED | UserMenu component with signOut action, accessible in app layout header |
-| 4 | User can view and edit their profile | ✓ VERIFIED | Profile page with ProfileForm, auto-save with debounce, server actions wired |
-| 5 | User profile displays GitHub integration | ✓ VERIFIED | Profile shows GitHub avatar/email, welcome page displays user data |
-| 6 | User can recover access through GitHub | ✓ VERIFIED | OAuth flow allows re-authentication, no password recovery needed |
+| --- | ------- | -------- | ---------- |
+  | 1 | User can lo... | ✓ VERIFIED | Login page ... |  
+  | 2 | User sessio... | ✓ VERIFIED | Database se... |  
+  | 3 | User can lo... | ✓ VERIFIED | UserMenu co... |  
+  | 4 | User can vi... | ✓ VERIFIED | Profile pag... |  
+  | 5 | User profil... | ✓ VERIFIED | Profile sho... |  
+  | 6 | User can re... | ✓ VERIFIED | OAuth flow ... |  
 
 **Score:** 6/6 truths verified (100%)
 
 ### Required Artifacts
 
 | Artifact | Expected | Status | Details |
-|----------|----------|--------|---------|
-| `prisma/schema.prisma` | Auth.js models | ✓ VERIFIED | User, Account, Session, VerificationToken models present with custom fields (bio, customAvatar) |
-| `src/shared/lib/auth.ts` | Auth.js configuration | ✓ VERIFIED | 42 lines, exports handlers/auth/signIn/signOut, GitHub provider configured, PrismaAdapter wired |
-| `src/app/api/auth/[...nextauth]/route.ts` | Auth API routes | ✓ VERIFIED | 3 lines, imports handlers, exports GET/POST |
-| `src/middleware.ts` | Route protection | ✓ VERIFIED | 57 lines, protects /settings, /dashboard, /tasks, redirects unauthenticated users |
-| `src/shared/lib/dal.ts` | Data access layer | ✓ VERIFIED | 60 lines, verifySession, getUser, getSession functions with caching |
-| `src/app/(auth)/login/page.tsx` | Login page | ✓ VERIFIED | 75 lines, GitHub OAuth button, error handling, server action for signIn |
-| `src/app/(auth)/welcome/page.tsx` | Welcome/onboarding | ✓ VERIFIED | 91 lines, personalized greeting, onboarding steps, CTAs to dashboard/profile |
-| `src/app/(app)/dashboard/page.tsx` | Dashboard | ✓ VERIFIED | 76 lines, uses getUser, placeholder stats cards, getting started section |
-| `src/app/(app)/settings/profile/page.tsx` | Profile settings | ✓ VERIFIED | 27 lines, renders ProfileForm with user data |
-| `src/shared/components/ProfileForm.tsx` | Profile form component | ✓ VERIFIED | 167 lines, auto-save with useDebounce, visual status indicators, calls updateProfileField action |
-| `src/shared/components/UserMenu.tsx` | User menu with logout | ✓ VERIFIED | 93 lines, dropdown menu, profile link, signOut form action |
-| `src/app/actions/profile.ts` | Profile server actions | ✓ VERIFIED | 103 lines, updateProfileField and updateProfile with validation |
-| `src/app/page.tsx` | Homepage with CTA | ✓ VERIFIED | 120 lines, conditional rendering for auth/unauth users, "Login with GitHub" CTA |
+| ---------- | ---------- | -------- | --------- |
+  | `prisma/sch... | Auth.js models | ✓ VERIFIED | User, Accou... |  
+  | `src/shared... | Auth.js con... | ✓ VERIFIED | 42 lines, e... |  
+  | `src/app/ap... | Auth API ro... | ✓ VERIFIED | 3 lines, im... |  
+  | `src/middle... | Route prote... | ✓ VERIFIED | 57 lines, p... |  
+  | `src/shared... | Data access... | ✓ VERIFIED | 60 lines, v... |  
+  | `src/app/(a... | Login page | ✓ VERIFIED | 75 lines, G... |  
+  | `src/app/(a... | Welcome/onb... | ✓ VERIFIED | 91 lines, p... |  
+  | `src/app/(a... | Dashboard | ✓ VERIFIED | 76 lines, u... |  
+  | `src/app/(a... | Profile set... | ✓ VERIFIED | 27 lines, r... |  
+  | `src/shared... | Profile for... | ✓ VERIFIED | 167 lines, ... |  
+  | `src/shared... | User menu w... | ✓ VERIFIED | 93 lines, d... |  
+  | `src/app/ac... | Profile ser... | ✓ VERIFIED | 103 lines, ... |  
+  | `src/app/pa... | Homepage wi... | ✓ VERIFIED | 120 lines, ... |  
 
 **All 13 artifacts verified as SUBSTANTIVE and WIRED.**
 
 ### Key Link Verification
 
 | From | To | Via | Status | Details |
-|------|----|----|--------|---------|
-| `route.ts` | `auth.ts` | import handlers | ✓ WIRED | API route imports and exports handlers from auth config |
-| `auth.ts` | `schema.prisma` | PrismaAdapter | ✓ WIRED | Auth.js uses PrismaAdapter(prisma) to connect to database models |
-| `login/page.tsx` | `auth.ts` | signIn action | ✓ WIRED | Form action calls signIn('github') with redirectTo |
-| `ProfileForm.tsx` | `profile.ts` | updateProfileField | ✓ WIRED | Client component calls server action on debounced input changes |
-| `UserMenu.tsx` | `auth.ts` | signOut action | ✓ WIRED | Form action calls signOut via signOutAction prop from layout |
-| `middleware.ts` | `auth.ts` | auth() check | ✓ WIRED | Middleware calls auth() to verify session, redirects if not authenticated |
-| `dal.ts` | `auth.ts` | verifySession | ✓ WIRED | DAL calls auth() to get session, redirects to login if null |
-| `profile.ts` | `dal.ts` | verifySession | ✓ WIRED | Server actions call verifySession before database operations |
-| All pages | `dal.ts` | getUser | ✓ WIRED | Dashboard, welcome, profile pages call getUser for user data |
+| ------ | ---- | ---- | -------- | --------- |
+  | `route.ts` | `auth.ts` | import ha... | ✓ WIRED | API route... |  
+  | `auth.ts` | `schema.p... | PrismaAda... | ✓ WIRED | Auth.js u... |  
+  | `login/pa... | `auth.ts` | signIn ac... | ✓ WIRED | Form acti... |  
+  | `ProfileF... | `profile.ts` | updatePro... | ✓ WIRED | Client co... |  
+  | `UserMenu... | `auth.ts` | signOut a... | ✓ WIRED | Form acti... |  
+  | `middlewa... | `auth.ts` | auth() check | ✓ WIRED | Middlewar... |  
+  | `dal.ts` | `auth.ts` | verifySes... | ✓ WIRED | DAL calls... |  
+  | `profile.ts` | `dal.ts` | verifySes... | ✓ WIRED | Server ac... |  
+  | All pages | `dal.ts` | getUser | ✓ WIRED | Dashboard... |  
 
 **All 9 key links verified as WIRED with proper data flow.**
 
 ### Requirements Coverage
 
 | Requirement | Status | Evidence |
-|-------------|--------|----------|
-| AUTH-01: User can log in using GitHub OAuth | ✓ SATISFIED | Login page functional, GitHub provider configured, OAuth flow complete |
-| AUTH-02: User session persists across browser sessions | ✓ SATISFIED | Database sessions with 24h expiry, silent refresh every hour |
-| AUTH-03: User can log out from any page | ✓ SATISFIED | UserMenu in app layout header with signOut action |
-| AUTH-04: User can reset/recover access through GitHub | ✓ SATISFIED | OAuth re-authentication flow allows access recovery |
-| AUTH-05: User can view and edit profile information | ✓ SATISFIED | Profile page with auto-save form for name and bio |
-| AUTH-06: User profile displays GitHub integration | ✓ SATISFIED | Profile shows GitHub avatar, email, and allows custom bio |
-| INTG-04: User can view GitHub profile in settings | ✓ SATISFIED | Profile page displays GitHub account info (read-only section) |
+| ------------- | -------- | ---------- |
+| AUTH-01: User can ... | ✓ SATISFIED | Login page functio... |
+| AUTH-02: User sess... | ✓ SATISFIED | Database sessions ... |
+| AUTH-03: User can ... | ✓ SATISFIED | UserMenu in app la... |
+| AUTH-04: User can ... | ✓ SATISFIED | OAuth re-authentic... |
+| AUTH-05: User can ... | ✓ SATISFIED | Profile page with ... |
+| AUTH-06: User prof... | ✓ SATISFIED | Profile shows GitH... |
+| INTG-04: User can ... | ✓ SATISFIED | Profile page displ... |
 
 **All 7 requirements satisfied (100% coverage).**
 
@@ -107,7 +107,8 @@ Scanned files:
 ✅ Route protection redirects to login
 ✅ Error handling displays on OAuth failures
 
-**No additional human verification required - all manual testing completed and documented in SUMMARY.md.**
+**No additional human verification required - all manual testing completed and
+documented in SUMMARY.md.**
 
 ---
 
@@ -117,7 +118,8 @@ Scanned files:
 
 All required artifacts exist in the codebase:
 
-- ✓ Database schema includes all Auth.js models (User, Account, Session, VerificationToken)
+- ✓ Database schema includes all Auth.js models (User, Account, Session,
+  VerificationToken)
 - ✓ Auth configuration file exists with proper exports
 - ✓ Auth API routes exist at correct path
 - ✓ Middleware exists for route protection
@@ -133,22 +135,23 @@ All required artifacts exist in the codebase:
 
 ### Level 2: Substantive Checks
 
-All artifacts meet minimum line count thresholds and contain real implementations:
+All artifacts meet minimum line count thresholds and contain real
+implementations:
 
 | File | Lines | Threshold | Status | Notes |
-|------|-------|-----------|--------|-------|
+| ------ | ------- | ----------- | -------- | ------- |
 | auth.ts | 42 | 10+ | ✓ PASS | Full GitHub OAuth config with callbacks |
 | route.ts | 3 | 10+ | ✓ PASS | Minimal by design (Next.js pattern) |
 | middleware.ts | 57 | 10+ | ✓ PASS | Route protection logic |
 | dal.ts | 60 | 10+ | ✓ PASS | Session verification and user fetching |
 | login/page.tsx | 75 | 15+ | ✓ PASS | Complete login UI with error handling |
 | welcome/page.tsx | 91 | 15+ | ✓ PASS | Onboarding flow with steps |
-| dashboard/page.tsx | 76 | 15+ | ✓ PASS | Dashboard with stats (placeholder values for future Phase 3) |
+  | dashboard... | 76 | 15+ | ✓ PASS | Dashboard... |  
 | profile/page.tsx | 27 | 15+ | ✓ PASS | Server component rendering form |
-| ProfileForm.tsx | 167 | 15+ | ✓ PASS | Complex client component with auto-save |
+  | ProfileFo... | 167 | 15+ | ✓ PASS | Complex c... |  
 | UserMenu.tsx | 93 | 15+ | ✓ PASS | Dropdown menu with click-outside handling |
 | profile.ts | 103 | 10+ | ✓ PASS | Server actions with validation |
-| page.tsx (home) | 120 | 15+ | ✓ PASS | Marketing homepage with conditional CTAs |
+  | page.tsx ... | 120 | 15+ | ✓ PASS | Marketing... |  
 
 **No stub patterns detected:**
 
@@ -199,7 +202,7 @@ All artifacts meet minimum line count thresholds and contain real implementation
 
 Migration verification:
 
-```
+```text
 ✓ Migration 20260124210303_add_auth_models applied
 ✓ Database has User, Account, Session, VerificationToken tables
 ✓ Custom fields (bio, customAvatar) present in User model
@@ -211,7 +214,7 @@ Migration verification:
 
 Auth.js packages installed:
 
-```
+```text
 ✓ next-auth@5.0.0-beta.30 (Auth.js v5)
 ✓ @auth/prisma-adapter@2.11.1
 
@@ -311,6 +314,7 @@ From ROADMAP.md Phase 2 Success Criteria:
 **Implementation:**
 
 ```typescript
+
 // src/shared/lib/auth.ts
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -323,7 +327,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 // src/app/api/auth/[...nextauth]/route.ts
 export const { GET, POST } = handlers
 
-```
+```yaml
 
 **When to use:** Any Next.js app requiring GitHub OAuth with persistent sessions
 
@@ -332,6 +336,7 @@ export const { GET, POST } = handlers
 **Implementation:**
 
 ```typescript
+
 // src/middleware.ts - Lightweight session check
 const session = await auth()
 if (isProtectedRoute && !isAuthenticated) {
@@ -354,6 +359,7 @@ export const verifySession = cache(async () => {
 **Implementation:**
 
 ```typescript
+
 // Client component with debounced save
 const debouncedSave = useDebounce(saveFunction, 3000)
 
@@ -372,7 +378,7 @@ export async function updateField(field, value) {
   return { success: true }
 }
 
-```
+```yaml
 
 **When to use:** Profile forms, settings pages, any form with auto-save
 
@@ -381,12 +387,17 @@ export async function updateField(field, value) {
 **Implementation:**
 
 ```typescript
+
 // Click-outside handling
 useEffect(() => {
   function handleClickOutside(event) {
-    if (menuRef.current && !menuRef.current.contains(event.target)) {
-      setIsOpen(false)
-    }
+
+```
+if (menuRef.current && !menuRef.current.contains(event.target)) {
+  setIsOpen(false)
+}
+
+```
   }
   document.addEventListener('mousedown', handleClickOutside)
   return () => document.removeEventListener('mousedown', handleClickOutside)

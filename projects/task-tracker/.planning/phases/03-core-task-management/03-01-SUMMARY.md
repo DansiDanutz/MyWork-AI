@@ -12,29 +12,41 @@ tech-stack:
 key-files:
   created:
 
-    - src/app/actions/tasks.ts
+```
+- src/app/actions/tasks.ts
 
+```
   modified:
 
-    - prisma/schema.prisma
-    - src/shared/lib/dal.ts
+```
+- prisma/schema.prisma
+- src/shared/lib/dal.ts
 
+```
 decisions:
 
   - id: TASK-001
 
-    decision: Use TaskStatus enum instead of string for type safety
-    rationale: Prevents invalid status values at database and application level
+```
+decision: Use TaskStatus enum instead of string for type safety
+rationale: Prevents invalid status values at database and application level
 
+```
   - id: TASK-002
 
-    decision: Separate updateTaskStatus from updateTask for optimistic UI
-    rationale: Status changes are frequent and benefit from separate action with minimal payload
+```
+decision: Separate updateTaskStatus from updateTask for optimistic UI
+rationale: Status changes are frequent and benefit from separate action with
+minimal payload
 
+```
   - id: TASK-003
 
-    decision: Cascade delete tasks when user is deleted
-    rationale: Tasks are meaningless without owner, prevents orphaned records
+```
+decision: Cascade delete tasks when user is deleted
+rationale: Tasks are meaningless without owner, prevents orphaned records
+
+```
 metrics:
   lines-added: 334
   lines-modified: 30
@@ -44,11 +56,13 @@ metrics:
 
 # Phase 03 Plan 01: Task Database and Server Actions Summary
 
-**One-liner:** Database schema, CRUD Server Actions, and cached DAL functions for complete task lifecycle management with authentication and analytics.
+**One-liner:** Database schema, CRUD Server Actions, and cached DAL functions
+for complete task lifecycle management with authentication and analytics.
 
 ## What Was Built
 
-Created the foundational data layer for task management with proper authentication, validation, and performance optimization:
+Created the foundational data layer for task management with proper
+authentication, validation, and performance optimization:
 
 1. **Database Schema (Prisma)**
    - Task model with title, description, status, timestamps
@@ -59,7 +73,12 @@ Created the foundational data layer for task management with proper authenticati
 2. **Server Actions (src/app/actions/tasks.ts)**
    - `createTask`: Create new tasks with validation
    - `updateTask`: Update title/description with ownership check
-   - `updateTaskStatus`: Separate action for status changes (optimistic UI support)
+   - `updateTaskStatus`: Separate action for status changes (optimistic UI
+
+```
+ support)
+
+```
    - `deleteTask`: Delete with ownership verification
    - All actions include authentication, analytics tracking, path revalidation
 
@@ -76,18 +95,20 @@ Created the foundational data layer for task management with proper authenticati
 Every operation verifies user identity:
 
 ```typescript
+
 const user = await getUser()
 if (!user) {
   return { success: false, error: 'You must be logged in' }
 }
 
-```
+```markdown
 
 ### Ownership Verification
 
 All queries scope to authenticated user:
 
 ```typescript
+
 const task = await prisma.task.findFirst({
   where: { id: taskId, userId: user.id }
 })
@@ -99,13 +120,14 @@ const task = await prisma.task.findFirst({
 Non-blocking event tracking:
 
 ```typescript
+
 trackEvent({
   type: 'task_created',
   userId: user.id,
   properties: { taskId: task.id, hasDescription: !!description }
 })
 
-```
+```markdown
 
 ### Performance Optimization
 
@@ -120,10 +142,10 @@ None - plan executed exactly as written.
 ## Decisions Made
 
 | ID | Decision | Impact |
-|----|----------|--------|
-| TASK-001 | TaskStatus enum instead of string | Type safety at database and application level |
-| TASK-002 | Separate updateTaskStatus action | Enables optimistic UI updates for status changes |
-| TASK-003 | Cascade delete on user deletion | Prevents orphaned tasks, maintains referential integrity |
+| ---- | ---------- | -------- |
+| TASK-001 | TaskStatus enum in... | Type safety at dat... |
+| TASK-002 | Separate updateTas... | Enables optimistic... |
+| TASK-003 | Cascade delete on ... | Prevents orphaned ... |
 
 ## Key Patterns Established
 
@@ -160,6 +182,7 @@ This plan provides the data foundation. Next plans will add:
 **Pattern: Server Action CRUD with Auth**
 
 ```typescript
+
 export async function createTask(formData: FormData) {
   // 1. Verify authentication
   const user = await getUser()
@@ -186,23 +209,33 @@ export async function createTask(formData: FormData) {
 **Pattern: DAL with Caching and Ownership**
 
 ```typescript
+
 export const getResourcesByUser = cache(async (userId: string) => {
   try {
-    return await prisma.resource.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' }
-    })
-  } catch (error) {
-    console.error('Error fetching resources:', error)
-    return []
-  }
+
+```
+return await prisma.resource.findMany({
+  where: { userId },
+  orderBy: { createdAt: 'desc' }
 })
 
 ```
+  } catch (error) {
+
+```
+console.error('Error fetching resources:', error)
+return []
+
+```
+  }
+})
+
+```yaml
 
 **Pattern: Enum for Status Management**
 
 ```prisma
+
 enum ResourceStatus {
   PENDING
   ACTIVE
@@ -231,10 +264,10 @@ model Resource {
 ## Commits
 
 | Hash | Message | Files |
-|------|---------|-------|
-| b129966 | feat(03-01): add Task model and TaskStatus enum to schema | prisma/schema.prisma |
-| 6cb94aa | feat(03-01): implement Server Actions for task CRUD | src/app/actions/tasks.ts |
-| 0848488 | feat(03-01): add task DAL functions with caching | src/shared/lib/dal.ts |
+| ------ | --------- | ------- |
+| b129966 | feat(03-01): add T... | prisma/schema.prisma |
+| 6cb94aa | feat(03-01): imple... | src/app/actions/ta... |
+| 0848488 | feat(03-01): add t... | src/shared/lib/dal.ts |
 
 ## Verification Status
 

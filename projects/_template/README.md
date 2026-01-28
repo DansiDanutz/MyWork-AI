@@ -13,7 +13,7 @@
 ./start.sh  # Mac/Linux
 start.bat   # Windows
 
-```
+```markdown
 
 ## Project Structure
 
@@ -28,7 +28,7 @@ start.bat   # Windows
 ├── README.md           # This file
 └── ...
 
-```
+```markdown
 
 ## GSD Commands
 
@@ -59,7 +59,7 @@ start.bat   # Windows
 ## API Endpoints (if applicable)
 
 | Endpoint | Method | Description |
-|----------|--------|-------------|
+| ---------- | -------- | ------------- |
 | `/api/...` | GET | ... |
 
 ## Environment Variables

@@ -8,7 +8,8 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in MyWork Framework, please report it responsibly.
+If you discover a security vulnerability in MyWork Framework, please report it
+responsibly.
 
 ### How to Report
 
@@ -62,7 +63,7 @@ If you discover a security vulnerability in MyWork Framework, please report it r
    ```bash
    python tools/mw.py doctor
 
-   ```
+```markdown
 
    - Checks for exposed secrets
    - Validates `.gitignore`
@@ -124,7 +125,7 @@ ANTHROPIC_API_KEY=sk-ant-xxxxx  # In .env only
 
 api_key = "sk-ant-real-key"  # Never do this!
 
-```
+```markdown
 
 ## Disclosure Policy
 

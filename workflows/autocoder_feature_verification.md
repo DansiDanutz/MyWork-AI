@@ -2,7 +2,8 @@
 
 ## Problem This Solves
 
-**The Marketplace Bug:** The Autocoder initializer agent created 56 features from a *gaming platform* spec instead of the *marketplace* spec. This caused:
+**The Marketplace Bug:** The Autocoder initializer agent created 56 features
+from a *gaming platform* spec instead of the *marketplace* spec. This caused:
 
 - Agents building wrong features
 - Wasted compute on skipping irrelevant features
@@ -11,13 +12,15 @@
 
 ## Root Cause
 
-The initializer agent reads `prompts/app_spec.txt` to create features in `features.db`. If:
+The initializer agent reads `prompts/app_spec.txt` to create features in
+`features.db`. If:
 
 1. The spec is ambiguous or incomplete
 2. The agent has context from a previous project
 3. The agent hallucinates feature requirements
 
-...the wrong features get created, and all subsequent coding agents work on the wrong things.
+...the wrong features get created, and all subsequent coding agents work on the
+wrong things.
 
 ---
 
@@ -28,27 +31,36 @@ The initializer agent reads `prompts/app_spec.txt` to create features in `featur
 Before running Autocoder, ensure `prompts/app_spec.txt` has:
 
 ```xml
+
 <project_specification>
   <project_name>EXACT PROJECT NAME</project_name>
 
   <overview>
-    2-3 sentences describing EXACTLY what this project is.
-    Be specific about the domain (e-commerce, gaming, SaaS, etc.)
+
+```
+2-3 sentences describing EXACTLY what this project is.
+Be specific about the domain (e-commerce, gaming, SaaS, etc.)
+
+```
   </overview>
 
   <core_features>
-    <!-- List actual features, not categories -->
-    <feature>User can sign up with email</feature>
-    <feature>User can create a product listing</feature>
-    <feature>Buyer can checkout with Stripe</feature>
-    <!-- Be explicit - don't assume anything -->
+
+```
+<!-- List actual features, not categories -->
+<feature>User can sign up with email</feature>
+<feature>User can create a product listing</feature>
+<feature>Buyer can checkout with Stripe</feature>
+<!-- Be explicit - don't assume anything -->
+
+```
   </core_features>
 
   <feature_count>45</feature_count>
   <!-- Explicit count prevents agent from guessing -->
 </project_specification>
 
-```
+```yaml
 
 **Anti-patterns to avoid:**
 
@@ -88,7 +100,7 @@ sqlite3 projects/{name}/features.db "SELECT id, name FROM features LIMIT 10"
 
 sqlite3 projects/{name}/features.db "SELECT * FROM features WHERE name LIKE '%game%' OR name LIKE '%room%' OR name LIKE '%lobby%'"
 
-```
+```yaml
 
 **Red Flags:**
 
@@ -121,47 +133,50 @@ Update `tools/autocoder_api.py` to include verification step:
 
 ```python
 def verify_features(project_name: str) -> bool:
-    """Verify features.db matches app_spec.txt"""
-    db_path = MYWORK_PROJECTS / project_name / "features.db"
-    spec_path = MYWORK_PROJECTS / project_name / "prompts" / "app_spec.txt"
-
-    if not db_path.exists():
-        return True  # No features yet
-
-    # Read spec
-
-    spec = spec_path.read_text()
-    project_name_from_spec = extract_project_name(spec)
-
-    # Read features
-
-    conn = sqlite3.connect(str(db_path))
-    features = conn.execute("SELECT name FROM features LIMIT 5").fetchall()
-    categories = conn.execute("SELECT DISTINCT category FROM features").fetchall()
-    conn.close()
-
-    # Basic sanity checks
-
-    warnings = []
-
-    # Check for gaming-specific terms in non-gaming project
-
-    gaming_terms = ['game', 'lobby', 'room', 'player', 'match', 'XP', 'credits']
-    for feature in features:
-        for term in gaming_terms:
-            if term.lower() in feature[0].lower():
-                if 'game' not in project_name_from_spec.lower():
-                    warnings.append(f"Feature '{feature[0]}' contains gaming term '{term}'")
-
-    if warnings:
-        print("⚠️  FEATURE VERIFICATION WARNINGS:")
-        for w in warnings:
-            print(f"   - {w}")
-        return False
-
-    return True
 
 ```
+"""Verify features.db matches app_spec.txt"""
+db_path = MYWORK_PROJECTS / project_name / "features.db"
+spec_path = MYWORK_PROJECTS / project_name / "prompts" / "app_spec.txt"
+
+if not db_path.exists():
+    return True  # No features yet
+
+# Read spec
+
+spec = spec_path.read_text()
+project_name_from_spec = extract_project_name(spec)
+
+# Read features
+
+conn = sqlite3.connect(str(db_path))
+features = conn.execute("SELECT name FROM features LIMIT 5").fetchall()
+categories = conn.execute("SELECT DISTINCT category FROM features").fetchall()
+conn.close()
+
+# Basic sanity checks
+
+warnings = []
+
+# Check for gaming-specific terms in non-gaming project
+
+gaming_terms = ['game', 'lobby', 'room', 'player', 'match', 'XP', 'credits']
+for feature in features:
+    for term in gaming_terms:
+        if term.lower() in feature[0].lower():
+            if 'game' not in project_name_from_spec.lower():
+                warnings.append(f"Feature '{feature[0]}' contains gaming term '{term}'")
+
+if warnings:
+    print("⚠️  FEATURE VERIFICATION WARNINGS:")
+    for w in warnings:
+        print(f"   - {w}")
+    return False
+
+return True
+
+```
+```markdown
 
 ---
 
@@ -207,14 +222,15 @@ If agents have already started building wrong features:
 ## Prevention Summary
 
 | Step | Action | When |
-|------|--------|------|
+| ------ | -------- | ------ |
 | 1 | Write explicit app_spec.txt | Before starting Autocoder |
 | 2 | Run initializer | First Autocoder session |
 | 3 | **VERIFY features.db** | After initializer, before coding |
 | 4 | Fix if wrong | Before any coding agents run |
 | 5 | Monitor first features | First few coding sessions |
 
-**The key insight:** Verify features.db immediately after initialization. Don't assume the agent understood your spec correctly.
+**The key insight:** Verify features.db immediately after initialization. Don't
+assume the agent understood your spec correctly.
 
 ---
 
@@ -222,7 +238,7 @@ If agents have already started building wrong features:
 
 Consider adding this to `CLAUDE.md` decision tree:
 
-```
+```yaml
 ┌─────────────────────────────────────────────────────────────────┐
 │  After Autocoder initializer completes:                        │
 │     → ALWAYS run feature verification                          │
@@ -240,7 +256,7 @@ Consider adding this to `CLAUDE.md` decision tree:
 **Features created:** Gaming platform features
 
 | Feature ID | Created (Wrong) | Should Have Been |
-|------------|-----------------|------------------|
+| ------------ | ----------------- | ------------------ |
 | 14 | "Create XP game room" | "Create product listing" |
 | 15 | "Create Credits game room" | "Checkout with Stripe" |
 | 19 | "Lobby shows player list" | "Orders list page" |

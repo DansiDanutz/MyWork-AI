@@ -2,7 +2,8 @@
 phase: 07-performance-quality
 plan: 03
 subsystem: mobile-ux
-tags: [mobile, responsiveness, swipe-gestures, navigation, accessibility, touch-targets]
+tags: [mobile, responsiveness, swipe-gestures, navigation, accessibility,
+touch-targets]
 status: complete
 
 requires:
@@ -27,66 +28,86 @@ affects:
 tech-stack:
   added:
 
-    - react-swipeable: "^7.0.2"
+```
+- react-swipeable: "^7.0.2"
 
+```
   patterns:
 
-    - Mobile detection via touch support + screen width
-    - Conditional rendering (mobile vs desktop components)
-    - Swipe gesture thresholds (100px to trigger action)
-    - Hamburger menu with overlay and backdrop
-    - 44x44px minimum touch targets (WCAG 2.1 AAA compliance)
+```
+- Mobile detection via touch support + screen width
+- Conditional rendering (mobile vs desktop components)
+- Swipe gesture thresholds (100px to trigger action)
+- Hamburger menu with overlay and backdrop
+- 44x44px minimum touch targets (WCAG 2.1 AAA compliance)
 
+```
 key-files:
   created:
 
-    - src/shared/components/SwipeableTaskCard.tsx
-    - src/shared/components/MobileNav.tsx
+```
+- src/shared/components/SwipeableTaskCard.tsx
+- src/shared/components/MobileNav.tsx
 
+```
   modified:
 
-    - src/shared/components/TaskList.tsx
-    - src/app/(app)/layout.tsx
-    - src/shared/components/index.ts
-    - package.json
+```
+- src/shared/components/TaskList.tsx
+- src/app/(app)/layout.tsx
+- src/shared/components/index.ts
+- package.json
 
+```
 decisions:
 
   - id: MOBILE-001
 
-    date: 2026-01-26
-    decision: Use react-swipeable over custom gesture implementation
-    rationale: Mature library with proper touch event handling and scroll prevention
-    alternatives: Custom touch handlers, Framer Motion gestures
+```
+date: 2026-01-26
+decision: Use react-swipeable over custom gesture implementation
+rationale: Mature library with proper touch event handling and scroll
+prevention
+alternatives: Custom touch handlers, Framer Motion gestures
 
+```
   - id: GESTURE-001
 
-    date: 2026-01-26
-    decision: 100px swipe threshold to trigger actions
-    rationale: Prevents accidental triggers while keeping gestures responsive
-    context: Tested threshold balances safety and UX
+```
+date: 2026-01-26
+decision: 100px swipe threshold to trigger actions
+rationale: Prevents accidental triggers while keeping gestures responsive
+context: Tested threshold balances safety and UX
 
+```
   - id: UX-001
 
-    date: 2026-01-26
-    decision: Confirmation dialog for delete gesture, none for complete
-    rationale: Completing task is non-destructive (reversible), delete is permanent
-    impact: Reduces accidental data loss while keeping complete gesture fluid
+```
+date: 2026-01-26
+decision: Confirmation dialog for delete gesture, none for complete
+rationale: Completing task is non-destructive (reversible), delete is
+permanent
+impact: Reduces accidental data loss while keeping complete gesture fluid
 
+```
   - id: NAV-001
 
-    date: 2026-01-26
-    decision: Hamburger menu over tab bar for mobile navigation
-    rationale: Only 2 nav items, hamburger simpler than bottom tab bar
-    alternatives: Bottom tab bar, drawer navigation
+```
+date: 2026-01-26
+decision: Hamburger menu over tab bar for mobile navigation
+rationale: Only 2 nav items, hamburger simpler than bottom tab bar
+alternatives: Bottom tab bar, drawer navigation
 
+```
   - id: ACCESSIBILITY-001
 
-    date: 2026-01-26
-    decision: 44x44px minimum touch targets throughout
-    rationale: WCAG 2.1 Level AAA compliance (guideline 2.5.5)
-    impact: All interactive elements accessible on mobile
+```
+date: 2026-01-26
+decision: 44x44px minimum touch targets throughout
+rationale: WCAG 2.1 Level AAA compliance (guideline 2.5.5)
+impact: All interactive elements accessible on mobile
 
+```
 metrics:
   duration: 3 minutes
   completed: 2026-01-26
@@ -101,7 +122,8 @@ commits:
 
 # Phase 07 Plan 03: Mobile Responsiveness Summary
 
-**One-liner:** Native mobile gestures (swipe-to-complete/delete) with responsive hamburger navigation and WCAG AAA touch targets
+**One-liner:** Native mobile gestures (swipe-to-complete/delete) with responsive
+hamburger navigation and WCAG AAA touch targets
 
 ## What Was Built
 
@@ -239,22 +261,29 @@ Conditional rendering based on device capabilities:
 
 ### Downstream Impact
 
-- **Image optimization (07-04):** Should consider mobile viewport sizes for srcset
+- **Image optimization (07-04):** Should consider mobile viewport sizes for
+  srcset
 - **Error boundaries (07-05):** Should handle swipe gesture failures gracefully
-- **Deployment (08-XX):** Must test on real mobile devices, not just DevTools emulation
+- **Deployment (08-XX):** Must test on real mobile devices, not just DevTools
+  emulation
 
 ## Reusable Patterns for Brain
 
 ### Pattern: Mobile Detection with Touch + Width
 
 ```typescript
+
 const [isMobile, setIsMobile] = useState(false)
 
 useEffect(() => {
   const checkMobile = () => {
-    const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
-    const isNarrow = window.innerWidth < 768
-    setIsMobile(hasTouch && isNarrow)
+
+```
+const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
+const isNarrow = window.innerWidth < 768
+setIsMobile(hasTouch && isNarrow)
+
+```
   }
 
   checkMobile()
@@ -262,7 +291,7 @@ useEffect(() => {
   return () => window.removeEventListener('resize', checkMobile)
 }, [])
 
-```
+```yaml
 
 **Why both checks:**
 
@@ -275,19 +304,28 @@ useEffect(() => {
 ### Pattern: Swipe Gesture with Threshold
 
 ```typescript
+
 const handlers = useSwipeable({
   onSwiping: (eventData) => {
-    if (Math.abs(eventData.deltaX) > Math.abs(eventData.deltaY)) {
-      setSwipeOffset(eventData.deltaX)
-      setSwipeDirection(eventData.deltaX > 0 ? 'right' : 'left')
-    }
+
+```
+if (Math.abs(eventData.deltaX) > Math.abs(eventData.deltaY)) {
+  setSwipeOffset(eventData.deltaX)
+  setSwipeDirection(eventData.deltaX > 0 ? 'right' : 'left')
+}
+
+```
   },
   onSwipedRight: () => {
-    if (Math.abs(swipeOffset) > 100) {
-      handleAction()
-    } else {
-      setSwipeOffset(0)
-    }
+
+```
+if (Math.abs(swipeOffset) > 100) {
+  handleAction()
+} else {
+  setSwipeOffset(0)
+}
+
+```
   },
   delta: 30,
   preventScrollOnSwipe: true,
@@ -309,22 +347,31 @@ const handlers = useSwipeable({
 ### Pattern: Hamburger Menu with Backdrop
 
 ```typescript
+
 <div className="md:hidden">
   <button className="min-w-[44px] min-h-[44px]" onClick={() => setIsOpen(!isOpen)}>
-    {/* Icon */}
+
+```
+{/* Icon */}
+
+```
   </button>
 
   {isOpen && (
-    <>
-      <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setIsOpen(false)} />
-      <nav className="fixed top-16 left-0 right-0 z-50">
-        {/* Menu items */}
-      </nav>
-    </>
+
+```
+<>
+  <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setIsOpen(false)} />
+  <nav className="fixed top-16 left-0 right-0 z-50">
+    {/* Menu items */}
+  </nav>
+</>
+
+```
   )}
 </div>
 
-```
+```yaml
 
 **Key elements:**
 
@@ -338,6 +385,7 @@ const handlers = useSwipeable({
 ### Pattern: 44px Touch Targets (WCAG AAA)
 
 ```tsx
+
 // Button
 <button className="p-2 min-w-[44px] min-h-[44px]">
 
@@ -405,7 +453,8 @@ Recommend adding these to framework brain:
 
 1. **SwipeableTaskCard** - Generic swipeable card with left/right actions
 2. **MobileNav** - Hamburger menu with backdrop and active route highlighting
-3. **Mobile detection hook** - Touch + width detection for accurate mobile targeting
+3. **Mobile detection hook** - Touch + width detection for accurate mobile
+targeting
 4. **Swipe gesture pattern** - Threshold-based gesture with visual feedback
 5. **44px touch target pattern** - WCAG AAA compliant interactive elements
 

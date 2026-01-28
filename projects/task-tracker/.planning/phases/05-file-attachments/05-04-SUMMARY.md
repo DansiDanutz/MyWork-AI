@@ -11,7 +11,8 @@ dependencies: ["05-02", "05-03"]
 
 ## Objective
 
-Created comprehensive file upload UI components with drag & drop functionality, progress tracking, and dual upload strategies.
+Created comprehensive file upload UI components with drag & drop functionality,
+progress tracking, and dual upload strategies.
 
 ## What Was Built
 
@@ -22,7 +23,8 @@ Created comprehensive file upload UI components with drag & drop functionality, 
 **Key Features:**
 
 - ✅ Visual progress bars with percentage display
-- ✅ File type icons with color coding (images=purple, PDF=red, docs=blue, sheets=green)
+- ✅ File type icons with color coding (images=purple, PDF=red, docs=blue,
+  sheets=green)
 - ✅ File size display using formatFileSize utility
 - ✅ Action buttons: Cancel, Retry, Dismiss
 - ✅ Status indicators: pending, uploading, complete, error
@@ -32,6 +34,7 @@ Created comprehensive file upload UI components with drag & drop functionality, 
 **TypeScript Interface:**
 
 ```typescript
+
 export interface UploadState {
   id: string
   filename: string
@@ -43,7 +46,7 @@ export interface UploadState {
 
 export type UploadStatus = 'pending' | 'uploading' | 'complete' | 'error'
 
-```
+```markdown
 
 ### 2. FileDropzone Component (`src/shared/components/FileDropzone.tsx`)
 
@@ -63,6 +66,7 @@ export type UploadStatus = 'pending' | 'uploading' | 'complete' | 'error'
 **Props Interface:**
 
 ```typescript
+
 interface FileDropzoneProps {
   taskId: string
   onUploadComplete?: (fileId: string, filename: string) => void
@@ -86,16 +90,20 @@ interface FileDropzoneProps {
 
 ### Dual Upload Strategy
 
-```
+```yaml
 File Size Decision:
 ├── ≤ 5MB → Server Action
 │   ├── Direct FormData processing
 │   ├── Immediate validation & thumbnail
 │   └── Instant DB record creation
 └── > 5MB → TUS Protocol
-    ├── Chunked uploads (5MB chunks)
-    ├── Resume capability
-    └── Server-side completion handling
+
+```
+├── Chunked uploads (5MB chunks)
+├── Resume capability
+└── Server-side completion handling
+
+```
 
 ```
 

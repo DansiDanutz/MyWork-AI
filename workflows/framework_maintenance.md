@@ -2,7 +2,8 @@
 
 ## Objective
 
-Keep the MyWork framework healthy, updated, and continuously learning from projects.
+Keep the MyWork framework healthy, updated, and continuously learning from
+projects.
 
 ## When to Use
 
@@ -27,7 +28,7 @@ python tools/mw.py status           # Quick overview
 python tools/auto_update.py check   # Check for updates
 python tools/module_registry.py scan # Index all modules
 
-```
+```markdown
 
 ---
 
@@ -62,7 +63,7 @@ If warnings or errors appear, either:
 ```bash
 python tools/auto_update.py check
 
-```
+```yaml
 
 If updates available:
 
@@ -85,7 +86,7 @@ python tools/auto_update.py update n8n-skills
 ```bash
 python tools/module_registry.py scan
 
-```
+```yaml
 
 This indexes:
 
@@ -114,7 +115,7 @@ Creates `.planning/MODULE_REGISTRY.md` for easy browsing.
 ```bash
 python tools/health_check.py
 
-```
+```markdown
 
 ### 2. Auto-Fix Common Issues
 
@@ -134,7 +135,7 @@ This can fix:
 ```bash
 python tools/health_check.py report
 
-```
+```markdown
 
 Creates detailed markdown report in `.tmp/`.
 
@@ -155,7 +156,7 @@ python tools/auto_update.py rollback gsd
 ```bash
 python tools/module_registry.py scan
 
-```
+```markdown
 
 ### 2. Review What Was Built
 
@@ -169,7 +170,7 @@ python tools/module_registry.py stats
 ```bash
 python tools/module_registry.py export
 
-```
+```markdown
 
 ---
 
@@ -196,7 +197,7 @@ python tools/module_registry.py list component
 python tools/module_registry.py list service
 python tools/module_registry.py list utility
 
-```
+```markdown
 
 ### 3. View Module Details
 
@@ -221,7 +222,7 @@ Shows:
 ```bash
 python tools/scaffold.py list
 
-```
+```markdown
 
 ### 2. Create Project
 
@@ -245,7 +246,7 @@ Templates:
 cd projects/my-project
 /gsd:new-project
 
-```
+```markdown
 
 ---
 
@@ -281,7 +282,7 @@ lsof -i :8888
 
 kill -9 <PID>
 
-```
+```markdown
 
 ### n8n Connection Failed
 
@@ -309,7 +310,7 @@ ls projects/
 
 python tools/module_registry.py scan
 
-```
+```markdown
 
 ---
 

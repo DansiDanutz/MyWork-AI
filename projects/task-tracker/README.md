@@ -1,6 +1,7 @@
 # Task Tracker
 
-A focused task management app with status tracking, optimistic UI updates, and user-owned task workflows.
+A focused task management app with status tracking, optimistic UI updates, and
+user-owned task workflows.
 
 ## Quick Start
 
@@ -27,7 +28,7 @@ npx prisma migrate dev --name init
 
 npm run dev
 
-```
+```yaml
 
 App runs on `http://localhost:3000` by default.
 
@@ -66,4 +67,4 @@ See `.env.example` for required values. Key items:
 
 - GitHub OAuth is required for authentication.
 - Use the repository root `CONTRIBUTING.md` for workflow standards.
-- Live status: https://mywork-task-tracker.vercel.app/status
+- Live status: <https://mywork-task-tracker.vercel.app/status>

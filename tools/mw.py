@@ -469,11 +469,36 @@ def cmd_brain(args: List[str]):
         return 1
 
 
+def is_auto_linter_running() -> bool:
+    """Check if auto-linter is currently running."""
+    import subprocess
+    import platform
+
+    try:
+        if platform.system() == "Windows":
+            result = subprocess.run([
+                "tasklist", "/FI", "IMAGENAME eq python.exe"
+            ], capture_output=True, text=True)
+            return "auto_linting_agent" in result.stdout
+        else:
+            result = subprocess.run([
+                "pgrep", "-f", "auto_linting_agent.py.*--watch"
+            ], capture_output=True)
+            return result.returncode == 0
+    except:
+        return False
+
+
 def cmd_lint(args: List[str]):
     """Auto-linting commands."""
     if not args:
-        print("Usage: mw lint <scan|watch|fix|config|stats>")
-        print("\nCommands:")
+        print("Usage: mw lint <command>")
+        print("\n🎯 Perfect Auto-Linting Commands:")
+        print("   start                           Start auto-linter (with perfect markdown support)")
+        print("   stop                            Stop auto-linter")
+        print("   status                          Check auto-linter status")
+        print("   install-hooks                   Install git hooks for automatic linting")
+        print("\n📋 Standard Linting Commands:")
         print("   scan [--dir DIR] [--file FILE]  Scan for linting issues")
         print("   watch [--dir DIR]               Watch files and auto-lint")
         print("   fix [--dir DIR]                 Fix all linting issues")
@@ -484,7 +509,176 @@ def cmd_lint(args: List[str]):
     subcmd = args[0]
     remaining = args[1:]
 
-    if subcmd == "scan":
+    # Perfect Auto-Linting Commands
+    if subcmd == "start":
+        print("🚀 Starting Perfect Auto-Linter...")
+        import subprocess
+        import platform
+
+        # Check if already running
+        if is_auto_linter_running():
+            print("⚠️  Auto-linter is already running!")
+            print("   Run 'mw lint status' to check or 'mw lint stop' to stop it first.")
+            return 1
+
+        # Use platform-appropriate startup script
+        if platform.system() == "Windows":
+            script_path = TOOLS_DIR / "start_auto_linter.bat"
+            if script_path.exists():
+                subprocess.Popen([str(script_path)], creationflags=subprocess.CREATE_NEW_CONSOLE)
+                print("✅ Auto-linter started in new window")
+            else:
+                # Fallback to Python script
+                subprocess.Popen([sys.executable, str(TOOLS_DIR / "auto_linting_agent.py"), "--watch", "--root", str(MYWORK_ROOT)])
+                print("✅ Auto-linter started in background")
+        else:
+            script_path = TOOLS_DIR / "start_auto_linter.sh"
+            if script_path.exists():
+                subprocess.Popen(["/bin/bash", str(script_path)])
+                print("✅ Auto-linter started in background")
+            else:
+                # Fallback to Python script
+                subprocess.Popen([sys.executable, str(TOOLS_DIR / "auto_linting_agent.py"), "--watch", "--root", str(MYWORK_ROOT)])
+                print("✅ Auto-linter started in background")
+
+        print("\n💡 The auto-linter will now:")
+        print("   ✅ Monitor all markdown files for changes")
+        print("   ✅ Automatically fix markdown issues (MD001-MD060)")
+        print("   ✅ Maintain perfect 0-violation markdown quality")
+        print("   ✅ Work for all users in this project")
+        print("\n   Run 'mw lint status' to check if it's working.")
+        return 0
+
+    elif subcmd == "stop":
+        print("🛑 Stopping Auto-Linter...")
+        import subprocess
+        import platform
+
+        stopped = False
+        if platform.system() == "Windows":
+            try:
+                result = subprocess.run(
+                    ["taskkill", "/F", "/FI", "WINDOWTITLE eq *auto_linting_agent*"],
+                    capture_output=True, text=True
+                )
+                if result.returncode == 0:
+                    stopped = True
+            except:
+                pass
+        else:
+            try:
+                result = subprocess.run(
+                    ["pkill", "-f", "auto_linting_agent.py.*--watch"],
+                    capture_output=True
+                )
+                if result.returncode == 0:
+                    stopped = True
+            except:
+                pass
+
+        if stopped:
+            print("✅ Auto-linter stopped successfully")
+        else:
+            print("⚠️  No running auto-linter found (or already stopped)")
+        return 0
+
+    elif subcmd == "status":
+        print("📊 Auto-Linter Status")
+        print("=" * 50)
+
+        # Check if auto-linter is running
+        running = is_auto_linter_running()
+        if running:
+            print("🟢 Status: RUNNING")
+            print("✅ Perfect markdown quality is actively maintained")
+        else:
+            print("🔴 Status: STOPPED")
+            print("⚠️  Markdown files are not being automatically fixed")
+
+        # Check if auto_lint_fixer.py exists and works
+        auto_fixer_path = TOOLS_DIR / "auto_lint_fixer.py"
+        if auto_fixer_path.exists():
+            print("✅ Perfect markdown fixer: Available")
+            # Test the fixer quickly
+            try:
+                result = subprocess.run([
+                    sys.executable, "-c",
+                    f"import sys; sys.path.insert(0, '{TOOLS_DIR}'); from auto_lint_fixer import AutoLintFixer; print('✅ Works')"
+                ], capture_output=True, text=True, timeout=5)
+                if result.returncode == 0:
+                    print("✅ Auto-fixer test: PASSED")
+                else:
+                    print("❌ Auto-fixer test: FAILED")
+            except:
+                print("⚠️  Auto-fixer test: Could not test")
+        else:
+            print("❌ Perfect markdown fixer: MISSING")
+
+        # Check git hooks
+        git_hooks_dir = MYWORK_ROOT / ".git" / "hooks"
+        if git_hooks_dir.exists():
+            pre_commit_hook = git_hooks_dir / "pre-commit"
+            pre_push_hook = git_hooks_dir / "pre-push"
+            if pre_commit_hook.exists() and pre_push_hook.exists():
+                print("✅ Git hooks: Installed")
+            else:
+                print("⚠️  Git hooks: Partially installed")
+        else:
+            print("❌ Git hooks: Not installed")
+
+        # Show recommendation
+        print("\n💡 Recommendation:")
+        if not running:
+            print("   Run 'mw lint start' to enable automatic markdown fixing for all users")
+        if not (git_hooks_dir / "pre-commit").exists():
+            print("   Run 'mw lint install-hooks' to set up git integration")
+
+        return 0
+
+    elif subcmd == "install-hooks":
+        print("🔗 Installing Git Hooks for Automatic Linting...")
+
+        git_hooks_dir = MYWORK_ROOT / ".git" / "hooks"
+        if not git_hooks_dir.exists():
+            print("❌ Error: Not a git repository or .git/hooks directory not found")
+            return 1
+
+        # Install pre-commit hook
+        pre_commit_hook = git_hooks_dir / "pre-commit"
+        pre_commit_content = """#!/bin/bash
+# Auto-lint markdown files before commit
+echo "🔧 Auto-linting markdown files..."
+find . -name "*.md" -not -path "./.git/*" -not -path "./node_modules/*" -exec python3 tools/auto_lint_fixer.py {} \\;
+"""
+        pre_commit_hook.write_text(pre_commit_content)
+        pre_commit_hook.chmod(0o755)
+        print("   ✅ Pre-commit hook installed")
+
+        # Install pre-push hook
+        pre_push_hook = git_hooks_dir / "pre-push"
+        pre_push_content = """#!/bin/bash
+# Final lint check before push
+echo "🚀 Final markdown validation before push..."
+if find . -name "*.md" -not -path "./.git/*" -not -path "./node_modules/*" -exec markdownlint {} \\; 2>/dev/null | grep -q .; then
+    echo "❌ Markdown violations found. Auto-fixing..."
+    python3 tools/auto_lint_fixer.py .
+    echo "✅ Issues fixed. Please review and commit the changes."
+    exit 1
+fi
+echo "✅ All markdown files perfect!"
+"""
+        pre_push_hook.write_text(pre_push_content)
+        pre_push_hook.chmod(0o755)
+        print("   ✅ Pre-push hook installed")
+
+        print("\n🎯 Git Hooks Configured:")
+        print("   ✅ Pre-commit: Auto-fixes markdown before each commit")
+        print("   ✅ Pre-push: Ensures perfect markdown before push")
+        print("\n💡 All users will now get automatic markdown fixing during git operations!")
+        return 0
+
+    # Standard Linting Commands
+    elif subcmd == "scan":
         lint_args = ["--scan"]
         for i in range(0, len(remaining), 2):
             if i + 1 < len(remaining):

@@ -17,48 +17,65 @@ affects: ["05-04", "05-05", "05-06"]
 tech-stack:
   added:
 
-    - "sharp: image thumbnail generation"
+```
+- "sharp: image thumbnail generation"
 
+```
   patterns:
 
-    - "Server Action file upload pattern"
-    - "Authenticated file serving pattern"
+```
+- "Server Action file upload pattern"
+- "Authenticated file serving pattern"
 
+```
 key-files:
   created:
 
-    - "src/shared/lib/thumbnail-generator.ts"
-    - "src/shared/lib/file-storage.ts"
-    - "src/app/actions/files.ts"
-    - "src/app/api/files/download/[id]/route.ts"
+```
+- "src/shared/lib/thumbnail-generator.ts"
+- "src/shared/lib/file-storage.ts"
+- "src/app/actions/files.ts"
+- "src/app/api/files/download/[id]/route.ts"
 
+```
   modified:
 
-    - "src/shared/lib/dal.ts"
+```
+- "src/shared/lib/dal.ts"
 
+```
 decisions:
 
   - id: "THUMB-001"
 
-    context: "Thumbnail format and size selection"
-    decision: "200px square WebP thumbnails at 80% quality"
-    rationale: "WebP provides best compression, 200px sufficient for previews, 80% quality balances size and clarity"
-    date: "2026-01-25"
+```
+context: "Thumbnail format and size selection"
+decision: "200px square WebP thumbnails at 80% quality"
+rationale: "WebP provides best compression, 200px sufficient for previews,
+80% quality balances size and clarity"
+date: "2026-01-25"
 
+```
   - id: "FILE-001"
 
-    context: "File upload size threshold for Server Actions vs TUS"
-    decision: "Server Actions handle files < 5MB, TUS for larger files"
-    rationale: "Server Actions have payload limits, TUS provides resumable uploads for large files"
-    date: "2026-01-25"
+```
+context: "File upload size threshold for Server Actions vs TUS"
+decision: "Server Actions handle files < 5MB, TUS for larger files"
+rationale: "Server Actions have payload limits, TUS provides resumable
+uploads for large files"
+date: "2026-01-25"
 
+```
   - id: "SECURITY-001"
 
-    context: "File download authentication approach"
-    decision: "Verify ownership on every download request via database query"
-    rationale: "Cannot rely on URL security alone - must verify user owns the file before serving"
-    date: "2026-01-25"
+```
+context: "File download authentication approach"
+decision: "Verify ownership on every download request via database query"
+rationale: "Cannot rely on URL security alone - must verify user owns the
+file before serving"
+date: "2026-01-25"
 
+```
 metrics:
   duration: "5 minutes"
   completed: "2026-01-25"
@@ -66,7 +83,8 @@ metrics:
 
 # Phase 05 Plan 03: File Actions & Downloads Summary
 
-**One-liner:** Sharp thumbnail generation, Server Actions for <5MB uploads, authenticated download endpoint with ownership verification
+**One-liner:** Sharp thumbnail generation, Server Actions for <5MB uploads,
+authenticated download endpoint with ownership verification
 
 ## What Was Built
 
@@ -85,17 +103,20 @@ metrics:
 **Key functions:**
 
 - `generateThumbnail()` - Creates thumbnail from source file
-- `canGenerateThumbnail()` - Checks if MIME type supports thumbnails (JPEG, PNG, GIF, WebP)
+- `canGenerateThumbnail()` - Checks if MIME type supports thumbnails (JPEG, PNG,
+  GIF, WebP)
 - `deleteThumbnail()` - Cleanup on file deletion
 - `getThumbnailUrl()` - Generate URL for thumbnail display
 
-**SVG exclusion:** Intentionally excluded for security (Sharp can convert but SVG may contain scripts)
+**SVG exclusion:** Intentionally excluded for security (Sharp can convert but
+SVG may contain scripts)
 
 ### 2. File Storage Utilities (`file-storage.ts`)
 
 **Purpose:** Filesystem abstraction for file and thumbnail operations
 
-**Created as prerequisite:** This was needed by plan 05-03 but defined in plan 05-02. Added here to resolve dependency.
+**Created as prerequisite:** This was needed by plan 05-03 but defined in plan
+05-02. Added here to resolve dependency.
 
 **Key functions:**
 
@@ -103,7 +124,8 @@ metrics:
 - `readFile()` - Load file for download
 - `deleteFile()` - Remove file and thumbnail
 - `getThumbnailDir()` - Get/create thumbnail directory
-- Directory structure: `uploads/userId/taskId/` and `uploads/userId/taskId/thumbs/`
+- Directory structure: `uploads/userId/taskId/` and
+  `uploads/userId/taskId/thumbs/`
 
 ### 3. Server Actions (`actions/files.ts`)
 
@@ -159,7 +181,8 @@ metrics:
 - Cache-Control: `private, max-age=3600` (1 hour cache)
 
 **Why not serve files directly from /uploads:**
-Cannot expose filesystem paths publicly - must verify ownership on every request.
+Cannot expose filesystem paths publicly - must verify ownership on every
+request.
 
 ### 5. DAL File Functions (`dal.ts`)
 
@@ -188,7 +211,8 @@ All use React `cache()` for request deduplication.
 - Simpler error handling
 - Thumbnails small enough that generation is fast
 
-**Failure handling:** Thumbnail generation failure doesn't block upload - file still saved, just no preview.
+**Failure handling:** Thumbnail generation failure doesn't block upload - file
+still saved, just no preview.
 
 ### File Upload Split: Server Actions vs TUS
 
@@ -205,7 +229,8 @@ All use React `cache()` for request deduplication.
 - Better for large files
 - Handles network interruptions
 
-**Threshold rationale:** 5MB matches typical Server Action payload limits in Next.js.
+**Threshold rationale:** 5MB matches typical Server Action payload limits in
+Next.js.
 
 ### Download Security Model
 
@@ -215,15 +240,18 @@ All use React `cache()` for request deduplication.
 2. Database query to verify ownership
 3. File exists on disk
 
-**Cannot skip database check:** Even with signed URLs or tokens, must verify ownership hasn't changed (file could be deleted, user access revoked).
+**Cannot skip database check:** Even with signed URLs or tokens, must verify
+ownership hasn't changed (file could be deleted, user access revoked).
 
-**Performance:** Cached DAL function + 1 hour browser cache minimizes database load.
+**Performance:** Cached DAL function + 1 hour browser cache minimizes database
+load.
 
 ## Patterns Established
 
 ### Pattern: Server Action File Upload
 
 ```typescript
+
 // Client
 const formData = new FormData()
 formData.append('file', file)
@@ -239,7 +267,7 @@ export async function uploadFile(formData: FormData) {
   // Save and create DB record
 }
 
-```
+```yaml
 
 **Benefits:**
 
@@ -250,6 +278,7 @@ export async function uploadFile(formData: FormData) {
 ### Pattern: Authenticated File Serving
 
 ```typescript
+
 // 1. Verify ownership via database
 const file = await prisma.fileAttachment.findFirst({
   where: { id, userId: session.user.id }
@@ -261,15 +290,20 @@ const buffer = await readFile(userId, taskId, storedFilename)
 // 3. Serve with appropriate headers
 return new NextResponse(buffer, {
   headers: {
-    'Content-Type': file.mimeType,
-    'Content-Disposition': inline or attachment based on type,
-    'Cache-Control': 'private, max-age=3600'
+
+```
+'Content-Type': file.mimeType,
+'Content-Disposition': inline or attachment based on type,
+'Cache-Control': 'private, max-age=3600'
+
+```
   }
 })
 
 ```
 
-**Reusability:** Can be extracted to shared utility for any file serving scenario.
+**Reusability:** Can be extracted to shared utility for any file serving
+scenario.
 
 ## Testing Notes
 
@@ -310,18 +344,24 @@ return new NextResponse(buffer, {
 
 ## Known Limitations
 
-1. **No progress tracking:** Server Actions are all-or-nothing (handled by TUS for large files in 05-02)
-2. **No file_deleted analytics:** Event type doesn't exist in schema (would need to add)
-3. **Thumbnail generation blocking:** Could be moved to background queue for optimization
-4. **No image optimization:** Could add Sharp options for different sizes (preview, full, etc.)
+1. **No progress tracking:** Server Actions are all-or-nothing (handled by TUS
+for large files in 05-02)
+2. **No file_deleted analytics:** Event type doesn't exist in schema (would need
+to add)
+3. **Thumbnail generation blocking:** Could be moved to background queue for
+optimization
+4. **No image optimization:** Could add Sharp options for different sizes
+(preview, full, etc.)
 
 ## Deviations from Plan
 
 ### Added file-storage.ts
 
-**Reason:** Plan 05-03 depends on file-storage.ts functions but they're defined in plan 05-02 (wave 3). Created here to resolve dependency.
+**Reason:** Plan 05-03 depends on file-storage.ts functions but they're defined
+in plan 05-02 (wave 3). Created here to resolve dependency.
 
-**Impact:** Plan 05-02 will now only need to create the TUS upload endpoint, not the storage utilities.
+**Impact:** Plan 05-02 will now only need to create the TUS upload endpoint, not
+the storage utilities.
 
 **Files affected:**
 
@@ -329,7 +369,8 @@ return new NextResponse(buffer, {
 
 ## Brain-Worthy Patterns
 
-1. **Sharp thumbnail generation pattern** - 200px WebP at 80% quality is sweet spot
+1. **Sharp thumbnail generation pattern** - 200px WebP at 80% quality is sweet
+spot
 2. **Server Action file upload** - Clean pattern for < 5MB files
 3. **Authenticated file serving** - Always verify ownership before serving
 4. **Thumbnail failure handling** - Don't block upload if thumbnail fails
@@ -338,10 +379,10 @@ return new NextResponse(buffer, {
 ## Commits
 
 | Commit | Description | Files |
-|--------|-------------|-------|
-| 746fcf9 | feat(05-03): add thumbnail generator with Sharp | thumbnail-generator.ts, file-storage.ts |
-| 5d1fb5d | feat(05-03): add Server Actions for file operations | actions/files.ts |
-| 8fbac9a | feat(05-03): add download endpoint and DAL functions | api/files/download/[id]/route.ts, dal.ts |
+| -------- | ------------- | ------- |
+| 746fcf9 | feat(05-03): add t... | thumbnail-generato... |
+| 5d1fb5d | feat(05-03): add S... | actions/files.ts |
+| 8fbac9a | feat(05-03): add d... | api/files/download... |
 
 **Duration:** 5 minutes (2026-01-25T23:05:34Z to 2026-01-25T23:10:07Z)
 

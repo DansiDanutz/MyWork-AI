@@ -17,59 +17,59 @@ score: 6/6 must-haves verified
 ### Observable Truths
 
 | # | Truth | Status | Evidence |
-|---|-------|--------|----------|
-| 1 | User can create new tasks with title and description | ✓ VERIFIED | TaskForm component (130 lines) at /tasks/new wired to createTask Server Action with validation, loading states |
-| 2 | User can edit existing task titles, descriptions, and status | ✓ VERIFIED | TaskEditForm component (210 lines) at /tasks/[id]/edit wired to updateTask Server Action with ownership verification |
-| 3 | User can delete tasks they created | ✓ VERIFIED | Delete button in TaskCard (line 143-154) and TaskEditForm (line 189-206) with confirmation dialogs, wired to deleteTask Server Action |
-| 4 | User can set task status to todo, in progress, or done | ✓ VERIFIED | Status dropdown in TaskCard (line 110-126) with optimistic UI updates via updateTaskStatus Server Action |
-| 5 | User can view all their tasks in an organized list | ✓ VERIFIED | TaskList component (104 lines) displays tasks grouped by status (To Do, In Progress, Done) at /tasks page |
-| 6 | All user actions provide immediate visual feedback | ✓ VERIFIED | Loading states: TaskForm pending (line 100), TaskEditForm pending/isPending (line 167, 205), TaskCard isPending with "Saving..." (line 88), confirmation dialogs (TaskCard line 50, TaskEditForm line 45) |
+| --- | ------- | -------- | ---------- |
+  | 1 | User can cr... | ✓ VERIFIED | TaskForm co... |  
+  | 2 | User can ed... | ✓ VERIFIED | TaskEditFor... |  
+  | 3 | User can de... | ✓ VERIFIED | Delete butt... |  
+  | 4 | User can se... | ✓ VERIFIED | Status drop... |  
+  | 5 | User can vi... | ✓ VERIFIED | TaskList co... |  
+  | 6 | All user ac... | ✓ VERIFIED | Loading sta... |  
 
 **Score:** 6/6 truths verified
 
 ### Required Artifacts
 
 | Artifact | Expected | Status | Details |
-|----------|----------|--------|---------|
-| `prisma/schema.prisma` | Task model with TaskStatus enum | ✓ VERIFIED | Task model (lines 101-117) with title, description, status (enum: TODO, IN_PROGRESS, DONE), userId foreign key, cascade delete, composite indexes |
-| `src/app/actions/tasks.ts` | CRUD Server Actions | ✓ VERIFIED | 253 lines - createTask, updateTask, updateTaskStatus, deleteTask with auth, validation, ownership checks, analytics tracking |
-| `src/shared/lib/dal.ts` | Task data access functions | ✓ VERIFIED | getTasksByUser (line 66), getTask (line 87), getTaskCounts (line 107) - all use React cache(), ownership filtering |
-| `src/shared/components/TaskCard.tsx` | Task display with status updates | ✓ VERIFIED | 158 lines - optimistic UI (useOptimistic), status dropdown, edit/delete actions, loading states |
-| `src/shared/components/TaskList.tsx` | Status-grouped task list | ✓ VERIFIED | 104 lines - groups by TODO/IN_PROGRESS/DONE, empty state with CTA, imports and uses TaskCard |
-| `src/shared/components/TaskForm.tsx` | Task creation form | ✓ VERIFIED | 130 lines - useActionState integration, validation errors, loading states, wired to createTask |
-| `src/shared/components/TaskEditForm.tsx` | Task editing form | ✓ VERIFIED | 210 lines - pre-populated fields, status dropdown, delete button, wired to updateTask/deleteTask |
-| `src/app/(app)/tasks/page.tsx` | Task list page | ✓ VERIFIED | Suspense streaming, skeleton loader, imports TaskList, fetches via getTasksByUser |
-| `src/app/(app)/tasks/new/page.tsx` | Task creation page | ✓ VERIFIED | Imports and renders TaskForm, breadcrumb navigation |
-| `src/app/(app)/tasks/[id]/edit/page.tsx` | Task edit page | ✓ VERIFIED | Dynamic route, ownership verification via getTask, notFound() for unauthorized access, imports TaskEditForm |
+| ---------- | ---------- | -------- | --------- |
+  | `prisma/sch... | Task model ... | ✓ VERIFIED | Task model ... |  
+| `src/app/ac... | CRUD Server... | ✓ VERIFIED | 253 lines -... |
+  | `src/shared... | Task data a... | ✓ VERIFIED | getTasksByU... |  
+| `src/shared... | Task displa... | ✓ VERIFIED | 158 lines -... |
+| `src/shared... | Status-grou... | ✓ VERIFIED | 104 lines -... |
+| `src/shared... | Task creati... | ✓ VERIFIED | 130 lines -... |
+| `src/shared... | Task editin... | ✓ VERIFIED | 210 lines -... |
+  | `src/app/(a... | Task list page | ✓ VERIFIED | Suspense st... |  
+  | `src/app/(a... | Task creati... | ✓ VERIFIED | Imports and... |  
+  | `src/app/(a... | Task edit page | ✓ VERIFIED | Dynamic rou... |  
 
 ### Key Link Verification
 
 | From | To | Via | Status | Details |
-|------|----|----|--------|---------|
-| TaskForm | createTask Server Action | useActionState | ✓ WIRED | Line 14-20: formAction calls createTask, displays validation errors, loading states |
-| TaskEditForm | updateTask Server Action | useActionState | ✓ WIRED | Line 29-36: bound action updateTaskWithId, pre-populated fields, redirects on success |
-| TaskEditForm | deleteTask Server Action | onClick handler | ✓ WIRED | Line 44-57: confirmation dialog, useTransition for loading, redirect on success |
-| TaskCard | updateTaskStatus Server Action | onChange + optimistic UI | ✓ WIRED | Line 36-47: useOptimistic hook, startTransition, dropdown onChange calls updateTaskStatus |
-| TaskCard | deleteTask Server Action | onClick handler | ✓ WIRED | Line 49-58: confirmation dialog, error handling with alert |
-| /tasks page | getTasksByUser DAL | Async component | ✓ WIRED | Line 48-51: verifySession, getTasksByUser, passes to TaskList |
-| /tasks/new page | TaskForm component | Direct import | ✓ WIRED | Line 1, 45: imports and renders TaskForm |
-| /tasks/[id]/edit page | getTask DAL + TaskEditForm | Async page component | ✓ WIRED | Line 18: getTask with ownership check, line 49: TaskEditForm with task prop |
-| TaskList | TaskCard | Direct import | ✓ WIRED | Line 3, 40: imports TaskCard, maps tasks to TaskCard components |
+| ------ | ---- | ---- | -------- | --------- |
+| TaskForm | createTas... | useAction... | ✓ WIRED | Line 14-2... |
+| TaskEditForm | updateTas... | useAction... | ✓ WIRED | Line 29-3... |
+| TaskEditForm | deleteTas... | onClick h... | ✓ WIRED | Line 44-5... |
+| TaskCard | updateTas... | onChange ... | ✓ WIRED | Line 36-4... |
+| TaskCard | deleteTas... | onClick h... | ✓ WIRED | Line 49-5... |
+| /tasks page | getTasksB... | Async com... | ✓ WIRED | Line 48-5... |
+  | /tasks/ne... | TaskForm ... | Direct im... | ✓ WIRED | Line 1, 4... |  
+  | /tasks/[i... | getTask D... | Async pag... | ✓ WIRED | Line 18: ... |  
+  | TaskList | TaskCard | Direct im... | ✓ WIRED | Line 3, 4... |  
 
 ### Requirements Coverage
 
 | Requirement | Status | Evidence |
-|-------------|--------|----------|
-| TASK-01: Create tasks | ✓ SATISFIED | TaskForm + createTask Server Action verified |
-| TASK-02: Edit tasks | ✓ SATISFIED | TaskEditForm + updateTask Server Action verified |
-| TASK-03: Delete tasks | ✓ SATISFIED | Delete buttons with confirmation + deleteTask Server Action verified |
-| TASK-04: Task status management | ✓ SATISFIED | Status dropdown with optimistic UI + updateTaskStatus verified |
-| TASK-06: View tasks | ✓ SATISFIED | TaskList with status grouping + getTasksByUser verified |
+| ------------- | -------- | ---------- |
+| TASK-01: Create tasks | ✓ SATISFIED | TaskForm + createT... |
+| TASK-02: Edit tasks | ✓ SATISFIED | TaskEditForm + upd... |
+| TASK-03: Delete tasks | ✓ SATISFIED | Delete buttons wit... |
+| TASK-04: Task stat... | ✓ SATISFIED | Status dropdown wi... |
+| TASK-06: View tasks | ✓ SATISFIED | TaskList with stat... |
 
 ### Anti-Patterns Found
 
 | File | Line | Pattern | Severity | Impact |
-|------|------|---------|----------|--------|
+| ------ | ------ | --------- | ---------- | -------- |
 | - | - | None found | - | All patterns are production-ready |
 
 **Anti-pattern scan results:**
@@ -84,9 +84,11 @@ score: 6/6 must-haves verified
 
 ### Human Verification Required
 
-None. All observable truths can be verified programmatically and have been confirmed through:
+None. All observable truths can be verified programmatically and have been
+confirmed through:
 
-1. **User manual testing** (per context): User confirmed "its working" including:
+1. **User manual testing** (per context): User confirmed "its working"
+including:
    - GitHub OAuth login
    - Task creation via /tasks/new
    - Task list with status grouping
@@ -95,7 +97,8 @@ None. All observable truths can be verified programmatically and have been confi
    - Dashboard statistics
    - Optimistic UI status updates
 
-2. **Code verification** (this report): All artifacts exist, are substantive, and are properly wired.
+2. **Code verification** (this report): All artifacts exist, are substantive,
+and are properly wired.
 
 ## Detailed Verification
 
@@ -112,12 +115,12 @@ All required files exist:
 ### Level 2: Substantiveness Check
 
 | Artifact | Lines | Substantiveness | Details |
-|----------|-------|-----------------|---------|
-| tasks.ts | 253 | ✓ SUBSTANTIVE | 4 Server Actions with full auth, validation, DB operations, analytics |
-| TaskCard.tsx | 158 | ✓ SUBSTANTIVE | Optimistic UI, status dropdown, edit/delete actions, loading states |
-| TaskForm.tsx | 130 | ✓ SUBSTANTIVE | Form validation, useActionState, loading states, error display |
-| TaskEditForm.tsx | 210 | ✓ SUBSTANTIVE | Pre-populated form, status dropdown, delete handler, redirects |
-| TaskList.tsx | 104 | ✓ SUBSTANTIVE | Status grouping, empty state, TaskCard integration |
+| ---------- | ------- | ----------------- | --------- |
+  | tasks.ts | 253 | ✓ SUBSTANTIVE | 4 Server Ac... |  
+  | TaskCard.tsx | 158 | ✓ SUBSTANTIVE | Optimistic ... |  
+  | TaskForm.tsx | 130 | ✓ SUBSTANTIVE | Form valida... |  
+| TaskEditFor... | 210 | ✓ SUBSTANTIVE | Pre-populat... |
+  | TaskList.tsx | 104 | ✓ SUBSTANTIVE | Status grou... |  
 
 **Substantiveness criteria met:**
 
@@ -131,19 +134,24 @@ All required files exist:
 **Component → Server Action wiring:**
 
 - ✓ TaskForm imports createTask (line 4), calls via useActionState (line 14-20)
-- ✓ TaskEditForm imports updateTask/deleteTask (line 6), calls via bound action (line 29-36) and onClick (line 49-56)
-- ✓ TaskCard imports updateTaskStatus/deleteTask (line 4), calls via onChange (line 36-47) and onClick (line 49-58)
+- ✓ TaskEditForm imports updateTask/deleteTask (line 6), calls via bound action
+  (line 29-36) and onClick (line 49-56)
+- ✓ TaskCard imports updateTaskStatus/deleteTask (line 4), calls via onChange
+  (line 36-47) and onClick (line 49-58)
 
 **Page → Component wiring:**
 
 - ✓ /tasks page imports TaskList (line 4), renders in TaskListContent (line 51)
 - ✓ /tasks/new page imports TaskForm (line 1), renders directly (line 45)
-- ✓ /tasks/[id]/edit page imports TaskEditForm (line 4), renders with task prop (line 49)
+- ✓ /tasks/[id]/edit page imports TaskEditForm (line 4), renders with task prop
+  (line 49)
 
 **Page → DAL wiring:**
 
-- ✓ /tasks page imports getTasksByUser (line 3), calls in async component (line 49)
-- ✓ /tasks/[id]/edit page imports getTask (line 3), calls with ownership check (line 18)
+- ✓ /tasks page imports getTasksByUser (line 3), calls in async component (line
+  49)
+- ✓ /tasks/[id]/edit page imports getTask (line 3), calls with ownership check
+  (line 18)
 
 **Component → Component wiring:**
 
@@ -157,7 +165,8 @@ All wiring verified - no orphaned files, all connections functional.
 
 1. ✓ Task creation works (form → Server Action → database)
 2. ✓ Task editing works (form → Server Action → database with ownership check)
-3. ✓ Task deletion works (confirmation → Server Action → database with ownership check)
+3. ✓ Task deletion works (confirmation → Server Action → database with ownership
+check)
 4. ✓ Task status updates work (optimistic UI → Server Action → database)
 5. ✓ Task list displays organized by status (grouped sections)
 6. ✓ All actions provide immediate feedback (loading states, confirmations)
@@ -172,7 +181,8 @@ All wiring verified - no orphaned files, all connections functional.
 - Delete actions have confirmation dialogs
 
 **User verification:**
-User manually tested and confirmed all functionality working including GitHub OAuth, task CRUD, dashboard integration, and optimistic UI updates.
+User manually tested and confirmed all functionality working including GitHub
+OAuth, task CRUD, dashboard integration, and optimistic UI updates.
 
 **Ready to proceed** to Phase 4 (Task Organization & Discovery).
 

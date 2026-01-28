@@ -28,14 +28,31 @@ text
 ```text                 +------------------+
 
 ```text
-         |   CDN (Cloudflare)|
 
-     +--------+---------+
+```text
 
-              |
+```text
 
-              v
-```
+ |   CDN (Cloudflare)|
+
+```text
+ +--------+---------+
+
+```text
+
+```text
+ 
+```text |
+
+```text
+ 
+```text v
+
+```text
+
+```text
+
+```markdown
 
 ```text
 
@@ -44,6 +61,7 @@ text
 text
 
 ```text
+
 text
 +------------------------------------------------------------------+
 
@@ -61,6 +79,7 @@ text
 text
 
 ```text
+
 text
 
 ```text
@@ -76,13 +95,15 @@ text
 ```text
 
 ```text
-text
-
-```text
 
 text
 
 ```text
+
+text
+
+```text
+
 text
 +------------------------------------------------------------------+
 
@@ -97,6 +118,7 @@ text
 text
 
 ```text
+
 text
 
 ```text
@@ -112,13 +134,15 @@ text
   v                           v                           v
 
 ```text
-text
-
-```text
 
 text
 
 ```text
+
+text
+
+```text
+
 text
 +------------------+          +------------------+          +------------------+
 
@@ -136,6 +160,7 @@ text
 text
 
 ```text
+
 text
 
 ```text
@@ -147,13 +172,15 @@ text
   v                           v                           v
 
 ```text
-text
-
-```text
 
 text
 
 ```text
+
+text
+
+```text
+
 text
 +------------------------------------------------------------------+
 
@@ -175,6 +202,7 @@ text
 text
 
 ```text
+
 text
 
 ```text
@@ -186,13 +214,15 @@ text
   v                           v                           v
 
 ```text
-text
-
-```text
 
 text
 
 ```text
+
+text
+
+```text
+
 markdown
 
 +------------------------------------------------------------------+
@@ -220,6 +250,7 @@ text
 ### Core Tables
 
 ```text
+
 sql
 
 -- Users & Authentication
@@ -245,6 +276,7 @@ created_at TIMESTAMP DEFAULT NOW(),
 updated_at TIMESTAMP DEFAULT NOW()
 
 ```text
+
 text
 );
 
@@ -270,6 +302,7 @@ created_at TIMESTAMP DEFAULT NOW(),
 updated_at TIMESTAMP DEFAULT NOW()
 
 ```text
+
 text
 );
 
@@ -325,6 +358,7 @@ created_at TIMESTAMP DEFAULT NOW(),
 updated_at TIMESTAMP DEFAULT NOW()
 
 ```text
+
 text
 );
 
@@ -344,6 +378,7 @@ package_size_bytes BIGINT,
 created_at TIMESTAMP DEFAULT NOW()
 
 ```text
+
 text
 );
 
@@ -387,6 +422,7 @@ created_at TIMESTAMP DEFAULT NOW(),
 updated_at TIMESTAMP DEFAULT NOW()
 
 ```text
+
 text
 );
 
@@ -420,6 +456,7 @@ processed_at TIMESTAMP,
 created_at TIMESTAMP DEFAULT NOW()
 
 ```text
+
 text
 );
 
@@ -451,6 +488,7 @@ created_at TIMESTAMP DEFAULT NOW(),
 updated_at TIMESTAMP DEFAULT NOW()
 
 ```text
+
 text
 );
 
@@ -485,6 +523,7 @@ created_at TIMESTAMP DEFAULT NOW(),
 updated_at TIMESTAMP DEFAULT NOW()
 
 ```text
+
 text
 );
 
@@ -514,6 +553,7 @@ created_at TIMESTAMP DEFAULT NOW(),
 updated_at TIMESTAMP DEFAULT NOW()
 
 ```text
+
 markdown
 
 );
@@ -537,6 +577,7 @@ text
 ### Row-Level Security (Supabase)
 
 ```text
+
 sql
 
 -- Users can only see their own data
@@ -551,6 +592,7 @@ text
 FOR SELECT USING (auth.uid() = clerk_id);
 
 ```text
+
 text
 CREATE POLICY "Users can update own profile" ON users
 
@@ -561,6 +603,7 @@ text
 FOR UPDATE USING (auth.uid() = clerk_id);
 
 ```text
+
 text
 -- Products are public to view, but only seller can edit
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
@@ -574,6 +617,7 @@ text
 FOR SELECT USING (status = 'active');
 
 ```text
+
 text
 CREATE POLICY "Sellers can manage own products" ON products
 
@@ -584,6 +628,7 @@ text
 FOR ALL USING (seller_id = auth.uid());
 
 ```text
+
 text
 -- Orders visible to buyer and seller
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
@@ -597,6 +642,7 @@ text
 FOR SELECT USING (buyer_id = auth.uid());
 
 ```text
+
 text
 CREATE POLICY "Order visible to seller" ON orders
 
@@ -607,6 +653,7 @@ text
 FOR SELECT USING (seller_id = auth.uid());
 
 ```text
+
 markdown
 
 ```text
@@ -622,6 +669,7 @@ text
 All authenticated endpoints require:
 
 ```text
+
 text
 
 Authorization: Bearer <clerk_session_token>
@@ -633,6 +681,7 @@ text
 ### Marketplace API Endpoints
 
 ```text
+
 yaml
 
 # Products
@@ -689,6 +738,7 @@ text
 ### Brain API Endpoints
 
 ```text
+
 yaml
 
 # Knowledge
@@ -712,6 +762,7 @@ text
 **GET /api/products/:slug**
 
 ```text
+
 json
 {
   "id": "uuid",
@@ -731,6 +782,7 @@ yaml
 "<https://r2.mywork.ai/products/uuid/preview-1.png">
 
 ```text
+
 text
 
   ],
@@ -750,6 +802,7 @@ yaml
 "total_sales": 142
 
 ```text
+
 text
 
   },
@@ -765,6 +818,7 @@ yaml
 "rating_count": 32
 
 ```text
+
 text
 
   },
@@ -779,6 +833,7 @@ text
 **POST /api/orders**
 
 ```text
+
 json
 // Request
 {
@@ -806,6 +861,7 @@ text
 ### Stripe Connect Flow
 
 ```text
+
 text
 
 1. SELLER ONBOARDING
@@ -831,6 +887,7 @@ text
 text
 
 ```text
+
 text
 
    |
@@ -842,6 +899,7 @@ text
 text
 
 ```text
+
 text
 
    +----------------+     +----------------+     +----------------+
@@ -868,6 +926,7 @@ text
 ### Stripe Integration Code
 
 ```text
+
 python
 
 # services/stripe_service.py
@@ -887,6 +946,7 @@ javascript
 async def create_connect_account(user_id: str, email: str) -> str:
 
 ```text
+
 text
 
 """Create Stripe Connect Express account for seller."""
@@ -900,6 +960,7 @@ email=email,
 capabilities={
 
 ```text"card_payments": {"requested": True},
+
 "transfers": {"requested": True},
 
 ```text},
@@ -907,6 +968,7 @@ capabilities={
 metadata={"user_id": user_id}
 
 ```text
+
 text
 )
 return account.id
@@ -919,6 +981,7 @@ text
 async def create_onboarding_link(account_id: str) -> str:
 
 ```text
+
 text
 
 """Generate Stripe Connect onboarding URL."""
@@ -933,6 +996,7 @@ return_url=f"{settings.APP_URL}/seller/onboarding/complete",
 type="account_onboarding",
 
 ```text
+
 text
 )
 return link.url
@@ -945,6 +1009,7 @@ text
 async def create_payment_intent(
 
 ```text
+
 text
 
 amount: int,  # cents
@@ -959,6 +1024,7 @@ text
 ) -> stripe.PaymentIntent:
 
 ```text
+
 text
 
 """Create payment with automatic split to seller."""
@@ -975,6 +1041,7 @@ transfer_data={"destination": seller_connect_id},
 metadata=metadata
 
 ```text
+
 text
 )
 
@@ -986,6 +1053,7 @@ text
 async def process_payout(seller_id: str, amount: int) -> stripe.Transfer:
 
 ```text
+
 text
 
 """Transfer funds to seller's connected account."""
@@ -1005,6 +1073,7 @@ destination=seller.stripe_connect_id,
 metadata={"seller_id": seller_id}
 
 ```text
+
 text
 )
 
@@ -1013,6 +1082,7 @@ text
 text
 
 ```text
+
 text
 
 ```text
@@ -1022,6 +1092,7 @@ text
 ### Webhook Handler
 
 ```text
+
 python
 
 # api/webhooks/stripe.py
@@ -1044,6 +1115,7 @@ sig_header = request.headers.get("stripe-signature")
 try:
 
 ```text
+
 text
 
 event = stripe.Webhook.construct_event(
@@ -1054,6 +1126,7 @@ text
 payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
 
 ```text
+
 text
 )
 
@@ -1064,6 +1137,7 @@ text
 except ValueError:
 
 ```text
+
 text
 
 raise HTTPException(400, "Invalid payload")
@@ -1075,6 +1149,7 @@ text
 except stripe.error.SignatureVerificationError:
 
 ```text
+
 text
 
 raise HTTPException(400, "Invalid signature")
@@ -1088,6 +1163,7 @@ text
 if event.type == "payment_intent.succeeded":
 
 ```text
+
 text
 
 await handle_payment_success(event.data.object)
@@ -1099,6 +1175,7 @@ text
 elif event.type == "payment_intent.payment_failed":
 
 ```text
+
 text
 
 await handle_payment_failed(event.data.object)
@@ -1110,6 +1187,7 @@ text
 elif event.type == "account.updated":
 
 ```text
+
 text
 
 await handle_account_updated(event.data.object)
@@ -1121,6 +1199,7 @@ text
 elif event.type == "payout.paid":
 
 ```text
+
 text
 
 await handle_payout_completed(event.data.object)
@@ -1133,6 +1212,7 @@ return {"status": "success"}
 
 
 ```text
+
 text
 
 async def handle_payment_success(payment_intent):
@@ -1149,6 +1229,7 @@ order_id = payment_intent.metadata.get("order_id")
 order = await update_order(
 
 ```text
+
 text
 
 order_id,
@@ -1181,6 +1262,7 @@ await send_purchase_confirmation(order)
 await send_sale_notification(order)
 
 ```text
+
 text
 
 ```text
@@ -1194,6 +1276,7 @@ text
 ### Embedding & Search Flow
 
 ```text
+
 yaml
 KNOWLEDGE INGESTION
 +------------------------------------------------------------------+
@@ -1253,6 +1336,7 @@ text
 ### Brain Service Implementation
 
 ```text
+
 python
 
 # services/brain_service.py
@@ -1276,6 +1360,7 @@ text
 async def learn(entry: BrainEntry, user_id: str) -> BrainEntry:
 
 ```text
+
 text
 """Add knowledge to the brain."""
 
@@ -1297,6 +1382,7 @@ text
 "metadata": {
 
 ```text"type": entry.type,
+
 "title": entry.title,
 "tags": entry.tags,
 "contributor_id": user_id
@@ -1304,6 +1390,7 @@ text
 ```text}
 
 ```text
+
 text
 }])
 
@@ -1323,6 +1410,7 @@ text
 async def query(question: str, user_id: str) -> BrainResponse:
 
 ```text
+
 text
 """Query the brain for answers."""
 
@@ -1342,6 +1430,7 @@ top_k=10,
 include_metadata=True
 
 ```text
+
 text
 )
 
@@ -1361,6 +1450,7 @@ f"[{e.type}] {e.title}:\n{e.content}"
 for e in entries
 
 ```text
+
 text
 ])
 
@@ -1374,32 +1464,37 @@ max_tokens=1024,
 messages=[{
 
 ```text"role": "user",
+
 "content": f"""Based on the following knowledge base entries, answer
 the question.
 
 ```text
 
 ```text
-text
-
-```text
 
 text
 
 ```text
+
+text
+
+```text
+
 yaml
 KNOWLEDGE BASE:
 {context}
 
 QUESTION: {question}
 
-Provide a helpful, practical answer. Reference specific entries when relevant."""
+Provide a helpful, practical answer. Reference specific entries when
+relevant."""
 
 ```text
 
 text
 
 ```text
+
 text
 
 ```text
@@ -1408,6 +1503,7 @@ text
 }]
 
 ```text
+
 text
 )
 
@@ -1421,6 +1517,7 @@ text
 await db.brain_entries.increment_usage(entry.id)
 
 ```text
+
 text
 return BrainResponse(
 
@@ -1431,12 +1528,14 @@ answer=response.content[0].text,
 sources=[{
 
 ```text"id": e.id,
+
 "title": e.title,
 "type": e.type
 
 ```text} for e in entries[:5]]
 
 ```text
+
 text
 )
 
@@ -1448,6 +1547,7 @@ text
 async def suggest(context: str, user_id: str) -> List[Suggestion]:
 
 ```text
+
 text
 """Get contextual suggestions based on current work."""
 
@@ -1468,6 +1568,7 @@ filter={"type": {"$in": ["pattern", "tip"]}},
 include_metadata=True
 
 ```text
+
 text
 )
 
@@ -1482,6 +1583,7 @@ text
 if r.score > 0.7:  # Only high-relevance suggestions
 
 ```textentry = await db.brain_entries.fetch(r.id.replace("brain_", ""))
+
 suggestions.append(Suggestion(
 
 ```text
@@ -1489,6 +1591,7 @@ suggestions.append(Suggestion(
 title=entry.title,
 
 ```text
+
 content=entry.content[:200] + "...",
 
 ```text
@@ -1496,12 +1599,14 @@ content=entry.content[:200] + "...",
 relevance=r.score,
 
 ```text
+
 type=entry.type
 ))
 
 ```text
 
 ```text
+
 text
 return suggestions
 
@@ -1511,6 +1616,7 @@ return suggestions
 text
 
 ```text
+
 javascript
 async def generate_embedding(text: str) -> List[float]:
 
@@ -1527,6 +1633,7 @@ text
 response = anthropic.messages.create(
 
 ```text
+
 text
 model="claude-sonnet-4-20250514",
 max_tokens=1,
@@ -1539,6 +1646,7 @@ text
 "content": f"Generate a semantic embedding for: {text[:1000]}"
 
 ```text
+
 text
 }]
 
@@ -1555,6 +1663,7 @@ text
 return [0.0] * 1536  # Placeholder
 
 ```text
+
 markdown
 
 ```text
@@ -1568,6 +1677,7 @@ text
 ### Vercel Configuration
 
 ```text
+
 json
 // vercel.json
 {
@@ -1584,6 +1694,7 @@ text
 }
 
 ```text
+
 yaml
   },
   "crons": [
@@ -1602,6 +1713,7 @@ text
 }
 
 ```text
+
 markdown
 
   ]
@@ -1614,6 +1726,7 @@ text
 ### Railway Configuration
 
 ```text
+
 toml
 
 # railway.toml
@@ -1650,6 +1763,7 @@ text
 ### Docker Configuration
 
 ```text
+
 dockerfile
 
 # Dockerfile
@@ -1678,6 +1792,7 @@ text
 ### Environment Variables
 
 ```text
+
 bash
 
 # .env.production (example - never commit real values)
@@ -1709,7 +1824,7 @@ PINECONE_ENVIRONMENT=us-east-1
 R2_ACCESS_KEY_ID=xxx
 R2_SECRET_ACCESS_KEY=xxx
 R2_BUCKET=mywork-files
-R2_ENDPOINT=https://xxx.r2.cloudflarestorage.com
+R2_ENDPOINT=<https://xxx.r2.cloudflarestorage.com>
 
 # Email
 
@@ -1730,6 +1845,7 @@ text
 ### Input Validation
 
 ```text
+
 python
 
 # schemas/product.py
@@ -1754,6 +1870,7 @@ tech_stack: List[str] = Field(..., max_items=10)
 def sanitize_title(cls, v):
 
 ```text
+
 text
 
 # Remove potentially dangerous characters
@@ -1768,6 +1885,7 @@ text
 def validate_category(cls, v):
 
 ```text
+
 text
 allowed = ['saas-starters', 'api-services', 'automation',
 
@@ -1780,6 +1898,7 @@ text
 ```text
 
 ```text
+
 text
 if v not in allowed:
 
@@ -1789,6 +1908,7 @@ text
 raise ValueError(f'Category must be one of: {allowed}')
 
 ```text
+
 text
 return v
 
@@ -1797,6 +1917,7 @@ return v
 text
 
 ```text
+
 markdown
 
 ```text
@@ -1806,6 +1927,7 @@ text
 ### Rate Limiting
 
 ```text
+
 python
 
 # middleware/rate_limit.py
@@ -1832,6 +1954,7 @@ current = redis.get(key)
 if current is None:
 
 ```text
+
 text
 redis.setex(key, window, 1)
 
@@ -1842,6 +1965,7 @@ text
 elif int(current) >= limit:
 
 ```text
+
 text
 raise HTTPException(429, "Rate limit exceeded")
 
@@ -1852,6 +1976,7 @@ text
 else:
 
 ```text
+
 text
 redis.incr(key)
 
@@ -1860,6 +1985,7 @@ redis.incr(key)
 text
 
 ```text
+
 markdown
 
 ```text
@@ -1869,6 +1995,7 @@ text
 ### Code Scanning
 
 ```text
+
 python
 
 # services/security_service.py
@@ -1886,6 +2013,7 @@ text
 DANGEROUS_PATTERNS = [
 
 ```text
+
 text
 r'eval\s*\(',
 r'exec\s*\(',
@@ -1904,6 +2032,7 @@ text
 async def scan_package(package_path: str) -> ScanResult:
 
 ```text
+
 text
 """Scan uploaded package for security issues."""
 
@@ -1932,6 +2061,7 @@ for root, dirs, files in os.walk(tmpdir):
 if file.endswith(('.py', '.js', '.ts')):
 
 ```text```text
+
 filepath = os.path.join(root, file)
 
 ```text
@@ -1939,6 +2069,7 @@ filepath = os.path.join(root, file)
 file_issues = await scan_file(filepath)
 
 ```text
+
 issues.extend(file_issues)
 
 ```text
@@ -1952,6 +2083,7 @@ result = subprocess.run(
 capture_output=True
 
 ```text)
+
 if result.returncode != 0:
 
 ```textbandit_issues = json.loads(result.stdout)

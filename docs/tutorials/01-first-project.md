@@ -1,6 +1,7 @@
 # Tutorial 1: Your First Project
 
-**Goal:** Create a working task manager CLI in 15 minutes and learn MyWork fundamentals.
+**Goal:** Create a working task manager CLI in 15 minutes and learn MyWork
+fundamentals.
 
 **What you'll learn:**
 
@@ -30,7 +31,7 @@ python task_manager.py add "Learn MyWork framework"
 python task_manager.py list
 python task_manager.py complete 1
 
-```
+```markdown
 
 ---
 
@@ -49,7 +50,7 @@ ls projects/  # See existing projects
 ```bash
 mw new task-manager-cli cli
 
-```
+```markdown
 
 **What just happened?**
 
@@ -67,7 +68,7 @@ ls -la  # Explore the structure
 
 **You should see:**
 
-```
+```text
 .planning/          # GSD state management
 ├── PROJECT.md      # Vision and goals
 ├── STATE.md        # Current progress
@@ -86,7 +87,7 @@ project.yaml        # Project metadata
 ```bash
 mw gsd new-project
 
-```
+```yaml
 
 **Follow the interactive prompts:**
 
@@ -95,28 +96,28 @@ mw gsd new-project
 ```
 A simple CLI task manager for developers who want quick task tracking from the terminal.
 
-```
+```yaml
 
 **Target audience:**
 
 ```
 Developers and power users who prefer command-line tools.
 
-```
+```yaml
 
 **Key features:**
 
 ```
 Add tasks, list tasks, mark as complete, search by keyword, persistent storage.
 
-```
+```yaml
 
 **Success criteria:**
 
 ```
 Can manage a personal todo list entirely from the command line with intuitive commands.
 
-```
+```markdown
 
 ### **2.2 Review the generated roadmap**
 
@@ -128,12 +129,13 @@ cat .planning/ROADMAP.md
 **You should see something like:**
 
 ```markdown
+
 Phase 1: Foundation & Core Commands (3-5 features)
 Phase 2: Storage & Persistence (2-3 features)
 Phase 3: Search & Filtering (2-3 features)
 Phase 4: Polish & Documentation (2-3 features)
 
-```
+```yaml
 
 **Check your current status:**
 
@@ -151,7 +153,7 @@ mw gsd progress
 ```bash
 mw gsd plan-phase 1
 
-```
+```yaml
 
 **GSD will:**
 
@@ -170,7 +172,7 @@ mw gsd execute-phase 1
 
 **Watch the magic happen:**
 
-```
+```yaml
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  GSD ► EXECUTING WAVE 1
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -190,7 +192,7 @@ Wave 1 complete!
 ls src/  # See the generated code
 cat src/task_manager.py | head -20  # Preview the implementation
 
-```
+```markdown
 
 ---
 
@@ -214,7 +216,7 @@ python src/task_manager.py list
 
 **Expected output:**
 
-```
+```yaml
 📋 Your Tasks:
 
 1. [ ] Learn MyWork framework
@@ -229,7 +231,7 @@ python src/task_manager.py list
 python src/task_manager.py complete 1
 python src/task_manager.py list
 
-```
+```yaml
 
 **Expected output:**
 
@@ -240,7 +242,7 @@ python src/task_manager.py list
 2. [ ] Build my first CLI app
 3. [ ] Share my project with friends
 
-```
+```markdown
 
 ### **4.3 Test help and other features**
 
@@ -259,7 +261,7 @@ python src/task_manager.py stats  # If implemented
 ```bash
 mw gsd progress
 
-```
+```yaml
 
 **You should see:**
 
@@ -269,7 +271,7 @@ mw gsd progress
 ### **What you just experienced**
 
 | Traditional Development | MyWork Framework |
-|------------------------|------------------|
+| ------------------------ | ------------------ |
 | ⏱️ **2-3 hours** manual coding | ⚡ **6 minutes** guided execution |
 | 📝 Write requirements manually | 🧠 AI generates structured plan |
 | 🔨 Code from scratch | 🤖 Intelligent code generation |
@@ -320,7 +322,7 @@ Ready for a web app? → [**Tutorial 2: GSD Basics →**](02-gsd-basics.md)
 cd /Users/dansidanutz/Desktop/MyWork
 python tools/mw.py new task-manager-cli cli
 
-```
+```markdown
 
 ### **❌ "No planning structure found"**
 
@@ -345,7 +347,7 @@ mw gsd verify-work
 
 mw doctor
 
-```
+```markdown
 
 ### **❌ "Need more features"**
 
@@ -382,4 +384,5 @@ In just 15 minutes, you've:
 
 **Ready for Tutorial 2?** → [**Understanding GSD Workflow →**](02-gsd-basics.md)
 
-*💡 This tutorial introduced you to 20% of MyWork's capabilities. Tutorial 2 will show you how to handle more complex web applications and advanced GSD features.*
+*💡 This tutorial introduced you to 20% of MyWork's capabilities. Tutorial 2 will
+show you how to handle more complex web applications and advanced GSD features.*

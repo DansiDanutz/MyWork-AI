@@ -7,7 +7,7 @@
 ## Phase Overview
 
 | Phase | Name | Status | Progress |
-|-------|------|--------|----------|
+| ------- | ------ | -------- | ---------- |
 | 1 | Backend Core | ✅ Complete | 100% |
 | 2 | Scrapers Implementation | ✅ Complete | 100% |
 | 3 | YouTube Automation Service | ✅ Complete | 100% |
@@ -25,7 +25,8 @@
 **Deliverables:**
 
 - [x] FastAPI app structure
-- [x] SQLAlchemy models (YouTubeVideo, AINews, GitHubProject, YouTubeAutomation, ScraperLog)
+- [x] SQLAlchemy models (YouTubeVideo, AINews, GitHubProject, YouTubeAutomation,
+  ScraperLog)
 - [x] Database initialization
 - [x] CORS middleware
 - [x] APScheduler integration
@@ -133,7 +134,8 @@
 - `frontend/components/AppShell.tsx`
 - `frontend/lib/api.ts`
 
-**Note:** Build has SSG pre-render errors with lucide-react icons. Dev mode (`npm run dev`) works perfectly. Can deploy to Vercel which handles this better.
+**Note:** Build has SSG pre-render errors with lucide-react icons. Dev mode
+(`npm run dev`) works perfectly. Can deploy to Vercel which handles this better.
 
 ---
 
@@ -184,7 +186,7 @@
 ## Milestone Summary
 
 | Metric | Value |
-|--------|-------|
+| -------- | ------- |
 | Total Phases | 7 |
 | Completed | 7 |
 | Ready | 0 |

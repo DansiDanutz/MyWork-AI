@@ -2,7 +2,8 @@
 
 ## Objective
 
-Execute GSD tasks that involve visual workflow automation using n8n, tracking the workflow within the GSD phase structure.
+Execute GSD tasks that involve visual workflow automation using n8n, tracking
+the workflow within the GSD phase structure.
 
 ## When to Use
 
@@ -31,6 +32,7 @@ Execute GSD tasks that involve visual workflow automation using n8n, tracking th
 During `/gsd:plan-phase`, when a task requires automation:
 
 ```xml
+
 <task type="n8n">
   <name>Create Slack notification workflow</name>
   <trigger>Webhook from monitoring service</trigger>
@@ -38,7 +40,7 @@ During `/gsd:plan-phase`, when a task requires automation:
   <verify>POST to webhook triggers Slack message</verify>
 </task>
 
-```
+```markdown
 
 ### Step 2: Build n8n Workflow
 
@@ -49,7 +51,7 @@ Follow `workflows/create_n8n_workflow.md`:
    ```
    search_templates({searchMode: 'by_task', task: 'slack notification webhook'})
 
-   ```
+```markdown
 
 2. **Build or Adapt**
    - Use template if found
@@ -60,14 +62,14 @@ Follow `workflows/create_n8n_workflow.md`:
    ```
    validate_workflow(workflow)
 
-   ```
+```text
 
 4. **Deploy**
 
    ```
    n8n_create_workflow(workflow)
 
-   ```
+```markdown
 
 ### Step 3: Record in GSD
 
@@ -99,7 +101,7 @@ curl -X POST https://seme.app.n8n.cloud/webhook/monitoring-slack \
   -H "Content-Type: application/json" \
   -d '{"event": "test", "message": "GSD verification"}'
 
-```
+```markdown
 
 ### Step 5: Update GSD State
 
@@ -110,7 +112,7 @@ In `.planning/STATE.md`:
 ## Active n8n Workflows
 
 | Phase | Task | Workflow ID | Status |
-|-------|------|-------------|--------|
+| ------- | ------ | ------------- | -------- |
 | 3 | Slack notifications | wf-abc123 | Active |
 | 3 | Daily report | wf-def456 | Active |
 
@@ -120,7 +122,7 @@ In `.planning/STATE.md`:
 
 When phase complete:
 
-```
+```yaml
 /gsd:verify-work N
 
 ```
@@ -133,7 +135,7 @@ Include n8n workflow verification in UAT checklist.
 
 Send GSD phase progress to external channels:
 
-```
+```text
 GSD Execute → Webhook → n8n → Slack/Email/Telegram
 
 ```
@@ -142,7 +144,7 @@ GSD Execute → Webhook → n8n → Slack/Email/Telegram
 
 External events trigger GSD-tracked workflows:
 
-```
+```text
 External Service → n8n Webhook → Transform → Action
 (Tracked in GSD STATE.md)
 
@@ -152,7 +154,7 @@ External Service → n8n Webhook → Transform → Action
 
 Cron-triggered data aggregation:
 
-```
+```text
 Schedule Trigger → Fetch Data → Transform → Report
 (Tracked as GSD recurring task)
 

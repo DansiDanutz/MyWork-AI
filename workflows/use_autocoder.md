@@ -2,7 +2,8 @@
 
 ## Objective
 
-Build complete applications using the Autocoder autonomous coding agent for multi-session development.
+Build complete applications using the Autocoder autonomous coding agent for
+multi-session development.
 
 ## When to Use This Workflow
 
@@ -39,7 +40,7 @@ Build complete applications using the Autocoder autonomous coding agent for mult
 2. Create new project in UI
 3. **IMPORTANT:** Set project path to MyWork projects folder:
 
-   ```
+```text
    /Users/dansidanutz/Desktop/MyWork/projects/{project-name}
 
    ```
@@ -71,7 +72,8 @@ Build complete applications using the Autocoder autonomous coding agent for mult
 
 When Autocoder completes:
 
-1. Review generated code in `/Users/dansidanutz/Desktop/MyWork/projects/{project-name}/`
+1. Review generated code in
+`/Users/dansidanutz/Desktop/MyWork/projects/{project-name}/`
 2. Run the application: `./init.sh` or `npm install && npm run dev`
 3. Test functionality
 4. Hand back to user with summary
@@ -79,7 +81,7 @@ When Autocoder completes:
 ## LLM Provider Options
 
 | Provider | Config | Best For |
-|----------|--------|----------|
+| ---------- | -------- | ---------- |
 | Z.ai (Default) | Active in .env | Long sessions, cost savings |
 | Claude Native | Comment out ANTHROPIC_* vars | Highest quality |
 
@@ -98,7 +100,7 @@ To switch providers, edit `/Users/dansidanutz/Desktop/GamesAI/autocoder/.env`
 ```bash
 python autonomous_agent_demo.py --project-dir {name} --yolo
 
-```
+```markdown
 
 - Skip browser testing
 - Faster iteration
@@ -117,14 +119,16 @@ python autonomous_agent_demo.py --project-dir {name} --parallel --max-concurrenc
 
 ## Expected Outputs
 
-- Complete application source code in `/Users/dansidanutz/Desktop/MyWork/projects/{project-name}/`
+- Complete application source code in
+  `/Users/dansidanutz/Desktop/MyWork/projects/{project-name}/`
 - SQLite database with feature tracking (`features.db`)
 - Git repository with commits
 - Running application (after init.sh)
 
 ## Path Configuration
 
-- **Autocoder Tool:** `/Users/dansidanutz/Desktop/GamesAI/autocoder` (do not move)
+- **Autocoder Tool:** `/Users/dansidanutz/Desktop/GamesAI/autocoder` (do not
+  move)
 - **Your Projects:** `/Users/dansidanutz/Desktop/MyWork/projects/`
 - **Environment Variable:** `MYWORK_PROJECTS_PATH` in `.env`
 

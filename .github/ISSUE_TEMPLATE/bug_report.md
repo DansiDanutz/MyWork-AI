@@ -33,7 +33,7 @@ What actually happened.
 
 ## Error Output
 
-```
+```text
 Paste any error messages here
 
 ```

@@ -2,11 +2,16 @@
 
 ## What This Is
 
-A simple task management application that serves as a proof-of-concept for the MyWork framework's ability to produce production-ready applications. Users can create, manage, and organize tasks with file attachments, while the system captures reusable patterns for the collective brain.
+A simple task management application that serves as a proof-of-concept for the
+MyWork framework's ability to produce production-ready applications. Users can
+create, manage, and organize tasks with file attachments, while the system
+captures reusable patterns for the collective brain.
 
 ## Core Value
 
-**Validate that the MyWork framework can deliver production-quality applications with reusable modules that accelerate future development.** Every feature built must prove genuine user value and technical reusability for the brain.
+**Validate that the MyWork framework can deliver production-quality applications
+with reusable modules that accelerate future development.** Every feature built
+must prove genuine user value and technical reusability for the brain.
 
 ## Requirements
 
@@ -38,11 +43,15 @@ A simple task management application that serves as a proof-of-concept for the M
 This project exists to validate the MyWork framework's capability to:
 
 1. **Generate production-ready code** that users actually want to use
-2. **Capture reusable patterns** for authentication, CRUD operations, file handling, and UI components
-3. **Demonstrate the brain learning system** by tracking which patterns survive in real usage
+2. **Capture reusable patterns** for authentication, CRUD operations, file
+handling, and UI components
+3. **Demonstrate the brain learning system** by tracking which patterns survive
+in real usage
 4. **Prove the value proposition** for the future marketplace platform
 
-The task tracker serves as the seed data for the brain - every working pattern becomes an asset for future users. GitHub integration will track long-term pattern success.
+The task tracker serves as the seed data for the brain - every working pattern
+becomes an asset for future users. GitHub integration will track long-term
+pattern success.
 
 ## Constraints
 
@@ -56,11 +65,11 @@ The task tracker serves as the seed data for the brain - every working pattern b
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
-|----------|-----------|---------|
-| Focus on individual tasks vs team features | Need to validate core patterns before complexity | — Pending |
-| Include file uploads | Common pattern needed by many future projects | — Pending |
-| Mandatory GitHub linking | Essential for tracking which patterns actually work | — Pending |
-| Deploy for real usage | Brain learns from actual user behavior, not just code completion | — Pending |
+| ---------- | ----------- | --------- |
+  | Focus on individua... | Need to validate c... | — Pending |  
+  | Include file uploads | Common pattern nee... | — Pending |  
+  | Mandatory GitHub l... | Essential for trac... | — Pending |  
+  | Deploy for real usage | Brain learns from ... | — Pending |  
 
 ---
 *Last updated: 2026-01-24 after initialization*

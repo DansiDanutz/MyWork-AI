@@ -10,7 +10,10 @@ requires:
 
   - phase: 01-02
 
-    provides: Environment validation with Zod schema
+```
+provides: Environment validation with Zod schema
+
+```
 provides:
 
   - Next.js production builds work without NODE_ENV conflicts
@@ -25,17 +28,21 @@ tech-stack:
   added: []
   patterns:
 
-    - "Next.js manages NODE_ENV automatically - never set in .env"
-    - "Use process.env.NODE_ENV directly for runtime environment checks"
+```
+- "Next.js manages NODE_ENV automatically - never set in .env"
+- "Use process.env.NODE_ENV directly for runtime environment checks"
 
+```
 key-files:
   created: []
   modified:
 
-    - .env.example
-    - src/shared/lib/env.ts
-    - src/app/api/health/route.ts
+```
+- .env.example
+- src/shared/lib/env.ts
+- src/app/api/health/route.ts
 
+```
 key-decisions:
 
   - "Remove NODE_ENV from environment files - Next.js manages it automatically"
@@ -43,8 +50,12 @@ key-decisions:
 
 patterns-established:
 
-  - "Environment variables: User-controlled only in Zod schema, framework-managed accessed directly"
+  - "Environment variables: User-controlled only in Zod schema, framework-managed
 
+```
+accessed directly"
+
+```
 # Metrics
 
 duration: 3min
@@ -53,7 +64,8 @@ completed: 2026-01-24
 
 # Phase 1 Plan 3: Environment Configuration Fix Summary
 
-**Next.js production builds work cleanly without NODE_ENV conflicts, environment validation simplified to user-controlled variables only**
+**Next.js production builds work cleanly without NODE_ENV conflicts, environment
+validation simplified to user-controlled variables only**
 
 ## Performance
 
@@ -80,21 +92,27 @@ Each task was committed atomically:
 
 ## Files Created/Modified
 
-- `.env.example` - Removed NODE_ENV, added documentation explaining Next.js manages it
-- `src/shared/lib/env.ts` - Removed NODE_ENV from Zod schema, added isDev/isProd exports
-- `src/app/api/health/route.ts` - Use process.env.NODE_ENV directly for environment reporting
+- `.env.example` - Removed NODE_ENV, added documentation explaining Next.js
+  manages it
+- `src/shared/lib/env.ts` - Removed NODE_ENV from Zod schema, added isDev/isProd
+  exports
+- `src/app/api/health/route.ts` - Use process.env.NODE_ENV directly for
+  environment reporting
 
 ## Decisions Made
 
 **Remove NODE_ENV from environment configuration:**
 
-- Next.js automatically sets NODE_ENV based on the command (`dev` = development, `build`/`start` = production)
-- Having NODE_ENV in .env causes conflicts during builds ("non-standard NODE_ENV value")
+- Next.js automatically sets NODE_ENV based on the command (`dev` = development,
+  `build`/`start` = production)
+- Having NODE_ENV in .env causes conflicts during builds ("non-standard NODE_ENV
+  value")
 - User should never need to manually set NODE_ENV
 
 **Simplify environment validation:**
 
-- Zod schema validates only user-controlled variables (DATABASE_URL, NEXT_PUBLIC_APP_URL)
+- Zod schema validates only user-controlled variables (DATABASE_URL,
+  NEXT_PUBLIC_APP_URL)
 - Framework-managed variables (NODE_ENV) accessed directly via process.env
 - Provides isDev/isProd helpers for convenience
 
@@ -110,7 +128,8 @@ None - plan executed exactly as written.
 - Impact: `npm run build` still shows warning if shell has NODE_ENV set
 - Resolution: Not a code issue - shell environment persists between sessions
 - Documentation: Added comment in .env.example explaining NODE_ENV management
-- User action: If build shows NODE_ENV warning, check `echo $NODE_ENV` and unset if needed
+- User action: If build shows NODE_ENV warning, check `echo $NODE_ENV` and unset
+  if needed
 
 ## User Setup Required
 
@@ -124,7 +143,10 @@ None - no external service configuration required.
 - Ready to proceed with application features
 
 **Note on shell environment:**
-If production builds show "non-standard NODE_ENV" warning, the shell session may have NODE_ENV set. This is not a code issue - the .env files are correct. Check with `echo $NODE_ENV` and unset if needed. Fresh terminal sessions won't have this issue.
+If production builds show "non-standard NODE_ENV" warning, the shell session may
+have NODE_ENV set. This is not a code issue - the .env files are correct. Check
+with `echo $NODE_ENV` and unset if needed. Fresh terminal sessions won't have
+this issue.
 
 ---
 *Phase: 01-foundation-setup*

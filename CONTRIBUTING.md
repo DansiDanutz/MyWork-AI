@@ -1,10 +1,12 @@
 # Contributing to MyWork Framework
 
-Thank you for your interest in contributing to MyWork! This document provides guidelines for contributing to the project.
+Thank you for your interest in contributing to MyWork! This document provides
+guidelines for contributing to the project.
 
 ## Code of Conduct
 
-Be respectful and constructive. We're all here to build something great together.
+Be respectful and constructive. We're all here to build something great
+together.
 
 ## Getting Started
 
@@ -24,7 +26,7 @@ Be respectful and constructive. We're all here to build something great together
    git clone https://github.com/YOUR_USERNAME/MyWork-AI.git
    cd MyWork-AI
 
-   ```
+```yaml
 
 3. Set up environment:
 
@@ -41,7 +43,7 @@ Be respectful and constructive. We're all here to build something great together
    pip install pre-commit
    pre-commit install
 
-   ```
+```yaml
 
 5. Verify setup:
 
@@ -81,7 +83,7 @@ Be respectful and constructive. We're all here to build something great together
 
 Follow conventional commits:
 
-```
+```yaml
 type(scope): description
 
 [optional body]
@@ -101,7 +103,7 @@ Types:
 
 Examples:
 
-```
+```bash
 feat(brain): add auto-discovery from git commits
 fix(mw): handle missing projects directory
 docs(readme): update installation instructions
@@ -118,7 +120,7 @@ docs(readme): update installation instructions
    python tools/mw.py doctor
    python tools/mw.py status
 
-   ```
+```markdown
 
 4. Update documentation if needed
 5. Submit PR using the template
@@ -135,17 +137,21 @@ docs(readme): update installation instructions
 
 ```python
 def search_modules(query: str, limit: int = 10) -> List[Module]:
-    """
-    Search the module registry.
 
-    Args:
-        query: Search term
-        limit: Maximum results to return
+```
+"""
+Search the module registry.
 
-    Returns:
-        List of matching modules
-    """
-    pass
+Args:
+    query: Search term
+    limit: Maximum results to return
+
+Returns:
+    List of matching modules
+"""
+pass
+
+```
 
 ```
 
@@ -157,7 +163,7 @@ def search_modules(query: str, limit: int = 10) -> List[Module]:
 
 ## Project Structure
 
-```
+```text
 MyWork/
 +-- tools/           # CLI tools (Python)
 +-- workflows/       # WAT workflows (Markdown)
@@ -174,17 +180,24 @@ MyWork/
    ```bash
    cp tools/_template.py tools/my_tool.py
 
-   ```
+```yaml
 
 2. Implement required functions:
 
    ```python
    def main():
-       """Main entry point."""
-       pass
 
+```
+   """Main entry point."""
+   pass
+
+```
    if __name__ == "__main__":
-       main()
+
+```
+   main()
+
+```
 
    ```
 
@@ -199,7 +212,7 @@ MyWork/
    ```bash
    cp workflows/_template.md workflows/my_workflow.md
 
-   ```
+```yaml
 
 2. Fill in sections:
    - Objective

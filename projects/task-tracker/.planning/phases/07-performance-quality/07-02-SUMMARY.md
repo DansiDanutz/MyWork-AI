@@ -12,35 +12,48 @@ tech-stack:
 key-files:
   created:
 
-    - src/shared/components/LazyFileDropzone.tsx
-    - src/shared/components/LazyFileList.tsx
+```
+- src/shared/components/LazyFileDropzone.tsx
+- src/shared/components/LazyFileList.tsx
 
+```
   modified:
 
-    - src/shared/components/FileDropzone.tsx
-    - src/shared/components/TaskEditFormWithTags.tsx
-    - src/shared/components/index.ts
-    - next.config.ts
+```
+- src/shared/components/FileDropzone.tsx
+- src/shared/components/TaskEditFormWithTags.tsx
+- src/shared/components/index.ts
+- next.config.ts
 
+```
 decisions:
 
   - id: LAZY-001
 
-    date: 2026-01-26
-    decision: Use next/dynamic with ssr: false for file components
-    rationale: File components use browser APIs (FileReader, drag-drop) and heavy libraries (tus-js-client, react-dropzone, file-type)
+```
+date: 2026-01-26
+decision: Use next/dynamic with ssr: false for file components
+rationale: File components use browser APIs (FileReader, drag-drop) and
+heavy libraries (tus-js-client, react-dropzone, file-type)
 
+```
   - id: LAZY-002
 
-    date: 2026-01-26
-    decision: Show skeleton loading fallbacks during component load
-    rationale: Visual feedback improves perceived performance and prevents layout shift
+```
+date: 2026-01-26
+decision: Show skeleton loading fallbacks during component load
+rationale: Visual feedback improves perceived performance and prevents
+layout shift
 
+```
   - id: BUNDLE-001
 
-    date: 2026-01-26
-    decision: Use optimizePackageImports for @heroicons/react
-    rationale: Tree-shake unused icons to reduce bundle size
+```
+date: 2026-01-26
+decision: Use optimizePackageImports for @heroicons/react
+rationale: Tree-shake unused icons to reduce bundle size
+
+```
 metrics:
   duration: 5 minutes
   completed: 2026-01-26
@@ -48,15 +61,19 @@ metrics:
 
 # Phase 7 Plan 02: Lazy Loading Heavy Components Summary
 
-**One-liner:** Code-split file upload/display components using next/dynamic with loading fallbacks, reducing initial bundle by deferring tus-js-client, react-dropzone, and file-type
+**One-liner:** Code-split file upload/display components using next/dynamic with
+loading fallbacks, reducing initial bundle by deferring tus-js-client,
+react-dropzone, and file-type
 
 ## What Was Built
 
-Implemented lazy loading for heavy file-related components using Next.js dynamic imports:
+Implemented lazy loading for heavy file-related components using Next.js dynamic
+imports:
 
 **Lazy Wrappers:**
 
-- `LazyFileDropzone` - Wraps FileDropzone with loading fallback (skeleton upload area)
+- `LazyFileDropzone` - Wraps FileDropzone with loading fallback (skeleton upload
+  area)
 - `LazyFileList` - Wraps FileList with loading fallback (skeleton file items)
 - Both use `ssr: false` since they rely on browser-only APIs
 
@@ -75,7 +92,9 @@ Implemented lazy loading for heavy file-related components using Next.js dynamic
 
 ### LAZY-001: Use next/dynamic with ssr: false for file components
 
-**Context:** FileDropzone and FileList components include heavy libraries (tus-js-client 150KB, react-dropzone 50KB, file-type 30KB) and use browser APIs (FileReader, drag-drop events).
+**Context:** FileDropzone and FileList components include heavy libraries
+(tus-js-client 150KB, react-dropzone 50KB, file-type 30KB) and use browser APIs
+(FileReader, drag-drop events).
 
 **Decision:** Wrap components with next/dynamic and disable SSR.
 
@@ -90,7 +109,8 @@ Implemented lazy loading for heavy file-related components using Next.js dynamic
 
 - Rejected: Unnecessarily bloats initial bundle for all users
 
-**Impact:** Initial page load faster, slight delay when file section first appears
+**Impact:** Initial page load faster, slight delay when file section first
+appears
 
 ### LAZY-002: Show skeleton loading fallbacks during component load
 
@@ -130,7 +150,8 @@ Implemented lazy loading for heavy file-related components using Next.js dynamic
 **1. [Rule 1 - Bug] Fixed TypeScript error in TaskEditFormWithTags**
 
 - **Found during:** Task 1 TypeScript verification
-- **Issue:** FileAttachment type uses `storedFilename` but code referenced `filePath`
+- **Issue:** FileAttachment type uses `storedFilename` but code referenced
+  `filePath`
 - **Fix:** Updated handleFileUploadComplete to use correct field name
 - **Files modified:** src/shared/components/TaskEditFormWithTags.tsx
 - **Commit:** 2c46656
@@ -138,10 +159,13 @@ Implemented lazy loading for heavy file-related components using Next.js dynamic
 **2. [Rule 1 - Bug] Pre-existing build error (not fixed)**
 
 - **Found during:** Task 3 build verification
-- **Issue:** Production build fails with "Html should not be imported outside pages/_document"
-- **Analysis:** Pre-existing error (confirmed by testing before my changes), related to Next.js 15 error page generation
+- **Issue:** Production build fails with "Html should not be imported outside
+  pages/_document"
+- **Analysis:** Pre-existing error (confirmed by testing before my changes),
+  related to Next.js 15 error page generation
 - **Impact:** Affects production builds but not development server
-- **Decision:** Documented but not fixed (out of scope for lazy loading task, would require significant investigation)
+- **Decision:** Documented but not fixed (out of scope for lazy loading task,
+  would require significant investigation)
 - **Tracked in:** Commit message for 6a5284c
 
 ## Files Changed
@@ -149,18 +173,18 @@ Implemented lazy loading for heavy file-related components using Next.js dynamic
 ### Created
 
 | File | Purpose | Exports |
-|------|---------|---------|
-| `src/shared/components/LazyFileDropzone.tsx` | Lazy-loaded FileDropzone wrapper | LazyFileDropzone, FileDropzoneProps |
-| `src/shared/components/LazyFileList.tsx` | Lazy-loaded FileList wrapper | LazyFileList |
+| ------ | --------- | --------- |
+| `src/shared/compon... | Lazy-loaded FileDr... | LazyFileDropzone, ... |
+| `src/shared/compon... | Lazy-loaded FileLi... | LazyFileList |
 
 ### Modified
 
 | File | Changes | Reason |
-|------|---------|--------|
-| `src/shared/components/FileDropzone.tsx` | Export FileDropzoneProps interface | Enable type re-export from lazy wrapper |
-| `src/shared/components/TaskEditFormWithTags.tsx` | Use LazyFileDropzone/LazyFileList, fix storedFilename | Implement lazy loading, fix TypeScript error |
-| `src/shared/components/index.ts` | Export lazy components and types | Public API for component library |
-| `next.config.ts` | Add optimizePackageImports, serverExternalPackages | Bundle optimization |
+| ------ | --------- | -------- |
+| `src/shared/compon... | Export FileDropzon... | Enable type re-exp... |
+  | `src/shared/compon... | Use LazyFileDropzo... | Implement lazy loa... |  
+  | `src/shared/compon... | Export lazy compon... | Public API for com... |  
+  | `next.config.ts` | Add optimizePackag... | Bundle optimization |  
 
 ## Verification Results
 
@@ -199,7 +223,8 @@ Implemented lazy loading for heavy file-related components using Next.js dynamic
 **Potential blockers:**
 
 - ⚠️ Production build error (pre-existing, affects deployments)
-- Recommend investigating Next.js 15 error page issue before production deployment
+- Recommend investigating Next.js 15 error page issue before production
+  deployment
 
 **Recommendations:**
 
@@ -211,10 +236,10 @@ Implemented lazy loading for heavy file-related components using Next.js dynamic
 ## Commits
 
 | Commit | Message | Files |
-|--------|---------|-------|
-| 2c46656 | feat(07-02): create lazy-loaded file component wrappers | LazyFileDropzone.tsx, LazyFileList.tsx, FileDropzone.tsx, TaskEditFormWithTags.tsx |
-| e543c86 | feat(07-02): update TaskEditFormWithTags to use lazy components | TaskEditFormWithTags.tsx, index.ts |
-| 6a5284c | feat(07-02): add bundle optimization to Next.js config | next.config.ts |
+| -------- | --------- | ------- |
+| 2c46656 | feat(07-02): creat... | LazyFileDropzone.t... |
+| e543c86 | feat(07-02): updat... | TaskEditFormWithTa... |
+| 6a5284c | feat(07-02): add b... | next.config.ts |
 
 **Total commits:** 3
 **Duration:** 5 minutes
@@ -223,14 +248,18 @@ Implemented lazy loading for heavy file-related components using Next.js dynamic
 
 ### What Worked Well
 
-1. **next/dynamic pattern** - Simple wrapper approach keeps original components unchanged
+1. **next/dynamic pattern** - Simple wrapper approach keeps original components
+unchanged
 2. **Loading fallbacks** - Skeleton UI provides good perceived performance
-3. **Bundle optimization config** - Zero-code-change optimizations via Next.js config
+3. **Bundle optimization config** - Zero-code-change optimizations via Next.js
+config
 
 ### What Could Be Improved
 
-1. **Bundle size measurement** - Should have measured actual bundle reduction with webpack-bundle-analyzer
-2. **Production build testing** - Pre-existing build error should have been flagged earlier in phase
+1. **Bundle size measurement** - Should have measured actual bundle reduction
+with webpack-bundle-analyzer
+2. **Production build testing** - Pre-existing build error should have been
+flagged earlier in phase
 3. **Lazy loading metrics** - Could track component load times and user impact
 
 ### Reusable Patterns
@@ -238,15 +267,20 @@ Implemented lazy loading for heavy file-related components using Next.js dynamic
 1. **Lazy Component Wrapper Pattern:**
 
    ```tsx
+
    const LazyComponent = dynamic(
-     () => import('./Component').then((mod) => mod.Component),
-     {
-       loading: () => <SkeletonUI />,
-       ssr: false, // if uses browser APIs
-     }
+
+```
+ () => import('./Component').then((mod) => mod.Component),
+ {
+   loading: () => <SkeletonUI />,
+   ssr: false, // if uses browser APIs
+ }
+
+```
    )
 
-   ```
+```yaml
 
 2. **Skeleton Fallback Pattern:**
    - Match original component layout
@@ -256,8 +290,13 @@ Implemented lazy loading for heavy file-related components using Next.js dynamic
 3. **Next.js Bundle Optimization:**
 
    ```ts
+
    experimental: {
-     optimizePackageImports: ['@heroicons/react'],
+
+```
+ optimizePackageImports: ['@heroicons/react'],
+
+```
    },
    serverExternalPackages: ['sharp'], // server-only packages
 
@@ -280,4 +319,5 @@ Implemented lazy loading for heavy file-related components using Next.js dynamic
 - next/dynamic with ssr: false prevents browser API issues
 - optimizePackageImports can tree-shake icon libraries effectively
 - Loading fallbacks should match component dimensions to prevent layout shift
-- Pre-existing build errors can be difficult to isolate during new feature development
+- Pre-existing build errors can be difficult to isolate during new feature
+  development

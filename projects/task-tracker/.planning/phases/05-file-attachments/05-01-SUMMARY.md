@@ -7,40 +7,59 @@ requires: [04-05]
 provides: [file-attachment-schema, file-validation-utilities]
 affects: [05-02, 05-03, 05-04, 05-05, 05-06]
 tech-stack:
-  added: [react-dropzone, file-type, sharp, tus-js-client, @tus/server, @tus/file-store]
-  patterns: [content-based-mime-validation, magic-byte-detection, file-size-validation]
+  added: [react-dropzone, file-type, sharp, tus-js-client, @tus/server,
+  @tus/file-store]
+  patterns: [content-based-mime-validation, magic-byte-detection,
+  file-size-validation]
 key-files:
   created:
 
-    - src/shared/lib/file-validation.ts
+```
+- src/shared/lib/file-validation.ts
 
+```
   modified:
 
-    - prisma/schema.prisma
-    - next.config.ts
-    - package.json
+```
+- prisma/schema.prisma
+- next.config.ts
+- package.json
 
+```
 decisions:
 
   - id: FILE-001
 
-    title: Content-based MIME validation over client-provided types
-    rationale: Security-critical to validate actual file content using magic bytes, not trust client-provided MIME types or extensions
+```
+title: Content-based MIME validation over client-provided types
+rationale: Security-critical to validate actual file content using magic
+bytes, not trust client-provided MIME types or extensions
 
+```
   - id: FILE-002
 
-    title: 25MB file size limit with 5MB Server Actions threshold
-    rationale: 25MB generous enough for documents/media, 5MB threshold determines Server Actions vs TUS protocol for resumable uploads
+```
+title: 25MB file size limit with 5MB Server Actions threshold
+rationale: 25MB generous enough for documents/media, 5MB threshold
+determines Server Actions vs TUS protocol for resumable uploads
 
+```
   - id: FILE-003
 
-    title: FileAttachment with denormalized userId
-    rationale: Enables direct ownership checks without joining through Task, improves query performance
+```
+title: FileAttachment with denormalized userId
+rationale: Enables direct ownership checks without joining through Task,
+improves query performance
 
+```
   - id: FILE-004
 
-    title: Cascade delete file attachments when task deleted
-    rationale: Clean orphan file prevention, no abandoned attachments in database or filesystem
+```
+title: Cascade delete file attachments when task deleted
+rationale: Clean orphan file prevention, no abandoned attachments in
+database or filesystem
+
+```
 metrics:
   duration: 4 minutes
   completed: 2026-01-26
@@ -48,7 +67,8 @@ metrics:
 
 # Phase 05 Plan 01: File Attachment Schema & Validation Summary
 
-**One-liner:** Established secure file attachment foundation with magic byte validation, FileAttachment Prisma model, and resumable upload infrastructure
+**One-liner:** Established secure file attachment foundation with magic byte
+validation, FileAttachment Prisma model, and resumable upload infrastructure
 
 ## What Was Built
 
@@ -91,9 +111,12 @@ metrics:
 
 ### FILE-001: Content-Based MIME Validation
 
-**Decision:** Validate file types by reading magic bytes (binary signature), never trust client-provided MIME types or extensions.
+**Decision:** Validate file types by reading magic bytes (binary signature),
+never trust client-provided MIME types or extensions.
 
-**Context:** Client-provided file information (MIME type, extension) can be trivially spoofed. Malicious users could upload executable files disguised as images.
+**Context:** Client-provided file information (MIME type, extension) can be
+trivially spoofed. Malicious users could upload executable files disguised as
+images.
 
 **Implementation:**
 
@@ -102,15 +125,18 @@ metrics:
 - Whitelist approach with ALLOWED_MIME_TYPES constant
 - Reject files with unrecognized or disallowed signatures
 
-**Security benefit:** Prevents malicious file uploads by validating actual content
+**Security benefit:** Prevents malicious file uploads by validating actual
+content
 
 ---
 
 ### FILE-002: 25MB Limit with 5MB Server Actions Threshold
 
-**Decision:** Set MAX_FILE_SIZE to 25MB, use Server Actions for ≤5MB, TUS protocol for >5MB.
+**Decision:** Set MAX_FILE_SIZE to 25MB, use Server Actions for ≤5MB, TUS
+protocol for >5MB.
 
-**Context:** Server Actions have practical size limits. Large file uploads need resumable protocol for reliability.
+**Context:** Server Actions have practical size limits. Large file uploads need
+resumable protocol for reliability.
 
 **Implementation:**
 
@@ -129,20 +155,22 @@ metrics:
 
 ### FILE-003: Denormalized userId in FileAttachment
 
-**Decision:** Store userId directly on FileAttachment, not just via Task relation.
+**Decision:** Store userId directly on FileAttachment, not just via Task
+relation.
 
 **Context:** Frequent ownership checks would require joining through Task table.
 
 **Implementation:**
 
 ```prisma
+
 model FileAttachment {
   userId  String  // Denormalized
   taskId  String
   task    Task @relation(...)
 }
 
-```
+```yaml
 
 **Benefits:**
 
@@ -150,19 +178,22 @@ model FileAttachment {
 - No join required for access control checks
 - Faster user file quota calculations
 
-**Trade-off:** Data duplication (userId in both Task and FileAttachment), but performance gain worth it
+**Trade-off:** Data duplication (userId in both Task and FileAttachment), but
+performance gain worth it
 
 ---
 
 ### FILE-004: Cascade Delete on Task Deletion
 
-**Decision:** Configure FileAttachment with `onDelete: Cascade` when task deleted.
+**Decision:** Configure FileAttachment with `onDelete: Cascade` when task
+deleted.
 
 **Context:** Need automatic cleanup to prevent orphaned attachments.
 
 **Implementation:**
 
 ```prisma
+
 task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
 ```
@@ -187,6 +218,7 @@ task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
 ### Validation Flow
 
 ```typescript
+
 // Security-critical validation order
 
 1. validateFileSize(size) → Reject if >25MB or empty
@@ -194,7 +226,7 @@ task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
 3. If both pass → Proceed with upload
 4. If either fails → Return clear error to user
 
-```
+```markdown
 
 ### Upload Strategy Decision Tree
 
@@ -203,7 +235,7 @@ File size ≤ 5MB → Server Actions (simple, fast)
 File size > 5MB → TUS protocol (resumable, network-safe)
 File size > 25MB → Reject with error
 
-```
+```python
 
 ## Deviations from Plan
 
@@ -241,6 +273,7 @@ None - all dependencies installed, schema in place
 **Key exports:**
 
 ```typescript
+
 validateFileType(buffer: Buffer) → Promise<FileValidationResult>
 validateFileSize(size: number) → FileValidationResult
 ALLOWED_MIME_TYPES: readonly string[]
@@ -250,7 +283,8 @@ MAX_FILE_SIZE: number
 
 **Security guarantee:** Validates actual file content, not client metadata
 
-**Learning:** Never trust client-provided MIME types or extensions. Always read magic bytes.
+**Learning:** Never trust client-provided MIME types or extensions. Always read
+magic bytes.
 
 ---
 
@@ -317,10 +351,10 @@ MAX_FILE_SIZE: number
 ## Commits
 
 | Commit | Message | Files |
-|--------|---------|-------|
-| f29ba01 | feat(05-01): install file upload dependencies and configure Next.js | package.json, next.config.ts |
-| fd755a7 | feat(05-01): add FileAttachment model to Prisma schema | prisma/schema.prisma |
-| 5a11a7d | feat(05-01): create file validation utility with content-based MIME detection | src/shared/lib/file-validation.ts |
+| -------- | --------- | ------- |
+| f29ba01 | feat(05-01): insta... | package.json, next... |
+| fd755a7 | feat(05-01): add F... | prisma/schema.prisma |
+| 5a11a7d | feat(05-01): creat... | src/shared/lib/fil... |
 
 ## Success Criteria
 

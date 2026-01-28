@@ -19,29 +19,35 @@ tech-stack:
 key-files:
   created:
 
-    - src/app/(app)/layout.tsx
-    - src/shared/components/UserMenu.tsx
-    - src/app/actions/profile.ts
-    - src/shared/components/ProfileForm.tsx
-    - src/app/(app)/settings/layout.tsx
-    - src/app/(app)/settings/profile/page.tsx
+```
+- src/app/(app)/layout.tsx
+- src/shared/components/UserMenu.tsx
+- src/app/actions/profile.ts
+- src/shared/components/ProfileForm.tsx
+- src/app/(app)/settings/layout.tsx
+- src/app/(app)/settings/profile/page.tsx
 
+```
   modified:
 
-    - src/shared/components/index.ts
-    - src/shared/hooks/useDebounce.ts
+```
+- src/shared/components/index.ts
+- src/shared/hooks/useDebounce.ts
 
+```
 duration: 4 minutes
 completed: 2026-01-24
 ---
 
 # Phase 02 Plan 04: Profile Settings with Auto-Save Summary
 
-**One-liner:** Profile settings page with 3-second auto-save debouncing, user menu dropdown with logout, and authenticated app layout with header navigation.
+**One-liner:** Profile settings page with 3-second auto-save debouncing, user
+menu dropdown with logout, and authenticated app layout with header navigation.
 
 ## What Was Built
 
-Created a complete profile management interface with seamless auto-save functionality and user menu navigation.
+Created a complete profile management interface with seamless auto-save
+functionality and user menu navigation.
 
 ### Components Created
 
@@ -98,12 +104,14 @@ Created a complete profile management interface with seamless auto-save function
 
 - Initial implementation used single debounced function with field parameter
 - TypeScript generic constraint `unknown[]` prevented proper type inference
-- **Solution:** Changed useDebounce constraint from `unknown[]` to `any[]` for better inference
+- **Solution:** Changed useDebounce constraint from `unknown[]` to `any[]` for
+  better inference
 - Created separate save functions per field for type safety
 
 **Code Structure:**
 
 ```typescript
+
 const saveName = useCallback<(value: string) => Promise<void>>(async (value) => {
   const result = await updateProfileField('name', value)
   // Handle result...
@@ -111,13 +119,14 @@ const saveName = useCallback<(value: string) => Promise<void>>(async (value) => 
 
 const debouncedSaveName = useDebounce<(value: string) => Promise<void>>(saveName, 3000)
 
-```
+```markdown
 
 ### User Menu Pattern
 
 **Server Action in Client Component:**
 
 ```typescript
+
 // In server component (layout):
 async function handleSignOut() {
   'use server'
@@ -142,10 +151,10 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 ## Commits
 
 | Commit | Message | Files |
-|--------|---------|-------|
-| 78f0ec1 | feat(02-04): create app layout with header and user menu | layout.tsx, UserMenu.tsx, index.ts |
-| f9088b6 | feat(02-04): add profile server actions with auto-save support | profile.ts |
-| 640ba49 | feat(02-04): add profile settings page with auto-save form | ProfileForm.tsx, settings/layout.tsx, profile/page.tsx, useDebounce.ts |
+| -------- | --------- | ------- |
+| 78f0ec1 | feat(02-04): creat... | layout.tsx, UserMe... |
+| f9088b6 | feat(02-04): add p... | profile.ts |
+| 640ba49 | feat(02-04): add p... | ProfileForm.tsx, s... |
 
 ## Decisions Made
 
@@ -172,7 +181,8 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 **1. [Rule 1 - Bug] Fixed Zod error property access**
 
 - **Found during:** Task 2 (Profile Server Actions)
-- **Issue:** Used `validation.error.errors[0]` instead of `validation.error.issues[0]`
+- **Issue:** Used `validation.error.errors[0]` instead of
+  `validation.error.issues[0]`
 - **Fix:** Changed to correct Zod API (`issues` instead of `errors`)
 - **Files modified:** src/app/actions/profile.ts
 - **Commit:** f9088b6
@@ -180,11 +190,16 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 **2. [Rule 2 - Missing Critical] Fixed useDebounce TypeScript constraint**
 
 - **Found during:** Task 3 (ProfileForm component)
-- **Issue:** Generic constraint `unknown[]` prevented TypeScript from inferring function types
-- **Fix:** Changed constraint to `any[]` for proper inference with typed callbacks
+- **Issue:** Generic constraint `unknown[]` prevented TypeScript from inferring
+  function types
+- **Fix:** Changed constraint to `any[]` for proper inference with typed
+  callbacks
 - **Files modified:** src/shared/hooks/useDebounce.ts
 - **Commit:** 640ba49
-- **Justification:** The `any[]` constraint still preserves type safety through `Parameters<T>` inference, but allows TypeScript to accept explicitly typed functions. Alternative would have been to weaken all type checking or duplicate the hook.
+- **Justification:** The `any[]` constraint still preserves type safety through
+  `Parameters<T>` inference, but allows TypeScript to accept explicitly typed
+  functions. Alternative would have been to weaken all type checking or duplicate
+  the hook.
 
 ## Testing Notes
 
@@ -195,7 +210,8 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 
 **Build Status:**
 
-- Production build fails due to known Next.js 15.0.3 bug (documented in STATE.md blocker)
+- Production build fails due to known Next.js 15.0.3 bug (documented in STATE.md
+  blocker)
 - Development server works correctly
 - Not a regression from this plan
 
@@ -254,12 +270,17 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 **Implementation:**
 
 ```typescript
+
 // Separate save functions per field for type safety
 const saveField = useCallback<(value: string) => Promise<void>>(
   async (value) => {
-    setStatus('saving')
-    const result = await updateProfileField('field', value)
-    setStatus(result.success ? 'saved' : 'error')
+
+```
+setStatus('saving')
+const result = await updateProfileField('field', value)
+setStatus(result.success ? 'saved' : 'error')
+
+```
   }, []
 )
 
@@ -271,7 +292,7 @@ const debouncedSave = useDebounce<(value: string) => Promise<void>>(
 // Use in onChange handler
 <input onChange={(e) => debouncedSave(e.target.value)} />
 
-```
+```yaml
 
 **When to use:**
 
@@ -293,6 +314,7 @@ const debouncedSave = useDebounce<(value: string) => Promise<void>>(
 **Implementation:**
 
 ```typescript
+
 // Server component (layout):
 async function handleAction() {
   'use server'
@@ -319,6 +341,7 @@ async function handleAction() {
 **Implementation:**
 
 ```typescript
+
 // app/(protected)/layout.tsx
 export default async function ProtectedLayout({ children }) {
   const session = await auth()
@@ -326,7 +349,7 @@ export default async function ProtectedLayout({ children }) {
   return <>{children}</>
 }
 
-```
+```yaml
 
 **When to use:**
 
@@ -341,6 +364,7 @@ export default async function ProtectedLayout({ children }) {
 **Implementation:**
 
 ```typescript
+
 // Instead of:
 function hook<T extends (...args: unknown[]) => unknown>(cb: T) { }
 

@@ -2,7 +2,8 @@
 
 ## 🎯 Overview
 
-Three tools for maintaining professional markdown standards across the MyWork repository:
+Three tools for maintaining professional markdown standards across the MyWork
+repository:
 
 1. **`auto_lint_fixer.py`** - Fixes common markdownlint violations
 2. **`auto_lint_scheduler.py`** - Runs fixes automatically every 15 minutes
@@ -11,7 +12,7 @@ Three tools for maintaining professional markdown standards across the MyWork re
 ## ✅ Fixed Violation Types
 
 | Rule | Description | Auto-Fixed |
-|------|-------------|-------------|
+| ------ | ------------- | ------------- |
 | **MD022** | Headings without blank lines | ✅ |
 | **MD032** | Lists without blank lines | ✅ |
 | **MD031** | Code blocks without blank lines | ✅ |
@@ -19,6 +20,7 @@ Three tools for maintaining professional markdown standards across the MyWork re
 | **MD047** | Missing trailing newlines | ✅ |
 
 **Not auto-fixed (manual review needed):**
+
 - MD013 (line length) - Often intentional
 - MD024 (duplicate headings) - Common in changelogs
 - MD040 (fenced code language) - Need specific language
@@ -29,37 +31,50 @@ Three tools for maintaining professional markdown standards across the MyWork re
 ### One-Time Fix
 
 ```bash
+
 # Fix all markdown files once
+
 python3 tools/auto_lint_fixer.py
 
 # See detailed output and summary
-```
+
+```markdown
 
 ### Automated Background Fixing
 
 ```bash
+
 # Start background service (every 15 minutes)
+
 ./start_auto_linter.sh
 
 # Check logs
+
 tail -f auto_linter.log
 
 # Stop background service
+
 pkill -f auto_lint_scheduler
+
 ```
 
 ### Manual Scheduling
 
 ```bash
+
 # Run once
+
 python3 tools/auto_lint_scheduler.py
 
 # Run every 15 minutes
+
 python3 tools/auto_lint_scheduler.py --daemon
 
 # Custom interval (every 30 minutes)
+
 python3 tools/auto_lint_scheduler.py --daemon --interval 1800
-```
+
+```markdown
 
 ## 📊 Recent Results
 
@@ -107,7 +122,8 @@ The tools scan these locations:
 ❌ node_modules/ (excluded)
 ❌ .git/ (excluded)
 ❌ __pycache__/ (excluded)
-```
+
+```markdown
 
 ## 🎛️ Configuration
 
@@ -122,6 +138,7 @@ Uses standard markdownlint rules. To customize, create `.markdownlint.json`:
   "MD040": false,
   "MD036": false
 }
+
 ```
 
 ### Automation Settings
@@ -145,15 +162,20 @@ Edit `auto_lint_scheduler.py` to change:
 ### Check Status
 
 ```bash
+
 # Is auto-linter running?
+
 ps aux | grep auto_lint_scheduler
 
 # View recent activity
+
 tail -20 auto_linter.log
 
 # Check git commits
+
 git log --oneline | grep "auto-lint"
-```
+
+```markdown
 
 ### Expected Log Output
 
@@ -164,7 +186,8 @@ git log --oneline | grep "auto-lint"
    • MD032: 4
 ✅ Committed 12 fixes
 ⏰ Sleeping for 15 minutes...
-```
+
+```markdown
 
 ## 💡 Tips
 
@@ -181,8 +204,11 @@ git log --oneline | grep "auto-lint"
 Add to `.git/hooks/pre-commit`:
 
 ```bash
+
 #!/bin/bash
+
 python3 tools/auto_lint_fixer.py
+
 ```
 
 ### With CI/CD
@@ -190,9 +216,12 @@ python3 tools/auto_lint_fixer.py
 Add to GitHub Actions workflow:
 
 ```yaml
+
 - name: Fix markdown lint issues
+
   run: python3 tools/auto_lint_fixer.py
-```
+
+```markdown
 
 ### With IDE
 
@@ -200,8 +229,10 @@ Configure your IDE to run on save:
 
 ```bash
 python3 /path/to/MyWork/tools/auto_lint_fixer.py
+
 ```
 
 ---
 
-**🎉 Result:** Professional markdown standards maintained automatically across the entire repository!
+**🎉 Result:** Professional markdown standards maintained automatically across
+the entire repository!

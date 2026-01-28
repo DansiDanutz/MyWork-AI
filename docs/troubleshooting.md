@@ -19,7 +19,7 @@ mw status --verbose
 git status  # See what changed
 git checkout .  # WARNING: Loses uncommitted changes
 
-```
+```markdown
 
 ### **🔴 Can't run any MyWork commands**
 
@@ -67,7 +67,7 @@ mw doctor --check dependencies
 mw doctor --check services
 mw doctor --check projects
 
-```
+```markdown
 
 ### **Framework Status**
 
@@ -103,7 +103,7 @@ cat .planning/STATE.md
 
 ls .planning/phases/*/
 
-```
+```markdown
 
 ---
 
@@ -129,7 +129,7 @@ bash: mw: command not found
    cd /Users/dansidanutz/Desktop/MyWork
    python tools/mw.py status
 
-   ```
+```yaml
 
 2. **Add to PATH (optional):**
 
@@ -148,7 +148,7 @@ bash: mw: command not found
    python tools/mw.py status
    python tools/mw.py new my-project
 
-   ```
+```markdown
 
 #### **Problem: Python dependency errors**
 
@@ -176,7 +176,7 @@ pip install click rich requests
 
 python -c "import click; print('Click installed')"
 
-```
+```markdown
 
 #### **Problem: Permission denied errors**
 
@@ -200,7 +200,7 @@ chmod +x install.sh
 
 python tools/mw.py status
 
-```
+```markdown
 
 ### **🚀 GSD (Planning & Execution) Issues**
 
@@ -223,7 +223,7 @@ Run /gsd:new-project to start a new project.
    pwd  # Should be in projects/your-project/
    ls -la .planning/  # Should exist with files
 
-   ```
+```yaml
 
 2. **Initialize GSD if missing:**
 
@@ -238,7 +238,7 @@ Run /gsd:new-project to start a new project.
    cd projects/your-project-name/
    mw gsd progress
 
-   ```
+```markdown
 
 #### **Problem: GSD execution fails or hangs**
 
@@ -267,7 +267,7 @@ Run /gsd:new-project to start a new project.
    ls .planning/phases/[phase]/ -la
    cat .planning/phases/[phase]/[plan]-SUMMARY.md
 
-   ```
+```python
 
 3. **Resume from checkpoint:**
 
@@ -281,7 +281,7 @@ Run /gsd:new-project to start a new project.
    ```bash
    mw gsd execute-phase [phase-number]
 
-   ```
+```yaml
 
 5. **Create gap closure plans:**
 
@@ -314,7 +314,7 @@ Run /gsd:new-project to start a new project.
 
    # Provide more detailed, specific answers
 
-   ```
+```yaml
 
 2. **Use discussion mode first:**
 
@@ -338,7 +338,7 @@ Run /gsd:new-project to start a new project.
 
    mw gsd plan-phase [phase]
 
-   ```
+```markdown
 
 ### **🤖 Autocoder Issues**
 
@@ -359,7 +359,7 @@ $ mw ac status
    ```bash
    mw ac server
 
-   ```
+```yaml
 
 2. **Check if port is in use:**
 
@@ -376,7 +376,7 @@ $ mw ac status
    pkill -f autocoder  # Kill any existing processes
    mw ac server --port 8889  # Start on different port
 
-   ```
+```markdown
 
 #### **Problem: Autocoder runs out of memory or crashes**
 
@@ -400,7 +400,7 @@ $ mw ac status
    ```bash
    mw ac start my-project --model claude-haiku  # Instead of opus
 
-   ```
+```yaml
 
 3. **Check system resources:**
 
@@ -417,7 +417,7 @@ $ mw ac status
    mw ac server  # Restart server
    mw ac start my-project --concurrency 1
 
-   ```
+```markdown
 
 ### **🔗 n8n Integration Issues**
 
@@ -438,7 +438,7 @@ MCP server connection failed
    ```bash
    npx n8n-mcp
 
-   ```
+```yaml
 
 2. **Check MCP configuration:**
 
@@ -455,7 +455,7 @@ MCP server connection failed
 
    python -c "from tools.n8n_api import *; print('n8n tools available')"
 
-   ```
+```markdown
 
 #### **Problem: n8n workflow creation fails**
 
@@ -485,7 +485,7 @@ MCP server connection failed
 
    # Use validate_workflow tool
 
-   ```
+```yaml
 
 3. **Check node configurations:**
 
@@ -507,7 +507,7 @@ MCP server connection failed
 fatal: not a git repository
 Your branch is behind 'origin/main'
 
-```
+```yaml
 
 **Solutions:**
 
@@ -526,7 +526,7 @@ Your branch is behind 'origin/main'
    git fetch origin
    git merge origin/main
 
-   ```
+```yaml
 
 3. **Reset to clean state:**
 
@@ -545,7 +545,7 @@ Your branch is behind 'origin/main'
 ```bash
 OSError: [Errno 28] No space left on device
 
-```
+```yaml
 
 **Solutions:**
 
@@ -570,7 +570,7 @@ OSError: [Errno 28] No space left on device
 
    rm -rf /tmp/*
 
-   ```
+```yaml
 
 3. **Archive old projects:**
 
@@ -603,7 +603,7 @@ export LOG_LEVEL=DEBUG
 mw status --verbose
 mw gsd execute-phase 1 --verbose
 
-```
+```markdown
 
 #### **Check log files:**
 
@@ -645,7 +645,7 @@ cat > .planning/config.json << 'EOF'
 }
 EOF
 
-```
+```markdown
 
 #### **Check environment variables:**
 
@@ -672,7 +672,7 @@ echo "GITHUB_TOKEN: ${GITHUB_TOKEN:0:10}..."
    ```bash
    top -p $(pgrep -f python)
 
-   ```
+```yaml
 
 2. **Reduce AI calls:**
 
@@ -694,7 +694,7 @@ echo "GITHUB_TOKEN: ${GITHUB_TOKEN:0:10}..."
    rm -rf .tmp/cache/
    rm -rf ~/.cache/anthropic/
 
-   ```
+```markdown
 
 #### **Large project optimization:**
 
@@ -716,7 +716,7 @@ echo "GITHUB_TOKEN: ${GITHUB_TOKEN:0:10}..."
 
    mw gsd insert-phase 2.1  # Insert between phases
 
-   ```
+```markdown
 
 ---
 
@@ -755,7 +755,7 @@ rm .planning/STATE.md
 
 mw gsd new-project --resume
 
-```
+```markdown
 
 ### **Get Help**
 
@@ -771,8 +771,19 @@ If you're still stuck:
    ```
 
 2. **Ask for help:**
-   - 💬 **[GitHub Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)** - Attach debug report
-   - 🐛 **[GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)** - If it's a bug
+   - 💬 **[GitHub
+
+```
+ Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)** -
+ Attach debug report
+
+```
+   - 🐛 **[GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)** - If
+
+```
+ it's a bug
+
+```
    - 📧 **[Email Support](mailto:support@mywork.ai)** - For urgent issues
 
 3. **Include this info:**
@@ -803,7 +814,7 @@ If you're still stuck:
    git status  # Commit your work
    mw status   # Verify everything is healthy
 
-   ```
+```yaml
 
 2. **Keep backups:**
 
@@ -831,8 +842,10 @@ If you're still stuck:
 
    mw-check
 
-   ```
+```yaml
 
 ---
 
-*💡 **Pro Tip:** Most issues are environmental (wrong directory, missing dependencies, configuration). The diagnostic commands above will catch 90% of problems.*
+*💡 **Pro Tip:** Most issues are environmental (wrong directory, missing
+dependencies, configuration). The diagnostic commands above will catch 90% of
+problems.*

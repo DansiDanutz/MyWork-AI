@@ -1,11 +1,12 @@
 # MyWork Framework Documentation
 
-Welcome to the MyWork Framework documentation. This guide covers everything you need to know about using the framework for AI-assisted development.
+Welcome to the MyWork Framework documentation. This guide covers everything you
+need to know about using the framework for AI-assisted development.
 
 ## Getting Started
 
 | Guide | Description |
-|-------|-------------|
+| ------- | ------------- |
 | [Quick Start](quickstart.md) | Get running in 5 minutes |
 | [FAQ](faq.md) | Common questions answered |
 | [Troubleshooting](troubleshooting.md) | Fix common issues |
@@ -13,7 +14,7 @@ Welcome to the MyWork Framework documentation. This guide covers everything you 
 ## Architecture
 
 | Document | Description |
-|----------|-------------|
+| ---------- | ------------- |
 | [System Overview](architecture/overview.md) | How the layers work together |
 | [GSD Orchestration](architecture/gsd.md) | Project lifecycle management |
 | [WAT Framework](architecture/wat.md) | Workflows, Agents, Tools |
@@ -21,7 +22,7 @@ Welcome to the MyWork Framework documentation. This guide covers everything you 
 ## API Reference
 
 | Tool | Description |
-|------|-------------|
+| ------ | ------------- |
 | [mw CLI](api/tools/mw.md) | Unified command-line interface |
 | [Brain](api/tools/brain.md) | Knowledge vault management |
 | [Module Registry](api/tools/module-registry.md) | Code pattern indexing |
@@ -30,9 +31,9 @@ Welcome to the MyWork Framework documentation. This guide covers everything you 
 ## Tutorials
 
 | Tutorial | Description |
-|----------|-------------|
+| ---------- | ------------- |
 | [Your First Project](tutorials/first-project.md) | Build a complete app |
-| [Using Autocoder](tutorials/autocoder.md) | Autonomous coding for large projects |
+  | [Using Autocoder](tutorials/aut... | Autonomous coding for large pro... |  
 | [n8n Integration](tutorials/n8n.md) | Workflow automation |
 
 ## Live Products
@@ -40,10 +41,10 @@ Welcome to the MyWork Framework documentation. This guide covers everything you 
 Products built with MyWork Framework:
 
 | Product | URL | Description |
-|---------|-----|-------------|
-| Marketplace | [frontend-hazel-ten-17.vercel.app](https://frontend-hazel-ten-17.vercel.app) | Digital product marketplace |
-| Task Tracker | [task-tracker-weld-delta.vercel.app](https://task-tracker-weld-delta.vercel.app) | Task management with GitHub OAuth |
-| Sports-AI | [sports-ai-one.vercel.app](https://sports-ai-one.vercel.app) | Sports betting analytics |
+| --------- | ----- | ------------- |
+| Marketplace | [frontend-hazel-te... | Digital product ma... |
+| Task Tracker | [task-tracker-weld... | Task management wi... |
+| Sports-AI | [sports-ai-one.ver... | Sports betting ana... |
 
 ## Quick Links
 

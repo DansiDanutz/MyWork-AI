@@ -3,22 +3,29 @@ phase: 07
 plan: 04
 type: execute
 subsystem: performance-monitoring
-tags: [web-vitals, core-web-vitals, performance, monitoring, lcp, cls, inp, nextjs]
+tags: [web-vitals, core-web-vitals, performance, monitoring, lcp, cls, inp,
+nextjs]
 
 requires:
 
   - phase: 07-01
 
-    deliverable: Loading states with skeleton screens
+```
+deliverable: Loading states with skeleton screens
 
+```
   - phase: 07-02
 
-    deliverable: Code splitting for file components
+```
+deliverable: Code splitting for file components
 
+```
   - phase: 07-03
 
-    deliverable: Mobile responsive navigation and swipe gestures
+```
+deliverable: Mobile responsive navigation and swipe gestures
 
+```
 provides:
 
   - Core Web Vitals monitoring infrastructure
@@ -32,63 +39,90 @@ affects:
 
   - future: Deployment & Monitoring
 
-    why: Establishes performance baseline and monitoring infrastructure for production
+```
+why: Establishes performance baseline and monitoring infrastructure for
+production
 
+```
   - future: Analytics Dashboard
 
-    why: Could visualize collected Web Vitals data for trend analysis
+```
+why: Could visualize collected Web Vitals data for trend analysis
 
+```
 tech-stack:
   added:
 
-    - next/web-vitals (useReportWebVitals hook)
-    - navigator.sendBeacon API for reliable metric reporting
+```
+- next/web-vitals (useReportWebVitals hook)
+- navigator.sendBeacon API for reliable metric reporting
 
+```
   patterns:
 
-    - Core Web Vitals monitoring pattern with client-side reporter
-    - Dual reporting strategy (console in dev, API in all environments)
-    - sendBeacon for reliable analytics reporting
-    - Color-coded console logging for metric ratings
-    - Threshold-based metric classification (GOOD/NEEDS_IMPROVEMENT/POOR)
+```
+- Core Web Vitals monitoring pattern with client-side reporter
+- Dual reporting strategy (console in dev, API in all environments)
+- sendBeacon for reliable analytics reporting
+- Color-coded console logging for metric ratings
+- Threshold-based metric classification (GOOD/NEEDS_IMPROVEMENT/POOR)
 
+```
 key-files:
   created:
 
-    - src/shared/components/WebVitalsReporter.tsx
-    - src/app/api/analytics/vitals/route.ts
+```
+- src/shared/components/WebVitalsReporter.tsx
+- src/app/api/analytics/vitals/route.ts
 
+```
   modified:
 
-    - src/app/layout.tsx
-    - src/shared/components/index.ts
+```
+- src/app/layout.tsx
+- src/shared/components/index.ts
 
+```
 decisions:
 
   - id: VITALS-001
 
-    date: 2026-01-26
-    choice: useReportWebVitals hook over manual web-vitals library
-    why: Next.js provides built-in hook that integrates with App Router navigation
-    impact: Simpler implementation, automatic metric collection on all page transitions
-    alternatives: Manual web-vitals library (more control but requires integration work)
+```
+date: 2026-01-26
+choice: useReportWebVitals hook over manual web-vitals library
+why: Next.js provides built-in hook that integrates with App Router
+navigation
+impact: Simpler implementation, automatic metric collection on all page
+transitions
+alternatives: Manual web-vitals library (more control but requires
+integration work)
 
+```
   - id: VITALS-002
 
-    date: 2026-01-26
-    choice: Dual reporting (console + API) over API-only
-    why: Console logging aids development debugging, API provides production telemetry
-    impact: Better developer experience without compromising production monitoring
-    alternatives: API-only (cleaner but harder to debug), Console-only (no production data)
+```
+date: 2026-01-26
+choice: Dual reporting (console + API) over API-only
+why: Console logging aids development debugging, API provides production
+telemetry
+impact: Better developer experience without compromising production
+monitoring
+alternatives: API-only (cleaner but harder to debug), Console-only (no
+production data)
 
+```
   - id: VITALS-003
 
-    date: 2026-01-26
-    choice: sendBeacon with fetch fallback over fetch-only
-    why: sendBeacon reliably sends data even when user navigates away immediately
-    impact: More accurate metric collection, especially for navigation-triggered events
-    alternatives: fetch-only (simpler but can lose data on rapid navigation)
+```
+date: 2026-01-26
+choice: sendBeacon with fetch fallback over fetch-only
+why: sendBeacon reliably sends data even when user navigates away
+immediately
+impact: More accurate metric collection, especially for navigation-triggered
+events
+alternatives: fetch-only (simpler but can lose data on rapid navigation)
 
+```
 metrics:
   duration: 5 minutes (implementation) + verification checkpoint
   tasks: 3 (2 auto + 1 checkpoint)
@@ -100,33 +134,43 @@ metrics:
 
 # Phase 07 Plan 04: Core Web Vitals Monitoring Summary
 
-**One-liner:** Next.js Core Web Vitals monitoring with WebVitalsReporter component, analytics API endpoint, and verified performance benchmarks meeting production targets (LCP < 2.5s, CLS < 0.1, INP < 200ms)
+**One-liner:** Next.js Core Web Vitals monitoring with WebVitalsReporter
+component, analytics API endpoint, and verified performance benchmarks meeting
+production targets (LCP < 2.5s, CLS < 0.1, INP < 200ms)
 
 ## What Was Built
 
-Complete Core Web Vitals monitoring infrastructure with real-time metric collection and performance verification:
+Complete Core Web Vitals monitoring infrastructure with real-time metric
+collection and performance verification:
 
 ### WebVitalsReporter Component
 
 - **Client-side reporter** using Next.js `useReportWebVitals` hook
-- **Development logging**: Color-coded console output (green/yellow/red) for quick debugging
+- **Development logging**: Color-coded console output (green/yellow/red) for
+  quick debugging
 - **Production telemetry**: Sends metrics to `/api/analytics/vitals` endpoint
 - **Reliable delivery**: Uses `navigator.sendBeacon` with `fetch` fallback
-- **Tracked metrics**: LCP, INP, CLS, FCP, TTFB with ratings (good/needs-improvement/poor)
+- **Tracked metrics**: LCP, INP, CLS, FCP, TTFB with ratings
+  (good/needs-improvement/poor)
 
 ### Analytics API Endpoint
 
 - **POST /api/analytics/vitals**: Receives Web Vitals metrics from client
-- **Threshold validation**: Compares metrics against Google Core Web Vitals thresholds
-- **Server-side logging**: Logs metric status (GOOD/NEEDS_IMPROVEMENT/POOR) for monitoring
-- **Extensibility**: Ready to integrate with analytics services (Vercel Analytics, Google Analytics, etc.)
+- **Threshold validation**: Compares metrics against Google Core Web Vitals
+  thresholds
+- **Server-side logging**: Logs metric status (GOOD/NEEDS_IMPROVEMENT/POOR) for
+  monitoring
+- **Extensibility**: Ready to integrate with analytics services (Vercel
+  Analytics, Google Analytics, etc.)
 
 ### Performance Verification Results
 
 ✅ **All benchmarks passed during human verification checkpoint:**
 
-1. **Loading States (LCP < 2.5s target)**: Skeleton appears immediately, content loads within 2-3s
-2. **Layout Stability (CLS < 0.1 target)**: No visible layout shifts during page load
+1. **Loading States (LCP < 2.5s target)**: Skeleton appears immediately, content
+loads within 2-3s
+2. **Layout Stability (CLS < 0.1 target)**: No visible layout shifts during page
+load
 3. **Mobile Experience**: Hamburger menu and swipe gestures work smoothly
 4. **Lazy Loading**: File dropzone loads lazily with skeleton placeholder
 5. **Core Web Vitals Logging**: Console shows metrics with accurate ratings
@@ -137,21 +181,26 @@ Complete Core Web Vitals monitoring infrastructure with real-time metric collect
 ### Pattern: Next.js useReportWebVitals Hook
 
 ```tsx
+
 'use client'
 import { useReportWebVitals } from 'next/web-vitals'
 
 export function WebVitalsReporter() {
   useReportWebVitals((metric) => {
-    // Automatic metric collection on every page transition
-    console.log(`[Web Vitals] ${metric.name}: ${metric.value}ms (${metric.rating})`)
 
-    // Send to analytics
-    navigator.sendBeacon('/api/analytics/vitals', JSON.stringify(metric))
+```
+// Automatic metric collection on every page transition
+console.log(`[Web Vitals] ${metric.name}: ${metric.value}ms (${metric.rating})`)
+
+// Send to analytics
+navigator.sendBeacon('/api/analytics/vitals', JSON.stringify(metric))
+
+```
   })
   return null
 }
 
-```
+```markdown
 
 ### Threshold Classification
 
@@ -165,7 +214,8 @@ Based on Google Core Web Vitals standards:
 
 ### Dual Reporting Strategy
 
-- **Development**: Console logging with color-coded ratings for immediate feedback
+- **Development**: Console logging with color-coded ratings for immediate
+  feedback
 - **Production**: API endpoint ready for integration with analytics platforms
 - **Reliability**: sendBeacon ensures metrics sent even during rapid navigation
 
@@ -308,7 +358,8 @@ None - plan executed exactly as written.
 
 **Blockers/Concerns:** None
 
-**Dependencies satisfied:** All Phase 07 plans complete, application meets production quality standards
+**Dependencies satisfied:** All Phase 07 plans complete, application meets
+production quality standards
 
 ## Files Changed
 
@@ -343,10 +394,13 @@ None - plan executed exactly as written.
 
 ### What Worked Well
 
-- **Next.js hook integration**: useReportWebVitals worked out-of-the-box, no manual integration needed
-- **Dual reporting strategy**: Console logging made debugging easy, API ready for production
+- **Next.js hook integration**: useReportWebVitals worked out-of-the-box, no
+  manual integration needed
+- **Dual reporting strategy**: Console logging made debugging easy, API ready for
+  production
 - **sendBeacon pattern**: Standard approach for analytics, reliable delivery
-- **Checkpoint verification**: Human testing caught real performance wins (2-3s loads, smooth mobile UX)
+- **Checkpoint verification**: Human testing caught real performance wins (2-3s
+  loads, smooth mobile UX)
 
 ### Patterns to Extract for Brain
 
@@ -396,7 +450,7 @@ None - plan executed exactly as written.
 Based on human verification checkpoint testing:
 
 | Metric | Target | Result | Status |
-|--------|--------|--------|--------|
+| -------- | -------- | -------- | -------- |
 | **LCP** (Largest Contentful Paint) | < 2.5s | 2-3s on Slow 3G | ✅ GOOD |
 | **CLS** (Cumulative Layout Shift) | < 0.1 | < 0.1 (Lighthouse) | ✅ GOOD |
 | **INP** (Interaction to Next Paint) | < 200ms | < 200ms (observed) | ✅ GOOD |

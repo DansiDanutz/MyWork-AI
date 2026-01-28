@@ -17,48 +17,67 @@ tech-stack:
   added: [pg_trgm]
   patterns:
 
-    - Generated tsvector columns for automatic search index maintenance
-    - Weighted full-text search (title=A, description=B)
-    - Two-tier search (FTS primary, fuzzy fallback)
-    - Implicit many-to-many relations in Prisma
+```
+- Generated tsvector columns for automatic search index maintenance
+- Weighted full-text search (title=A, description=B)
+- Two-tier search (FTS primary, fuzzy fallback)
+- Implicit many-to-many relations in Prisma
 
+```
 key-files:
   created:
 
-    - prisma/migrations/20260125200020_add_tags_and_search/migration.sql
-    - src/app/actions/tags.ts
+```
+- prisma/migrations/20260125200020_add_tags_and_search/migration.sql
+- src/app/actions/tags.ts
 
+```
   modified:
 
-    - prisma/schema.prisma
-    - src/shared/lib/dal.ts
-    - src/shared/lib/analytics/types.ts
+```
+- prisma/schema.prisma
+- src/shared/lib/dal.ts
+- src/shared/lib/analytics/types.ts
 
+```
 decisions:
 
   - id: SEARCH-001
 
-    title: Use PostgreSQL tsvector over external search service
-    rationale: Validation project scale doesn't justify Elasticsearch/Algolia complexity
-    impact: Search integrated into primary database, no additional infrastructure
+```
+title: Use PostgreSQL tsvector over external search service
+rationale: Validation project scale doesn't justify Elasticsearch/Algolia
+complexity
+impact: Search integrated into primary database, no additional
+infrastructure
 
+```
   - id: SEARCH-002
 
-    title: Two-tier search strategy (FTS + fuzzy fallback)
-    rationale: Full-text search for exact matches, trigrams catch typos and partial terms
-    impact: Better search UX without requiring exact spelling
+```
+title: Two-tier search strategy (FTS + fuzzy fallback)
+rationale: Full-text search for exact matches, trigrams catch typos and
+partial terms
+impact: Better search UX without requiring exact spelling
 
+```
   - id: SEARCH-003
 
-    title: Generated tsvector column instead of triggers
-    rationale: PostgreSQL 12+ native feature, automatic maintenance without custom code
-    impact: Cleaner schema, no trigger maintenance burden
+```
+title: Generated tsvector column instead of triggers
+rationale: PostgreSQL 12+ native feature, automatic maintenance without
+custom code
+impact: Cleaner schema, no trigger maintenance burden
 
+```
   - id: TAG-001
 
-    title: Implicit many-to-many over explicit join table
-    rationale: Prisma auto-generates _TagToTask, simpler API for basic tagging
-    impact: Less boilerplate, Prisma handles join operations
+```
+title: Implicit many-to-many over explicit join table
+rationale: Prisma auto-generates _TagToTask, simpler API for basic tagging
+impact: Less boilerplate, Prisma handles join operations
+
+```
 metrics:
   duration: 5 minutes
   tasks_completed: 4/4
@@ -69,7 +88,9 @@ completed: 2026-01-25
 
 # Phase 04 Plan 01: Tag Model and Search Infrastructure Summary
 
-**One-liner:** PostgreSQL full-text search with weighted tsvector, fuzzy trigram fallback, and flexible tag-based organization via implicit many-to-many relations.
+**One-liner:** PostgreSQL full-text search with weighted tsvector, fuzzy trigram
+fallback, and flexible tag-based organization via implicit many-to-many
+relations.
 
 ## What Was Built
 
@@ -144,16 +165,23 @@ Added 4 new event types to analytics schema:
 ## Key Technical Decisions
 
 **Why generated tsvector over triggers?**
-PostgreSQL 12+ supports GENERATED ALWAYS columns that automatically update when source columns change. This eliminates trigger maintenance and is cleaner than manual tsvector management.
+PostgreSQL 12+ supports GENERATED ALWAYS columns that automatically update when
+source columns change. This eliminates trigger maintenance and is cleaner than
+manual tsvector management.
 
 **Why weighted search?**
-Title matches should rank higher than description matches in search results. Using `setweight()` with 'A' for title and 'B' for description achieves this.
+Title matches should rank higher than description matches in search results.
+Using `setweight()` with 'A' for title and 'B' for description achieves this.
 
 **Why two-tier search (FTS + fuzzy)?**
-Full-text search is fast but requires exact word boundaries. Trigram search catches typos and partial matches. Try FTS first for speed, fallback to trigrams for UX.
+Full-text search is fast but requires exact word boundaries. Trigram search
+catches typos and partial matches. Try FTS first for speed, fallback to trigrams
+for UX.
 
 **Why implicit many-to-many?**
-For basic tagging without custom join table fields, Prisma's implicit m-n is simpler. The auto-generated `_TagToTask` table handles the relationship without boilerplate.
+For basic tagging without custom join table fields, Prisma's implicit m-n is
+simpler. The auto-generated `_TagToTask` table handles the relationship without
+boilerplate.
 
 ## Deviations from Plan
 
@@ -164,6 +192,7 @@ None - plan executed exactly as written.
 **Search verification:**
 
 ```sql
+
 -- Test full-text search
 SELECT title, ts_rank(search_vector, websearch_to_tsquery('english', 'test')) as rank
 FROM tasks WHERE search_vector @@ websearch_to_tsquery('english', 'test');
@@ -172,11 +201,12 @@ FROM tasks WHERE search_vector @@ websearch_to_tsquery('english', 'test');
 SELECT title, similarity(title, 'tast') as sim
 FROM tasks WHERE title % 'tast' ORDER BY sim DESC;
 
-```
+```yaml
 
 **Tag relationship verification:**
 
 ```sql
+
 -- Verify implicit join table
 SELECT * FROM "_TagToTask" LIMIT 5;
 
@@ -214,17 +244,18 @@ DELETE FROM tags WHERE id = 'test-tag-id';
 ## Commits
 
 | Hash | Message | Files |
-|------|---------|-------|
-| 40dae6e | feat(04-01): add Tag model with implicit many-to-many Task relation | prisma/schema.prisma |
-| 1252902 | feat(04-01): add PostgreSQL full-text search infrastructure | prisma/migrations/.../migration.sql |
-| 2f1cd1e | feat(04-01): add DAL functions for tags and full-text search | src/shared/lib/dal.ts |
-| b1c0697 | feat(04-01): add Server Actions for tag management | src/app/actions/tags.ts, src/shared/lib/analytics/types.ts |
+| ------ | --------- | ------- |
+| 40dae6e | feat(04-01): add T... | prisma/schema.prisma |
+| 1252902 | feat(04-01): add P... | prisma/migrations/... |
+| 2f1cd1e | feat(04-01): add D... | src/shared/lib/dal.ts |
+| b1c0697 | feat(04-01): add S... | src/app/actions/ta... |
 
 ## Brain-Worthy Patterns
 
 **Pattern: Generated tsvector for automatic search index maintenance**
 
 ```prisma
+
 -- In migration.sql, not schema.prisma (Prisma doesn't support tsvector)
 ALTER TABLE tasks
 ADD COLUMN search_vector tsvector
@@ -233,13 +264,15 @@ GENERATED ALWAYS AS (
   setweight(to_tsvector('english', coalesce(description, '')), 'B')
 ) STORED;
 
-```
+```yaml
 
-*Eliminates triggers, automatically updates on INSERT/UPDATE, supports weighted relevance.*
+*Eliminates triggers, automatically updates on INSERT/UPDATE, supports weighted
+relevance.*
 
 **Pattern: Two-tier search with graceful degradation**
 
 ```typescript
+
 // Try fast FTS first
 const ftsResults = await prisma.$queryRaw`...websearch_to_tsquery...`
 if (ftsResults.length > 0) return ftsResults
@@ -255,19 +288,24 @@ return fuzzyResults
 **Pattern: Connect-or-create for inline tag creation**
 
 ```typescript
+
 await prisma.task.update({
   where: { id: taskId },
   data: {
-    tags: {
-      connectOrCreate: {
-        where: { userId_name: { userId, name: tagName } },
-        create: { name: tagName, color: '#6b7280', userId }
-      }
-    }
+
+```
+tags: {
+  connectOrCreate: {
+    where: { userId_name: { userId, name: tagName } },
+    create: { name: tagName, color: '#6b7280', userId }
+  }
+}
+
+```
   }
 })
 
-```
+```markdown
 
 *Enables "create tag while tagging task" UX without separate API calls.*
 
@@ -291,7 +329,8 @@ await prisma.task.update({
 **Search performance considerations:**
 
 - GIN indexes provide O(log n) search performance
-- Generated columns add ~10% overhead on INSERT/UPDATE (negligible for validation scale)
+- Generated columns add ~10% overhead on INSERT/UPDATE (negligible for validation
+  scale)
 - tsvector column storage: ~30% overhead vs raw text (acceptable tradeoff)
 - Trigram indexes larger than tsvector indexes but necessary for fuzzy search
 

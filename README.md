@@ -5,31 +5,36 @@
 ### AI-Powered Development Platform
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python 3.9+](https://img.shields.io/badge/Python-3.9+-3776AB?logo=python&logoColor=white)](https://www.python.org)
-[![Node.js 18+](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white)](https://nodejs.org)
+[![Python
+3.9+](https://img.shields.io/badge/Python-3.9+-3776AB?logo=python&logoColor=white)](https://www.python.org)
+[![Node.js
+18+](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white)](https://nodejs.org)
 [![GSD](https://img.shields.io/badge/GSD-v1.9.10-blue?logo=anthropic&logoColor=white)](https://github.com/anthropics/claude-code)
 [![n8n](https://img.shields.io/badge/n8n-2709%20templates-EA4B71?logo=n8n&logoColor=white)](https://n8n.io)
 
-**A unified framework combining project orchestration, autonomous coding, and workflow automation.**
+**A unified framework combining project orchestration, autonomous coding, and
+workflow automation.**
 
 ### You Clone. You Build. You Sell. You Earn.
 
-```
+```text
    ┌──────────┐      ┌──────────┐      ┌──────────┐      ┌──────────┐
    │  CLONE   │ ───► │  BUILD   │ ───► │  SELL    │ ───► │  EARN    │
    │          │      │          │      │          │      │          │
    │ Get the  │      │ AI builds│      │ List on  │      │ Passive  │
    │ framework│      │ your app │      │Marketplace│      │ income   │
    └──────────┘      └──────────┘      └──────────┘      └──────────┘
+
 ```
 
-[Live Products](#live-products) | [Quick Start](#quick-start) | [Documentation](#documentation) | [How It Works](#how-it-works)
+[Live Products](#live-products) | [Quick Start](#quick-start) |
+[Documentation](#documentation) | [How It Works](#how-it-works)
 
 ---
 
 ### What's Included vs What You Build
 
-```
+```python
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                         WHEN YOU CLONE THIS REPO                            │
 ├─────────────────────────────────────────────────────────────────────────────┤
@@ -46,6 +51,7 @@
 │   Learn from the code.                       Keep 90% of revenue.           │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
+
 ```
 
 </div>
@@ -54,18 +60,19 @@
 
 ## What's Inside (Tools You Get)
 
-When you clone this repo, you get **working tools** you can use, learn from, and develop further:
+When you clone this repo, you get **working tools** you can use, learn from, and
+develop further:
 
 ### Task Tracker
 
 > **Production-ready task management** - Use it, learn from it, improve it.
 
 | | |
-|---|---|
-| **Live Demo** | [task-tracker-weld-delta.vercel.app](https://task-tracker-weld-delta.vercel.app) |
-| **Source** | [`projects/task-tracker/`](projects/task-tracker) - **INCLUDED IN REPO** |
+| --- | --- |
+| **Live Demo** | [task-tracker-weld-delta.vercel... |
+| **Source** | [`projects/task-tracker/`](proj... |
 | **Stack** | Next.js 15 + Prisma + Neon PostgreSQL |
-| **Features** | GitHub OAuth, Full-text search, File uploads (TUS), Mobile swipe gestures |
+| **Features** | GitHub OAuth, Full-text search,... |
 
 **Built in 5.8 hours** with GSD orchestration (39 plans, 211 commits)
 
@@ -76,10 +83,10 @@ When you clone this repo, you get **working tools** you can use, learn from, and
 > **AI news aggregation and YouTube automation** - Ready to deploy.
 
 | | |
-|---|---|
-| **Source** | [`projects/ai-dashboard/`](projects/ai-dashboard) - **INCLUDED IN REPO** |
+| --- | --- |
+| **Source** | [`projects/ai-dashboard/`](proj... |
 | **Stack** | Next.js 14 + FastAPI + APScheduler |
-| **Features** | YouTube scraper, News aggregator, GitHub trending, HeyGen video automation |
+  | **Features** | YouTube scraper, News aggregato... |  
 | **Status** | Ready for deployment |
 
 ---
@@ -89,48 +96,52 @@ When you clone this repo, you get **working tools** you can use, learn from, and
 > **Where you sell what you build** - The platform that powers your earnings.
 
 | | |
-|---|---|
-| **Platform** | [frontend-hazel-ten-17.vercel.app](https://frontend-hazel-ten-17.vercel.app) |
-| **API** | [mywork-ai-production.up.railway.app](https://mywork-ai-production.up.railway.app) |
-| **Features** | Product listings, Stripe payments, 90% seller revenue, Analytics |
+| --- | --- |
+| **Platform** | [frontend-hazel-ten-17.vercel.a... |
+| **API** | [mywork-ai-production.up.railwa... |
+  | **Features** | Product listings, Stripe paymen... |  
 
 ---
 
 ## Example Product (Built to Sell)
 
-This is an **example** of what you can build with the framework and sell on the Marketplace:
+This is an **example** of what you can build with the framework and sell on the
+Marketplace:
 
 ### Sports-AI
 
-> **Real-time sports betting analytics** - Built with MyWork, sold on Marketplace.
+> **Real-time sports betting analytics** - Built with MyWork, sold on
+Marketplace.
 
 | | |
-|---|---|
-| **Live Product** | [sports-ai-one.vercel.app](https://sports-ai-one.vercel.app) |
-| **Marketplace Listing** | [View on Marketplace](https://frontend-hazel-ten-17.vercel.app/products/sportsai-sports-betting-arbitrage-platform) |
+| --- | --- |
+| **Live Product** | [sports-ai-one.vercel.app](http... |
+  | **Marketplace Listing** | [View on Marketplace](https://f... |  
 | **Stack** | React + FastAPI + PostgreSQL + Redis |
 | **Features** | 10+ sportsbook odds, Arbitrage alerts, AI predictions, 2FA |
 
-**This is NOT in the repo** - It's a product built to demonstrate what you can create and sell.
+**This is NOT in the repo** - It's a product built to demonstrate what you can
+create and sell.
 
-The knowledge from building it lives in the **Brain** (`.planning/BRAIN.md`), so future projects benefit from lessons learned.
+The knowledge from building it lives in the **Brain** (`.planning/BRAIN.md`), so
+future projects benefit from lessons learned.
 
 ---
 
 ## Production Status
 
 | Component | Type | Status | Link |
-|-----------|------|--------|------|
-| **Task Tracker** | Tool (in repo) | ![Status](https://img.shields.io/website?url=https%3A%2F%2Ftask-tracker-weld-delta.vercel.app&label=live) | [Demo](https://task-tracker-weld-delta.vercel.app) |
+| ----------- | ------ | -------- | ------ |
+  | **Task Trac... | Tool (in repo) | ![Status](h... | [Demo](http... |  
 | **AI Dashboard** | Tool (in repo) | Ready | `projects/ai-dashboard/` |
-| **Marketplace** | Platform | ![Status](https://img.shields.io/website?url=https%3A%2F%2Ffrontend-hazel-ten-17.vercel.app&label=live) | [Platform](https://frontend-hazel-ten-17.vercel.app) |
-| **Sports-AI** | Product (example) | ![Status](https://img.shields.io/website?url=https%3A%2F%2Fsports-ai-one.vercel.app&label=live) | [Buy](https://frontend-hazel-ten-17.vercel.app/products/sportsai-sports-betting-arbitrage-platform) |
+  | **Marketpla... | Platform | ![Status](h... | [Platform](... |  
+| **Sports-AI** | Product (ex... | ![Status](h... | [Buy](https... |
 
 | | |
-|---|---|
+| --- | --- |
 | **Status** | Ready for deployment |
 | **Stack** | Next.js 14 + FastAPI + APScheduler |
-| **Features** | YouTube scraper, News aggregator, GitHub trending, HeyGen video automation |
+  | **Features** | YouTube scraper, News aggregato... |  
 
 **Source:** [`projects/ai-dashboard`](projects/ai-dashboard)
 
@@ -140,12 +151,16 @@ The knowledge from building it lives in the **Brain** (`.planning/BRAIN.md`), so
 
 <div align="center">
 
+```yaml
+
 ```
-                            ┌─────────────────────────────────────┐
-                            │           YOU (Request)             │
-                            └─────────────────┬───────────────────┘
-                                              │
-                                              ▼
+                        ┌─────────────────────────────────────┐
+                        │           YOU (Request)             │
+                        └─────────────────┬───────────────────┘
+                                          │
+                                          ▼
+
+```
 ┌─────────────────────────────────────────────────────────────────────────────────┐
 │                              MASTER ORCHESTRATOR                                 │
 │                                  (CLAUDE.md)                                     │
@@ -157,10 +172,14 @@ The knowledge from building it lives in the **Brain** (`.planning/BRAIN.md`), so
 │   • 20+ features?       → Autocoder                                              │
 │   • Webhooks/APIs?      → n8n                                                    │
 └─────────────────────────────────────────────────────────────────────────────────┘
-                                              │
-                 ┌────────────────────────────┼────────────────────────────┐
-                 │                            │                            │
-                 ▼                            ▼                            ▼
+
+```
+                                          │
+             ┌────────────────────────────┼────────────────────────────┐
+             │                            │                            │
+             ▼                            ▼                            ▼
+
+```
 ┌─────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐
 │      LAYER 1: GSD       │   │      LAYER 2: WAT       │   │   LAYER 3: ENGINES      │
 │  (Project Orchestration)│   │   (Task Execution)      │   │     (Automation)        │
@@ -178,33 +197,40 @@ The knowledge from building it lives in the **Brain** (`.planning/BRAIN.md`), so
 │  /gsd:verify-work       │   │                         │   │  │  2,709 workflow │   │
 │                         │   │                         │   │  │  templates      │   │
 └────────────┬────────────┘   └────────────┬────────────┘   └──────────┬──────────┘
-             │                             │                            │
-             └─────────────────────────────┼────────────────────────────┘
-                                           │
-                                           ▼
-                     ┌─────────────────────────────────────────────┐
-                     │              SELF-LEARNING                   │
-                     ├─────────────────────────────────────────────┤
-                     │                                              │
-                     │   🧠 BRAIN           📦 MODULE REGISTRY      │
-                     │   Remembers what     Indexes your code       │
-                     │   worked & failed    1,300+ reusable modules │
-                     │                                              │
-                     │   Every completed task makes the next faster │
-                     │                                              │
-                     └─────────────────────────────────────────────┘
+
+```
+         │                             │                            │
+         └─────────────────────────────┼────────────────────────────┘
+                                       │
+                                       ▼
+                 ┌─────────────────────────────────────────────┐
+                 │              SELF-LEARNING                   │
+                 ├─────────────────────────────────────────────┤
+                 │                                              │
+                 │   🧠 BRAIN           📦 MODULE REGISTRY      │
+                 │   Remembers what     Indexes your code       │
+                 │   worked & failed    1,300+ reusable modules │
+                 │                                              │
+                 │   Every completed task makes the next faster │
+                 │                                              │
+                 └─────────────────────────────────────────────┘
+
+```
+
 ```
 
 </div>
 
 ### The Simple Flow
 
-```
+```markdown
+
 1. You ask for something
 2. CLAUDE.md routes to the right tool
 3. Work gets done (with atomic commits)
 4. Brain learns from result
 5. Next time is faster
+
 ```
 
 ---
@@ -212,76 +238,87 @@ The knowledge from building it lives in the **Brain** (`.planning/BRAIN.md`), so
 ## Architecture Details
 
 ```mermaid
+
 graph TB
-    subgraph "Master Orchestrator"
-        MO[CLAUDE.md<br/>Routes all requests]
-    end
 
-    subgraph "Layer 1: GSD - Project Orchestration"
-        GSD_NEW["/gsd:new-project"]
-        GSD_PLAN["/gsd:plan-phase"]
-        GSD_EXEC["/gsd:execute-phase"]
-        GSD_VERIFY["/gsd:verify-work"]
-    end
-
-    subgraph "Layer 2: WAT - Task Execution"
-        WORKFLOWS[Workflows<br/>markdown SOPs]
-        TOOLS[Tools<br/>Python scripts]
-    end
-
-    subgraph "Layer 3: Automation Engines"
-        AUTOCODER[Autocoder<br/>Autonomous coding]
-        N8N[n8n<br/>2,709 templates]
-    end
-
-    subgraph "Self-Learning"
-        BRAIN[Brain<br/>Knowledge vault]
-        REGISTRY[Module Registry<br/>1,300+ modules]
-    end
-
-    MO --> GSD_NEW
-    MO --> GSD_PLAN
-    MO --> WORKFLOWS
-    MO --> AUTOCODER
-    MO --> N8N
-
-    GSD_NEW --> GSD_PLAN
-    GSD_PLAN --> GSD_EXEC
-    GSD_EXEC --> GSD_VERIFY
-    GSD_VERIFY --> BRAIN
-
-    WORKFLOWS --> TOOLS
-    TOOLS --> REGISTRY
-
-    style MO fill:#4A90D9,stroke:#333,color:#fff
-    style BRAIN fill:#34A853,stroke:#333,color:#fff
-    style AUTOCODER fill:#EA4335,stroke:#333,color:#fff
-    style N8N fill:#EA4B71,stroke:#333,color:#fff
 ```
+subgraph "Master Orchestrator"
+    MO[CLAUDE.md<br/>Routes all requests]
+end
+
+subgraph "Layer 1: GSD - Project Orchestration"
+    GSD_NEW["/gsd:new-project"]
+    GSD_PLAN["/gsd:plan-phase"]
+    GSD_EXEC["/gsd:execute-phase"]
+    GSD_VERIFY["/gsd:verify-work"]
+end
+
+subgraph "Layer 2: WAT - Task Execution"
+    WORKFLOWS[Workflows<br/>markdown SOPs]
+    TOOLS[Tools<br/>Python scripts]
+end
+
+subgraph "Layer 3: Automation Engines"
+    AUTOCODER[Autocoder<br/>Autonomous coding]
+    N8N[n8n<br/>2,709 templates]
+end
+
+subgraph "Self-Learning"
+    BRAIN[Brain<br/>Knowledge vault]
+    REGISTRY[Module Registry<br/>1,300+ modules]
+end
+
+MO --> GSD_NEW
+MO --> GSD_PLAN
+MO --> WORKFLOWS
+MO --> AUTOCODER
+MO --> N8N
+
+GSD_NEW --> GSD_PLAN
+GSD_PLAN --> GSD_EXEC
+GSD_EXEC --> GSD_VERIFY
+GSD_VERIFY --> BRAIN
+
+WORKFLOWS --> TOOLS
+TOOLS --> REGISTRY
+
+style MO fill:#4A90D9,stroke:#333,color:#fff
+style BRAIN fill:#34A853,stroke:#333,color:#fff
+style AUTOCODER fill:#EA4335,stroke:#333,color:#fff
+style N8N fill:#EA4B71,stroke:#333,color:#fff
+
+```
+```markdown
 
 ### Decision Flow
 
 ```mermaid
+
 flowchart TD
-    A[User Request] --> B{New Project?}
-    B -->|Yes| C["/gsd:new-project"]
-    B -->|No| D{Existing GSD Phase?}
-    D -->|Yes| E["/gsd:plan-phase N"]
-    D -->|No| F{Quick Task?}
-    F -->|Yes| G["/gsd:quick"]
-    F -->|No| H{20+ Features?}
-    H -->|Yes| I[Autocoder]
-    H -->|No| J{Visual Automation?}
-    J -->|Yes| K[n8n Workflow]
-    J -->|No| L[WAT Tools]
 
-    E --> M["/gsd:execute-phase N"]
-    M --> N["/gsd:verify-work"]
+```
+A[User Request] --> B{New Project?}
+B -->|Yes| C["/gsd:new-project"]
+B -->|No| D{Existing GSD Phase?}
+D -->|Yes| E["/gsd:plan-phase N"]
+D -->|No| F{Quick Task?}
+F -->|Yes| G["/gsd:quick"]
+F -->|No| H{20+ Features?}
+H -->|Yes| I[Autocoder]
+H -->|No| J{Visual Automation?}
+J -->|Yes| K[n8n Workflow]
+J -->|No| L[WAT Tools]
 
-    style C fill:#4A90D9,stroke:#333,color:#fff
-    style E fill:#4A90D9,stroke:#333,color:#fff
-    style I fill:#EA4335,stroke:#333,color:#fff
-    style K fill:#EA4B71,stroke:#333,color:#fff
+E --> M["/gsd:execute-phase N"]
+M --> N["/gsd:verify-work"]
+
+style C fill:#4A90D9,stroke:#333,color:#fff
+style E fill:#4A90D9,stroke:#333,color:#fff
+style I fill:#EA4335,stroke:#333,color:#fff
+style K fill:#EA4B71,stroke:#333,color:#fff
+
+```
+
 ```
 
 ---
@@ -295,21 +332,26 @@ flowchart TD
 </div>
 
 ```bash
+
 # Step 1: Clone
+
 git clone https://github.com/DansiDanutz/MyWork-AI.git
 cd MyWork-AI
 
 # Step 2: Install (does everything automatically)
+
 ./install.sh          # macOS/Linux
 install.bat           # Windows
-```
 
-**That's it.** The script installs Python dependencies, sets up the environment, and verifies everything works.
+```markdown
+
+**That's it.** The script installs Python dependencies, sets up the environment,
+and verifies everything works.
 
 ### What the Install Script Does
 
 | Step | What Happens |
-|------|--------------|
+| ------ | -------------- |
 | 1 | Checks Python 3.9+ and Node.js 18+ |
 | 2 | Creates virtual environment |
 | 3 | Installs all dependencies |
@@ -326,48 +368,63 @@ After installation, configure your API keys in `.env`:
 ### Required (Minimum)
 
 ```bash
+
 # Opens .env in your editor
+
 nano .env   # or: code .env / vim .env
+
 ```
 
 ```env
+
 # REQUIRED - You need at least this one
+
 ANTHROPIC_API_KEY=sk-ant-xxxxx
-```
+
+```markdown
 
 ### Optional (Enable More Features)
 
 ```env
+
 # Other AI Providers
+
 OPENAI_API_KEY=sk-xxxxx              # For GPT models
 GROQ_API_KEY=gsk_xxxxx               # Fast inference
 
 # n8n Workflow Automation
+
 N8N_API_URL=https://your.app.n8n.cloud
 N8N_API_KEY=your-n8n-api-key
 
 # GitHub Integration
+
 GITHUB_TOKEN=ghp_xxxxx               # For GitHub OAuth features
 
 # Autocoder (if using external instance)
+
 AUTOCODER_ROOT=/path/to/autocoder    # Default: .autocoder/
 AUTOCODER_PORT=8889                  # Default: 8889
+
 ```
 
 ### Verify Configuration
 
 ```bash
 python tools/mw.py doctor    # Shows what's configured and what's missing
-```
+
+```yaml
 
 **Output example:**
+
 ```
 ✅ ANTHROPIC_API_KEY: Configured
 ✅ Python: 3.11.5
 ✅ Node.js: 20.10.0
 ⚠️  N8N_API_KEY: Not set (n8n features disabled)
 ⚠️  GITHUB_TOKEN: Not set (GitHub features disabled)
-```
+
+```markdown
 
 ---
 
@@ -376,23 +433,28 @@ python tools/mw.py doctor    # Shows what's configured and what's missing
 ### Create Your First Project
 
 ```bash
+
 # Create from template
+
 python tools/mw.py new my-app fastapi
 
 # Navigate to project
+
 cd projects/my-app
 
 # In Claude Code CLI:
+
 /gsd:new-project          # Initialize with discovery
 /gsd:plan-phase 1         # Plan first phase
 /gsd:execute-phase 1      # Build it
 /gsd:verify-work          # Validate
+
 ```
 
 ### Available Templates
 
 | Template | What You Get |
-|----------|--------------|
+| ---------- | -------------- |
 | `basic` | Empty project with GSD structure |
 | `fastapi` | FastAPI + SQLAlchemy + SQLite backend |
 | `nextjs` | Next.js + TypeScript + Tailwind frontend |
@@ -401,11 +463,14 @@ cd projects/my-app
 | `automation` | n8n + Python webhook handler |
 
 ```bash
+
 # Examples
+
 python tools/mw.py new my-api fastapi
 python tools/mw.py new my-site nextjs
 python tools/mw.py new my-saas fullstack
-```
+
+```markdown
 
 ---
 
@@ -444,7 +509,8 @@ MyWork-AI/
 ├── CLAUDE.md                    # Master Orchestrator instructions
 ├── .env.example                 # Environment template
 └── .mcp.json.example            # MCP server config template
-```
+
+```markdown
 
 ---
 
@@ -453,30 +519,36 @@ MyWork-AI/
 ### Core Commands
 
 ```bash
+
 # Status & Health
+
 mw status                    # Quick health check
 mw doctor                    # Full diagnostics with auto-fix
 
 # Projects
+
 mw new <name> [template]     # Create project (basic|fastapi|nextjs|fullstack|cli)
 mw projects                  # List all projects
 mw open <name>               # Open in VS Code
 
 # Knowledge
+
 mw brain search <query>      # Search knowledge vault
 mw brain learn               # Run daily learning
 mw search <query>            # Search module registry (1,300+ modules)
 mw scan                      # Re-index all modules
 
 # Updates
+
 mw update check              # Check for updates
 mw update <component>        # Update gsd|autocoder|n8n-skills
+
 ```
 
 ### GSD Commands
 
 | Command | Purpose |
-|---------|---------|
+| --------- | --------- |
 | `/gsd:new-project` | Initialize with discovery, research, roadmap |
 | `/gsd:plan-phase N` | Create detailed task plans for phase N |
 | `/gsd:execute-phase N` | Run plans in parallel waves |
@@ -489,7 +561,9 @@ mw update <component>        # Update gsd|autocoder|n8n-skills
 ### Autocoder Commands
 
 ```bash
+
 # Control
+
 mw ac start <project>        # Start autonomous coding
 mw ac stop <project>         # Stop gracefully
 mw ac pause <project>        # Pause execution
@@ -498,13 +572,16 @@ mw ac status                 # Check server status
 mw ac progress <project>     # View progress
 
 # UI
+
 mw ac ui                     # Open web interface (localhost:8889)
 
 # Service (macOS)
+
 mw ac service install        # Install LaunchAgent
 mw ac service status         # Check service
 mw ac service logs           # View logs
-```
+
+```markdown
 
 ---
 
@@ -513,19 +590,25 @@ mw ac service logs           # View logs
 ### Required Environment Variables
 
 ```bash
+
 # Minimum required
+
 ANTHROPIC_API_KEY=sk-ant-xxxxx
 
 # Optional LLM providers
+
 OPENAI_API_KEY=sk-xxxxx
 GROQ_API_KEY=gsk_xxxxx
 
 # Optional n8n integration
+
 N8N_API_URL=https://your-instance.app.n8n.cloud
 N8N_API_KEY=your-api-key
 
 # Optional GitHub integration
+
 GITHUB_TOKEN=ghp_xxxxx
+
 ```
 
 ### MCP Server Configuration
@@ -535,24 +618,29 @@ Copy `.mcp.json.example` to `.mcp.json`:
 ```json
 {
   "mcpServers": {
-    "n8n-mcp": {
-      "command": "npx",
-      "args": ["n8n-mcp"],
-      "env": {
-        "N8N_API_URL": "https://your-instance.app.n8n.cloud",
-        "N8N_API_KEY": "your-api-key"
-      }
-    }
+
+```
+"n8n-mcp": {
+  "command": "npx",
+  "args": ["n8n-mcp"],
+  "env": {
+    "N8N_API_URL": "https://your-instance.app.n8n.cloud",
+    "N8N_API_KEY": "your-api-key"
   }
 }
+
 ```
+  }
+}
+
+```markdown
 
 ---
 
 ## Project Templates
 
 | Template | Stack | Best For |
-|----------|-------|----------|
+| ---------- | ------- | ---------- |
 | `basic` | Python only | Scripts, utilities |
 | `fastapi` | FastAPI + SQLAlchemy + SQLite | APIs, backends |
 | `nextjs` | Next.js + TypeScript + Tailwind | Frontends, SPAs |
@@ -564,6 +652,7 @@ Copy `.mcp.json.example` to `.mcp.json`:
 mw new my-api fastapi
 mw new my-frontend nextjs
 mw new my-app fullstack
+
 ```
 
 ---
@@ -571,7 +660,7 @@ mw new my-app fullstack
 ## Documentation
 
 | Document | Description |
-|----------|-------------|
+| ---------- | ------------- |
 | [Quick Start Guide](docs/quickstart.md) | Get running in 5 minutes |
 | [Troubleshooting](docs/troubleshooting.md) | Common issues and fixes |
 | [FAQ](docs/faq.md) | Frequently asked questions |
@@ -588,7 +677,7 @@ mw new my-app fullstack
 This framework handles sensitive credentials. Follow these practices:
 
 | File | Purpose | Commit? |
-|------|---------|---------|
+| ------ | --------- | --------- |
 | `.env` | API keys and secrets | **Never** |
 | `.mcp.json` | MCP server credentials | **Never** |
 | `.env.example` | Template (no real values) | Safe |
@@ -605,18 +694,24 @@ See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
 
 ```bash
+
 # Fork and clone
+
 git clone https://github.com/YOUR_USERNAME/MyWork-AI.git
 
 # Create feature branch
+
 git checkout -b feature/amazing-feature
 
 # Make changes and commit
+
 git commit -m 'Add amazing feature'
 
 # Push and create PR
+
 git push origin feature/amazing-feature
-```
+
+```markdown
 
 ---
 
@@ -628,10 +723,13 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Acknowledgments
 
-- [Claude Code](https://github.com/anthropics/claude-code) - AI coding assistant and GSD orchestration
+- [Claude Code](https://github.com/anthropics/claude-code) - AI coding assistant
+  and GSD orchestration
 - [n8n](https://n8n.io) - Workflow automation platform
-- [n8n-mcp](https://github.com/czlonkowski/n8n-mcp) - n8n MCP server (1,084 nodes)
-- [n8n-skills](https://github.com/czlonkowski/n8n-skills) - Claude Code skills for n8n
+- [n8n-mcp](https://github.com/czlonkowski/n8n-mcp) - n8n MCP server (1,084
+  nodes)
+- [n8n-skills](https://github.com/czlonkowski/n8n-skills) - Claude Code skills
+  for n8n
 
 ---
 
@@ -639,6 +737,8 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 **Built with AI, for AI-assisted development.**
 
-[Report Bug](https://github.com/DansiDanutz/MyWork-AI/issues) | [Request Feature](https://github.com/DansiDanutz/MyWork-AI/issues) | [Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
+[Report Bug](https://github.com/DansiDanutz/MyWork-AI/issues) | [Request
+Feature](https://github.com/DansiDanutz/MyWork-AI/issues) |
+[Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
 
 </div>

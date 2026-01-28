@@ -15,41 +15,53 @@
 
 - **Primary Location**: Show file indicators on task cards in list view
 - **Secondary Feature**: Quick preview on hover over file indicators
-- **Full Management**: Complete file operations available in task detail/edit view
-- **Preview Style**: Thumbnails for images, file type icons for documents, click to view larger/download
+- **Full Management**: Complete file operations available in task detail/edit
+  view
+- **Preview Style**: Thumbnails for images, file type icons for documents, click
+  to view larger/download
 
 ### File Type Support
 
 - **Scope**: Accept any file type for maximum flexibility
-- **Validation**: Must implement robust file type validation and security scanning
-- **Security Considerations**: Virus scanning, executable file warnings, content type verification
+- **Validation**: Must implement robust file type validation and security
+  scanning
+- **Security Considerations**: Virus scanning, executable file warnings, content
+  type verification
 
 ### Storage & Infrastructure
 
 - **Storage Method**: Local filesystem (simple, fast, no cloud dependencies)
-- **File Size Limit**: 25MB per file (generous enough for documents, presentations, media)
-- **Directory Structure**: Organize by user ID and task ID for easy access control
-- **File Naming**: Generate unique filenames to prevent conflicts, preserve original names for display
+- **File Size Limit**: 25MB per file (generous enough for documents,
+  presentations, media)
+- **Directory Structure**: Organize by user ID and task ID for easy access
+  control
+- **File Naming**: Generate unique filenames to prevent conflicts, preserve
+  original names for display
 
 ### Security Model
 
-- **Access Control**: Task-level access matching existing security (users only see files on their own tasks)
+- **Access Control**: Task-level access matching existing security (users only
+  see files on their own tasks)
 - **URL Security**: Private file URLs requiring authentication
 - **File Isolation**: Each file scoped to specific task and user
-- **Cleanup Policy**: Delete files immediately when parent task is deleted (clean, no orphaned files)
+- **Cleanup Policy**: Delete files immediately when parent task is deleted
+  (clean, no orphaned files)
 
 ### Error Handling & Recovery
 
 - **Validation**: Check file size and type before upload starts
 - **Progress Feedback**: Inline error messages for specific upload failures
 - **Recovery Options**: Allow retry for failed uploads due to network issues
-- **Resume Capability**: Partial upload recovery for interrupted large file transfers
-- **User Feedback**: Clear error messages (file too large, invalid type, network error, etc.)
+- **Resume Capability**: Partial upload recovery for interrupted large file
+  transfers
+- **User Feedback**: Clear error messages (file too large, invalid type, network
+  error, etc.)
 
 ### Technical Requirements
 
 - **Database Schema**: FileAttachment model with task relation, metadata storage
-- **Upload Endpoint**: Chunked upload support for large files and resume capability
+- **Upload Endpoint**: Chunked upload support for large files and resume
+  capability
 - **File Serving**: Secure download endpoint with access control
 - **Preview Generation**: Thumbnail creation for images, file type icon mapping
 - **Cleanup Jobs**: Background task cleanup when tasks deleted

@@ -1,6 +1,7 @@
 # MyWork Framework - Example Projects
 
-This folder contains working example projects that demonstrate how to use the MyWork framework.
+This folder contains working example projects that demonstrate how to use the
+MyWork framework.
 
 ## Available Now
 
@@ -19,7 +20,7 @@ cd projects/my-task-cli
 pip install -r requirements.txt
 python src/task_manager.py --help
 
-```
+```markdown
 
 ## Notes
 

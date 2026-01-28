@@ -25,27 +25,34 @@ tech-stack:
   added: []
   patterns:
 
-    - Server Components with Suspense streaming
-    - Skeleton loaders matching component layout
-    - Conditional CTAs based on data state
-    - React cache() for request deduplication
+```
+- Server Components with Suspense streaming
+- Skeleton loaders matching component layout
+- Conditional CTAs based on data state
+- React cache() for request deduplication
 
+```
 key-files:
   created:
 
-    - src/app/(app)/tasks/page.tsx
-    - src/app/(app)/tasks/new/page.tsx
+```
+- src/app/(app)/tasks/page.tsx
+- src/app/(app)/tasks/new/page.tsx
 
+```
   modified:
 
-    - src/app/(app)/dashboard/page.tsx
+```
+- src/app/(app)/dashboard/page.tsx
 
+```
 decisions: []
 ---
 
 # Phase 3 Plan 3: Task Pages & Dashboard Integration Summary
 
-**One-liner:** Wire task UI components to Next.js routes with streaming and real-time statistics
+**One-liner:** Wire task UI components to Next.js routes with streaming and
+real-time statistics
 
 ## What Was Built
 
@@ -68,8 +75,12 @@ Created three interconnected pages completing the task management UI:
    - Real task counts via `getTaskCounts` DAL function
    - Quick-add button in header
    - Conditional CTAs:
-     - No tasks: "Create your first task"
-     - Has tasks: "View all tasks" (count displayed)
+
+```
+ - No tasks: "Create your first task"
+ - Has tasks: "View all tasks" (count displayed)
+
+```
    - All three stat cards show real data
 
 ## Technical Implementation
@@ -77,6 +88,7 @@ Created three interconnected pages completing the task management UI:
 ### Server Components & Streaming
 
 ```typescript
+
 // Task list with Suspense boundary
 <Suspense fallback={<TaskListSkeleton />}>
   <TaskListContent />
@@ -89,7 +101,7 @@ async function TaskListContent() {
   return <TaskList tasks={tasks} />
 }
 
-```
+```python
 
 **Pattern:** Separate skeleton from content for better streaming UX.
 
@@ -107,6 +119,7 @@ Custom skeleton matching TaskList layout:
 ### Dashboard Data Flow
 
 ```typescript
+
 // Get user first (cached via React cache())
 const user = await getUser()
 
@@ -115,18 +128,20 @@ const taskCounts = await getTaskCounts(user?.id || '')
 
 ```
 
-**Pattern:** Sequential data fetching leveraging React cache() for deduplication.
+**Pattern:** Sequential data fetching leveraging React cache() for
+deduplication.
 
 ### Conditional CTAs
 
 ```typescript
+
 {taskCounts.total === 0 ? (
   <Link href="/tasks/new">Create your first task</Link>
 ) : (
   <Link href="/tasks">View all tasks</Link>
 )}
 
-```
+```yaml
 
 **Pattern:** UI adapts to data state for contextual guidance.
 
@@ -144,7 +159,7 @@ Dashboard
   ├─> Cancel ──────────> /tasks
   └─> Create success ──> /tasks (via redirect)
 
-```
+```markdown
 
 All routes protected via `(app)` route group middleware.
 
@@ -212,7 +227,8 @@ All verification criteria met:
 
 ## Decisions Made
 
-No new architectural decisions - followed established patterns from previous plans.
+No new architectural decisions - followed established patterns from previous
+plans.
 
 ## Deviations from Plan
 
@@ -255,12 +271,17 @@ None.
 ### Pattern: Server Components with Suspense Streaming
 
 ```typescript
+
 // Page structure
 export default function Page() {
   return (
-    <Suspense fallback={<Skeleton />}>
-      <AsyncContent />
-    </Suspense>
+
+```
+<Suspense fallback={<Skeleton />}>
+  <AsyncContent />
+</Suspense>
+
+```
   )
 }
 
@@ -276,23 +297,29 @@ async function AsyncContent() {
 ### Pattern: Skeleton Loader Matching Layout
 
 ```typescript
+
 function Skeleton() {
   return (
-    <div className="animate-pulse">
-      {/* Match exact layout of actual content */}
-      <div className="h-6 bg-gray-200 rounded w-3/4 mb-3" />
-      <div className="h-4 bg-gray-200 rounded w-full" />
-    </div>
+
+```
+<div className="animate-pulse">
+  {/* Match exact layout of actual content */}
+  <div className="h-6 bg-gray-200 rounded w-3/4 mb-3" />
+  <div className="h-4 bg-gray-200 rounded w-full" />
+</div>
+
+```
   )
 }
 
-```
+```yaml
 
 **Why this matters:** Prevents layout shift, better perceived performance
 
 ### Pattern: Conditional CTAs Based on Data State
 
 ```typescript
+
 {hasData ? (
   <Link href="/view">View items</Link>
 ) : (
@@ -320,7 +347,7 @@ None - all functionality working as expected.
 ## Commits
 
 | Commit | Type | Description |
-|--------|------|-------------|
+| -------- | ------ | ------------- |
 | 100f138 | feat | Create task list page at /tasks |
 | 0c27ce4 | feat | Create new task page at /tasks/new |
 | ca841b5 | feat | Update dashboard with real task statistics |

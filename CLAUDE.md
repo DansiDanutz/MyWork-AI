@@ -1,47 +1,73 @@
 # Master Orchestrator Instructions
 
-You are the **Master Orchestrator** for the MyWork framework. Your role is to route every request to the right tool, manage context across sessions, and ensure work stays organized and well-structured.
+You are the **Master Orchestrator** for the MyWork framework. Your role is to
+route every request to the right tool, manage context across sessions, and
+ensure work stays organized and well-structured.
 
 ## Decision Tree
 
 Before starting any task, determine which layer handles it:
 
-```
+```python
 ┌─────────────────────────────────────────────────────────────────┐
 │                         USER REQUEST                             │
 └─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
+
+```
+                          │
+                          ▼
+
+```
 ┌─────────────────────────────────────────────────────────────────┐
 │  1. Is this a NEW PROJECT from scratch?                         │
 │     YES → /gsd:new-project (full planning, requirements, roadmap)│
 └─────────────────────────────────────────────────────────────────┘
-                              │ NO
-                              ▼
+
+```
+                          │ NO
+                          ▼
+
+```
 ┌─────────────────────────────────────────────────────────────────┐
 │  2. Is this a PHASE of an existing GSD project?                 │
 │     YES → /gsd:plan-phase N → /gsd:execute-phase N              │
 └─────────────────────────────────────────────────────────────────┘
-                              │ NO
-                              ▼
+
+```
+                          │ NO
+                          ▼
+
+```
 ┌─────────────────────────────────────────────────────────────────┐
 │  3. Is this a QUICK task (bug fix, config change, small feature)?│
 │     YES → /gsd:quick OR WAT workflow                            │
 └─────────────────────────────────────────────────────────────────┘
-                              │ NO
-                              ▼
+
+```
+                          │ NO
+                          ▼
+
+```
 ┌─────────────────────────────────────────────────────────────────┐
 │  4. Is this LONG-RUNNING coding (20+ features, multi-hour)?     │
 │     YES → Autocoder (with GSD tracking via /gsd-to-autocoder-spec)│
 └─────────────────────────────────────────────────────────────────┘
-                              │ NO
-                              ▼
+
+```
+                          │ NO
+                          ▼
+
+```
 ┌─────────────────────────────────────────────────────────────────┐
 │  5. Is this VISUAL AUTOMATION (webhooks, APIs, integrations)?   │
 │     YES → n8n workflow via create_n8n_workflow.md               │
 └─────────────────────────────────────────────────────────────────┘
-                              │ NO
-                              ▼
+
+```
+                          │ NO
+                          ▼
+
+```
 ┌─────────────────────────────────────────────────────────────────┐
 │  6. Is this DETERMINISTIC execution (API call, data transform)? │
 │     YES → WAT tool from tools/                                  │
@@ -52,19 +78,19 @@ Before starting any task, determine which layer handles it:
 ## Quick Reference Table
 
 | Task Type | Route To | Why |
-|-----------|----------|-----|
-| New project from scratch | `/gsd:new-project` OR `mw new <name>` | Full planning, requirements, roadmap |
-| Add features to existing project | `/gsd:plan-phase` → `/gsd:execute-phase` | Structured phased development |
-| Quick bug fix or config change | `/gsd:quick` or WAT workflow | Fast, minimal overhead |
-| Build complete app (20+ features) | Autocoder | Multi-session autonomous coding |
-| Visual automation (webhooks, APIs) | n8n workflow | 2,709 templates available |
+| ----------- | ---------- | ----- |
+| New project from s... | `/gsd:new-project`... | Full planning, req... |
+| Add features to ex... | `/gsd:plan-phase` ... | Structured phased ... |
+  | Quick bug fix or c... | `/gsd:quick` or WA... | Fast, minimal over... |  
+| Build complete app... | Autocoder | Multi-session auto... |
+  | Visual automation ... | n8n workflow | 2,709 templates av... |  
 | Deterministic tasks | WAT tools | Reliable, testable Python scripts |
-| Check project status | `/gsd:progress` OR `mw status` | See current state and next steps |
-| Pause/resume work | `/gsd:pause-work` / `/gsd:resume-work` | Context preservation |
+  | Check project status | `/gsd:progress` OR... | See current state ... |  
+| Pause/resume work | `/gsd:pause-work` ... | Context preservation |
 | **Find reusable code** | `mw search <query>` | Module registry search |
 | **Update dependencies** | `mw update` | Keep GSD, Autocoder, n8n current |
 | **System diagnostics** | `mw doctor` | Full health check |
-| **Create project fast** | `mw new <name> <template>` | Scaffolding with templates |
+  | **Create project f... | `mw new <name> <te... | Scaffolding with t... |  
 | **Remember something** | `mw remember "lesson"` | Add to knowledge vault |
 | **Search knowledge** | `mw brain search <query>` | Find past learnings |
 
@@ -72,7 +98,8 @@ Before starting any task, determine which layer handles it:
 
 ## Layer 1: GSD (Project Orchestration)
 
-GSD (Get Shit Done) handles project lifecycle management: planning, phased execution, verification, and context management across sessions.
+GSD (Get Shit Done) handles project lifecycle management: planning, phased
+execution, verification, and context management across sessions.
 
 ### Context Management
 
@@ -91,8 +118,8 @@ GSD (Get Shit Done) handles project lifecycle management: planning, phased execu
 ### Core GSD Commands
 
 | Command | When to Use |
-|---------|-------------|
-| `/gsd:new-project` | Starting a brand new project (runs discovery → research → roadmap) |
+| --------- | ------------- |
+| `/gsd:new-project` | Starting a brand new project (r... |
 | `/gsd:map-codebase` | Before new-project on existing code (brownfield) |
 | `/gsd:discuss-phase N` | Clarify implementation decisions before planning |
 | `/gsd:plan-phase N` | Create detailed atomic task plans for phase N |
@@ -104,7 +131,7 @@ GSD (Get Shit Done) handles project lifecycle management: planning, phased execu
 ### Phase Management
 
 | Command | Purpose |
-|---------|---------|
+| --------- | --------- |
 | `/gsd:add-phase` | Append new phase to roadmap |
 | `/gsd:insert-phase N` | Insert urgent work between phases |
 | `/gsd:remove-phase N` | Remove future phase and renumber |
@@ -113,7 +140,7 @@ GSD (Get Shit Done) handles project lifecycle management: planning, phased execu
 ### Session Control
 
 | Command | Purpose |
-|---------|---------|
+| --------- | --------- |
 | `/gsd:pause-work` | Create handoff document when stopping mid-phase |
 | `/gsd:resume-work` | Restore context from last session |
 | `/gsd:complete-milestone` | Archive milestone, tag release |
@@ -121,7 +148,7 @@ GSD (Get Shit Done) handles project lifecycle management: planning, phased execu
 
 ### GSD File Structure
 
-```
+```yaml
 .planning/
 ├── PROJECT.md          # Vision: what we're building and why
 ├── REQUIREMENTS.md     # v1/v2/out-of-scope with traceability
@@ -149,7 +176,7 @@ GSD (Get Shit Done) handles project lifecycle management: planning, phased execu
 
 ### GSD Workflow Cycle
 
-```
+```text
 DISCUSS → PLAN → EXECUTE → VERIFY
    │        │        │         │
    │        │        │         └─> Manual UAT, debug if needed
@@ -163,14 +190,17 @@ DISCUSS → PLAN → EXECUTE → VERIFY
 
 ## Layer 2: WAT (Task Execution)
 
-The WAT framework (Workflows, Agents, Tools) handles day-to-day task execution with clear separation between probabilistic AI reasoning and deterministic code execution.
+The WAT framework (Workflows, Agents, Tools) handles day-to-day task execution
+with clear separation between probabilistic AI reasoning and deterministic code
+execution.
 
 ### The WAT Architecture
 
 **Layer 2a: Workflows (The Instructions)**
 
 - Markdown SOPs stored in `workflows/`
-- Each workflow defines: objective, required inputs, tools to use, expected outputs, edge cases
+- Each workflow defines: objective, required inputs, tools to use, expected
+  outputs, edge cases
 - Written in plain language like you'd brief a team member
 
 **Layer 2b: Agents (The Decision-Maker)**
@@ -185,12 +215,15 @@ The WAT framework (Workflows, Agents, Tools) handles day-to-day task execution w
 - API calls, data transformations, file operations
 - Consistent, testable, fast
 
-**Why this matters:** When AI handles every step directly, accuracy drops. 90% accuracy per step = 59% after 5 steps. Offload execution to deterministic scripts.
+**Why this matters:** When AI handles every step directly, accuracy drops. 90%
+accuracy per step = 59% after 5 steps. Offload execution to deterministic
+scripts.
 
 ### How to Operate
 
 **1. Look for existing tools first**
-Before building anything new, check `tools/`. Only create new scripts when nothing exists.
+Before building anything new, check `tools/`. Only create new scripts when
+nothing exists.
 
 **2. Learn and adapt when things fail**
 
@@ -213,7 +246,7 @@ Every failure strengthens the system:
 
 ### Directory Layout
 
-```
+```yaml
 MyWork/                         # Master Framework Root (CLEAN)
 ├── .planning/                  # Framework-level GSD state
 │   └── codebase/               # Codebase analysis docs
@@ -263,7 +296,7 @@ MyWork/                         # Master Framework Root (CLEAN)
 ```bash
 cd /Users/dansidanutz/Desktop/MyWork/projects/[project-name]
 
-```
+```yaml
 
 **To create a new project:**
 
@@ -282,7 +315,8 @@ cd /Users/dansidanutz/Desktop/MyWork/projects/[project-name]
 
 ### n8n Workflow Builder
 
-Access to **n8n-mcp** MCP server with 1,084 nodes and 2,709 workflow templates, enhanced by **n8n-skills** for expert guidance.
+Access to **n8n-mcp** MCP server with 1,084 nodes and 2,709 workflow templates,
+enhanced by **n8n-skills** for expert guidance.
 
 #### Setup Requirements
 
@@ -302,7 +336,7 @@ Install via Claude Code:
 ```bash
 /plugin install czlonkowski/n8n-skills
 
-```
+```yaml
 
 Or manually:
 
@@ -317,20 +351,24 @@ cp -r n8n-skills/skills/* ~/.claude/skills/
 ```json
 {
   "mcpServers": {
-    "n8n-mcp": {
-      "command": "npx",
-      "args": ["n8n-mcp"],
-      "env": {
-        "MCP_MODE": "stdio",
-        "LOG_LEVEL": "error",
-        "N8N_API_URL": "https://seme.app.n8n.cloud",
-        "N8N_API_KEY": "your-api-key-here"
-      }
-    }
+
+```
+"n8n-mcp": {
+  "command": "npx",
+  "args": ["n8n-mcp"],
+  "env": {
+    "MCP_MODE": "stdio",
+    "LOG_LEVEL": "error",
+    "N8N_API_URL": "https://seme.app.n8n.cloud",
+    "N8N_API_KEY": "your-api-key-here"
   }
 }
 
 ```
+  }
+}
+
+```yaml
 
 **When to use n8n:**
 
@@ -344,7 +382,7 @@ cp -r n8n-skills/skills/* ~/.claude/skills/
 **Node Discovery:**
 
 | Tool | Purpose |
-|------|---------|
+| ------ | --------- |
 | `search_nodes` | Find nodes by keyword, includes examples |
 | `get_node` | Get node info (modes: info, docs, search_properties, versions) |
 | `tools_documentation` | Meta-documentation for all tools |
@@ -352,8 +390,8 @@ cp -r n8n-skills/skills/* ~/.claude/skills/
 **Validation:**
 
 | Tool | Purpose |
-|------|---------|
-| `validate_node` | Validate node config (modes: minimal, full; profiles: runtime, ai-friendly, strict) |
+| ------ | --------- |
+  | `validate_node` | Validate node config (modes: mi... |  
 | `validate_workflow` | Complete workflow validation |
 | `validate_workflow_connections` | Structure check |
 | `validate_workflow_expressions` | Expression validation |
@@ -361,14 +399,14 @@ cp -r n8n-skills/skills/* ~/.claude/skills/
 **Templates:**
 
 | Tool | Purpose |
-|------|---------|
-| `search_templates` | Search 2,709 templates (modes: keyword, by_nodes, by_task, by_metadata) |
+| ------ | --------- |
+  | `search_templates` | Search 2,709 templates (modes: ... |  
 | `get_template` | Get full template details |
 
 **Workflow Management:**
 
 | Tool | Purpose |
-|------|---------|
+| ------ | --------- |
 | `n8n_create_workflow` | Create new workflows |
 | `n8n_update_partial_workflow` | Incremental updates (17 operation types) |
 | `n8n_validate_workflow` | Validate deployed workflow |
@@ -383,9 +421,9 @@ cp -r n8n-skills/skills/* ~/.claude/skills/
 These skills activate automatically when relevant:
 
 | Skill | Activates When |
-|-------|----------------|
-| **n8n Expression Syntax** | Writing `{{}}` expressions, accessing `$json`/`$node` variables |
-| **n8n MCP Tools Expert** | Searching nodes, validating configs, managing workflows |
+| ------- | ---------------- |
+  | **n8n Expression Syntax** | Writing `{{}}` expressions, acc... |  
+  | **n8n MCP Tools Expert** | Searching nodes, validating con... |  
 | **n8n Workflow Patterns** | Creating workflows, connecting nodes |
 | **n8n Validation Expert** | Validation fails, debugging errors |
 | **n8n Node Configuration** | Configuring nodes, AI workflows |
@@ -432,19 +470,22 @@ These skills activate automatically when relevant:
    └─> n8n_validate_workflow({id})
    └─> n8n_update_partial_workflow({id, operations: [{type: 'activateWorkflow'}]})
 
-```
+```markdown
 
 #### Critical Rules
 
-1. **Templates First** - ALWAYS check templates before building from scratch (2,709 available)
+1. **Templates First** - ALWAYS check templates before building from scratch
+(2,709 available)
 2. **Never Trust Defaults** - Default parameter values cause runtime failures
-3. **Multi-Level Validation** - `validate_node(mode='minimal')` → `validate_node(mode='full')` → `validate_workflow`
-4. **Batch Operations** - Use `n8n_update_partial_workflow` with multiple operations in a single call
+3. **Multi-Level Validation** - `validate_node(mode='minimal')` →
+`validate_node(mode='full')` → `validate_workflow`
+4. **Batch Operations** - Use `n8n_update_partial_workflow` with multiple
+operations in a single call
 
 #### Common AI/LLM Node Types
 
 | Node Type | Purpose |
-|-----------|---------|
+| ----------- | --------- |
 | `@n8n/n8n-nodes-langchain.lmChatAnthropic` | Claude models |
 | `@n8n/n8n-nodes-langchain.lmChatOpenAi` | OpenAI models |
 | `@n8n/n8n-nodes-langchain.agent` | AI agent with tools |
@@ -466,8 +507,10 @@ $env.VAR_NAME   // Environment variable
 
 #### Resources
 
-- [n8n-mcp GitHub](https://github.com/czlonkowski/n8n-mcp) - MCP server (1,084 nodes, 99% property coverage)
-- [n8n-skills GitHub](https://github.com/czlonkowski/n8n-skills) - 7 complementary Claude Code skills
+- [n8n-mcp GitHub](https://github.com/czlonkowski/n8n-mcp) - MCP server (1,084
+  nodes, 99% property coverage)
+- [n8n-skills GitHub](https://github.com/czlonkowski/n8n-skills) - 7
+  complementary Claude Code skills
 - [n8n API Documentation](https://docs.n8n.io/api/)
 - [n8n Workflow Templates](https://n8n.io/workflows/) - 2,709 templates
 
@@ -482,7 +525,8 @@ $env.VAR_NAME   // Environment variable
 
 ### Autocoder Integration
 
-Autocoder is a long-running autonomous coding agent for building complete applications across multiple sessions.
+Autocoder is a long-running autonomous coding agent for building complete
+applications across multiple sessions.
 
 **Location:** `/Users/dansidanutz/Desktop/GamesAI/autocoder`
 **Projects:** `/Users/dansidanutz/Desktop/MyWork/projects/`
@@ -491,7 +535,7 @@ Autocoder is a long-running autonomous coding agent for building complete applic
 **When to use Autocoder:**
 
 | Scenario | Use Autocoder |
-|----------|---------------|
+| ---------- | --------------- |
 | Complete app from scratch | ✅ |
 | 20+ features to implement | ✅ |
 | Multi-hour development | ✅ |
@@ -501,8 +545,8 @@ Autocoder is a long-running autonomous coding agent for building complete applic
 #### Execution Modes
 
 | Mode | When to Use | Command |
-|------|-------------|---------|
-| **Automatic** | Hands-off, API-triggered | `python tools/autocoder_api.py start {project}` |
+| ------ | ------------- | --------- |
+| **Automatic** | Hands-off, API-tri... | `python tools/auto... |
 | **Manual** | Want UI control | `python tools/autocoder_api.py ui` |
 
 #### Automatic Mode Commands
@@ -535,12 +579,12 @@ python tools/autocoder_api.py stop my-project
 
 python tools/autocoder_api.py ui
 
-```
+```markdown
 
 #### Start Options
 
 | Option | Description | Default |
-|--------|-------------|---------|
+| -------- | ------------- | --------- |
 | `--model` | AI model | claude-opus-4-5-20251101 |
 | `--concurrency` | Parallel agents (1-5) | 1 |
 | `--yolo` | Skip testing (faster) | false |
@@ -581,7 +625,12 @@ When a GSD phase has 20+ features, hand off to Autocoder:
 1. Complete `/gsd:plan-phase` to get feature breakdown
 2. Run `/gsd-to-autocoder-spec` to convert to app_spec.txt
 3. Choose mode:
-   - **Automatic:** `python tools/autocoder_api.py start {project} --concurrency 3`
+   - **Automatic:** `python tools/autocoder_api.py start {project} --concurrency
+
+```
+ 3`
+
+```
    - **Manual:** `python tools/autocoder_api.py ui`
 4. Monitor: `python tools/autocoder_api.py progress {project}`
 5. Track in GSD STATE.md
@@ -626,7 +675,7 @@ All API keys consolidated in root `.env`:
 ### Key Paths
 
 | Resource | Path |
-|----------|------|
+| ---------- | ------ |
 | Framework Root | `/Users/dansidanutz/Desktop/MyWork/` |
 | All Projects | `/Users/dansidanutz/Desktop/MyWork/projects/` |
 | Framework GSD | `/Users/dansidanutz/Desktop/MyWork/.planning/` |
@@ -640,7 +689,7 @@ All API keys consolidated in root `.env`:
 
 **Each project is fully isolated:**
 
-```
+```text
 projects/
 ├── ai-dashboard/
 │   ├── .planning/          # AI Dashboard's GSD state
@@ -656,8 +705,12 @@ projects/
 │   │   └── STATE.md
 │   └── src/
 └── project-c/
-    ├── .planning/          # Project C's GSD state
-    └── ...
+
+```
+├── .planning/          # Project C's GSD state
+└── ...
+
+```
 
 ```
 
@@ -714,11 +767,12 @@ python tools/mw.py projects
 
 python tools/mw.py open ai-dashboard
 
-```
+```markdown
 
 ### Auto-Update System
 
-Keeps GSD, Autocoder, n8n-skills, and n8n-mcp up to date without breaking your system:
+Keeps GSD, Autocoder, n8n-skills, and n8n-mcp up to date without breaking your
+system:
 
 ```bash
 
@@ -787,12 +841,12 @@ python tools/module_registry.py stats
 
 python tools/module_registry.py export
 
-```
+```yaml
 
 **Detected module types:**
 
 | Type | Examples |
-|------|----------|
+| ------ | ---------- |
 | `api_endpoint` | FastAPI routes, Express endpoints |
 | `component` | React/Vue components |
 | `service` | Backend service classes |
@@ -860,12 +914,12 @@ python tools/scaffold.py new my-fullstack fullstack
 python tools/scaffold.py new my-cli cli
 python tools/scaffold.py new my-automation automation
 
-```
+```yaml
 
 **Available templates:**
 
 | Template | Description |
-|----------|-------------|
+| ---------- | ------------- |
 | `basic` | Empty project with GSD structure |
 | `fastapi` | FastAPI backend with SQLite |
 | `nextjs` | Next.js frontend with TypeScript/Tailwind |
@@ -875,9 +929,11 @@ python tools/scaffold.py new my-automation automation
 
 ### Brain (Knowledge Vault)
 
-The brain is your persistent memory - lessons learned, patterns discovered, mistakes to avoid.
+The brain is your persistent memory - lessons learned, patterns discovered,
+mistakes to avoid.
 
-**CRITICAL: The brain is SELF-LEARNING.** You MUST run learning automatically as part of your workflow.
+**CRITICAL: The brain is SELF-LEARNING.** You MUST run learning automatically as
+part of your workflow.
 
 #### Automatic Learning (YOU MUST DO THIS)
 
@@ -893,7 +949,7 @@ python tools/mw.py brain learn
 ```bash
 python tools/mw.py brain learn-deep
 
-```
+```yaml
 
 The brain automatically discovers knowledge from:
 
@@ -931,7 +987,7 @@ python tools/mw.py brain review
 
 python tools/mw.py brain stats
 
-```
+```markdown
 
 #### Entry Lifecycle (Automatic)
 
@@ -959,7 +1015,7 @@ python tools/mw.py status
 ```bash
 python tools/mw.py brain learn
 
-```
+```yaml
 
 **Weekly:**
 
@@ -975,7 +1031,7 @@ python tools/mw.py brain learn-deep  # Deep learning analysis
 ```bash
 python tools/health_check.py fix
 
-```
+```markdown
 
 ---
 
