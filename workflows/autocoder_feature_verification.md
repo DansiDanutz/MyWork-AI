@@ -37,16 +37,19 @@ Before running Autocoder, ensure `prompts/app_spec.txt` has:
 
   <overview>
 
-```
+```text
+
 2-3 sentences describing EXACTLY what this project is.
 Be specific about the domain (e-commerce, gaming, SaaS, etc.)
 
-```
+```html
+
   </overview>
 
   <core_features>
 
-```
+```html
+
 <!-- List actual features, not categories -->
 <feature>User can sign up with email</feature>
 <feature>User can create a product listing</feature>
@@ -74,7 +77,7 @@ Be specific about the domain (e-commerce, gaming, SaaS, etc.)
 ```bash
 python tools/autocoder_api.py start {project-name}
 
-```
+```markdown
 
 The initializer runs first (creates features.db).
 
@@ -125,7 +128,7 @@ python tools/autocoder_api.py start {project-name}
 rm projects/{name}/features.db
 python tools/autocoder_api.py start {project-name}
 
-```
+```markdown
 
 ### Step 5: Add Verification to Workflow
 
@@ -134,13 +137,18 @@ Update `tools/autocoder_api.py` to include verification step:
 ```python
 def verify_features(project_name: str) -> bool:
 
-```
+```yaml
+
 """Verify features.db matches app_spec.txt"""
 db_path = MYWORK_PROJECTS / project_name / "features.db"
 spec_path = MYWORK_PROJECTS / project_name / "prompts" / "app_spec.txt"
 
 if not db_path.exists():
-    return True  # No features yet
+
+```
+return True  # No features yet
+
+```markdown
 
 # Read spec
 
@@ -162,20 +170,38 @@ warnings = []
 
 gaming_terms = ['game', 'lobby', 'room', 'player', 'match', 'XP', 'credits']
 for feature in features:
-    for term in gaming_terms:
-        if term.lower() in feature[0].lower():
-            if 'game' not in project_name_from_spec.lower():
-                warnings.append(f"Feature '{feature[0]}' contains gaming term '{term}'")
+
+```
+for term in gaming_terms:
+
+```
+if term.lower() in feature[0].lower():
+    if 'game' not in project_name_from_spec.lower():
+        warnings.append(f"Feature '{feature[0]}' contains gaming term
+        '{term}'")
+
+```
+
+```yaml
 
 if warnings:
-    print("⚠️  FEATURE VERIFICATION WARNINGS:")
-    for w in warnings:
-        print(f"   - {w}")
-    return False
+
+```
+print("⚠️  FEATURE VERIFICATION WARNINGS:")
+for w in warnings:
+
+```
+print(f"   - {w}")
+
+```
+return False
+
+```text
 
 return True
 
 ```
+
 ```markdown
 
 ---
@@ -201,7 +227,7 @@ If agents have already started building wrong features:
    ```bash
    python tools/autocoder_api.py stop {project-name}
 
-   ```
+```yaml
 
 2. **Assess damage:**
    - Check what's actually built vs what features say
@@ -246,7 +272,7 @@ Consider adding this to `CLAUDE.md` decision tree:
 │     → If wrong: DELETE and re-run initializer                  │
 └─────────────────────────────────────────────────────────────────┘
 
-```
+```markdown
 
 ---
 

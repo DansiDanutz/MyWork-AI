@@ -74,7 +74,7 @@ def sample_brain_data(temp_mywork_root):
                 "status": "TESTED",
                 "tags": ["test", "pattern"],
                 "date_added": datetime.now().strftime("%Y-%m-%d"),
-                "references": 0
+                "references": 0,
             },
             {
                 "id": "test-002",
@@ -84,9 +84,9 @@ def sample_brain_data(temp_mywork_root):
                 "status": "EXPERIMENTAL",
                 "tags": ["test", "tdd"],
                 "date_added": datetime.now().strftime("%Y-%m-%d"),
-                "references": 0
+                "references": 0,
             },
-        ]
+        ],
     }
 
     brain_file = temp_mywork_root / ".planning" / "brain_data.json"
@@ -119,7 +119,7 @@ def sample_module_registry(temp_mywork_root):
                 "dependencies": ["react"],
                 "exports": ["TestComponent"],
                 "last_modified": datetime.now().isoformat(),
-                "hash": "abc123"
+                "hash": "abc123",
             },
             {
                 "id": "def456",
@@ -134,9 +134,9 @@ def sample_module_registry(temp_mywork_root):
                 "dependencies": ["sqlalchemy"],
                 "exports": ["get_user"],
                 "last_modified": datetime.now().isoformat(),
-                "hash": "def456"
+                "hash": "def456",
             },
-        ]
+        ],
     }
 
     registry_file = temp_mywork_root / ".planning" / "module_registry.json"

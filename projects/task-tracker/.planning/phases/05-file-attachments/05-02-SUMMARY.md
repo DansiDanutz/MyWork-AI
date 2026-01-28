@@ -86,15 +86,24 @@ uploads/
 │   └── .gitkeep
 └── [userId]/             # Created dynamically
 
-```
+```text
+
 └── [taskId]/
-    ├── [fileId].ext
-    └── thumbs/
-        └── [fileId].webp
+
+```text
+├── [fileId].ext
+└── thumbs/
+
+```
+└── [fileId].webp
 
 ```
 
 ```
+
+```markdown
+
+```markdown
 
 ### Error Handling
 
@@ -137,6 +146,8 @@ components:
 ## Notes
 
 - TUS protocol placeholders allow future enhancement for large file resumable
+
   uploads
+
 - Current implementation handles most use cases with direct uploads
 - Full TUS implementation can be added incrementally without breaking changes

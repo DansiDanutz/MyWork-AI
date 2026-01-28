@@ -1,30 +1,30 @@
-import Link from 'next/link'
-import { redirect } from 'next/navigation'
-import { auth, signOut } from '@/shared/lib/auth'
-import { UserMenu } from '@/shared/components/UserMenu'
-import { MobileNav } from '@/shared/components/MobileNav'
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { auth, signOut } from "@/shared/lib/auth";
+import { UserMenu } from "@/shared/components/UserMenu";
+import { MobileNav } from "@/shared/components/MobileNav";
 
 const navLinks = [
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/tasks', label: 'Tasks' },
-]
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/tasks", label: "Tasks" },
+];
 
 export default async function AppLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const session = await auth()
+  const session = await auth();
 
   // Protect all routes in (app) group
   if (!session?.user) {
-    redirect('/login')
+    redirect("/login");
   }
 
   // Server Action for sign out (passed to client component)
   async function handleSignOut() {
-    'use server'
-    await signOut({ redirectTo: '/' })
+    "use server";
+    await signOut({ redirectTo: "/" });
   }
 
   return (
@@ -33,7 +33,10 @@ export default async function AppLayout({
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <Link href="/dashboard" className="text-xl font-bold text-gray-900 dark:text-white">
+            <Link
+              href="/dashboard"
+              className="text-xl font-bold text-gray-900 dark:text-white"
+            >
               Task Tracker
             </Link>
 
@@ -60,9 +63,7 @@ export default async function AppLayout({
       </header>
 
       {/* Main content */}
-      <main className="container mx-auto px-4 py-8">
-        {children}
-      </main>
+      <main className="container mx-auto px-4 py-8">{children}</main>
     </div>
-  )
+  );
 }

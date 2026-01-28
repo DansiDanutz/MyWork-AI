@@ -1,83 +1,86 @@
-'use client'
+"use client";
 
-import { useActionState, useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
-import { createTask } from '@/app/actions/tasks'
-import { addTagToTask } from '@/app/actions/tags'
-import { TagInput } from './TagInput'
-import { Tag } from '@prisma/client'
-import Link from 'next/link'
+import { useActionState, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import { createTask } from "@/app/actions/tasks";
+import { addTagToTask } from "@/app/actions/tags";
+import { TagInput } from "./TagInput";
+import { Tag } from "@prisma/client";
+import Link from "next/link";
 
 type TaskFormWithTagsProps = {
-  availableTags: Tag[]
-}
+  availableTags: Tag[];
+};
 
 type FormState = {
-  success: boolean
-  error?: string
-  data?: { taskId: string }
-} | null
+  success: boolean;
+  error?: string;
+  data?: { taskId: string };
+} | null;
 
 export function TaskFormWithTags({ availableTags }: TaskFormWithTagsProps) {
-  const router = useRouter()
-  const [selectedTags, setSelectedTags] = useState<Tag[]>([])
-  const [localTags, setLocalTags] = useState<Tag[]>(availableTags)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter();
+  const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+  const [localTags, setLocalTags] = useState<Tag[]>(availableTags);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [state, formAction, isPending] = useActionState<FormState, FormData>(
     async (_prevState, formData) => {
-      setIsSubmitting(true)
+      setIsSubmitting(true);
       try {
-        const result = await createTask(formData)
+        const result = await createTask(formData);
 
         // If task created successfully and we have tags, add them
         if (result.success && result.data?.taskId && selectedTags.length > 0) {
           // Add each tag to the task
           for (const tag of selectedTags) {
-            await addTagToTask(result.data.taskId, tag.name)
+            await addTagToTask(result.data.taskId, tag.name);
           }
         }
 
         if (result.success) {
-          router.push('/tasks')
+          router.push("/tasks");
         }
 
-        return result
+        return result;
       } finally {
-        setIsSubmitting(false)
+        setIsSubmitting(false);
       }
     },
-    null
-  )
+    null,
+  );
 
-  const handleAddTag = useCallback(async (tagName: string) => {
-    // Check if tag already exists in local list
-    const existingTag = localTags.find(
-      t => t.name.toLowerCase() === tagName.toLowerCase()
-    )
+  const handleAddTag = useCallback(
+    async (tagName: string) => {
+      // Check if tag already exists in local list
+      const existingTag = localTags.find(
+        (t) => t.name.toLowerCase() === tagName.toLowerCase(),
+      );
 
-    if (existingTag) {
-      // Check if already selected
-      if (!selectedTags.some(t => t.id === existingTag.id)) {
-        setSelectedTags(prev => [...prev, existingTag])
+      if (existingTag) {
+        // Check if already selected
+        if (!selectedTags.some((t) => t.id === existingTag.id)) {
+          setSelectedTags((prev) => [...prev, existingTag]);
+        }
+      } else {
+        // Create a temporary tag for display (will be created on submit)
+        const tempTag: Tag = {
+          id: `temp-${Date.now()}`,
+          name: tagName,
+          color: TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)],
+          userId: "",
+          createdAt: new Date(),
+        };
+        setSelectedTags((prev) => [...prev, tempTag]);
+        setLocalTags((prev) => [...prev, tempTag]);
       }
-    } else {
-      // Create a temporary tag for display (will be created on submit)
-      const tempTag: Tag = {
-        id: `temp-${Date.now()}`,
-        name: tagName,
-        color: TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)],
-        userId: '',
-        createdAt: new Date(),
-      }
-      setSelectedTags(prev => [...prev, tempTag])
-      setLocalTags(prev => [...prev, tempTag])
-    }
-  }, [localTags, selectedTags])
+    },
+    [localTags, selectedTags],
+  );
 
   const handleRemoveTag = useCallback((tagId: string) => {
-    setSelectedTags(prev => prev.filter(t => t.id !== tagId))
-  }, [])
+    setSelectedTags((prev) => prev.filter((t) => t.id !== tagId));
+  }, []);
 
   return (
     <form action={formAction} className="space-y-6 max-w-2xl">
@@ -103,7 +106,7 @@ export function TaskFormWithTags({ availableTags }: TaskFormWithTagsProps) {
             bg-white dark:bg-gray-800
             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
             disabled:opacity-50 disabled:cursor-not-allowed
-            ${state && !state.success ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}
+            ${state && !state.success ? "border-red-500" : "border-gray-300 dark:border-gray-600"}
           `}
           placeholder="e.g., Complete project proposal"
         />
@@ -171,7 +174,7 @@ export function TaskFormWithTags({ availableTags }: TaskFormWithTagsProps) {
             transition-colors
           "
         >
-          {isPending || isSubmitting ? 'Creating...' : 'Create Task'}
+          {isPending || isSubmitting ? "Creating..." : "Create Task"}
         </button>
 
         {/* Cancel button */}
@@ -200,17 +203,17 @@ export function TaskFormWithTags({ availableTags }: TaskFormWithTagsProps) {
         </div>
       )}
     </form>
-  )
+  );
 }
 
 // Preset colors for new tags
 const TAG_COLORS = [
-  '#3b82f6', // blue
-  '#10b981', // green
-  '#f59e0b', // amber
-  '#ef4444', // red
-  '#8b5cf6', // purple
-  '#ec4899', // pink
-  '#06b6d4', // cyan
-  '#f97316', // orange
-]
+  "#3b82f6", // blue
+  "#10b981", // green
+  "#f59e0b", // amber
+  "#ef4444", // red
+  "#8b5cf6", // purple
+  "#ec4899", // pink
+  "#06b6d4", // cyan
+  "#f97316", // orange
+];

@@ -27,7 +27,7 @@ class YouTubeAutomationService:
         self,
         anthropic_api_key: Optional[str] = None,
         heygen_api_key: Optional[str] = None,
-        youtube_api_key: Optional[str] = None
+        youtube_api_key: Optional[str] = None,
     ):
         self.anthropic_key = anthropic_api_key or os.getenv("ANTHROPIC_API_KEY")
         self.heygen_key = heygen_api_key or os.getenv("HEYGEN_API_KEY")
@@ -41,7 +41,7 @@ class YouTubeAutomationService:
         db: Session,
         user_prompt: str,
         target_audience: str = "tech enthusiasts",
-        video_length: str = "5-10"
+        video_length: str = "5-10",
     ) -> YouTubeAutomation:
         """
         Create a video draft from user prompt
@@ -60,9 +60,7 @@ class YouTubeAutomationService:
 
         # Step 2: Generate video content
         content = self.prompt_optimizer.generate_video_content(
-            topic=user_prompt,
-            target_audience=target_audience,
-            video_length=video_length
+            topic=user_prompt, target_audience=target_audience, video_length=video_length
         )
 
         # Step 3: Create database record
@@ -74,7 +72,7 @@ class YouTubeAutomationService:
             video_script=content["script"],
             video_tags=content["tags"],
             thumbnail_prompt=content.get("thumbnail_prompt"),
-            status="draft"
+            status="draft",
         )
 
         db.add(automation)
@@ -89,7 +87,7 @@ class YouTubeAutomationService:
         db: Session,
         automation_id: int,
         avatar_id: str = "Kristin_public_3_20240108",
-        voice_id: str = "1bd001e7e50f421d891986aad5158bc8"
+        voice_id: str = "1bd001e7e50f421d891986aad5158bc8",
     ) -> YouTubeAutomation:
         """
         Generate video using HeyGen API
@@ -103,9 +101,9 @@ class YouTubeAutomationService:
         Returns:
             Updated YouTubeAutomation record
         """
-        automation = db.query(YouTubeAutomation).filter(
-            YouTubeAutomation.id == automation_id
-        ).first()
+        automation = (
+            db.query(YouTubeAutomation).filter(YouTubeAutomation.id == automation_id).first()
+        )
 
         if not automation:
             raise ValueError(f"Automation {automation_id} not found")
@@ -120,10 +118,7 @@ class YouTubeAutomationService:
         try:
             # Create HeyGen video
             url = "https://api.heygen.com/v2/video/generate"
-            headers = {
-                "X-Api-Key": self.heygen_key,
-                "Content-Type": "application/json"
-            }
+            headers = {"X-Api-Key": self.heygen_key, "Content-Type": "application/json"}
 
             payload = {
                 "video_inputs": [
@@ -131,19 +126,16 @@ class YouTubeAutomationService:
                         "character": {
                             "type": "avatar",
                             "avatar_id": avatar_id,
-                            "avatar_style": "normal"
+                            "avatar_style": "normal",
                         },
                         "voice": {
                             "type": "text",
                             "input_text": automation.video_script,
-                            "voice_id": voice_id
-                        }
+                            "voice_id": voice_id,
+                        },
                     }
                 ],
-                "dimension": {
-                    "width": 1920,
-                    "height": 1080
-                }
+                "dimension": {"width": 1920, "height": 1080},
             }
 
             response = await self.client.post(url, headers=headers, json=payload)
@@ -179,15 +171,11 @@ class YouTubeAutomationService:
             db.commit()
             raise
 
-    async def check_heygen_status(
-        self,
-        db: Session,
-        automation_id: int
-    ) -> Dict:
+    async def check_heygen_status(self, db: Session, automation_id: int) -> Dict:
         """Check HeyGen video generation status"""
-        automation = db.query(YouTubeAutomation).filter(
-            YouTubeAutomation.id == automation_id
-        ).first()
+        automation = (
+            db.query(YouTubeAutomation).filter(YouTubeAutomation.id == automation_id).first()
+        )
 
         if not automation or not automation.heygen_video_id:
             return {"status": "not_found"}
@@ -211,20 +199,14 @@ class YouTubeAutomationService:
                 automation.status = "pending_review"
                 db.commit()
 
-            return {
-                "status": status,
-                "video_url": automation.heygen_video_url
-            }
+            return {"status": status, "video_url": automation.heygen_video_url}
 
         except Exception as e:
             logger.error(f"HeyGen status check failed: {e}")
             return {"status": "error", "error": str(e)}
 
     async def update_draft(
-        self,
-        db: Session,
-        automation_id: int,
-        updates: Dict
+        self, db: Session, automation_id: int, updates: Dict
     ) -> YouTubeAutomation:
         """
         Update video draft with user edits
@@ -237,9 +219,9 @@ class YouTubeAutomationService:
         Returns:
             Updated YouTubeAutomation record
         """
-        automation = db.query(YouTubeAutomation).filter(
-            YouTubeAutomation.id == automation_id
-        ).first()
+        automation = (
+            db.query(YouTubeAutomation).filter(YouTubeAutomation.id == automation_id).first()
+        )
 
         if not automation:
             raise ValueError(f"Automation {automation_id} not found")
@@ -270,11 +252,7 @@ class YouTubeAutomationService:
         logger.info(f"Updated video draft: {automation.id}")
         return automation
 
-    async def approve_and_upload(
-        self,
-        db: Session,
-        automation_id: int
-    ) -> YouTubeAutomation:
+    async def approve_and_upload(self, db: Session, automation_id: int) -> YouTubeAutomation:
         """
         Approve draft and upload to YouTube
 
@@ -285,9 +263,9 @@ class YouTubeAutomationService:
         Returns:
             Updated YouTubeAutomation record with YouTube URL
         """
-        automation = db.query(YouTubeAutomation).filter(
-            YouTubeAutomation.id == automation_id
-        ).first()
+        automation = (
+            db.query(YouTubeAutomation).filter(YouTubeAutomation.id == automation_id).first()
+        )
 
         if not automation:
             raise ValueError(f"Automation {automation_id} not found")
@@ -319,16 +297,9 @@ class YouTubeAutomationService:
 
     def get_draft(self, db: Session, automation_id: int) -> Optional[YouTubeAutomation]:
         """Get a video draft by ID"""
-        return db.query(YouTubeAutomation).filter(
-            YouTubeAutomation.id == automation_id
-        ).first()
+        return db.query(YouTubeAutomation).filter(YouTubeAutomation.id == automation_id).first()
 
-    def get_all_drafts(
-        self,
-        db: Session,
-        status: Optional[str] = None,
-        limit: int = 50
-    ) -> list:
+    def get_all_drafts(self, db: Session, status: Optional[str] = None, limit: int = 50) -> list:
         """Get all video drafts, optionally filtered by status"""
         query = db.query(YouTubeAutomation)
 

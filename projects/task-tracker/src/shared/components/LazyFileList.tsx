@@ -1,10 +1,10 @@
-'use client'
+"use client";
 
-import dynamic from 'next/dynamic'
+import dynamic from "next/dynamic";
 
 // Lazy load FileList with loading fallback
 const FileList = dynamic(
-  () => import('./FileList').then((mod) => mod.FileList),
+  () => import("./FileList").then((mod) => mod.FileList),
   {
     loading: () => (
       <div className="space-y-2 animate-pulse">
@@ -18,7 +18,7 @@ const FileList = dynamic(
       </div>
     ),
     ssr: false,
-  }
-)
+  },
+);
 
-export { FileList as LazyFileList }
+export { FileList as LazyFileList };

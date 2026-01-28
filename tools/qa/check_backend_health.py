@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import os
 import sys
+import time
 from typing import Any, Iterable
 
 import requests
@@ -15,6 +16,8 @@ BACKEND_URL = os.getenv(
     "https://mywork-ai-production.up.railway.app",
 ).rstrip("/")
 TIMEOUT = float(os.getenv("QA_TIMEOUT", "20"))
+RETRIES = int(os.getenv("QA_RETRIES", "3"))
+RETRY_BACKOFF = float(os.getenv("QA_RETRY_BACKOFF", "1.5"))
 HEADERS = {
     "User-Agent": "MyWork-QA/1.0",
 }
@@ -27,10 +30,35 @@ CHECKS: Iterable[Check] = (
 )
 
 
-def run_check(label: str, path: str, expect_json: bool, expected_subset: dict[str, Any] | None) -> str | None:
+def _request_with_retries(url: str) -> requests.Response:
+    last_exc: Exception | None = None
+    for attempt in range(1, max(RETRIES, 1) + 1):
+        try:
+            response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+        except Exception as exc:  # pragma: no cover - network errors
+            last_exc = exc
+            if attempt >= RETRIES:
+                raise
+            time.sleep(RETRY_BACKOFF * attempt)
+            continue
+
+        if response.status_code >= 500 and attempt < RETRIES:
+            time.sleep(RETRY_BACKOFF * attempt)
+            continue
+
+        return response
+
+    if last_exc:  # pragma: no cover - defensive
+        raise last_exc
+    raise RuntimeError(f"Unknown error requesting {url}")
+
+
+def run_check(
+    label: str, path: str, expect_json: bool, expected_subset: dict[str, Any] | None
+) -> str | None:
     url = f"{BACKEND_URL}{path}"
     try:
-        response = requests.get(url, headers=HEADERS, timeout=TIMEOUT)
+        response = _request_with_retries(url)
     except Exception as exc:  # pragma: no cover - network errors
         return f"{label}: request to {url} failed ({exc})"
 

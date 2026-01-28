@@ -30,7 +30,7 @@ python tools/mw.py status
 
 **Expected Output:**
 
-```
+```yaml
 ✅ MyWork Framework Status
 ├── 🧠 Brain: Ready (253 patterns indexed)
 ├── 📊 Module Registry: Ready (1,300+ modules)
@@ -60,7 +60,7 @@ python tools/mw.py new task-manager-cli cli
 
 # 4. Generate project.yaml metadata
 
-```
+```markdown
 
 **What just happened?**
 
@@ -74,7 +74,7 @@ projects/task-manager-cli/
 ├── project.yaml          # Project metadata
 └── src/                  # Source code (will be created)
 
-```
+```markdown
 
 ## 🏗️ Step 3: Plan Your Project (1 minute)
 
@@ -137,7 +137,7 @@ python ../../tools/mw.py gsd execute-phase 1
 
 Phase 1 complete! Ready for Phase 2: Advanced Features
 
-```
+```markdown
 
 ## 🎉 Step 5: Test Your Creation (30 seconds)
 
@@ -196,14 +196,18 @@ python ../../tools/mw.py gsd verify-work
 
 python ../../tools/mw.py gsd execute-phase 3
 
-```
+```markdown
 
 ### 🧠 **Level Up Your Skills**
 
 - 📖 [**Complete Tutorial Series →**](tutorials/01-first-project.md) - 6
+
   comprehensive guides
+
 - 🏗️ [**Architecture Deep Dive →**](architecture/overview.md) - Understand the 3
+
   layers
+
 - 💡 [**Example Projects →**](../examples/) - Study working applications
 - 🤖 **Autocoder Integration** - Coming soon
 
@@ -232,12 +236,18 @@ python tools/mw.py ac start my-big-project --concurrency 3
 ### 🌟 **Join the Community**
 
 - 💬 [**GitHub
+
   Discussions**](https://github.com/DansiDanutz/MyWork-AI/discussions) - Ask
   questions, share projects
+
 - 🐦 [**Twitter Updates**](https://twitter.com/MyWorkAI) - Latest features and
+
   showcases
+
 - 📺 [**YouTube Channel**](https://youtube.com/@MyWorkAI) - Video tutorials and
+
   demos
+
 - 📧 [**Newsletter**](https://mywork.ai/newsletter) - Weekly tips and case studies
 
 ## 🆘 Troubleshooting
@@ -255,7 +265,7 @@ node --version    # Should be 18+
 
 python tools/health_check.py fix
 
-```
+```markdown
 
 **❌ GSD command not found?**
 
@@ -290,6 +300,7 @@ python ../../tools/mw.py doctor
 - 📖 [**FAQ →**](faq.md) - Common questions answered
 - 🔧 [**Troubleshooting Guide →**](troubleshooting.md) - Detailed problem-solving
 - 💬 [**Get Support →**](https://github.com/DansiDanutz/MyWork-AI/discussions) -
+
   Community help
 
 ---

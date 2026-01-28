@@ -1,8 +1,14 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { LuRefreshCw, LuExternalLink, LuThumbsUp, LuEye, LuPlay } from 'react-icons/lu';
-import { getVideos, triggerScraper, Video } from '@/lib/api';
+import { useEffect, useState } from "react";
+import {
+  LuRefreshCw,
+  LuExternalLink,
+  LuThumbsUp,
+  LuEye,
+  LuPlay,
+} from "react-icons/lu";
+import { getVideos, triggerScraper, Video } from "@/lib/api";
 
 export default function VideosClient() {
   const [videos, setVideos] = useState<Video[]>([]);
@@ -21,7 +27,7 @@ export default function VideosClient() {
       setVideos(data);
       setError(null);
     } catch (err) {
-      setError('Failed to load videos');
+      setError("Failed to load videos");
       console.error(err);
     } finally {
       setLoading(false);
@@ -31,10 +37,10 @@ export default function VideosClient() {
   const handleScrape = async () => {
     try {
       setScraping(true);
-      await triggerScraper('videos');
+      await triggerScraper("videos");
       await fetchVideos();
     } catch (err) {
-      setError('Scraping failed');
+      setError("Scraping failed");
       console.error(err);
     } finally {
       setScraping(false);
@@ -42,8 +48,8 @@ export default function VideosClient() {
   };
 
   const formatNumber = (num: number) => {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+    if (num >= 1000) return (num / 1000).toFixed(1) + "K";
     return num.toString();
   };
 
@@ -61,7 +67,9 @@ export default function VideosClient() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">AI Videos</h1>
-          <p className="text-gray-500 mt-1">Top rated AI and ML videos from YouTube</p>
+          <p className="text-gray-500 mt-1">
+            Top rated AI and ML videos from YouTube
+          </p>
         </div>
         <div className="flex gap-3">
           <button
@@ -81,15 +89,13 @@ export default function VideosClient() {
             ) : (
               <LuPlay className="w-4 h-4" />
             )}
-            {scraping ? 'Scraping...' : 'Scrape Now'}
+            {scraping ? "Scraping..." : "Scrape Now"}
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg">
-          {error}
-        </div>
+        <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>
       )}
 
       {/* Videos Grid */}
@@ -123,7 +129,7 @@ export default function VideosClient() {
                 {video.title}
               </h3>
               <p className="text-sm text-gray-500 mb-3">
-                {video.channel_name || 'Unknown Channel'}
+                {video.channel_name || "Unknown Channel"}
               </p>
 
               {/* Stats */}

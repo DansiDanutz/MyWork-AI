@@ -43,6 +43,7 @@ from dataclasses import dataclass, asdict, field, fields
 try:
     from config import get_mywork_root
 except ImportError:  # pragma: no cover - fallback for standalone usage
+
     def get_mywork_root() -> Path:
         if env_root := os.environ.get("MYWORK_ROOT"):
             return Path(env_root)
@@ -74,6 +75,7 @@ ENTRY_TYPES = {
 @dataclass
 class BrainEntry:
     """Represents a single piece of knowledge."""
+
     id: str
     type: str
     content: str
@@ -127,7 +129,7 @@ class BrainManager:
             "version": "1.0",
             "last_updated": datetime.now().isoformat(),
             "entry_count": len(self.entries),
-            "entries": [e.to_dict() for e in self.entries.values()]
+            "entries": [e.to_dict() for e in self.entries.values()],
         }
         with open(self.brain_json, "w") as f:
             json.dump(data, f, indent=2)
@@ -138,8 +140,14 @@ class BrainManager:
         next_num = len(type_entries) + 1
         return f"{entry_type}-{next_num:03d}"
 
-    def add(self, entry_type: str, content: str, context: str = "",
-            status: str = "TESTED", tags: List[str] = None) -> BrainEntry:
+    def add(
+        self,
+        entry_type: str,
+        content: str,
+        context: str = "",
+        status: str = "TESTED",
+        tags: List[str] = None,
+    ) -> BrainEntry:
         """Add a new entry to the brain."""
         if entry_type not in ENTRY_TYPES:
             raise ValueError(f"Unknown type: {entry_type}. Valid: {', '.join(ENTRY_TYPES.keys())}")
@@ -151,15 +159,21 @@ class BrainManager:
             content=content,
             context=context,
             status=status,
-            tags=tags or []
+            tags=tags or [],
         )
         self.entries[entry_id] = entry
         self.save()
         self._update_brain_md()
         return entry
 
-    def update(self, entry_id: str, content: str = None, context: str = None,
-               status: str = None, tags: List[str] = None) -> Optional[BrainEntry]:
+    def update(
+        self,
+        entry_id: str,
+        content: str = None,
+        context: str = None,
+        status: str = None,
+        tags: List[str] = None,
+    ) -> Optional[BrainEntry]:
         """Update an existing entry."""
         if entry_id not in self.entries:
             return None
@@ -269,9 +283,9 @@ class BrainManager:
 
         # Update the "Last updated" line
         content = re.sub(
-            r'> Last updated: \d{4}-\d{2}-\d{2}',
+            r"> Last updated: \d{4}-\d{2}-\d{2}",
             f'> Last updated: {datetime.now().strftime("%Y-%m-%d")}',
-            content
+            content,
         )
 
         self.brain_file.write_text(content)
@@ -296,7 +310,9 @@ def print_entry(entry: BrainEntry, verbose: bool = False):
 def cmd_add(args: List[str]):
     """Add a new entry."""
     if len(args) < 2:
-        print("Usage: python brain.py add <type> <content> [--context <ctx>] [--status <status>] [--tags <t1,t2>]")
+        print(
+            "Usage: python brain.py add <type> <content> [--context <ctx>] [--status <status>] [--tags <t1,t2>]"
+        )
         print(f"Types: {', '.join(ENTRY_TYPES.keys())}")
         return
 
@@ -333,7 +349,9 @@ def cmd_add(args: List[str]):
 def cmd_update(args: List[str]):
     """Update an existing entry."""
     if len(args) < 2:
-        print("Usage: python brain.py update <id> [--content <text>] [--context <ctx>] [--status <status>]")
+        print(
+            "Usage: python brain.py update <id> [--content <text>] [--context <ctx>] [--status <status>]"
+        )
         return
 
     entry_id = args[0]

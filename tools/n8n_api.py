@@ -25,6 +25,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def _is_placeholder(value: str) -> bool:
     if not value:
         return True
@@ -62,7 +63,7 @@ def get_headers() -> dict:
     return {
         "X-N8N-API-KEY": N8N_API_KEY,
         "Content-Type": "application/json",
-        "Accept": "application/json"
+        "Accept": "application/json",
     }
 
 
@@ -78,10 +79,7 @@ def list_workflows(active_only: bool = False) -> dict:
     """
     params = {"active": "true"} if active_only else {}
     response = httpx.get(
-        f"{N8N_API_URL}/api/v1/workflows",
-        headers=get_headers(),
-        params=params,
-        timeout=30.0
+        f"{N8N_API_URL}/api/v1/workflows", headers=get_headers(), params=params, timeout=30.0
     )
     response.raise_for_status()
     return response.json()
@@ -98,9 +96,7 @@ def get_workflow(workflow_id: str) -> dict:
         dict: Workflow details
     """
     response = httpx.get(
-        f"{N8N_API_URL}/api/v1/workflows/{workflow_id}",
-        headers=get_headers(),
-        timeout=30.0
+        f"{N8N_API_URL}/api/v1/workflows/{workflow_id}", headers=get_headers(), timeout=30.0
     )
     response.raise_for_status()
     return response.json()
@@ -117,10 +113,7 @@ def create_workflow(workflow_data: dict) -> dict:
         dict: Created workflow with ID
     """
     response = httpx.post(
-        f"{N8N_API_URL}/api/v1/workflows",
-        headers=get_headers(),
-        json=workflow_data,
-        timeout=30.0
+        f"{N8N_API_URL}/api/v1/workflows", headers=get_headers(), json=workflow_data, timeout=30.0
     )
     response.raise_for_status()
     return response.json()
@@ -141,7 +134,7 @@ def update_workflow(workflow_id: str, workflow_data: dict) -> dict:
         f"{N8N_API_URL}/api/v1/workflows/{workflow_id}",
         headers=get_headers(),
         json=workflow_data,
-        timeout=30.0
+        timeout=30.0,
     )
     response.raise_for_status()
     return response.json()
@@ -158,9 +151,7 @@ def delete_workflow(workflow_id: str) -> dict:
         dict: Deletion confirmation
     """
     response = httpx.delete(
-        f"{N8N_API_URL}/api/v1/workflows/{workflow_id}",
-        headers=get_headers(),
-        timeout=30.0
+        f"{N8N_API_URL}/api/v1/workflows/{workflow_id}", headers=get_headers(), timeout=30.0
     )
     response.raise_for_status()
     return {"status": "deleted", "workflow_id": workflow_id}
@@ -179,7 +170,7 @@ def activate_workflow(workflow_id: str) -> dict:
     response = httpx.post(
         f"{N8N_API_URL}/api/v1/workflows/{workflow_id}/activate",
         headers=get_headers(),
-        timeout=30.0
+        timeout=30.0,
     )
     response.raise_for_status()
     return response.json()
@@ -198,7 +189,7 @@ def deactivate_workflow(workflow_id: str) -> dict:
     response = httpx.post(
         f"{N8N_API_URL}/api/v1/workflows/{workflow_id}/deactivate",
         headers=get_headers(),
-        timeout=30.0
+        timeout=30.0,
     )
     response.raise_for_status()
     return response.json()
@@ -220,7 +211,7 @@ def execute_workflow(workflow_id: str, data: Optional[dict] = None) -> dict:
         f"{N8N_API_URL}/api/v1/workflows/{workflow_id}/execute",
         headers=get_headers(),
         json=body,
-        timeout=120.0  # Longer timeout for execution
+        timeout=120.0,  # Longer timeout for execution
     )
     response.raise_for_status()
     return response.json()
@@ -271,10 +262,7 @@ def list_executions(workflow_id: Optional[str] = None, status: Optional[str] = N
         params["status"] = status
 
     response = httpx.get(
-        f"{N8N_API_URL}/api/v1/executions",
-        headers=get_headers(),
-        params=params,
-        timeout=30.0
+        f"{N8N_API_URL}/api/v1/executions", headers=get_headers(), params=params, timeout=30.0
     )
     response.raise_for_status()
     return response.json()
@@ -287,11 +275,7 @@ def health_check() -> dict:
     Returns:
         dict: Health status with workflow count (if available)
     """
-    response = httpx.get(
-        f"{N8N_API_URL}/api/v1/workflows",
-        headers=get_headers(),
-        timeout=10.0
-    )
+    response = httpx.get(f"{N8N_API_URL}/api/v1/workflows", headers=get_headers(), timeout=10.0)
     response.raise_for_status()
     data = response.json()
 
@@ -301,20 +285,35 @@ def health_check() -> dict:
     else:
         workflows = data if isinstance(data, list) else []
 
-    return {
-        "status": "ok",
-        "workflows": len(workflows)
-    }
+    return {"status": "ok", "workflows": len(workflows)}
 
 
 def main():
     parser = argparse.ArgumentParser(description="n8n API Client")
-    parser.add_argument("--action", required=True,
-                       choices=["list", "get", "create", "update", "delete",
-                               "activate", "deactivate", "execute", "webhook", "executions", "health"],
-                       help="Action to perform")
-    parser.add_argument("--workflow-id", help="Workflow ID for get/update/delete/activate/deactivate/execute")
-    parser.add_argument("--workflow-file", help="JSON file with workflow definition for create/update")
+    parser.add_argument(
+        "--action",
+        required=True,
+        choices=[
+            "list",
+            "get",
+            "create",
+            "update",
+            "delete",
+            "activate",
+            "deactivate",
+            "execute",
+            "webhook",
+            "executions",
+            "health",
+        ],
+        help="Action to perform",
+    )
+    parser.add_argument(
+        "--workflow-id", help="Workflow ID for get/update/delete/activate/deactivate/execute"
+    )
+    parser.add_argument(
+        "--workflow-file", help="JSON file with workflow definition for create/update"
+    )
     parser.add_argument("--data", help="JSON data for execute/webhook")
     parser.add_argument("--webhook-path", help="Webhook path for webhook action")
     parser.add_argument("--active-only", action="store_true", help="List only active workflows")
@@ -324,10 +323,14 @@ def main():
 
     # Validate environment
     if not N8N_API_URL or not N8N_API_KEY:
-        print(json.dumps({
-            "status": "error",
-            "message": "N8N_API_URL and N8N_API_KEY must be set in environment"
-        }))
+        print(
+            json.dumps(
+                {
+                    "status": "error",
+                    "message": "N8N_API_URL and N8N_API_KEY must be set in environment",
+                }
+            )
+        )
         return
 
     try:
@@ -383,10 +386,7 @@ def main():
             result = trigger_webhook(args.webhook_path, data)
 
         elif args.action == "executions":
-            result = list_executions(
-                workflow_id=args.workflow_id,
-                status=args.status
-            )
+            result = list_executions(workflow_id=args.workflow_id, status=args.status)
 
         elif args.action == "health":
             result = health_check()
@@ -394,17 +394,18 @@ def main():
         print(json.dumps(result, indent=2))
 
     except httpx.HTTPStatusError as e:
-        print(json.dumps({
-            "status": "error",
-            "code": e.response.status_code,
-            "message": str(e),
-            "response": e.response.text
-        }))
+        print(
+            json.dumps(
+                {
+                    "status": "error",
+                    "code": e.response.status_code,
+                    "message": str(e),
+                    "response": e.response.text,
+                }
+            )
+        )
     except Exception as e:
-        print(json.dumps({
-            "status": "error",
-            "message": str(e)
-        }))
+        print(json.dumps({"status": "error", "message": str(e)}))
 
 
 if __name__ == "__main__":

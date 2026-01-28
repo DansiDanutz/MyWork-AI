@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { useQueryStates } from 'nuqs'
-import { taskSearchParams } from '@/app/(app)/tasks/search-params'
-import { Tag } from '@prisma/client'
+import { useQueryStates } from "nuqs";
+import { taskSearchParams } from "@/app/(app)/tasks/search-params";
+import { Tag } from "@prisma/client";
 
 /**
  * TaskFilters: Filter sidebar for status and tag filtering
@@ -14,28 +14,28 @@ import { Tag } from '@prisma/client'
  * - URL state persistence via nuqs
  */
 export function TaskFilters({ tags }: { tags: Tag[] }) {
-  const [filters, setFilters] = useQueryStates(taskSearchParams)
+  const [filters, setFilters] = useQueryStates(taskSearchParams);
 
-  const selectedStatuses = filters.status || []
-  const selectedTags = filters.tags || []
+  const selectedStatuses = filters.status || [];
+  const selectedTags = filters.tags || [];
 
   // Toggle status filter
   const toggleStatus = (status: string) => {
     const newStatuses = selectedStatuses.includes(status)
-      ? selectedStatuses.filter(s => s !== status)
-      : [...selectedStatuses, status]
+      ? selectedStatuses.filter((s) => s !== status)
+      : [...selectedStatuses, status];
 
-    setFilters({ status: newStatuses.length > 0 ? newStatuses : null })
-  }
+    setFilters({ status: newStatuses.length > 0 ? newStatuses : null });
+  };
 
   // Toggle tag filter
   const toggleTag = (tagId: string) => {
     const newTags = selectedTags.includes(tagId)
-      ? selectedTags.filter(t => t !== tagId)
-      : [...selectedTags, tagId]
+      ? selectedTags.filter((t) => t !== tagId)
+      : [...selectedTags, tagId];
 
-    setFilters({ tags: newTags.length > 0 ? newTags : null })
-  }
+    setFilters({ tags: newTags.length > 0 ? newTags : null });
+  };
 
   // Clear all filters
   const clearFilters = () => {
@@ -43,11 +43,11 @@ export function TaskFilters({ tags }: { tags: Tag[] }) {
       q: null,
       status: null,
       tags: null,
-    })
-  }
+    });
+  };
 
   const hasActiveFilters =
-    filters.q || selectedStatuses.length > 0 || selectedTags.length > 0
+    filters.q || selectedStatuses.length > 0 || selectedTags.length > 0;
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
@@ -77,9 +77,9 @@ export function TaskFilters({ tags }: { tags: Tag[] }) {
         </h4>
         <div className="space-y-2">
           {[
-            { value: 'TODO', label: 'To Do' },
-            { value: 'IN_PROGRESS', label: 'In Progress' },
-            { value: 'DONE', label: 'Done' },
+            { value: "TODO", label: "To Do" },
+            { value: "IN_PROGRESS", label: "In Progress" },
+            { value: "DONE", label: "Done" },
           ].map(({ value, label }) => (
             <label
               key={value}
@@ -157,5 +157,5 @@ export function TaskFilters({ tags }: { tags: Tag[] }) {
         </div>
       )}
     </div>
-  )
+  );
 }

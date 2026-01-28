@@ -47,7 +47,7 @@ start.bat   # Windows
 
 ## Project Structure
 
-```
+```yaml
 ai-dashboard/
 ├── .planning/          # GSD: Project-specific planning
 ├── backend/            # FastAPI backend
@@ -108,7 +108,7 @@ cd backend
 source venv/bin/activate
 uvicorn main:app --reload
 
-```
+```yaml
 
 **Frontend only:**
 

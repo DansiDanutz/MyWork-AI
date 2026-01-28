@@ -39,7 +39,7 @@
 │  └────────────┘  └─────────────┘  └──────────────┘  │       │
 └─────────────────────────────────────────────────────────────┘
 
-```
+```markdown
 
 ### Component Responsibilities
 
@@ -112,26 +112,34 @@ task-tracker/
 │
 └── database/                  # Database files and migrations
 
-```
+```text
+
 ├── migrations/            # Schema migration scripts
 ├── seeds/                 # Seed data
 └── task-tracker.db        # SQLite database file
 
-```
+```text
 
 ```
 
 ### Structure Rationale
 
 - **client/**: Modular component-based architecture allows independent
+
   development and testing of UI components. Feature-based organization (tasks/,
   auth/) makes it easy to locate related code.
+
 - **server/**: Three-layer architecture (routes → controllers → services)
+
   separates HTTP concerns from business logic, making code more testable and
   reusable across different contexts.
+
 - **shared/**: Code reuse between frontend and backend reduces duplication,
+
   especially for validation rules and type definitions.
+
 - **Monolith structure**: For a small task tracker, a monolithic architecture is
+
   optimal - faster development, easier testing, simpler deployment, and better
   performance for small scale.
 
@@ -140,6 +148,7 @@ task-tracker/
 ### Pattern 1: Layered Architecture (N-Tier)
 
 **What:** Organizes application into distinct layers with clear responsibilities
+
 - Presentation, Application (API), Business Logic, and Data layers.
 
 **When to use:** Standard pattern for task management apps of all sizes.
@@ -148,9 +157,12 @@ Provides clear separation of concerns while maintaining simplicity.
 **Trade-offs:**
 
 - **Pros:** Easy to understand, test, and maintain. Clear boundaries. Good for
+
   small teams.
+
 - **Cons:** Can become too rigid. Layer coupling can make changes harder.
 - **For this project:** RECOMMENDED - Perfect fit for a task tracker with small
+
   team.
 
 **Example:**
@@ -197,9 +209,12 @@ implementation details. Essential for testability.
 **Trade-offs:**
 
 - **Pros:** Easy to mock for testing. Can swap data sources. Centralizes query
+
   logic.
+
 - **Cons:** Adds extra layer of abstraction. Can be overkill for simple CRUD.
 - **For this project:** RECOMMENDED - Enables reusable brain patterns for data
+
   access.
 
 **Example:**
@@ -211,7 +226,8 @@ implementation details. Essential for testability.
 class TaskRepository {
   async findByUserId(userId, filters = {}) {
 
-```
+```javascript
+
 let query = db.tasks.where({ userId });
 
 if (filters.status) {
@@ -224,12 +240,13 @@ if (filters.search) {
 
 return await query.orderBy('createdAt', 'desc').all();
 
-```
+```javascript
   }
 
   async findById(taskId) {
 
-```
+```yaml
+
 return await db.tasks.findOne({ id: taskId });
 
 ```
@@ -237,15 +254,17 @@ return await db.tasks.findOne({ id: taskId });
 
   async create(taskData) {
 
-```
+```text
+
 return await db.tasks.create(taskData);
 
-```
+```javascript
   }
 
   async update(taskId, updates) {
 
-```
+```yaml
+
 return await db.tasks.update({ id: taskId }, updates);
 
 ```
@@ -253,10 +272,11 @@ return await db.tasks.update({ id: taskId }, updates);
 
   async delete(taskId) {
 
-```
+```yaml
+
 return await db.tasks.delete({ id: taskId });
 
-```
+```javascript
   }
 }
 
@@ -265,7 +285,7 @@ const mockRepo = {
   findByUserId: jest.fn().mockResolvedValue([...]),
 };
 
-```
+```markdown
 
 ### Pattern 3: Service Layer Pattern
 
@@ -278,9 +298,12 @@ validation, or external services.
 **Trade-offs:**
 
 - **Pros:** Centralized business logic. Reusable across different entry points
+
   (API, CLI, etc.).
+
 - **Cons:** Can become bloated if not carefully organized.
 - **For this project:** RECOMMENDED - Critical for GitHub integration and access
+
   control logic.
 
 **Example:**
@@ -293,17 +316,19 @@ class TaskService {
   constructor(taskRepo, fileService, githubService, authService) {
 
 ```
+
 this.taskRepo = taskRepo;
 this.fileService = fileService;
 this.githubService = githubService;
 this.authService = authService;
 
-```
+```javascript
   }
 
   async createTask(taskData, userId, files = []) {
 
-```
+```yaml
+
 // Business logic: validation
 if (!taskData.title) throw new ValidationError('Title required');
 
@@ -328,12 +353,13 @@ await this.githubService.trackEvent('task_created', {
 
 return task;
 
-```
+```javascript
   }
 
   async deleteTask(taskId, userId) {
 
 ```
+
 const task = await this.taskRepo.findById(taskId);
 
 // Business logic: authorization
@@ -347,7 +373,8 @@ await this.taskRepo.delete(taskId);
 
 await this.githubService.trackEvent('task_deleted', { taskId });
 
-```
+```markdown
+
   }
 }
 
@@ -366,6 +393,7 @@ concerns.
 - **Pros:** Modular, composable, easy to add/remove functionality.
 - **Cons:** Order matters. Can be hard to trace execution flow.
 - **For this project:** REQUIRED - Essential for authentication and error
+
   handling.
 
 **Example:**
@@ -398,7 +426,7 @@ app.post('/api/tasks',
   taskController.create // 3. Handle request
 );
 
-```
+```markdown
 
 ### Pattern 5: Unidirectional Data Flow (React)
 
@@ -429,7 +457,8 @@ function TaskProvider({ children }) {
 
   const addTask = async (taskData) => {
 
-```
+```javascript
+
 const newTask = await api.createTask(taskData);
 setTasks([...tasks, newTask]);
 
@@ -438,17 +467,19 @@ setTasks([...tasks, newTask]);
 
   const filteredTasks = useMemo(() => {
 
-```
+```javascript
+
 return filter === 'all'
   ? tasks
   : tasks.filter(t => t.status === filter);
 
-```
+```yaml
   }, [tasks, filter]);
 
   return (
 
-```
+```yaml
+
 <TaskContext.Provider value={{
   tasks: filteredTasks,
   addTask,
@@ -473,11 +504,13 @@ function CreateTaskForm() {
 
   const handleSubmit = (e) => {
 
-```
+```yaml
+
 e.preventDefault();
 addTask({ title: e.target.title.value }); // Event → Action → State
 
-```
+```markdown
+
   };
 
   return <form onSubmit={handleSubmit}>...</form>;
@@ -489,71 +522,87 @@ addTask({ title: e.target.title.value }); // Event → Action → State
 
 ### Request Flow (Create Task with File Attachment)
 
-```
+```text
 User Action (Submit Form)
 
 ```
+
 ↓
 
-```
+```text
 React Component → API Service → POST /api/tasks
 
-```
+```text
+
 ↓
 
-```
+```text
 Express Router → Auth Middleware → Validation Middleware
 
 ```
+
 ↓
 
-```
+```text
 Task Controller → extracts request data
 
-```
+```text
+
 ↓
 
-```
+```text
 Task Service → coordinates business logic
 
 ```
+
 ├─→ Validates task data
 ├─→ Task Repository → INSERT into database
 ├─→ File Service → saves file to disk, creates DB record
 └─→ GitHub Service → logs usage event via GitHub API
 ↓
 
-```
+```text
 Response ← transforms data ← returns task object
 
-```
+```text
+
 ↓
 
-```
+```text
 React Component ← updates local state ← receives response
 
 ```
+
 ↓
 
-```
+```markdown
+
 UI Re-renders (shows new task)
 
 ```markdown
 
 ### State Management (React Context API)
 
+```text
+
+```text
+
 ```
 
 ```
-              ┌───────────────┐
-              │  Task Context │ (Global State)
-              │  - tasks[]    │
-              │  - filter     │
-              └───────┬───────┘
-                      │
-    ┌─────────────────┼─────────────────┐
-    │ (subscribe)     │ (subscribe)     │ (subscribe)
-    ↓                 ↓                 ↓
+      ┌───────────────┐
+      │  Task Context │ (Global State)
+      │  - tasks[]    │
+      │  - filter     │
+      └───────┬───────┘
+              │
+
+```
+┌─────────────────┼─────────────────┐
+│ (subscribe)     │ (subscribe)     │ (subscribe)
+↓                 ↓                 ↓
+
+```text
 
 ```
   ┌──────────┐      ┌──────────┐      ┌──────────┐
@@ -561,33 +610,50 @@ UI Re-renders (shows new task)
   │ Component│      │ Component│      │ Component│
   └────┬─────┘      └────┬─────┘      └────┬─────┘
 
-```
+```text
+
    │                 │                  │
    │ (read tasks)    │ (setFilter)      │ (addTask)
    │                 │                  │
    └─────────────────┴──────────────────┘
-                     │
-            Actions dispatched
-                     ↓
-              Context updates
-                     ↓
-            Components re-render
+
+```text
 
 ```
+             │
+    Actions dispatched
+             ↓
+      Context updates
+             ↓
+    Components re-render
+
+```
+
+```
+
+```markdown
+
 ```markdown
 
 ### Key Data Flows
 
 1. **Authentication Flow:** User logs in → API validates credentials → JWT token
+
 issued → Token stored in localStorage → Token sent with subsequent requests →
 Middleware validates token → User data attached to request
+
 2. **File Upload Flow:** User selects file → Frontend validates size/type →
+
 FormData sent to API → Multer middleware processes upload → File saved to disk →
 Metadata stored in database → File URL returned to client
+
 3. **Search/Filter Flow:** User types search query → Debounced state update →
+
 API called with query params → Database query with LIKE clause → Filtered
 results returned → UI updated
+
 4. **GitHub Integration Flow:** User performs action → Service layer triggered →
+
 Event data prepared → GitHub API called (async) → Response logged → No UI
 blocking
 
@@ -605,10 +671,11 @@ blocking
 1. **First bottleneck: Database connections (around 5k concurrent users)**
    - **Solution:** Connection pooling, add read replicas, implement caching for
 
-```
+```text
  frequently accessed data
 
 ```
+
    - **Cost:** Low - configuration changes mostly
 
 2. **Second bottleneck: File storage performance and cost (around 10k users)**
@@ -642,7 +709,8 @@ operations.
 class TaskController {
   async createTask(req, res) {
 
-```
+```yaml
+
 // Validation in controller
 if (!req.body.title) return res.status(400).json({error: 'Title required'});
 
@@ -652,17 +720,22 @@ const task = await db.tasks.create({...req.body, userId: req.user.id});
 // File handling in controller
 if (req.files) {
   for (let file of req.files) {
-    await fs.writeFile(`./uploads/${file.name}`, file.buffer);
-    await db.attachments.create({taskId: task.id, filename: file.name});
+
+```yaml
+await fs.writeFile(`./uploads/${file.name}`, file.buffer);
+await db.attachments.create({taskId: task.id, filename: file.name});
+
+```
+
   }
 }
 
 // External API in controller
-await fetch('https://api.github.com/...', {method: 'POST', body: {...}});
+await fetch('<https://api.github.com/...',> {method: 'POST', body: {...}});
 
 res.json(task);
 
-```
+```python
   }
 }
 
@@ -670,7 +743,8 @@ res.json(task);
 class TaskController {
   async createTask(req, res) {
 
-```
+```javascript
+
 const task = await taskService.createTask(req.body, req.user.id, req.files);
 res.json(task);
 
@@ -681,18 +755,20 @@ res.json(task);
 class TaskService {
   async createTask(taskData, userId, files) {
 
-```
+```javascript
+
 this.validator.validateTask(taskData);
 const task = await this.taskRepo.create({...taskData, userId});
 if (files) await this.fileService.attachFiles(task.id, files);
 await this.githubService.logEvent('task_created', {taskId: task.id});
 return task;
 
-```
+```markdown
+
   }
 }
 
-```
+```markdown
 
 ### Anti-Pattern 2: Premature Microservices
 
@@ -702,7 +778,9 @@ auth, files, notifications from day one.
 **Why it's wrong:**
 
 - Massive overhead: service discovery, API versioning, distributed tracing,
+
   network calls
+
 - Harder to debug - errors span multiple services
 - Slower development - changes require coordination across services
 - Over-engineering for scale you don't have
@@ -720,20 +798,37 @@ server/
   src/
 
 ```
+
 modules/
   tasks/
-    taskRoutes.js
-    taskService.js
-    taskRepository.js
-  auth/
-    authRoutes.js
-    authService.js
-  files/
-    fileRoutes.js
-    fileService.js
-app.js  // Assembles all modules
+
+```text
+taskRoutes.js
+taskService.js
+taskRepository.js
 
 ```
+
+  auth/
+
+```text
+authRoutes.js
+authService.js
+
+```
+
+  files/
+
+```text
+fileRoutes.js
+fileService.js
+
+```
+
+app.js  // Assembles all modules
+
+```markdown
+
 ```markdown
 
 ### Anti-Pattern 3: No Error Boundaries
@@ -758,12 +853,13 @@ showing generic error pages.
 class ValidationError extends Error {
   constructor(message) {
 
-```
+```python
+
 super(message);
 this.statusCode = 400;
 this.name = 'ValidationError';
 
-```
+```python
   }
 }
 
@@ -771,11 +867,12 @@ class UnauthorizedError extends Error {
   constructor(message) {
 
 ```
+
 super(message);
 this.statusCode = 401;
 this.name = 'UnauthorizedError';
 
-```
+```javascript
   }
 }
 
@@ -783,22 +880,24 @@ this.name = 'UnauthorizedError';
 app.use((err, req, res, next) => {
   console.error(`[ERROR] ${err.name}: ${err.message}`, {
 
-```
+```yaml
+
 stack: err.stack,
 url: req.url,
 userId: req.user?.id
 
-```
+```bash
   });
 
   res.status(err.statusCode || 500).json({
 
 ```
+
 error: err.message,
 // Only expose stack in development
 ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
 
-```
+```python
   });
 });
 
@@ -808,29 +907,32 @@ class ErrorBoundary extends React.Component {
 
   static getDerivedStateFromError(error) {
 
-```
+```yaml
+
 return { hasError: true };
 
-```
+```text
   }
 
   componentDidCatch(error, info) {
 
 ```
+
 console.error('React Error:', error, info);
 
-```
+```text
   }
 
   render() {
 
-```
+```text
+
 if (this.state.hasError) {
   return <ErrorPage />;
 }
 return this.props.children;
 
-```
+```text
   }
 }
 
@@ -862,7 +964,8 @@ app.get('/api/users/:id', async (req, res) => {
 class UserDTO {
   static fromModel(user) {
 
-```
+```yaml
+
 return {
   id: user.id,
   name: user.name,
@@ -872,7 +975,7 @@ return {
   // password_hash, deleted_at, internal fields NOT included
 };
 
-```
+```javascript
   }
 }
 
@@ -905,11 +1008,13 @@ const multer = require('multer');
 const upload = multer({
   storage: multer.diskStorage({
 
-```
+```yaml
+
 destination: './uploads',
 filename: (req, file, cb) => {
   // Sanitize filename
-  const safeFilename = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '')}`;
+  const safeFilename =
+  `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.-]/g, '')}`;
   cb(null, safeFilename);
 }
 
@@ -917,15 +1022,17 @@ filename: (req, file, cb) => {
   }),
   limits: {
 
-```
+```yaml
+
 fileSize: 10 * 1024 * 1024, // 10MB max
 files: 5 // Max 5 files per request
 
-```
+```javascript
   },
   fileFilter: (req, file, cb) => {
 
-```
+```javascript
+
 // Whitelist allowed types
 const allowed = ['image/jpeg', 'image/png', 'application/pdf', 'text/plain'];
 if (allowed.includes(file.mimetype)) {
@@ -943,7 +1050,7 @@ app.post('/api/tasks/:id/attachments', upload.array('files'), (req, res) => {
   res.json({ files: req.files.map(f => ({ filename: f.filename, size: f.size })) });
 });
 
-```
+```markdown
 
 ## Integration Points
 
@@ -970,54 +1077,79 @@ app.post('/api/tasks/:id/attachments', upload.array('files'), (req, res) => {
 **Architecture Patterns:**
 
 - [5+ software architecture patterns you should know in
+
   2026](https://www.sayonetech.com/blog/software-architecture-patterns/)
+
 - [Chapter 2 — High-Level Design: Architecting the Task Management
+
   System](https://medium.com/@natarajanck2/chapter-2-high-level-design-architecting-the-task-management-system-1f82a489ecab)
+
 - [Guide to app architecture | Android
+
   Developers](https://developer.android.com/topic/architecture)
 
 **Task Management Best Practices:**
 
 - [How to Build a Task Management App [2026
+
   Guide]](https://www.freshcodeit.com/blog/how-to-create-task-management-app-mvp)
+
 - [Task Management for Service Teams: Best Practices for
+
   2026](https://www.luacrm.com/en/blog-detail/task-management-best-practices-for-service-teams-2026)
+
 - [Chapter 2: Designing a Task Management System -
+
   NocoBase](https://www.nocobase.com/en/tutorials/task-tutorial-system-design)
 
 **Database Design:**
 
 - [Guide To Design Database For Task Manager In
+
   MySQL](https://www.tutorials24x7.com/mysql/guide-to-design-database-for-task-manager-in-mysql)
+
 - [Database Design for Workflow Management Systems -
+
   GeeksforGeeks](https://www.geeksforgeeks.org/dbms/database-design-for-workflow-management-systems/)
 
 **API Design:**
 
 - [16 REST API design best practices and
+
   guidelines](https://www.techtarget.com/searchapparchitecture/tip/16-REST-API-design-best-practices-and-guidelines)
+
 - [RESTful API Design Guide: Principles & Best
+
   Practices](https://strapi.io/blog/restful-api-design-guide-principles-best-practices)
 
 **File Management:**
 
 - [Best Practices for Managing Attachments in Project Management
+
   Software](https://ones.com/blog/best-practices-managing-attachments-project-management-software/)
+
 - [Managing File Attachments: Best Practices for Cloud
+
   Security](https://softwaremind.com/blog/managing-file-attachments-best-practices-for-cloud-security/)
 
 **Monolith vs Microservices:**
 
 - [Microservices vs. monolithic architecture |
+
   Atlassian](https://www.atlassian.com/microservices/microservices-architecture/microservices-vs-monolith)
+
 - [Monolithic vs Microservices: Differences, Pros, & Cons in
+
   2026](https://www.superblocks.com/blog/monolithic-vs-microservices)
 
 **React/Node.js Architecture:**
 
 - [Building a full-stack Task Management App with Typescript, React,
+
   Nodejs](https://dev.to/jamesoyanna/building-a-full-stack-task-management-app-with-typescriptreactnodejs-29in)
+
 - [React.js in 2026: Performance Revolution and Secure
+
   Architecture](https://medium.com/@expertappdevs/react-js-2026-performance-secure-architecture-84f78ad650ab)
 
 ---

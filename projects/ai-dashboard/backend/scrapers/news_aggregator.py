@@ -42,7 +42,7 @@ class NewsAggregator:
         db: Session,
         include_rss: bool = True,
         include_hackernews: bool = True,
-        max_items_per_source: int = 20
+        max_items_per_source: int = 20,
     ) -> List[Dict]:
         """
         Aggregate AI news from all sources
@@ -59,10 +59,7 @@ class NewsAggregator:
         all_news = []
 
         # Log scraper start
-        log = ScraperLog(
-            scraper_name="news",
-            status="running"
-        )
+        log = ScraperLog(scraper_name="news", status="running")
         db.add(log)
         db.commit()
 
@@ -139,7 +136,7 @@ class NewsAggregator:
                     "query": query,
                     "tags": "story",
                     "numericFilters": f"created_at_i>{int((datetime.utcnow() - timedelta(days=7)).timestamp())}",
-                    "hitsPerPage": max_items
+                    "hitsPerPage": max_items,
                 }
 
                 response = await self.client.get(url, params=params)
@@ -275,11 +272,7 @@ class NewsAggregator:
             return False
 
     def get_latest_news(
-        self,
-        db: Session,
-        limit: int = 50,
-        source: Optional[str] = None,
-        days: int = 7
+        self, db: Session, limit: int = 50, source: Optional[str] = None, days: int = 7
     ) -> List[AINews]:
         """Get latest AI news from database"""
         cutoff_date = datetime.utcnow() - timedelta(days=days)
@@ -291,20 +284,17 @@ class NewsAggregator:
 
         return query.order_by(AINews.published_at.desc()).limit(limit).all()
 
-    def get_trending_news(
-        self,
-        db: Session,
-        limit: int = 20,
-        days: int = 3
-    ) -> List[AINews]:
+    def get_trending_news(self, db: Session, limit: int = 20, days: int = 3) -> List[AINews]:
         """Get trending AI news (by score/comments)"""
         cutoff_date = datetime.utcnow() - timedelta(days=days)
 
-        return db.query(AINews).filter(
-            AINews.scraped_at >= cutoff_date
-        ).order_by(
-            (AINews.score + AINews.comments_count).desc()
-        ).limit(limit).all()
+        return (
+            db.query(AINews)
+            .filter(AINews.scraped_at >= cutoff_date)
+            .order_by((AINews.score + AINews.comments_count).desc())
+            .limit(limit)
+            .all()
+        )
 
     async def close(self):
         """Close HTTP client"""

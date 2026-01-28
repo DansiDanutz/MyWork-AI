@@ -1,13 +1,13 @@
-import { TaskFormWithTags } from '@/shared/components/TaskFormWithTags'
-import { getTagsByUser, verifySession } from '@/shared/lib/dal'
-import Link from 'next/link'
+import { TaskFormWithTags } from "@/shared/components/TaskFormWithTags";
+import { getTagsByUser, verifySession } from "@/shared/lib/dal";
+import Link from "next/link";
 
 export default async function NewTaskPage() {
   // Verify authentication and get user ID
-  const { userId } = await verifySession()
+  const { userId } = await verifySession();
 
   // Fetch available tags for autocomplete
-  const tags = await getTagsByUser(userId)
+  const tags = await getTagsByUser(userId);
 
   return (
     <div className="max-w-2xl">
@@ -51,5 +51,5 @@ export default async function NewTaskPage() {
       {/* Task form component */}
       <TaskFormWithTags availableTags={tags} />
     </div>
-  )
+  );
 }

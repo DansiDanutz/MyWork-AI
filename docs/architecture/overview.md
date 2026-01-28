@@ -9,39 +9,70 @@ tasks to the appropriate tool or engine.
 
 graph TB
 
-```
+```yaml
+
 subgraph "User Interface"
-    CLI[Claude Code CLI]
-    MW[mw.py CLI]
+
+```text
+CLI[Claude Code CLI]
+MW[mw.py CLI]
+
+```
+
 end
 
 subgraph "Master Orchestrator"
-    CLAUDE[CLAUDE.md<br/>Decision routing]
+
+```text
+CLAUDE[CLAUDE.md<br/>Decision routing]
+
+```
+
 end
 
 subgraph "Layer 1: GSD"
-    direction TB
-    GSD_NEW[new-project]
-    GSD_PLAN[plan-phase]
-    GSD_EXEC[execute-phase]
-    GSD_VERIFY[verify-work]
-    GSD_NEW --> GSD_PLAN --> GSD_EXEC --> GSD_VERIFY
+
+```text
+direction TB
+GSD_NEW[new-project]
+GSD_PLAN[plan-phase]
+GSD_EXEC[execute-phase]
+GSD_VERIFY[verify-work]
+GSD_NEW --> GSD_PLAN --> GSD_EXEC --> GSD_VERIFY
+
+```
+
 end
 
 subgraph "Layer 2: WAT"
-    WORKFLOWS[Workflows<br/>SOPs in markdown]
-    TOOLS[Tools<br/>Python scripts]
-    WORKFLOWS --> TOOLS
+
+```text
+WORKFLOWS[Workflows<br/>SOPs in markdown]
+TOOLS[Tools<br/>Python scripts]
+WORKFLOWS --> TOOLS
+
+```
+
 end
 
 subgraph "Layer 3: Engines"
-    AUTOCODER[Autocoder<br/>Autonomous coding]
-    N8N[n8n<br/>Workflow automation]
+
+```text
+AUTOCODER[Autocoder<br/>Autonomous coding]
+N8N[n8n<br/>Workflow automation]
+
+```
+
 end
 
 subgraph "Self-Learning"
-    BRAIN[Brain<br/>Knowledge vault]
-    REGISTRY[Module Registry<br/>Code patterns]
+
+```text
+BRAIN[Brain<br/>Knowledge vault]
+REGISTRY[Module Registry<br/>Code patterns]
+
+```
+
 end
 
 CLI --> CLAUDE
@@ -58,7 +89,8 @@ style BRAIN fill:#34A853,stroke:#333,color:#fff
 style AUTOCODER fill:#EA4335,stroke:#333,color:#fff
 style N8N fill:#EA4B71,stroke:#333,color:#fff
 
-```
+```markdown
+
 ```markdown
 
 ## Layer Details
@@ -131,7 +163,8 @@ accuracy degradation over multi-step processes.
 
 flowchart TD
 
-```
+```text
+
 A[Request] --> B{Type?}
 
 B -->|New Project| C[GSD]
@@ -154,53 +187,65 @@ K --> L
 
 ```
 
-```
+```markdown
 
 ## Data Flow
 
 ```python
 User Request
 
-```
+```text
+
  │
  ▼
 
-```
+```text
 ┌─────────────┐
 │   CLAUDE.md │ ← Routes to appropriate layer
 └─────────────┘
 
 ```
+
  │
  ├─────────────────┬─────────────────┐
  ▼                 ▼                 ▼
 
-```
+```text
 ┌─────────┐      ┌─────────┐      ┌─────────┐
 │   GSD   │      │   WAT   │      │ Engines │
 └─────────┘      └─────────┘      └─────────┘
 
-```
+```text
+
  │                 │                 │
  ▼                 ▼                 ▼
 
-```
+```text
 ┌─────────┐      ┌─────────┐      ┌─────────┐
 │.planning│      │ tools/  │      │ Project │
 │  STATE  │      │ output  │      │  code   │
 └─────────┘      └─────────┘      └─────────┘
 
 ```
+
  │                 │                 │
  └────────────────┬┴─────────────────┘
-                  ▼
-          ┌─────────────┐
-          │    Brain    │ ← Learns from all
-          └─────────────┘
+
+```python
+
+```
+          ▼
+  ┌─────────────┐
+  │    Brain    │ ← Learns from all
+  └─────────────┘
 
 ```
 
 ```
+
+```text
+
+```markdown
 
 ## Key Principles
 

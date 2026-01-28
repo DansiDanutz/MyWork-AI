@@ -11,26 +11,29 @@ requires:
 
   - phase: 01-foundation
 
-```
+```yaml
 provides: Next.js config, environment validation foundation
 
-```
+```yaml
+
   - phase: 02-authentication
 
-```
+```yaml
 provides: Auth.js environment variables (AUTH_SECRET, AUTH_GITHUB_ID,
 AUTH_GITHUB_SECRET)
 
 ```
+
 provides:
 
   - Security headers for XSS, clickjacking, and content sniffing protection
   - Enhanced health check endpoint with database connectivity and uptime
 
-```
+```text
 monitoring
 
-```
+```markdown
+
   - Production environment validation with Zod schema
   - Optional rate limiting middleware (when Upstash configured)
 
@@ -42,76 +45,89 @@ tech-stack:
   added: [@upstash/ratelimit, @upstash/redis]
   patterns:
 
-```
+```markdown
+
 - Security headers via Next.js headers() function
 - Environment validation at import time with Zod
 - Conditional rate limiting with graceful degradation
 - Edge Runtime compatible dynamic imports
 
 ```
+
 key-files:
   created:
 
-```
+```markdown
+
 - src/shared/lib/env.ts (extended with production variables)
 
-```
+```yaml
+
   modified:
 
-```
+```markdown
+
 - next.config.ts (added security headers)
 - src/app/api/health/route.ts (enhanced with uptime and structured response)
 - src/middleware.ts (added conditional rate limiting)
 
 ```
+
 key-decisions:
 
   - "SECURITY-002: Security headers applied via Next.js config headers() function
 
-```
+```text
 to all routes"
 
-```
+```yaml
+
   - "SECURITY-003: Environment validation extended to include Auth.js variables
 
-```
+```text
 (AUTH_SECRET min 32 chars)"
 
 ```
+
   - "RATE-002: Rate limiting is optional - graceful degradation when Upstash not
 
-```
+```text
 configured (MVP friendly)"
 
-```
+```yaml
+
   - "RATE-003: 60 requests per minute sliding window for API routes only"
   - "MONITOR-001: Health check returns 503 when database unhealthy for load
 
-```
+```text
 balancer detection"
 
 ```
+
 patterns-established:
 
   - "Security headers pattern: Define once in next.config.ts, apply to all routes
 
-```
+```text
 automatically"
 
-```
+```python
+
   - "Environment validation pattern: Extend Zod schema, fail fast at import time"
   - "Graceful degradation pattern: Check for optional env vars, conditionally
 
-```
+```text
 initialize features"
 
 ```
+
   - "Edge Runtime pattern: Dynamic import of Node.js libraries to avoid build
 
-```
+```text
 errors"
 
-```
+```markdown
+
 # Metrics
 
 duration: 7min
@@ -135,11 +151,17 @@ Upstash**
 ## Accomplishments
 
 - Security headers protect against XSS, clickjacking, MIME sniffing, and restrict
+
   browser APIs
+
 - Health check endpoint provides structured status for monitoring and load
+
   balancers
+
 - Production environment validation catches missing Auth.js credentials at
+
   startup
+
 - Rate limiting protects API routes from abuse when Upstash is configured
 
 ## Task Commits
@@ -149,17 +171,25 @@ Each task was committed atomically:
 1. **Task 1: Add security headers to Next.js config** - `022406d` (feat)
 2. **Task 2: Enhance health check endpoint** - `031ef8f` (feat)
 3. **Task 3: Create environment validation and rate limiting** - `697a231`
+
 (feat)
 
 ## Files Created/Modified
 
 - `next.config.ts` - Added security headers (X-Content-Type-Options,
+
   X-Frame-Options, X-XSS-Protection, Referrer-Policy, Permissions-Policy)
+
 - `src/app/api/health/route.ts` - Enhanced with uptime, timestamp, database
+
   connectivity check, structured JSON response
+
 - `src/shared/lib/env.ts` - Extended schema with AUTH_SECRET (min 32 chars),
+
   AUTH_GITHUB_ID, AUTH_GITHUB_SECRET, optional UPSTASH_* variables
+
 - `src/middleware.ts` - Added conditional rate limiting with dynamic Upstash
+
   imports, Edge Runtime compatible
 
 ## Decisions Made
@@ -168,7 +198,9 @@ Each task was committed atomically:
 
 - Applied to all routes (/:path*) using headers() function
 - Includes X-Content-Type-Options, X-Frame-Options, X-XSS-Protection,
+
   Referrer-Policy, Permissions-Policy
+
 - Verified via HTTP response headers in dev mode
 - Note: HSTS not added - Vercel adds this automatically for HTTPS domains
 
@@ -182,7 +214,9 @@ Each task was committed atomically:
 **RATE-002: Optional rate limiting**
 
 - Only initializes when UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are
+
   set
+
 - Graceful degradation: silently skips if not configured (MVP friendly)
 - Supports testing and development without Upstash subscription
 
@@ -207,14 +241,21 @@ Each task was committed atomically:
 
 - **Found during:** Task 1 (production build verification)
 - **Issue:** Pre-existing production build error: "<Html> should not be imported
+
   outside of pages/_document" during static page generation
+
 - **Attempted fix:** Added suppressHydrationWarning to <html> and <body> tags in
+
   global-error.tsx
+
 - **Result:** Issue persists - appears to be a Next.js 15.5.9 build-time error
+
   unrelated to our code changes
+
 - **Files modified:** src/app/global-error.tsx
 - **Verification:** Dev mode works correctly, security headers verified via curl
 - **Note:** Build error is pre-existing from Phase 7 (documented as fixed but
+
   still occurring) - does NOT block dev server or runtime functionality. All new
   features work correctly in development.
 
@@ -233,10 +274,14 @@ investigation in future maintenance.
 
 - Next.js build fails during static page generation with "Html import" error
 - Error is unrelated to changes in this plan (persists even when removing
+
   global-error.tsx)
+
 - Dev server works correctly, all runtime functionality verified
 - All new features (security headers, health check, rate limiting) work as
+
   expected
+
 - Build error was documented as fixed in Phase 7 but continues to occur
 - Requires separate investigation - may be Next.js 15.5.9 specific issue
 
@@ -246,6 +291,7 @@ investigation in future maintenance.
 - Solution: Dynamic import of @upstash/ratelimit and @upstash/redis
 - Works correctly because Upstash libraries use fetch() API (Edge compatible)
 - Tested and verified: rate limiting initializes properly, middleware functions
+
   correctly
 
 ## User Setup Required
@@ -263,7 +309,9 @@ variable validation that will require user action before deployment:
 
 - `UPSTASH_REDIS_REST_URL` - From Upstash Console → Redis Database → REST API URL
 - `UPSTASH_REDIS_REST_TOKEN` - From Upstash Console → Redis Database → REST API
+
   Token
+
 - Note: Rate limiting gracefully skips if these are not set (MVP friendly)
 
 **Validation:**
@@ -282,7 +330,9 @@ invalid (e.g., AUTH_SECRET < 32 characters).
 **Concerns:**
 
 - Pre-existing production build error continues (documented, does not block
+
   runtime)
+
 - Need to investigate Next.js 15.5.9 static page generation issue
 
 **Blockers:**

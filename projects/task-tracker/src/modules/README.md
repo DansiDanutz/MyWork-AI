@@ -11,11 +11,13 @@ module-name/
 ├── types/         # TypeScript types
 └── index.ts       # Public API (only export what other modules need)
 
-```
+```markdown
 
 ## Rules
 
 - Import from module index only: `@/modules/tasks` not
+
   `@/modules/tasks/lib/internal`
+
 - Each module owns its data and logic
 - Shared code goes in `@/shared/`

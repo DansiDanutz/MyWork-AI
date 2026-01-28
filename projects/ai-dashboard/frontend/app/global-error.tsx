@@ -1,21 +1,21 @@
-'use client'
+"use client";
 
 // Note: global-error.tsx handles errors in the root layout
 // We use <a> tags instead of <Link> because Next.js components may not be reliable here
 /* eslint-disable @next/next/no-html-link-for-pages */
 
-import { useEffect } from 'react'
+import { useEffect } from "react";
 
 export default function GlobalError({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
   useEffect(() => {
-    console.error('Global error:', error)
-  }, [error])
+    console.error("Global error:", error);
+  }, [error]);
 
   return (
     <html lang="en">
@@ -56,5 +56,5 @@ export default function GlobalError({
         </div>
       </body>
     </html>
-  )
+  );
 }

@@ -1,9 +1,19 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { LuRefreshCw, LuPlus, LuPlay, LuCheck, LuPencil, LuEye, LuUpload, LuClock, LuCircleAlert } from 'react-icons/lu';
-import { getAutomations, createAutomation, Automation } from '@/lib/api';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import {
+  LuRefreshCw,
+  LuPlus,
+  LuPlay,
+  LuCheck,
+  LuPencil,
+  LuEye,
+  LuUpload,
+  LuClock,
+  LuCircleAlert,
+} from "react-icons/lu";
+import { getAutomations, createAutomation, Automation } from "@/lib/api";
+import Link from "next/link";
 
 export default function YouTubeBotClient() {
   const [automations, setAutomations] = useState<Automation[]>([]);
@@ -13,9 +23,9 @@ export default function YouTubeBotClient() {
   const [error, setError] = useState<string | null>(null);
 
   // Form state
-  const [prompt, setPrompt] = useState('');
-  const [targetAudience, setTargetAudience] = useState('tech enthusiasts');
-  const [videoLength, setVideoLength] = useState('5-10');
+  const [prompt, setPrompt] = useState("");
+  const [targetAudience, setTargetAudience] = useState("tech enthusiasts");
+  const [videoLength, setVideoLength] = useState("5-10");
 
   useEffect(() => {
     fetchAutomations();
@@ -28,7 +38,7 @@ export default function YouTubeBotClient() {
       setAutomations(data);
       setError(null);
     } catch (err) {
-      setError('Failed to load automations');
+      setError("Failed to load automations");
       console.error(err);
     } finally {
       setLoading(false);
@@ -43,10 +53,10 @@ export default function YouTubeBotClient() {
       setCreating(true);
       await createAutomation(prompt, targetAudience, videoLength);
       setShowCreateModal(false);
-      setPrompt('');
+      setPrompt("");
       await fetchAutomations();
     } catch (err) {
-      setError('Failed to create automation');
+      setError("Failed to create automation");
       console.error(err);
     } finally {
       setCreating(false);
@@ -55,20 +65,25 @@ export default function YouTubeBotClient() {
 
   const getStatusBadge = (status: string) => {
     const badges: Record<string, { color: string; icon: React.ElementType }> = {
-      draft: { color: 'bg-gray-100 text-gray-700', icon: LuPencil },
-      generating: { color: 'bg-yellow-100 text-yellow-700', icon: LuClock },
-      pending_review: { color: 'bg-blue-100 text-blue-700', icon: LuEye },
-      approved: { color: 'bg-green-100 text-green-700', icon: LuCheck },
-      ready_for_upload: { color: 'bg-purple-100 text-purple-700', icon: LuUpload },
-      uploaded: { color: 'bg-emerald-100 text-emerald-700', icon: LuCheck },
-      failed: { color: 'bg-red-100 text-red-700', icon: LuCircleAlert },
+      draft: { color: "bg-gray-100 text-gray-700", icon: LuPencil },
+      generating: { color: "bg-yellow-100 text-yellow-700", icon: LuClock },
+      pending_review: { color: "bg-blue-100 text-blue-700", icon: LuEye },
+      approved: { color: "bg-green-100 text-green-700", icon: LuCheck },
+      ready_for_upload: {
+        color: "bg-purple-100 text-purple-700",
+        icon: LuUpload,
+      },
+      uploaded: { color: "bg-emerald-100 text-emerald-700", icon: LuCheck },
+      failed: { color: "bg-red-100 text-red-700", icon: LuCircleAlert },
     };
     const badge = badges[status] || badges.draft;
     const Icon = badge.icon;
     return (
-      <span className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full ${badge.color}`}>
+      <span
+        className={`flex items-center gap-1 text-xs px-2 py-1 rounded-full ${badge.color}`}
+      >
         <Icon className="w-3 h-3" />
-        {status.replace('_', ' ')}
+        {status.replace("_", " ")}
       </span>
     );
   };
@@ -87,7 +102,9 @@ export default function YouTubeBotClient() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">YouTube Bot</h1>
-          <p className="text-gray-500 mt-1">Automated AI video creation pipeline</p>
+          <p className="text-gray-500 mt-1">
+            Automated AI video creation pipeline
+          </p>
         </div>
         <div className="flex gap-3">
           <button
@@ -108,26 +125,31 @@ export default function YouTubeBotClient() {
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg">
-          {error}
-        </div>
+        <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>
       )}
 
       {/* Pipeline Overview */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <h2 className="text-lg font-semibold mb-4">Pipeline Overview</h2>
         <div className="flex items-center justify-between overflow-x-auto pb-2">
-          {['Prompt', 'Optimize', 'Generate Script', 'Create Video', 'Review', 'Upload'].map((step, i) => (
+          {[
+            "Prompt",
+            "Optimize",
+            "Generate Script",
+            "Create Video",
+            "Review",
+            "Upload",
+          ].map((step, i) => (
             <div key={step} className="flex items-center">
               <div className="flex flex-col items-center">
                 <div className="w-10 h-10 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold">
                   {i + 1}
                 </div>
-                <span className="text-xs text-gray-500 mt-2 whitespace-nowrap">{step}</span>
+                <span className="text-xs text-gray-500 mt-2 whitespace-nowrap">
+                  {step}
+                </span>
               </div>
-              {i < 5 && (
-                <div className="w-12 h-0.5 bg-purple-200 mx-2" />
-              )}
+              {i < 5 && <div className="w-12 h-0.5 bg-purple-200 mx-2" />}
             </div>
           ))}
         </div>
@@ -137,13 +159,18 @@ export default function YouTubeBotClient() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100">
         <div className="p-6 border-b border-gray-100">
           <h2 className="text-lg font-semibold">Your Videos</h2>
-          <p className="text-sm text-gray-500 mt-1">Track your video automation progress</p>
+          <p className="text-sm text-gray-500 mt-1">
+            Track your video automation progress
+          </p>
         </div>
 
         {automations.length > 0 ? (
           <div className="divide-y divide-gray-100">
             {automations.map((automation) => (
-              <div key={automation.id} className="p-6 hover:bg-gray-50 transition-colors">
+              <div
+                key={automation.id}
+                className="p-6 hover:bg-gray-50 transition-colors"
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-2">
@@ -159,18 +186,19 @@ export default function YouTubeBotClient() {
                       {automation.video_description || automation.user_prompt}
                     </p>
 
-                    {automation.video_tags && automation.video_tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1 mt-3">
-                        {automation.video_tags.slice(0, 5).map((tag) => (
-                          <span
-                            key={tag}
-                            className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded"
-                          >
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    {automation.video_tags &&
+                      automation.video_tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-3">
+                          {automation.video_tags.slice(0, 5).map((tag) => (
+                            <span
+                              key={tag}
+                              className="text-xs px-2 py-0.5 bg-gray-100 text-gray-600 rounded"
+                            >
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
                   </div>
 
                   <div className="flex items-center gap-2 ml-4">
@@ -200,7 +228,10 @@ export default function YouTubeBotClient() {
         ) : (
           <div className="p-12 text-center text-gray-500">
             <LuPlay className="w-12 h-12 mx-auto mb-4 opacity-50" />
-            <p>No videos yet. Click "Create Video" to start your first automation.</p>
+            <p>
+              No videos yet. Click "Create Video" to start your first
+              automation.
+            </p>
           </div>
         )}
       </div>
@@ -243,7 +274,9 @@ export default function YouTubeBotClient() {
                   <option value="tech enthusiasts">Tech Enthusiasts</option>
                   <option value="developers">Developers</option>
                   <option value="beginners">Beginners</option>
-                  <option value="business professionals">Business Professionals</option>
+                  <option value="business professionals">
+                    Business Professionals
+                  </option>
                   <option value="students">Students</option>
                 </select>
               </div>
@@ -281,7 +314,7 @@ export default function YouTubeBotClient() {
                   ) : (
                     <LuPlus className="w-4 h-4" />
                   )}
-                  {creating ? 'Creating...' : 'Create Video'}
+                  {creating ? "Creating..." : "Create Video"}
                 </button>
               </div>
             </form>

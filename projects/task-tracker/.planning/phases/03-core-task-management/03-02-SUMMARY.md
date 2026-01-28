@@ -10,10 +10,11 @@ requires:
 
   - phase: 03-01
 
-```
+```yaml
 provides: Task database schema and Server Actions for CRUD operations
 
-```
+```yaml
+
 provides:
 
   - TaskCard component with optimistic status updates
@@ -29,32 +30,37 @@ tech-stack:
   added: []
   patterns:
 
-```
+```markdown
+
 - Optimistic UI with useOptimistic hook
 - useActionState for form integration with Server Actions
 - Status-based task grouping
 - Empty state handling with CTAs
 
 ```
+
 key-files:
   created:
 
-```
+```markdown
+
 - src/shared/components/TaskCard.tsx
 - src/shared/components/TaskList.tsx
 - src/shared/components/TaskForm.tsx
 
-```
+```yaml
+
   modified: []
 
 key-decisions:
 
   - "UI-006: Optimistic UI for status updates provides instant feedback before
 
-```
+```text
 server confirmation"
 
 ```
+
   - "UI-007: Status dropdown for quick inline status changes without navigation"
   - "UI-008: Delete confirmation dialog prevents accidental task deletion"
   - "UI-009: Done tasks faded but visible maintains task history awareness"
@@ -63,16 +69,18 @@ patterns-established:
 
   - "Optimistic updates: useOptimistic + useTransition pattern for instant UI
 
-```
+```text
 feedback"
 
-```
+```yaml
+
   - "Form integration: useActionState pattern for Server Action forms with
 
-```
+```text
 validation"
 
 ```
+
   - "Status grouping: Separate sections for Todo/In Progress/Done with counts"
   - "Empty states: Helpful illustrations and CTAs when no content exists"
 
@@ -107,17 +115,24 @@ and validated task creation form**
 Each task was committed atomically:
 
 1. **Task 1: Create TaskCard component with optimistic status updates** -
+
 `1a43857` (feat)
+
 2. **Task 2: Create TaskList component with status grouping** - `9bfcf8b` (feat)
 3. **Task 3: Create TaskForm component for task creation** - `e82b41b` (feat)
 
 ## Files Created/Modified
 
 - `src/shared/components/TaskCard.tsx` - Individual task display with optimistic
+
   status dropdown, edit/delete actions
+
 - `src/shared/components/TaskList.tsx` - Status-grouped task display with empty
+
   state handling
+
 - `src/shared/components/TaskForm.tsx` - Task creation form with useActionState
+
   and validation
 
 ## Decisions Made

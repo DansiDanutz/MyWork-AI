@@ -9,10 +9,11 @@ Missing language in code block:
 ```python
 def test():
 
-```
+```text
+
 return "hello world"
 
-```
+```yaml
 
 ```yaml
 
@@ -27,6 +28,6 @@ Bare URL: <https://github.com/user/repo>
 ```text
 Indented code block instead of fenced
 
-```
+```markdown
 
 ## Emphasized text used as heading

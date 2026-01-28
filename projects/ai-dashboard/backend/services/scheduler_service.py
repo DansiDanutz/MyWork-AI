@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 
 # Stagger startup times to avoid API rate limit spikes
 STARTUP_DELAYS = {
-    "youtube_scraper": 0,      # Run immediately
-    "news_aggregator": 60,     # 1 minute delay
-    "github_scraper": 120,     # 2 minute delay
+    "youtube_scraper": 0,  # Run immediately
+    "news_aggregator": 60,  # 1 minute delay
+    "github_scraper": 120,  # 2 minute delay
 }
 
 
@@ -39,7 +39,7 @@ class SchedulerService:
             id="youtube_scraper",
             name="YouTube AI Video Scraper",
             replace_existing=True,
-            next_run_time=now + timedelta(seconds=STARTUP_DELAYS["youtube_scraper"])
+            next_run_time=now + timedelta(seconds=STARTUP_DELAYS["youtube_scraper"]),
         )
 
         # News aggregator - every 4 hours
@@ -49,7 +49,7 @@ class SchedulerService:
             id="news_aggregator",
             name="AI News Aggregator",
             replace_existing=True,
-            next_run_time=now + timedelta(seconds=STARTUP_DELAYS["news_aggregator"])
+            next_run_time=now + timedelta(seconds=STARTUP_DELAYS["news_aggregator"]),
         )
 
         # GitHub trending - every 12 hours
@@ -59,7 +59,7 @@ class SchedulerService:
             id="github_scraper",
             name="GitHub Trending AI Projects",
             replace_existing=True,
-            next_run_time=now + timedelta(seconds=STARTUP_DELAYS["github_scraper"])
+            next_run_time=now + timedelta(seconds=STARTUP_DELAYS["github_scraper"]),
         )
 
         self.scheduler.start()
@@ -107,7 +107,7 @@ class SchedulerService:
             jobs[job.id] = {
                 "name": job.name,
                 "next_run": str(job.next_run_time) if job.next_run_time else None,
-                "trigger": str(job.trigger)
+                "trigger": str(job.trigger),
             }
         return jobs
 

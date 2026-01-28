@@ -12,20 +12,24 @@ tech-stack:
 key-files:
   created:
 
-```
+```markdown
+
 - src/app/(app)/tasks/search-params.ts
 - src/app/actions/search.ts
 - src/shared/components/TaskSearchBar.tsx
 - src/shared/components/TaskFilters.tsx
 
-```
+```yaml
+
   modified:
 
-```
+```markdown
+
 - src/app/(app)/tasks/page.tsx
 - package.json
 
 ```
+
 decisions: []
 metrics:
   duration: "6 minutes"
@@ -131,7 +135,7 @@ else {
   tasks = await getTasksByUser(userId)
 }
 
-```
+```markdown
 
 ## Key Files
 
@@ -166,7 +170,7 @@ else {
 ```text
 /tasks?q=meeting&status=TODO,IN_PROGRESS&tags=work-tag-id,urgent-tag-id
 
-```
+```markdown
 
 - Copy URL → paste in new tab → exact same filtered view
 - Share URL with team → they see same results (if they have access)
@@ -237,6 +241,7 @@ satisfied.
 - ✅ Tag filter infrastructure ready
 - ✅ TaskFilters displays tags with colors
 - ⚠️ **Note**: 04-03 was actually executed before 04-02, so all prerequisites
+
   already met
 
 ### For Phase 04-04 (Advanced Search Features)
@@ -293,7 +298,8 @@ onChange={(e) => setLocalValue(e.target.value)}
 useEffect(() => {
   const timer = setTimeout(() => {
 
-```
+```javascript
+
 startTransition(() => setUrlValue(localValue))
 
 ```
@@ -301,7 +307,7 @@ startTransition(() => setUrlValue(localValue))
   return () => clearTimeout(timer)
 }, [localValue])
 
-```
+```yaml
 
 **Benefits:**
 
@@ -379,6 +385,7 @@ else {
 
 - **Total**: 6 minutes
 - **Note**: Actual work was done during 04-03 execution, this summary documents
+
   existing implementation
 
 ---

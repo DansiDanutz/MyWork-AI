@@ -103,7 +103,9 @@ Optional:
 
 - ⏳ Confirm featured flag in API response (pending code change deploy)
 - 📸 Add preview images to Marketplace listing (guide:
+
   SPORTSAI_SCREENSHOT_GUIDE.md)
+
 - ✅ Support email + update policy completed (see: SPORTSAI_SUPPORT_POLICY.md)
 
 ## Assets Ready for Upload

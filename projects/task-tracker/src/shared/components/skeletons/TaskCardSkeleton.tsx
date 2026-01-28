@@ -49,5 +49,5 @@ export function TaskCardSkeleton() {
         <div className="h-8 w-14 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
       </div>
     </div>
-  )
+  );
 }

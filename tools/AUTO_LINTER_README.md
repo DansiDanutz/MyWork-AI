@@ -74,7 +74,7 @@ mw lint watch                 # Watch files manually
 mw lint config --show         # Show configuration
 mw lint stats                 # Show statistics
 
-```
+```markdown
 
 ## 🔧 How It Works
 
@@ -125,7 +125,7 @@ Add to your CI pipeline:
 python3 tools/auto_lint_fixer.py .
 markdownlint . || exit 1
 
-```
+```markdown
 
 ## 🎯 Benefits
 
@@ -157,13 +157,15 @@ markdownlint . || exit 1
 ```text
 File Changes → File Watcher → Auto-Fixer → Perfect Markdown
 
-```
+```text
+
  ↓              ↓             ↓              ↓
 
-```
+```markdown
+
 Git Commits → Git Hooks → Auto-Fixer → Perfect Commits
 
-```
+```markdown
 
 ### Files
 
@@ -209,7 +211,7 @@ To ensure all users get perfect auto-linting:
    cd <project>
    mw lint start
 
-   ```
+```yaml
 
 3. **CI/CD validation:**
 
@@ -233,7 +235,7 @@ git add .git/hooks/     # Commit hooks for all users
 git commit -m "feat: add perfect auto-linting for all users"
 git push
 
-```
+```markdown
 
 Now every team member gets automatic markdown fixing!
 

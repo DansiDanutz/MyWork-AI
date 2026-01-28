@@ -45,7 +45,7 @@ cd projects/my-project
 
 /gsd:new-project
 
-```
+```markdown
 
 ### Manual Creation
 
@@ -61,7 +61,8 @@ cd my-new-project
 
 Each project follows this standard structure:
 
-```
+```markdown
+
 project-name/
 ├── .planning/              # GSD state for this project
 │   ├── PROJECT.md          # Vision and scope
@@ -100,7 +101,7 @@ ln -s /path/to/your/project projects/project-name
 
 # GSD commands will work normally
 
-```
+```markdown
 
 ## Best Practices
 
@@ -108,4 +109,5 @@ ln -s /path/to/your/project projects/project-name
 2. **Use templates** - Start with `mw new` for consistent structure
 3. **Track state** - GSD creates `.planning/` automatically
 4. **Separate concerns** - Framework state stays in root `.planning/`, project
+
 state in `projects/[name]/.planning/`

@@ -27,6 +27,7 @@ import json
 import socket
 import subprocess
 import time
+
 try:
     import fcntl  # Unix-only
 except ImportError:  # pragma: no cover - Windows fallback
@@ -51,6 +52,7 @@ except ImportError:
             return Path(env_root)
         script_dir = Path(__file__).resolve().parent
         return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+
     MYWORK_ROOT = _get_mywork_root()
     AUTOCODER_PATH = Path(os.environ.get("AUTOCODER_ROOT", Path.home() / "GamesAI" / "autocoder"))
 
@@ -75,7 +77,7 @@ class HealthCheckLock:
             self.lock_file.parent.mkdir(parents=True, exist_ok=True)
 
             # Create lock file
-            self.lock_fd = open(self.lock_file, 'w')
+            self.lock_fd = open(self.lock_file, "w")
             self.lock_fd.seek(0)
 
             # Try to acquire exclusive lock with timeout
@@ -96,7 +98,9 @@ class HealthCheckLock:
                     return self
                 except (BlockingIOError, OSError):
                     if time.time() - start_time > self.timeout:
-                        raise RuntimeError(f"Another health check is running (timeout after {self.timeout}s)")
+                        raise RuntimeError(
+                            f"Another health check is running (timeout after {self.timeout}s)"
+                        )
                     time.sleep(0.1)
         except Exception:
             if self.lock_fd:
@@ -214,12 +218,14 @@ class HealthChecker:
         """Check GSD installation and status."""
         try:
             if not GSD_PATH.exists():
-                self.add_result(CheckResult(
-                    name="GSD Installation",
-                    status=Status.ERROR,
-                    message="GSD not installed",
-                    fix_command="/install gsd"
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="GSD Installation",
+                        status=Status.ERROR,
+                        message="GSD not installed",
+                        fix_command="/install gsd",
+                    )
+                )
                 return
 
             # Check version
@@ -250,20 +256,28 @@ class HealthChecker:
                     pass
 
             if has_updates:
-                self.add_result(CheckResult(
-                    name="GSD Version",
-                    status=Status.WARNING,
-                    message=f"Update available: {version} → {latest_version}",
-                    details={"current": version, "latest": latest_version, "commands": len(commands)},
-                    fix_command="/gsd:update"
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="GSD Version",
+                        status=Status.WARNING,
+                        message=f"Update available: {version} → {latest_version}",
+                        details={
+                            "current": version,
+                            "latest": latest_version,
+                            "commands": len(commands),
+                        },
+                        fix_command="/gsd:update",
+                    )
+                )
             else:
-                self.add_result(CheckResult(
-                    name="GSD Installation",
-                    status=Status.OK,
-                    message=f"GSD v{version} with {len(commands)} commands",
-                    details={"version": version, "commands": len(commands)}
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="GSD Installation",
+                        status=Status.OK,
+                        message=f"GSD v{version} with {len(commands)} commands",
+                        details={"version": version, "commands": len(commands)},
+                    )
+                )
 
             if quick:
                 return
@@ -272,62 +286,72 @@ class HealthChecker:
             agents_path = Path.home() / ".claude" / "agents"
             gsd_agents = list(agents_path.glob("gsd-*.md")) if agents_path.exists() else []
 
-            self.add_result(CheckResult(
-                name="GSD Agents",
-                status=Status.OK if len(gsd_agents) >= 10 else Status.WARNING,
-                message=f"{len(gsd_agents)} GSD agents installed",
-                details={"agents": [a.stem for a in gsd_agents]}
-            ))
+            self.add_result(
+                CheckResult(
+                    name="GSD Agents",
+                    status=Status.OK if len(gsd_agents) >= 10 else Status.WARNING,
+                    message=f"{len(gsd_agents)} GSD agents installed",
+                    details={"agents": [a.stem for a in gsd_agents]},
+                )
+            )
 
             # Check hooks
             hooks_path = Path.home() / ".claude" / "hooks"
             gsd_hooks = list(hooks_path.glob("gsd-*.js")) if hooks_path.exists() else []
 
-            self.add_result(CheckResult(
-                name="GSD Hooks",
-                status=Status.OK if len(gsd_hooks) >= 2 else Status.WARNING,
-                message=f"{len(gsd_hooks)} GSD hooks active",
-                details={"hooks": [h.stem for h in gsd_hooks]}
-            ))
+            self.add_result(
+                CheckResult(
+                    name="GSD Hooks",
+                    status=Status.OK if len(gsd_hooks) >= 2 else Status.WARNING,
+                    message=f"{len(gsd_hooks)} GSD hooks active",
+                    details={"hooks": [h.stem for h in gsd_hooks]},
+                )
+            )
 
         except Exception as e:
-            self.add_result(CheckResult(
-                name="GSD Check",
-                status=Status.ERROR,
-                message=f"Error checking GSD: {str(e)}"
-            ))
+            self.add_result(
+                CheckResult(
+                    name="GSD Check", status=Status.ERROR, message=f"Error checking GSD: {str(e)}"
+                )
+            )
 
     def check_autocoder(self, quick: bool = False):
         """Check Autocoder installation and server status."""
         try:
             # Check installation
             if not AUTOCODER_PATH.exists():
-                self.add_result(CheckResult(
-                    name="Autocoder Installation",
-                    status=Status.ERROR,
-                    message="Autocoder not found at expected path",
-                    details={"expected_path": str(AUTOCODER_PATH)}
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="Autocoder Installation",
+                        status=Status.ERROR,
+                        message="Autocoder not found at expected path",
+                        details={"expected_path": str(AUTOCODER_PATH)},
+                    )
+                )
                 return
 
             # Check if server is running (with timeout protection)
-            server_running = safe_socket_connect('127.0.0.1', 8888, timeout=3.0)
+            server_running = safe_socket_connect("127.0.0.1", 8888, timeout=3.0)
 
             if server_running:
-                self.add_result(CheckResult(
-                    name="Autocoder Server",
-                    status=Status.OK,
-                    message="Server running on port 8888",
-                    details={"port": 8888, "running": True}
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="Autocoder Server",
+                        status=Status.OK,
+                        message="Server running on port 8888",
+                        details={"port": 8888, "running": True},
+                    )
+                )
             else:
-                self.add_result(CheckResult(
-                    name="Autocoder Server",
-                    status=Status.WARNING,
-                    message="Server not running",
-                    details={"port": 8888, "running": False},
-                    fix_command="python tools/autocoder_api.py server"
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="Autocoder Server",
+                        status=Status.WARNING,
+                        message="Server not running",
+                        details={"port": 8888, "running": False},
+                        fix_command="python tools/autocoder_api.py server",
+                    )
+                )
 
             if quick:
                 return
@@ -337,82 +361,100 @@ class HealthChecker:
                 ["git", "rev-parse", "--short", "HEAD"],
                 cwd=AUTOCODER_PATH,
                 capture_output=True,
-                text=True
+                text=True,
             )
             commit = result.stdout.strip() if result.returncode == 0 else "unknown"
 
             # Check for updates
-            subprocess.run(
-                ["git", "fetch", "--quiet"],
-                cwd=AUTOCODER_PATH,
-                capture_output=True
-            )
+            subprocess.run(["git", "fetch", "--quiet"], cwd=AUTOCODER_PATH, capture_output=True)
             result = subprocess.run(
                 ["git", "log", "--oneline", "HEAD..@{u}"],
                 cwd=AUTOCODER_PATH,
                 capture_output=True,
-                text=True
+                text=True,
             )
-            pending_updates = len(result.stdout.strip().split("\n")) if result.returncode == 0 and result.stdout.strip() else 0
+            pending_updates = (
+                len(result.stdout.strip().split("\n"))
+                if result.returncode == 0 and result.stdout.strip()
+                else 0
+            )
 
             if pending_updates > 0:
-                self.add_result(CheckResult(
-                    name="Autocoder Version",
-                    status=Status.WARNING,
-                    message=f"Commit {commit}, {pending_updates} updates available",
-                    details={"commit": commit, "pending": pending_updates},
-                    fix_command="python tools/auto_update.py update autocoder"
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="Autocoder Version",
+                        status=Status.WARNING,
+                        message=f"Commit {commit}, {pending_updates} updates available",
+                        details={"commit": commit, "pending": pending_updates},
+                        fix_command="python tools/auto_update.py update autocoder",
+                    )
+                )
             else:
-                self.add_result(CheckResult(
-                    name="Autocoder Version",
-                    status=Status.OK,
-                    message=f"Commit {commit}, up to date",
-                    details={"commit": commit}
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="Autocoder Version",
+                        status=Status.OK,
+                        message=f"Commit {commit}, up to date",
+                        details={"commit": commit},
+                    )
+                )
 
             # Check venv
             venv_path = AUTOCODER_PATH / "venv"
             if venv_path.exists():
-                self.add_result(CheckResult(
-                    name="Autocoder Environment",
-                    status=Status.OK,
-                    message="Python venv configured"
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="Autocoder Environment",
+                        status=Status.OK,
+                        message="Python venv configured",
+                    )
+                )
             else:
-                self.add_result(CheckResult(
-                    name="Autocoder Environment",
-                    status=Status.ERROR,
-                    message="Python venv missing",
-                    fix_command=f"cd {AUTOCODER_PATH} && python -m venv venv && pip install -r requirements.txt"
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="Autocoder Environment",
+                        status=Status.ERROR,
+                        message="Python venv missing",
+                        fix_command=f"cd {AUTOCODER_PATH} && python -m venv venv && pip install -r requirements.txt",
+                    )
+                )
 
         except Exception as e:
-            self.add_result(CheckResult(
-                name="Autocoder Check",
-                status=Status.ERROR,
-                message=f"Error checking Autocoder: {str(e)}"
-            ))
+            self.add_result(
+                CheckResult(
+                    name="Autocoder Check",
+                    status=Status.ERROR,
+                    message=f"Error checking Autocoder: {str(e)}",
+                )
+            )
 
     def check_n8n(self, quick: bool = False):
         """Check n8n-mcp and n8n-skills."""
         try:
             # Check n8n-skills installation
             if N8N_SKILLS_PATH.exists():
-                skills = list((N8N_SKILLS_PATH / "skills").glob("n8n-*")) if (N8N_SKILLS_PATH / "skills").exists() else []
-                self.add_result(CheckResult(
-                    name="n8n-skills",
-                    status=Status.OK if len(skills) >= 7 else Status.WARNING,
-                    message=f"{len(skills)} skills installed",
-                    details={"skills": [s.name for s in skills]}
-                ))
+                skills = (
+                    list((N8N_SKILLS_PATH / "skills").glob("n8n-*"))
+                    if (N8N_SKILLS_PATH / "skills").exists()
+                    else []
+                )
+                self.add_result(
+                    CheckResult(
+                        name="n8n-skills",
+                        status=Status.OK if len(skills) >= 7 else Status.WARNING,
+                        message=f"{len(skills)} skills installed",
+                        details={"skills": [s.name for s in skills]},
+                    )
+                )
             else:
-                self.add_result(CheckResult(
-                    name="n8n-skills",
-                    status=Status.ERROR,
-                    message="n8n-skills not installed",
-                    fix_command="git clone https://github.com/czlonkowski/n8n-skills.git ~/.claude/skills/n8n-skills"
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="n8n-skills",
+                        status=Status.ERROR,
+                        message="n8n-skills not installed",
+                        fix_command="git clone https://github.com/czlonkowski/n8n-skills.git ~/.claude/skills/n8n-skills",
+                    )
+                )
 
             # Check .mcp.json configuration
             mcp_config = MYWORK_ROOT / ".mcp.json"
@@ -426,71 +468,80 @@ class HealthChecker:
                         env = n8n_config.get("env", {})
 
                         if env.get("N8N_API_KEY") and env.get("N8N_API_URL"):
-                            self.add_result(CheckResult(
-                                name="n8n-mcp Config",
-                                status=Status.OK,
-                                message=f"Configured for {env.get('N8N_API_URL', 'unknown')}",
-                                details={"url": env.get("N8N_API_URL")}
-                            ))
+                            self.add_result(
+                                CheckResult(
+                                    name="n8n-mcp Config",
+                                    status=Status.OK,
+                                    message=f"Configured for {env.get('N8N_API_URL', 'unknown')}",
+                                    details={"url": env.get("N8N_API_URL")},
+                                )
+                            )
                         else:
-                            self.add_result(CheckResult(
-                                name="n8n-mcp Config",
-                                status=Status.WARNING,
-                                message="n8n-mcp configured but missing API key or URL"
-                            ))
+                            self.add_result(
+                                CheckResult(
+                                    name="n8n-mcp Config",
+                                    status=Status.WARNING,
+                                    message="n8n-mcp configured but missing API key or URL",
+                                )
+                            )
                     else:
-                        self.add_result(CheckResult(
-                            name="n8n-mcp",
-                            status=Status.ERROR,
-                            message="n8n-mcp not in .mcp.json"
-                        ))
+                        self.add_result(
+                            CheckResult(
+                                name="n8n-mcp",
+                                status=Status.ERROR,
+                                message="n8n-mcp not in .mcp.json",
+                            )
+                        )
             else:
-                self.add_result(CheckResult(
-                    name="n8n-mcp Config",
-                    status=Status.ERROR,
-                    message=".mcp.json not found",
-                    details={"expected": str(mcp_config)}
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="n8n-mcp Config",
+                        status=Status.ERROR,
+                        message=".mcp.json not found",
+                        details={"expected": str(mcp_config)},
+                    )
+                )
 
             if quick:
                 return
 
             # Test n8n-mcp availability (npx should work)
             result = subprocess.run(
-                ["npx", "n8n-mcp", "--version"],
-                capture_output=True,
-                text=True,
-                timeout=30
+                ["npx", "n8n-mcp", "--version"], capture_output=True, text=True, timeout=30
             )
             if result.returncode == 0:
                 # npx n8n-mcp might not have --version, so just check if it runs
-                self.add_result(CheckResult(
-                    name="n8n-mcp Package",
-                    status=Status.OK,
-                    message="n8n-mcp available via npx"
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="n8n-mcp Package",
+                        status=Status.OK,
+                        message="n8n-mcp available via npx",
+                    )
+                )
             else:
                 output = (result.stderr or result.stdout or "").strip()
                 detail = output.splitlines()[0] if output else "npx returned non-zero exit code"
-                self.add_result(CheckResult(
-                    name="n8n-mcp Package",
-                    status=Status.WARNING,
-                    message=f"n8n-mcp not available via npx ({detail})",
-                    fix_command="npm install -g n8n-mcp"
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="n8n-mcp Package",
+                        status=Status.WARNING,
+                        message=f"n8n-mcp not available via npx ({detail})",
+                        fix_command="npm install -g n8n-mcp",
+                    )
+                )
 
         except subprocess.TimeoutExpired:
-            self.add_result(CheckResult(
-                name="n8n-mcp Package",
-                status=Status.WARNING,
-                message="n8n-mcp check timed out"
-            ))
+            self.add_result(
+                CheckResult(
+                    name="n8n-mcp Package", status=Status.WARNING, message="n8n-mcp check timed out"
+                )
+            )
         except Exception as e:
-            self.add_result(CheckResult(
-                name="n8n Check",
-                status=Status.ERROR,
-                message=f"Error checking n8n: {str(e)}"
-            ))
+            self.add_result(
+                CheckResult(
+                    name="n8n Check", status=Status.ERROR, message=f"Error checking n8n: {str(e)}"
+                )
+            )
 
     def check_projects(self):
         """Check project structure and GSD state."""
@@ -498,37 +549,44 @@ class HealthChecker:
             projects_dir = MYWORK_ROOT / "projects"
 
             if not projects_dir.exists():
-                self.add_result(CheckResult(
-                    name="Projects Directory",
-                    status=Status.ERROR,
-                    message="Projects directory not found",
-                    fix_command=f"mkdir -p {projects_dir}"
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="Projects Directory",
+                        status=Status.ERROR,
+                        message="Projects directory not found",
+                        fix_command=f"mkdir -p {projects_dir}",
+                    )
+                )
                 return
 
             projects = [
-                p for p in projects_dir.iterdir()
+                p
+                for p in projects_dir.iterdir()
                 if p.is_dir() and not p.name.startswith((".", "_"))
             ]
 
-            self.add_result(CheckResult(
-                name="Projects Directory",
-                status=Status.OK,
-                message=f"{len(projects)} projects found",
-                details={"projects": [p.name for p in projects]}
-            ))
+            self.add_result(
+                CheckResult(
+                    name="Projects Directory",
+                    status=Status.OK,
+                    message=f"{len(projects)} projects found",
+                    details={"projects": [p.name for p in projects]},
+                )
+            )
 
             # Check each project's GSD state
             for project in projects:
                 planning_dir = project / ".planning"
 
                 if not planning_dir.exists():
-                    self.add_result(CheckResult(
-                        name=f"Project: {project.name}",
-                        status=Status.WARNING,
-                        message="No .planning directory",
-                        fix_command=f"mkdir -p {planning_dir}"
-                    ))
+                    self.add_result(
+                        CheckResult(
+                            name=f"Project: {project.name}",
+                            status=Status.WARNING,
+                            message="No .planning directory",
+                            fix_command=f"mkdir -p {planning_dir}",
+                        )
+                    )
                     continue
 
                 # Check for key GSD files
@@ -536,13 +594,15 @@ class HealthChecker:
                 missing = [f for f in required_files if not (planning_dir / f).exists()]
 
                 if missing:
-                    self.add_result(CheckResult(
-                        name=f"Project: {project.name}",
-                        status=Status.WARNING,
-                        message=f"Missing GSD files: {', '.join(missing)}",
-                        details={"missing": missing},
-                        fix_command=f"cd {project} && /gsd:new-project"
-                    ))
+                    self.add_result(
+                        CheckResult(
+                            name=f"Project: {project.name}",
+                            status=Status.WARNING,
+                            message=f"Missing GSD files: {', '.join(missing)}",
+                            details={"missing": missing},
+                            fix_command=f"cd {project} && /gsd:new-project",
+                        )
+                    )
                 else:
                     # Check STATE.md for last update
                     state_file = planning_dir / "STATE.md"
@@ -550,19 +610,23 @@ class HealthChecker:
                     days_old = (datetime.now() - mtime).days
 
                     status = Status.OK if days_old < 7 else Status.WARNING
-                    self.add_result(CheckResult(
-                        name=f"Project: {project.name}",
-                        status=status,
-                        message=f"GSD state complete, last update {days_old} days ago",
-                        details={"last_updated": mtime.isoformat(), "days_old": days_old}
-                    ))
+                    self.add_result(
+                        CheckResult(
+                            name=f"Project: {project.name}",
+                            status=status,
+                            message=f"GSD state complete, last update {days_old} days ago",
+                            details={"last_updated": mtime.isoformat(), "days_old": days_old},
+                        )
+                    )
 
         except Exception as e:
-            self.add_result(CheckResult(
-                name="Projects Check",
-                status=Status.ERROR,
-                message=f"Error checking projects: {str(e)}"
-            ))
+            self.add_result(
+                CheckResult(
+                    name="Projects Check",
+                    status=Status.ERROR,
+                    message=f"Error checking projects: {str(e)}",
+                )
+            )
 
     def check_api_keys(self):
         """Check API key configuration."""
@@ -570,11 +634,11 @@ class HealthChecker:
             env_file = MYWORK_ROOT / ".env"
 
             if not env_file.exists():
-                self.add_result(CheckResult(
-                    name="Environment File",
-                    status=Status.ERROR,
-                    message=".env file not found"
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="Environment File", status=Status.ERROR, message=".env file not found"
+                    )
+                )
                 return
 
             with open(env_file) as f:
@@ -608,105 +672,89 @@ class HealthChecker:
                     missing.append(name)
 
             if missing:
-                self.add_result(CheckResult(
-                    name="API Keys",
-                    status=Status.WARNING,
-                    message=f"{len(configured)} configured, {len(missing)} missing",
-                    details={"configured": configured, "missing": missing}
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="API Keys",
+                        status=Status.WARNING,
+                        message=f"{len(configured)} configured, {len(missing)} missing",
+                        details={"configured": configured, "missing": missing},
+                    )
+                )
             else:
-                self.add_result(CheckResult(
-                    name="API Keys",
-                    status=Status.OK,
-                    message=f"All {len(configured)} essential keys configured",
-                    details={"configured": configured}
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="API Keys",
+                        status=Status.OK,
+                        message=f"All {len(configured)} essential keys configured",
+                        details={"configured": configured},
+                    )
+                )
 
         except Exception as e:
-            self.add_result(CheckResult(
-                name="API Keys Check",
-                status=Status.ERROR,
-                message=f"Error checking API keys: {str(e)}"
-            ))
+            self.add_result(
+                CheckResult(
+                    name="API Keys Check",
+                    status=Status.ERROR,
+                    message=f"Error checking API keys: {str(e)}",
+                )
+            )
 
     def check_dependencies(self):
         """Check Python and Node.js dependencies."""
         try:
             # Check Python
-            result = subprocess.run(
-                ["python3", "--version"],
-                capture_output=True,
-                text=True
-            )
+            result = subprocess.run(["python3", "--version"], capture_output=True, text=True)
             if result.returncode == 0:
                 python_version = result.stdout.strip()
-                self.add_result(CheckResult(
-                    name="Python",
-                    status=Status.OK,
-                    message=python_version
-                ))
+                self.add_result(
+                    CheckResult(name="Python", status=Status.OK, message=python_version)
+                )
             else:
-                self.add_result(CheckResult(
-                    name="Python",
-                    status=Status.ERROR,
-                    message="Python not found"
-                ))
+                self.add_result(
+                    CheckResult(name="Python", status=Status.ERROR, message="Python not found")
+                )
 
             # Check Node.js
-            result = subprocess.run(
-                ["node", "--version"],
-                capture_output=True,
-                text=True
-            )
+            result = subprocess.run(["node", "--version"], capture_output=True, text=True)
             if result.returncode == 0:
                 node_version = result.stdout.strip()
                 major_version = int(node_version.replace("v", "").split(".")[0])
                 status = Status.OK if major_version >= 18 else Status.WARNING
-                self.add_result(CheckResult(
-                    name="Node.js",
-                    status=status,
-                    message=node_version,
-                    details={"major": major_version}
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="Node.js",
+                        status=status,
+                        message=node_version,
+                        details={"major": major_version},
+                    )
+                )
             else:
-                self.add_result(CheckResult(
-                    name="Node.js",
-                    status=Status.ERROR,
-                    message="Node.js not found"
-                ))
+                self.add_result(
+                    CheckResult(name="Node.js", status=Status.ERROR, message="Node.js not found")
+                )
 
             # Check npm
-            result = subprocess.run(
-                ["npm", "--version"],
-                capture_output=True,
-                text=True
-            )
+            result = subprocess.run(["npm", "--version"], capture_output=True, text=True)
             if result.returncode == 0:
-                self.add_result(CheckResult(
-                    name="npm",
-                    status=Status.OK,
-                    message=f"v{result.stdout.strip()}"
-                ))
+                self.add_result(
+                    CheckResult(name="npm", status=Status.OK, message=f"v{result.stdout.strip()}")
+                )
 
             # Check git
-            result = subprocess.run(
-                ["git", "--version"],
-                capture_output=True,
-                text=True
-            )
+            result = subprocess.run(["git", "--version"], capture_output=True, text=True)
             if result.returncode == 0:
-                self.add_result(CheckResult(
-                    name="Git",
-                    status=Status.OK,
-                    message=result.stdout.strip()
-                ))
+                self.add_result(
+                    CheckResult(name="Git", status=Status.OK, message=result.stdout.strip())
+                )
 
         except Exception as e:
-            self.add_result(CheckResult(
-                name="Dependencies Check",
-                status=Status.ERROR,
-                message=f"Error checking dependencies: {str(e)}"
-            ))
+            self.add_result(
+                CheckResult(
+                    name="Dependencies Check",
+                    status=Status.ERROR,
+                    message=f"Error checking dependencies: {str(e)}",
+                )
+            )
 
     def check_security(self):
         """Check for common security issues."""
@@ -750,34 +798,39 @@ class HealthChecker:
                     pass  # Relaxed check for macOS
 
             if issues:
-                self.add_result(CheckResult(
-                    name="Security",
-                    status=Status.WARNING,
-                    message=f"{len(issues)} potential issues found",
-                    details={"issues": issues}
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="Security",
+                        status=Status.WARNING,
+                        message=f"{len(issues)} potential issues found",
+                        details={"issues": issues},
+                    )
+                )
             else:
-                self.add_result(CheckResult(
-                    name="Security",
-                    status=Status.OK,
-                    message="No obvious security issues"
-                ))
+                self.add_result(
+                    CheckResult(
+                        name="Security", status=Status.OK, message="No obvious security issues"
+                    )
+                )
 
         except Exception as e:
-            self.add_result(CheckResult(
-                name="Security Check",
-                status=Status.ERROR,
-                message=f"Error checking security: {str(e)}"
-            ))
+            self.add_result(
+                CheckResult(
+                    name="Security Check",
+                    status=Status.ERROR,
+                    message=f"Error checking security: {str(e)}",
+                )
+            )
 
     def check_disk_space(self):
         """Check available disk space."""
         try:
             import shutil
+
             total, used, free = shutil.disk_usage(MYWORK_ROOT)
 
-            free_gb = free / (1024 ** 3)
-            total_gb = total / (1024 ** 3)
+            free_gb = free / (1024**3)
+            total_gb = total / (1024**3)
             used_percent = (used / total) * 100
 
             if free_gb < 5:
@@ -788,21 +841,31 @@ class HealthChecker:
                 message = f"Disk space warning: {free_gb:.1f}GB free"
             else:
                 status = Status.OK
-                message = f"{free_gb:.1f}GB free of {total_gb:.1f}GB ({100-used_percent:.1f}% available)"
+                message = (
+                    f"{free_gb:.1f}GB free of {total_gb:.1f}GB ({100-used_percent:.1f}% available)"
+                )
 
-            self.add_result(CheckResult(
-                name="Disk Space",
-                status=status,
-                message=message,
-                details={"free_gb": round(free_gb, 1), "total_gb": round(total_gb, 1), "used_percent": round(used_percent, 1)}
-            ))
+            self.add_result(
+                CheckResult(
+                    name="Disk Space",
+                    status=status,
+                    message=message,
+                    details={
+                        "free_gb": round(free_gb, 1),
+                        "total_gb": round(total_gb, 1),
+                        "used_percent": round(used_percent, 1),
+                    },
+                )
+            )
 
         except Exception as e:
-            self.add_result(CheckResult(
-                name="Disk Space Check",
-                status=Status.ERROR,
-                message=f"Error checking disk space: {str(e)}"
-            ))
+            self.add_result(
+                CheckResult(
+                    name="Disk Space Check",
+                    status=Status.ERROR,
+                    message=f"Error checking disk space: {str(e)}",
+                )
+            )
 
 
 def print_results(results: List[CheckResult], verbose: bool = False):
@@ -951,7 +1014,11 @@ def main():
             elif command == "report":
                 results = checker.run_all()
                 report = generate_report(results)
-                report_file = MYWORK_ROOT / ".tmp" / f"health_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+                report_file = (
+                    MYWORK_ROOT
+                    / ".tmp"
+                    / f"health_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+                )
 
                 # Check permissions before writing report
                 can_write, error = check_file_permissions(report_file.parent, need_write=True)

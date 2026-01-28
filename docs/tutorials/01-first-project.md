@@ -43,7 +43,7 @@ python task_manager.py complete 1
 cd /Users/dansidanutz/Desktop/MyWork
 ls projects/  # See existing projects
 
-```
+```markdown
 
 ### **1.2 Create your project**
 
@@ -64,7 +64,7 @@ mw new task-manager-cli cli
 cd projects/task-manager-cli
 ls -la  # Explore the structure
 
-```
+```yaml
 
 **You should see:**
 
@@ -76,7 +76,7 @@ ls -la  # Explore the structure
 README.md           # Getting started guide
 project.yaml        # Project metadata
 
-```
+```markdown
 
 ---
 
@@ -100,21 +100,21 @@ A simple CLI task manager for developers who want quick task tracking from the t
 
 **Target audience:**
 
-```
+```yaml
 Developers and power users who prefer command-line tools.
 
 ```yaml
 
 **Key features:**
 
-```
+```yaml
 Add tasks, list tasks, mark as complete, search by keyword, persistent storage.
 
 ```yaml
 
 **Success criteria:**
 
-```
+```python
 Can manage a personal todo list entirely from the command line with intuitive commands.
 
 ```markdown
@@ -142,7 +142,7 @@ Phase 4: Polish & Documentation (2-3 features)
 ```bash
 mw gsd progress
 
-```
+```markdown
 
 ---
 
@@ -168,7 +168,7 @@ mw gsd plan-phase 1
 ```bash
 mw gsd execute-phase 1
 
-```
+```yaml
 
 **Watch the magic happen:**
 
@@ -184,7 +184,7 @@ mw gsd execute-phase 1
 
 Wave 1 complete!
 
-```
+```markdown
 
 ### **3.3 Check what was created**
 
@@ -223,7 +223,7 @@ python src/task_manager.py list
 2. [ ] Build my first CLI app
 3. [ ] Share my project with friends
 
-```
+```markdown
 
 ### **4.2 Mark a task complete**
 
@@ -235,7 +235,7 @@ python src/task_manager.py list
 
 **Expected output:**
 
-```
+```yaml
 📋 Your Tasks:
 
 1. [✅] Learn MyWork framework
@@ -250,7 +250,7 @@ python src/task_manager.py list
 python src/task_manager.py --help
 python src/task_manager.py stats  # If implemented
 
-```
+```markdown
 
 ---
 
@@ -333,7 +333,7 @@ python tools/mw.py new task-manager-cli cli
 pwd  # Should show .../MyWork/projects/task-manager-cli
 ls .planning/  # Should show PROJECT.md, STATE.md, etc.
 
-```
+```markdown
 
 ### **❌ "Generated code doesn't work"**
 
@@ -358,7 +358,7 @@ mw doctor
 mw gsd progress  # See what's next
 mw gsd execute-phase 2  # Add more features
 
-```
+```markdown
 
 ---
 

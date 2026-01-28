@@ -25,9 +25,11 @@ from dataclasses import dataclass, asdict
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
+
 @dataclass
 class LintResult:
     """Result of a linting operation"""
+
     file_path: str
     tool: str
     issues_found: int
@@ -36,9 +38,11 @@ class LintResult:
     messages: List[str]
     timestamp: str
 
+
 @dataclass
 class LintConfig:
     """Configuration for linting tools"""
+
     markdownlint: bool = True
     pylint: bool = True
     eslint: bool = True
@@ -59,8 +63,9 @@ class LintConfig:
                 "*.pyc",
                 ".tmp/**",
                 "dist/**",
-                "build/**"
+                "build/**",
             ]
+
 
 class AutoLintingAgent:
     """Main auto-linting agent class"""
@@ -72,10 +77,10 @@ class AutoLintingAgent:
         self.observer = None
         self.running = False
         self.stats = {
-            'files_processed': 0,
-            'total_issues_found': 0,
-            'total_issues_fixed': 0,
-            'last_run': None
+            "files_processed": 0,
+            "total_issues_found": 0,
+            "total_issues_fixed": 0,
+            "last_run": None,
         }
 
         # Load existing auto_lint_fixer
@@ -84,6 +89,7 @@ class AutoLintingAgent:
             sys.path.insert(0, str(self.framework_tools))
             try:
                 from auto_lint_fixer import AutoLintFixer
+
                 self.markdown_fixer = AutoLintFixer(str(self.root_dir))
                 print(f"✅ Loaded existing AutoLintFixer")
             except Exception as e:
@@ -102,7 +108,7 @@ class AutoLintingAgent:
             rel_path = str(Path(file_path))
 
         # Normalize path separators for consistent matching
-        rel_path = rel_path.replace('\\', '/')
+        rel_path = rel_path.replace("\\", "/")
 
         for pattern in self.config.ignore_patterns:
             # Convert glob pattern to handle both file and directory matching
@@ -110,9 +116,9 @@ class AutoLintingAgent:
                 return True
 
             # Special handling for directory patterns like "node_modules/**"
-            if pattern.endswith('/**'):
+            if pattern.endswith("/**"):
                 dir_pattern = pattern[:-3]  # Remove "/**"
-                if dir_pattern in rel_path.split('/'):
+                if dir_pattern in rel_path.split("/"):
                     return True
 
         return False
@@ -122,23 +128,23 @@ class AutoLintingAgent:
         tools = []
         ext = Path(file_path).suffix.lower()
 
-        if ext == '.md' and self.config.markdownlint:
-            tools.append('markdownlint')
-        elif ext == '.py':
+        if ext == ".md" and self.config.markdownlint:
+            tools.append("markdownlint")
+        elif ext == ".py":
             if self.config.black:
-                tools.append('black')
+                tools.append("black")
             if self.config.flake8:
-                tools.append('flake8')
+                tools.append("flake8")
             if self.config.pylint:
-                tools.append('pylint')
-        elif ext in ['.js', '.ts', '.jsx', '.tsx']:
+                tools.append("pylint")
+        elif ext in [".js", ".ts", ".jsx", ".tsx"]:
             if self.config.eslint:
-                tools.append('eslint')
+                tools.append("eslint")
             if self.config.prettier:
-                tools.append('prettier')
-        elif ext in ['.json', '.yaml', '.yml']:
+                tools.append("prettier")
+        elif ext in [".json", ".yaml", ".yml"]:
             if self.config.prettier:
-                tools.append('prettier')
+                tools.append("prettier")
 
         return tools
 
@@ -150,159 +156,165 @@ class AutoLintingAgent:
                 issues_fixed = self.markdown_fixer.fix_file(file_path)
                 return LintResult(
                     file_path=file_path,
-                    tool='markdownlint',
+                    tool="markdownlint",
                     issues_found=issues_fixed,
                     issues_fixed=issues_fixed,
                     success=True,
                     messages=[f"Fixed {issues_fixed} markdown issues"],
-                    timestamp=datetime.now().isoformat()
+                    timestamp=datetime.now().isoformat(),
                 )
             except Exception as e:
                 return LintResult(
                     file_path=file_path,
-                    tool='markdownlint',
+                    tool="markdownlint",
                     issues_found=0,
                     issues_fixed=0,
                     success=False,
                     messages=[f"Error: {e}"],
-                    timestamp=datetime.now().isoformat()
+                    timestamp=datetime.now().isoformat(),
                 )
 
         # Fallback to command-line markdownlint
         try:
-            cmd = ['markdownlint', '--fix', file_path]
+            cmd = ["markdownlint", "--fix", file_path]
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
 
-            issues_fixed = result.stdout.count('fixed') if result.stdout else 0
+            issues_fixed = result.stdout.count("fixed") if result.stdout else 0
 
             return LintResult(
                 file_path=file_path,
-                tool='markdownlint',
+                tool="markdownlint",
                 issues_found=issues_fixed,
                 issues_fixed=issues_fixed,
                 success=result.returncode == 0,
                 messages=[result.stdout, result.stderr] if result.stderr else [result.stdout],
-                timestamp=datetime.now().isoformat()
+                timestamp=datetime.now().isoformat(),
             )
         except Exception as e:
             return LintResult(
                 file_path=file_path,
-                tool='markdownlint',
+                tool="markdownlint",
                 issues_found=0,
                 issues_fixed=0,
                 success=False,
                 messages=[f"Error: {e}"],
-                timestamp=datetime.now().isoformat()
+                timestamp=datetime.now().isoformat(),
             )
 
     def run_black(self, file_path: str) -> LintResult:
         """Run Black Python formatter"""
         try:
-            cmd = ['black', '--quiet', file_path]
+            cmd = ["black", "--quiet", file_path]
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
 
             return LintResult(
                 file_path=file_path,
-                tool='black',
+                tool="black",
                 issues_found=1 if result.returncode != 0 else 0,
                 issues_fixed=1 if result.returncode == 0 else 0,
                 success=True,  # Black always succeeds if it can format
-                messages=['Formatted with Black'] if result.returncode == 0 else ['No changes needed'],
-                timestamp=datetime.now().isoformat()
+                messages=(
+                    ["Formatted with Black"] if result.returncode == 0 else ["No changes needed"]
+                ),
+                timestamp=datetime.now().isoformat(),
             )
         except Exception as e:
             return LintResult(
                 file_path=file_path,
-                tool='black',
+                tool="black",
                 issues_found=0,
                 issues_fixed=0,
                 success=False,
                 messages=[f"Error: {e}"],
-                timestamp=datetime.now().isoformat()
+                timestamp=datetime.now().isoformat(),
             )
 
     def run_prettier(self, file_path: str) -> LintResult:
         """Run Prettier formatter"""
         try:
-            cmd = ['npx', 'prettier', '--write', file_path]
+            cmd = ["npx", "prettier", "--write", file_path]
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
 
             return LintResult(
                 file_path=file_path,
-                tool='prettier',
-                issues_found=1 if 'unchanged' not in result.stderr else 0,
-                issues_fixed=1 if 'unchanged' not in result.stderr else 0,
+                tool="prettier",
+                issues_found=1 if "unchanged" not in result.stderr else 0,
+                issues_fixed=1 if "unchanged" not in result.stderr else 0,
                 success=result.returncode == 0,
-                messages=[result.stdout or 'Formatted with Prettier'],
-                timestamp=datetime.now().isoformat()
+                messages=[result.stdout or "Formatted with Prettier"],
+                timestamp=datetime.now().isoformat(),
             )
         except Exception as e:
             return LintResult(
                 file_path=file_path,
-                tool='prettier',
+                tool="prettier",
                 issues_found=0,
                 issues_fixed=0,
                 success=False,
                 messages=[f"Error: {e}"],
-                timestamp=datetime.now().isoformat()
+                timestamp=datetime.now().isoformat(),
             )
 
     def run_eslint(self, file_path: str) -> LintResult:
         """Run ESLint with auto-fix"""
         try:
-            cmd = ['npx', 'eslint', '--fix', file_path]
+            cmd = ["npx", "eslint", "--fix", file_path]
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
 
             # ESLint outputs errors to stderr and fixes to stdout
-            issues_found = result.stderr.count('error') + result.stderr.count('warning')
-            issues_fixed = result.stdout.count('fixed') if result.stdout else 0
+            issues_found = result.stderr.count("error") + result.stderr.count("warning")
+            issues_fixed = result.stdout.count("fixed") if result.stdout else 0
 
             return LintResult(
                 file_path=file_path,
-                tool='eslint',
+                tool="eslint",
                 issues_found=issues_found,
                 issues_fixed=issues_fixed,
                 success=result.returncode == 0,
-                messages=[result.stdout, result.stderr] if result.stderr else [result.stdout or 'No issues found'],
-                timestamp=datetime.now().isoformat()
+                messages=(
+                    [result.stdout, result.stderr]
+                    if result.stderr
+                    else [result.stdout or "No issues found"]
+                ),
+                timestamp=datetime.now().isoformat(),
             )
         except Exception as e:
             return LintResult(
                 file_path=file_path,
-                tool='eslint',
+                tool="eslint",
                 issues_found=0,
                 issues_fixed=0,
                 success=False,
                 messages=[f"Error: {e}"],
-                timestamp=datetime.now().isoformat()
+                timestamp=datetime.now().isoformat(),
             )
 
     def run_flake8(self, file_path: str) -> LintResult:
         """Run Flake8 (checking only, no auto-fix)"""
         try:
-            cmd = ['flake8', file_path]
+            cmd = ["flake8", file_path]
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
 
-            issues_found = len([line for line in result.stdout.split('\n') if line.strip()])
+            issues_found = len([line for line in result.stdout.split("\n") if line.strip()])
 
             return LintResult(
                 file_path=file_path,
-                tool='flake8',
+                tool="flake8",
                 issues_found=issues_found,
                 issues_fixed=0,  # Flake8 doesn't auto-fix
                 success=result.returncode == 0,
-                messages=[result.stdout] if result.stdout else ['No issues found'],
-                timestamp=datetime.now().isoformat()
+                messages=[result.stdout] if result.stdout else ["No issues found"],
+                timestamp=datetime.now().isoformat(),
             )
         except Exception as e:
             return LintResult(
                 file_path=file_path,
-                tool='flake8',
+                tool="flake8",
                 issues_found=0,
                 issues_fixed=0,
                 success=False,
                 messages=[f"Error: {e}"],
-                timestamp=datetime.now().isoformat()
+                timestamp=datetime.now().isoformat(),
             )
 
     def lint_file(self, file_path: str) -> List[LintResult]:
@@ -317,15 +329,15 @@ class AutoLintingAgent:
         results = []
 
         for tool in tools:
-            if tool == 'markdownlint':
+            if tool == "markdownlint":
                 result = self.run_markdownlint(file_path)
-            elif tool == 'black':
+            elif tool == "black":
                 result = self.run_black(file_path)
-            elif tool == 'prettier':
+            elif tool == "prettier":
                 result = self.run_prettier(file_path)
-            elif tool == 'eslint':
+            elif tool == "eslint":
                 result = self.run_eslint(file_path)
-            elif tool == 'flake8':
+            elif tool == "flake8":
                 result = self.run_flake8(file_path)
             else:
                 continue
@@ -333,12 +345,12 @@ class AutoLintingAgent:
             results.append(result)
 
             # Update stats
-            self.stats['total_issues_found'] += result.issues_found
-            self.stats['total_issues_fixed'] += result.issues_fixed
+            self.stats["total_issues_found"] += result.issues_found
+            self.stats["total_issues_fixed"] += result.issues_fixed
 
         if results:
-            self.stats['files_processed'] += 1
-            self.stats['last_run'] = datetime.now().isoformat()
+            self.stats["files_processed"] += 1
+            self.stats["last_run"] = datetime.now().isoformat()
 
         return results
 
@@ -383,7 +395,7 @@ class AutoLintingAgent:
         existing_results = []
         if results_file.exists():
             try:
-                with open(results_file, 'r') as f:
+                with open(results_file, "r") as f:
                     existing_results = json.load(f)
             except:
                 existing_results = []
@@ -395,7 +407,7 @@ class AutoLintingAgent:
         if len(all_results) > 1000:
             all_results = all_results[-1000:]
 
-        with open(results_file, 'w') as f:
+        with open(results_file, "w") as f:
             json.dump(all_results, f, indent=2)
 
     def print_summary(self, results: List[LintResult]):
@@ -416,6 +428,7 @@ class AutoLintingAgent:
         print(f"   Issues found: {total_found}")
         print(f"   Issues fixed: {total_fixed}")
         print(f"   Success rate: {(total_fixed/total_found*100) if total_found > 0 else 100:.1f}%")
+
 
 class LintingEventHandler(FileSystemEventHandler):
     """File system event handler for watching file changes"""
@@ -450,24 +463,25 @@ class LintingEventHandler(FileSystemEventHandler):
                     if issues_fixed > 0:
                         print(f"✅ Auto-fixed {issues_fixed} issues")
 
+
 def main():
     """Main CLI entry point"""
     import argparse
 
-    parser = argparse.ArgumentParser(description='Auto-Linting Agent for MyWork Framework')
-    parser.add_argument('--watch', action='store_true', help='Watch files for changes')
-    parser.add_argument('--scan', action='store_true', help='Scan all files once')
-    parser.add_argument('--file', help='Lint specific file')
-    parser.add_argument('--dir', help='Lint specific directory')
-    parser.add_argument('--config', help='Path to config file')
-    parser.add_argument('--stats', action='store_true', help='Show stats')
+    parser = argparse.ArgumentParser(description="Auto-Linting Agent for MyWork Framework")
+    parser.add_argument("--watch", action="store_true", help="Watch files for changes")
+    parser.add_argument("--scan", action="store_true", help="Scan all files once")
+    parser.add_argument("--file", help="Lint specific file")
+    parser.add_argument("--dir", help="Lint specific directory")
+    parser.add_argument("--config", help="Path to config file")
+    parser.add_argument("--stats", action="store_true", help="Show stats")
 
     args = parser.parse_args()
 
     # Load config
     config = LintConfig()
     if args.config and os.path.exists(args.config):
-        with open(args.config, 'r') as f:
+        with open(args.config, "r") as f:
             config_data = json.load(f)
             config = LintConfig(**config_data)
 
@@ -527,6 +541,7 @@ def main():
         results = agent.lint_directory()
         agent.print_summary(results)
         agent.save_results(results)
+
 
 if __name__ == "__main__":
     main()

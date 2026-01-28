@@ -1,16 +1,16 @@
-'use client'
+"use client";
 
-import { useEffect, useCallback } from 'react'
-import { formatFileSize } from '@/shared/lib/file-validation'
+import { useEffect, useCallback } from "react";
+import { formatFileSize } from "@/shared/lib/file-validation";
 
 interface FilePreviewProps {
-  fileId: string
-  filename: string
-  mimeType: string
-  size: number
-  onClose: () => void
-  onDownload: () => void
-  onDelete?: () => void
+  fileId: string;
+  filename: string;
+  mimeType: string;
+  size: number;
+  onClose: () => void;
+  onDownload: () => void;
+  onDelete?: () => void;
 }
 
 export function FilePreview({
@@ -22,28 +22,31 @@ export function FilePreview({
   onDownload,
   onDelete,
 }: FilePreviewProps) {
-  const isImage = mimeType.startsWith('image/')
-  const isPdf = mimeType === 'application/pdf'
+  const isImage = mimeType.startsWith("image/");
+  const isPdf = mimeType === "application/pdf";
 
   // Handle escape key
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape') {
-      onClose()
-    }
-  }, [onClose])
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    },
+    [onClose],
+  );
 
   useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [handleKeyDown])
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [handleKeyDown]);
 
   // Prevent body scroll when modal is open
   useEffect(() => {
-    document.body.style.overflow = 'hidden'
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [])
+      document.body.style.overflow = "unset";
+    };
+  }, []);
 
   return (
     <div
@@ -57,7 +60,9 @@ export function FilePreview({
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-700">
           <div className="min-w-0 flex-1">
-            <h3 className="text-lg font-medium text-zinc-100 truncate">{filename}</h3>
+            <h3 className="text-lg font-medium text-zinc-100 truncate">
+              {filename}
+            </h3>
             <p className="text-sm text-zinc-400">{formatFileSize(size)}</p>
           </div>
 
@@ -80,8 +85,18 @@ export function FilePreview({
               onClick={onClose}
               className="p-1.5 text-zinc-400 hover:text-zinc-200 transition-colors"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
@@ -117,7 +132,9 @@ export function FilePreview({
                   d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
                 />
               </svg>
-              <p className="text-zinc-400 mb-4">Preview not available for this file type</p>
+              <p className="text-zinc-400 mb-4">
+                Preview not available for this file type
+              </p>
               <button
                 onClick={onDownload}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
@@ -129,5 +146,5 @@ export function FilePreview({
         </div>
       </div>
     </div>
-  )
+  );
 }

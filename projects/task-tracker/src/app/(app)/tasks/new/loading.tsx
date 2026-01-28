@@ -53,5 +53,5 @@ export default function Loading() {
         </div>
       </div>
     </div>
-  )
+  );
 }

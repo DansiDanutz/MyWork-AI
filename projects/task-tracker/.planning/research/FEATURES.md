@@ -68,17 +68,27 @@ Features that seem good but create problems.
 ```text
 User Authentication
 
-```
+```text
+
 └──requires──> Task CRUD
-                   └──requires──> Task Lists/Projects
-                   └──requires──> Search & Filtering
-                   └──enables──> File Attachments
-                   └──enables──> GitHub Integration
+
+```text
 
 ```
+           └──requires──> Task Lists/Projects
+           └──requires──> Search & Filtering
+           └──enables──> File Attachments
+           └──enables──> GitHub Integration
+
+```
+
+```
+
+```text
 Task CRUD
 
-```
+```text
+
 └──enables──> Task Completion
 └──enables──> Due Dates
 └──enables──> Priority Levels
@@ -87,14 +97,16 @@ Task CRUD
 ```
 Search & Filtering
 
-```
+```text
+
 └──requires──> Task CRUD (data to search)
 └──enhanced by──> Tags/Labels (more filter dimensions)
 
-```
+```text
 File Attachments
 
-```
+```text
+
 └──requires──> User Authentication (ownership)
 └──requires──> Storage System
 └──requires──> Task CRUD (attach to what?)
@@ -102,43 +114,57 @@ File Attachments
 ```
 GitHub Integration
 
-```
+```text
+
 └──requires──> User Authentication (API tokens)
 └──requires──> Task CRUD (track what?)
 └──enhanced by──> Activity Log (event tracking)
 
-```
+```text
 Subtasks
 
-```
+```text
+
 └──requires──> Task CRUD
 └──conflicts with──> Nested Projects (choose one hierarchy)
 
 ```
 Offline Support
 
-```
+```text
+
 └──requires──> All core features working client-side
 └──conflicts with──> Real-time Collaboration
 
-```
+```markdown
 
-```
+```markdown
 
 ### Dependency Notes
 
 - **User Authentication required for everything personal:** Without auth, tasks
+
   are ephemeral or shared globally (useless for individual productivity)
+
 - **File Attachments enhances Task CRUD:** Can build tasks first, add attachments
+
   later as enhancement
+
 - **GitHub Integration enhances Activity Log:** Usage tracking works better with
+
   event history
+
 - **Search requires data model stability:** Build after core task schema is
+
   finalized
+
 - **Subtasks vs Nested Projects:** Both create hierarchy - pick one to avoid
+
   confusion. Subtasks better for individual tasks, nested projects better for
   team organization
+
 - **Offline conflicts with real-time:** Local-first architecture and real-time
+
   sync are architecturally opposed. Choose async sync for simplicity
 
 ## MVP Definition
@@ -148,9 +174,13 @@ Offline Support
 Minimum viable product — what's needed to validate the concept.
 
 - [x] **User Registration/Login** — Can't have personal task lists without
+
   identity
+
 - [x] **Task CRUD (Create/Read/Update/Delete)** — Core functionality, everything
+
   builds on this
+
 - [x] **Task Completion Toggle** — Psychological satisfaction is core value prop
 - [x] **Due Dates** — Time-bound tasks are fundamental to productivity
 - [x] **Basic Task Lists/Projects** — Organization beyond single list
@@ -175,12 +205,18 @@ Features to add once core is working and users provide feedback.
 - [ ] **Keyboard Shortcuts** — Trigger: Power users emerge asking for speed
 - [ ] **Dark Mode** — Trigger: User request or basic accessibility requirement
 - [ ] **Activity History** — Trigger: Users ask "what changed?" or debugging
+
   needs
+
 - [ ] **Subtasks** — Trigger: Users try to break down complex tasks
 - [ ] **Export/Backup** — Trigger: User data ownership concern or migration
+
   request
+
 - [ ] **Drag-and-Drop Reordering** — Trigger: Users manually prioritize in
+
   comments/descriptions
+
 - [ ] **Smart Filters** — Trigger: Advanced users want saved custom views
 
 ### Future Consideration (v2.0+)
@@ -188,22 +224,39 @@ Features to add once core is working and users provide feedback.
 Features to defer until product-market fit is established.
 
 - [ ] **Task Templates** — Why defer: Complex feature, unclear value until usage
+
   patterns emerge
+
 - [ ] **Offline Support** — Why defer: Architectural complexity, validate
+
   online-first approach first
+
 - [ ] **Natural Language Input** — Why defer: High complexity, questionable ROI
+
   for MVP
+
 - [ ] **Calendar View** — Why defer: Nice-to-have visualization, list view
+
   sufficient initially
+
 - [ ] **Recurring Tasks** — Why defer: Complex edge cases, manually recreate for
+
   MVP
+
 - [ ] **Task Sharing** — Why defer: Individual productivity focus, not
+
   collaboration tool
+
 - [ ] **Mobile Native Apps** — Why defer: PWA/responsive web sufficient, native
+
   is resources-heavy
+
 - [ ] **Email Notifications** — Why defer: Can be annoying, in-app notifications
+
   sufficient
+
 - [ ] **Integrations Beyond GitHub** — Why defer: GitHub validates integration
+
   architecture, expand later
 
 ## Feature Prioritization Matrix
@@ -240,10 +293,15 @@ Features to defer until product-market fit is established.
 **Priority key:**
 
 - **P1:** Must have for launch (v1.0) - Core task management + required
+
   integrations
+
 - **P2:** Should have, add when possible (v1.1-v1.5) - Usability enhancements
+
   based on feedback
+
 - **P3:** Nice to have, future consideration (v2.0+) - Advanced features after
+
   product-market fit
 
 ## Competitor Feature Analysis
@@ -267,12 +325,19 @@ Features to defer until product-market fit is established.
 **Our Competitive Position:**
 
 - **Differentiators:** File attachments + GitHub integration = unique combo for
+
   technical users
+
 - **Table Stakes Match:** We match core features (CRUD, search, organization,
+
   priorities)
+
 - **Strategic Omissions:** No collaboration (individual focus), no gamification
+
   (anti-feature), no natural language (complexity)
+
 - **Target User:** Developers and technical individuals who want task context
+
   (files) and usage insights (GitHub tracking)
 
 ## Sources
@@ -280,47 +345,73 @@ Features to defer until product-market fit is established.
 ### Feature Landscape & Table Stakes:
 
 - [5 Essential Features of a Productivity App in
+
   2026](https://dev.to/anas_kayssi/5-essential-features-of-a-productivity-app-in-2026-408g)
+
 - [20 Best Task Management Software Tools in
+
   2026](https://clickup.com/blog/task-management-software/)
+
 - [Best task management software in 2026 (features & price
+
   compared)](https://www.goodday.work/blog/best-task-management-software/)
+
 - [7 best to do list apps of 2026](https://zapier.com/blog/best-todo-list-apps/)
 
 ### Differentiators & Competitive Analysis:
 
 - [Todoist vs Microsoft To-Do (2026): Full
+
   Comparison](https://toolfinder.co/comparisons/todoist-vs-microsoft-todo)
+
 - [Todoist vs. Microsoft To Do: Which Tool Is Best?
+
   [2026]](https://clickup.com/blog/todoist-vs-microsoft-to-do/)
+
 - [Things 3 Review: Pros, Cons, Features &
+
   Pricing](https://thedigitalprojectmanager.com/tools/things-3-review/)
+
 - [Things3 Vs. Todoist: Which is the Best Task Management
+
   App?](https://focuzed.io/blog/things3-vs-todoist/)
 
 ### Anti-Features & Common Mistakes:
 
 - [25+ Anti-patterns of Sprint Planning: Task Creation &
+
   More](https://agilemania.com/anti-patterns-of-sprint-planning-task-creation)
+
 - [Make your team miserable with one of these popular project-management
+
   anti-patterns](https://www.rubick.com/three-anti-patterns-for-project-management/)
+
 - [What is scope creep in project
+
   management?](https://www.wrike.com/project-management-guide/faq/what-is-scope-creep-in-project-management/)
 
 ### GitHub Integration:
 
 - [How to use GitHub for project
+
   management](https://graphite.com/guides/github-project-management-guide)
+
 - [Super Productivity - GitHub integration with time
+
   tracking](https://github.com/johannesjo/super-productivity)
+
 - [Planning and tracking work for your team or project - GitHub
+
   Docs](https://docs.github.com/en/issues/tracking-your-work-with-issues/learning-about-issues/planning-and-tracking-work-for-your-team-or-project)
 
 ### Individual vs Team Collaboration:
 
 - [What Is Task Management? A Guide to Staying Organized and
+
   Aligned](https://slack.com/blog/productivity/what-is-task-management-and-why-it-matters-for-teams)
+
 - [How to foster collaborative task
+
   management](https://blog.box.com/collaborative-task-management)
 
 ---

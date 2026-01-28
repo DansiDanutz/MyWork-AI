@@ -1,86 +1,86 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from 'react'
-import { ChatBubbleOvalLeftIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { submitFeedback } from '@/shared/actions/feedback'
+import { useState, useEffect } from "react";
+import { ChatBubbleOvalLeftIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { submitFeedback } from "@/shared/actions/feedback";
 
-type FeedbackType = 'bug' | 'idea' | 'other'
+type FeedbackType = "bug" | "idea" | "other";
 
 export function FeedbackWidget() {
-  const [isOpen, setIsOpen] = useState(false)
-  const [feedback, setFeedback] = useState('')
-  const [type, setType] = useState<FeedbackType>('idea')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  const [errorMessage, setErrorMessage] = useState('')
+  const [isOpen, setIsOpen] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [type, setType] = useState<FeedbackType>("idea");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const characterCount = feedback.length
-  const maxCharacters = 500
+  const characterCount = feedback.length;
+  const maxCharacters = 500;
 
   // Reset status after 3 seconds
   useEffect(() => {
-    if (status !== 'idle') {
+    if (status !== "idle") {
       const timer = setTimeout(() => {
-        setStatus('idle')
-        setErrorMessage('')
-        if (status === 'success') {
-          setIsOpen(false)
-          setFeedback('')
-          setType('idea')
+        setStatus("idle");
+        setErrorMessage("");
+        if (status === "success") {
+          setIsOpen(false);
+          setFeedback("");
+          setType("idea");
         }
-      }, 3000)
-      return () => clearTimeout(timer)
+      }, 3000);
+      return () => clearTimeout(timer);
     }
-  }, [status])
+  }, [status]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (!feedback.trim()) {
-      setStatus('error')
-      setErrorMessage('Please enter your feedback')
-      return
+      setStatus("error");
+      setErrorMessage("Please enter your feedback");
+      return;
     }
 
     if (characterCount > maxCharacters) {
-      setStatus('error')
-      setErrorMessage(`Feedback must be ${maxCharacters} characters or less`)
-      return
+      setStatus("error");
+      setErrorMessage(`Feedback must be ${maxCharacters} characters or less`);
+      return;
     }
 
-    setIsSubmitting(true)
-    setStatus('idle')
-    setErrorMessage('')
+    setIsSubmitting(true);
+    setStatus("idle");
+    setErrorMessage("");
 
     try {
       const result = await submitFeedback({
         feedback: feedback.trim(),
         type,
         page: window.location.pathname,
-      })
+      });
 
       if (result.success) {
-        setStatus('success')
+        setStatus("success");
       } else {
-        setStatus('error')
-        setErrorMessage(result.error || 'Failed to submit feedback')
+        setStatus("error");
+        setErrorMessage(result.error || "Failed to submit feedback");
       }
     } catch (error) {
-      console.error('Failed to submit feedback:', error)
-      setStatus('error')
-      setErrorMessage('Failed to submit feedback. Please try again.')
+      console.error("Failed to submit feedback:", error);
+      setStatus("error");
+      setErrorMessage("Failed to submit feedback. Please try again.");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleCancel = () => {
-    setIsOpen(false)
-    setFeedback('')
-    setType('idea')
-    setStatus('idle')
-    setErrorMessage('')
-  }
+    setIsOpen(false);
+    setFeedback("");
+    setType("idea");
+    setStatus("idle");
+    setErrorMessage("");
+  };
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
@@ -97,7 +97,9 @@ export function FeedbackWidget() {
         // Feedback form
         <div className="w-80 rounded-lg border border-gray-200 bg-white shadow-xl">
           <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
-            <h3 className="text-lg font-semibold text-gray-900">Send Feedback</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Send Feedback
+            </h3>
             <button
               onClick={handleCancel}
               className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
@@ -110,7 +112,10 @@ export function FeedbackWidget() {
           <form onSubmit={handleSubmit} className="p-4">
             {/* Feedback type selector */}
             <div className="mb-4">
-              <label htmlFor="feedback-type" className="mb-2 block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="feedback-type"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
                 Type
               </label>
               <select
@@ -128,7 +133,10 @@ export function FeedbackWidget() {
 
             {/* Feedback textarea */}
             <div className="mb-2">
-              <label htmlFor="feedback-text" className="mb-2 block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="feedback-text"
+                className="mb-2 block text-sm font-medium text-gray-700"
+              >
                 What&apos;s on your mind?
               </label>
               <textarea
@@ -147,7 +155,9 @@ export function FeedbackWidget() {
             <div className="mb-4 text-right">
               <span
                 className={`text-xs ${
-                  characterCount > maxCharacters ? 'text-red-600' : 'text-gray-500'
+                  characterCount > maxCharacters
+                    ? "text-red-600"
+                    : "text-gray-500"
                 }`}
               >
                 {characterCount}/{maxCharacters}
@@ -155,13 +165,13 @@ export function FeedbackWidget() {
             </div>
 
             {/* Status messages */}
-            {status === 'success' && (
+            {status === "success" && (
               <div className="mb-4 rounded-lg bg-green-50 px-3 py-2 text-sm text-green-800">
                 Thanks for your feedback!
               </div>
             )}
 
-            {status === 'error' && (
+            {status === "error" && (
               <div className="mb-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">
                 {errorMessage}
               </div>
@@ -182,12 +192,12 @@ export function FeedbackWidget() {
                 className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                 disabled={isSubmitting || characterCount > maxCharacters}
               >
-                {isSubmitting ? 'Sending...' : 'Submit'}
+                {isSubmitting ? "Sending..." : "Submit"}
               </button>
             </div>
           </form>
         </div>
       )}
     </div>
-  )
+  );
 }

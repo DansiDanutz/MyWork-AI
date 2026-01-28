@@ -24,10 +24,14 @@
 ### Issue #1: DSPy API Change (FIXED)
 
 - **Problem:** Backend import failed with `AttributeError: module 'dspy' has no
+
   attribute 'Claude'`
+
 - **Root Cause:** DSPy 3.x changed API from `dspy.Claude()` to `dspy.LM()`
 - **Solution:** Updated
+
   [prompt_optimizer.py](../backend/services/prompt_optimizer.py) to use new API
+
 - **Status:** ✅ Fixed - Backend imports successfully
 
 ### Issue #2: Broken venv (FIXED)
@@ -42,53 +46,65 @@
 - **Problem:** No error.tsx or global-error.tsx in frontend
 - **Root Cause:** Best practice not implemented
 - **Solution:** Created both [error.tsx](../frontend/app/error.tsx) and
+
   [global-error.tsx](../frontend/app/global-error.tsx)
+
 - **Status:** ✅ Fixed - Build still passes
 
 ### Issue #4: Missing loading states (FIXED)
 
 - **Problem:** No loading.tsx files for any routes - users see blank screens
+
   during data fetching
+
 - **Root Cause:** Loading states not implemented during development
 - **Solution:** Created skeleton loading screens for all pages:
   - [/app/loading.tsx](../frontend/app/loading.tsx) - Root loading spinner
   - [/app/videos/loading.tsx](../frontend/app/videos/loading.tsx) - Video grid
 
-```
+```text
 skeleton
 
-```
+```markdown
+
   - [/app/news/loading.tsx](../frontend/app/news/loading.tsx) - News list
 
-```
+```text
 skeleton
 
 ```
+
   - [/app/projects/loading.tsx](../frontend/app/projects/loading.tsx) - Projects
 
-```
+```text
 grid skeleton
 
-```
+```markdown
+
   - [/app/youtube-bot/loading.tsx](../frontend/app/youtube-bot/loading.tsx) - Bot
 
-```
+```text
 list skeleton
 
 ```
+
   - [/app/youtube-bot/[id]/loading.tsx](../frontend/app/youtube-bot/[id]/loading.tsx)
 
-```
+```markdown
+
 - Bot detail skeleton
 
-```
+```markdown
+
   - [/app/settings/loading.tsx](../frontend/app/settings/loading.tsx) - Settings
 
-```
+```text
 skeleton
 
 ```
+
 - **Status:** ✅ Fixed - All pages now have proper loading states with Tailwind
+
   animate-pulse
 
 ---
@@ -233,7 +249,7 @@ APIFY_API_KEY           → YouTube/web scraping
 ANTHROPIC_API_KEY       → Claude for content generation
 HEYGEN_API_KEY          → AI video creation
 
-```
+```markdown
 
 ### Optional Keys
 
@@ -241,7 +257,7 @@ HEYGEN_API_KEY          → AI video creation
 YOUTUBE_API_KEY         → For future upload feature
 GITHUB_TOKEN            → Higher API rate limits
 
-```
+```markdown
 
 ---
 

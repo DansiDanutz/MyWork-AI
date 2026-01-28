@@ -43,7 +43,7 @@ multi-session development.
 ```text
    /Users/dansidanutz/Desktop/MyWork/projects/{project-name}
 
-   ```
+```yaml
 
 4. Use `/create-spec` command with the project path
 5. Walk through the interactive specification wizard:
@@ -73,7 +73,9 @@ multi-session development.
 When Autocoder completes:
 
 1. Review generated code in
+
 `/Users/dansidanutz/Desktop/MyWork/projects/{project-name}/`
+
 2. Run the application: `./init.sh` or `npm install && npm run dev`
 3. Test functionality
 4. Hand back to user with summary
@@ -111,7 +113,7 @@ python autonomous_agent_demo.py --project-dir {name} --yolo
 ```bash
 python autonomous_agent_demo.py --project-dir {name} --parallel --max-concurrency 3
 
-```
+```markdown
 
 - Multiple concurrent agents
 - Faster completion
@@ -120,7 +122,9 @@ python autonomous_agent_demo.py --project-dir {name} --parallel --max-concurrenc
 ## Expected Outputs
 
 - Complete application source code in
+
   `/Users/dansidanutz/Desktop/MyWork/projects/{project-name}/`
+
 - SQLite database with feature tracking (`features.db`)
 - Git repository with commits
 - Running application (after init.sh)
@@ -128,7 +132,9 @@ python autonomous_agent_demo.py --project-dir {name} --parallel --max-concurrenc
 ## Path Configuration
 
 - **Autocoder Tool:** `/Users/dansidanutz/Desktop/GamesAI/autocoder` (do not
+
   move)
+
 - **Your Projects:** `/Users/dansidanutz/Desktop/MyWork/projects/`
 - **Environment Variable:** `MYWORK_PROJECTS_PATH` in `.env`
 

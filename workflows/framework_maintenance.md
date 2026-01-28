@@ -39,7 +39,7 @@ python tools/module_registry.py scan # Index all modules
 ```bash
 python tools/mw.py status
 
-```
+```yaml
 
 This shows:
 
@@ -79,7 +79,7 @@ python tools/auto_update.py update gsd
 python tools/auto_update.py update autocoder
 python tools/auto_update.py update n8n-skills
 
-```
+```markdown
 
 ### 2. Scan Projects for New Modules
 
@@ -102,7 +102,7 @@ This indexes:
 ```bash
 python tools/module_registry.py export
 
-```
+```markdown
 
 Creates `.planning/MODULE_REGISTRY.md` for easy browsing.
 
@@ -145,7 +145,7 @@ Creates detailed markdown report in `.tmp/`.
 python tools/auto_update.py rollback autocoder
 python tools/auto_update.py rollback gsd
 
-```
+```markdown
 
 ---
 
@@ -163,7 +163,7 @@ python tools/module_registry.py scan
 ```bash
 python tools/module_registry.py stats
 
-```
+```markdown
 
 ### 3. Export for Future Reference
 
@@ -188,7 +188,7 @@ python tools/module_registry.py search "authentication"
 python tools/module_registry.py search "api endpoint"
 python tools/module_registry.py search "form validation"
 
-```
+```markdown
 
 ### 2. List by Type
 
@@ -229,7 +229,7 @@ python tools/scaffold.py list
 ```bash
 python tools/scaffold.py new my-project <template>
 
-```
+```yaml
 
 Templates:
 
@@ -264,7 +264,7 @@ ls ~/.claude/commands/gsd/
 
 /install gsd
 
-```
+```markdown
 
 ### Autocoder Won't Start
 
@@ -296,7 +296,7 @@ cat .mcp.json
 
 grep N8N_API_KEY .env
 
-```
+```markdown
 
 ### Module Registry Empty
 

@@ -33,7 +33,7 @@ When you need to stop mid-phase:
 ```yaml
 /gsd:pause-work
 
-```
+```yaml
 
 This creates a handoff document capturing:
 
@@ -91,7 +91,7 @@ Verify STATE.md was updated:
 ```bash
 cat .planning/STATE.md | head -50
 
-```
+```markdown
 
 ### Step 4: Safe to Exit
 
@@ -113,7 +113,7 @@ When starting a new session:
 ```yaml
 /gsd:resume-work
 
-```
+```yaml
 
 This:
 

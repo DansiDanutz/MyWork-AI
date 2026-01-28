@@ -9,6 +9,7 @@ Base = declarative_base()
 
 class YouTubeVideo(Base):
     """Scraped AI-related YouTube videos"""
+
     __tablename__ = "youtube_videos"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -37,6 +38,7 @@ class YouTubeVideo(Base):
 
         # Normalize values (log scale to handle large numbers)
         import math
+
         norm_views = math.log10(views + 1)
         norm_likes = math.log10(likes + 1)
         norm_comments = math.log10(comments + 1)
@@ -44,16 +46,14 @@ class YouTubeVideo(Base):
 
         # Weighted score
         self.quality_score = (
-            norm_views * 0.3 +
-            norm_likes * 0.25 +
-            norm_comments * 0.25 +
-            norm_subs * 0.2
+            norm_views * 0.3 + norm_likes * 0.25 + norm_comments * 0.25 + norm_subs * 0.2
         )
         return self.quality_score
 
 
 class AINews(Base):
     """Aggregated AI news articles"""
+
     __tablename__ = "ai_news"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -72,13 +72,14 @@ class AINews(Base):
 
     # Composite index for trending queries (score + comments)
     __table_args__ = (
-        Index('ix_ai_news_trending', 'score', 'comments_count'),
-        Index('ix_ai_news_published', 'published_at'),
+        Index("ix_ai_news_trending", "score", "comments_count"),
+        Index("ix_ai_news_published", "published_at"),
     )
 
 
 class GitHubProject(Base):
     """Top open source AI projects from GitHub"""
+
     __tablename__ = "github_projects"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -103,8 +104,8 @@ class GitHubProject(Base):
 
     # Composite index for star-based queries
     __table_args__ = (
-        Index('ix_github_projects_stars', 'stars'),
-        Index('ix_github_projects_pushed', 'pushed_at'),
+        Index("ix_github_projects_stars", "stars"),
+        Index("ix_github_projects_pushed", "pushed_at"),
     )
 
     def calculate_trending_score(self, previous_stars=0):
@@ -117,9 +118,9 @@ class GitHubProject(Base):
 
         # Weighted trending score
         self.trending_score = (
-            math.log10(stars + 1) * 0.4 +
-            math.log10(forks + 1) * 0.2 +
-            math.log10(weekly_growth + 1) * 0.4
+            math.log10(stars + 1) * 0.4
+            + math.log10(forks + 1) * 0.2
+            + math.log10(weekly_growth + 1) * 0.4
         )
         self.weekly_stars = weekly_growth
         return self.trending_score
@@ -127,6 +128,7 @@ class GitHubProject(Base):
 
 class YouTubeAutomation(Base):
     """YouTube video automation pipeline records"""
+
     __tablename__ = "youtube_automation"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -150,7 +152,9 @@ class YouTubeAutomation(Base):
     thumbnail_prompt = Column(Text)
 
     # Status
-    status = Column(String(50), default="draft")  # draft, pending_review, approved, uploaded, failed
+    status = Column(
+        String(50), default="draft"
+    )  # draft, pending_review, approved, uploaded, failed
     youtube_video_id = Column(String(20))
     youtube_url = Column(String(200))
 
@@ -165,6 +169,7 @@ class YouTubeAutomation(Base):
 
 class ScraperLog(Base):
     """Log of scraper runs for monitoring"""
+
     __tablename__ = "scraper_logs"
 
     id = Column(Integer, primary_key=True, index=True)

@@ -1,15 +1,15 @@
-import { Suspense } from 'react'
-import Link from 'next/link'
+import { Suspense } from "react";
+import Link from "next/link";
 import {
   getTasksByUser,
   verifySession,
   getTagsByUser,
   searchTasks,
   filterTasks,
-} from '@/shared/lib/dal'
-import { TaskListWithFilters } from '@/shared/components/TaskListWithFilters'
-import { searchParamsCache } from './search-params'
-import { TaskStatus } from '@prisma/client'
+} from "@/shared/lib/dal";
+import { TaskListWithFilters } from "@/shared/components/TaskListWithFilters";
+import { searchParamsCache } from "./search-params";
+import { TaskStatus } from "@prisma/client";
 
 /**
  * Tasks Page: Full task discovery experience
@@ -79,7 +79,7 @@ function TasksLoadingSkeleton() {
         </main>
       </div>
     </div>
-  )
+  );
 }
 
 // Server Component that fetches data and renders TaskListWithFilters
@@ -88,66 +88,66 @@ async function TasksContent({
   statusFilters,
   tagFilters,
 }: {
-  searchQuery: string
-  statusFilters: string[]
-  tagFilters: string[]
+  searchQuery: string;
+  statusFilters: string[];
+  tagFilters: string[];
 }) {
-  const { userId } = await verifySession()
+  const { userId } = await verifySession();
 
   // Fetch tags for filter sidebar
-  const tags = await getTagsByUser(userId)
+  const tags = await getTagsByUser(userId);
 
   // Fetch tasks based on search/filter state
-  let tasks
+  let tasks;
 
   if (searchQuery.trim().length > 0) {
     // Search with filters
-    const searchResults = await searchTasks(userId, searchQuery.trim())
-    tasks = searchResults
+    const searchResults = await searchTasks(userId, searchQuery.trim());
+    tasks = searchResults;
 
     // Apply status filter to search results
     if (statusFilters.length > 0) {
-      tasks = tasks.filter((task) => statusFilters.includes(task.status))
+      tasks = tasks.filter((task) => statusFilters.includes(task.status));
     }
 
     // Apply tag filter to search results
     if (tagFilters.length > 0) {
       tasks = tasks.filter((task) =>
-        task.tags.some((tag) => tagFilters.includes(tag.id))
-      )
+        task.tags.some((tag) => tagFilters.includes(tag.id)),
+      );
     }
   } else if (statusFilters.length > 0 || tagFilters.length > 0) {
     // Filter without search
     const filterObj: {
-      status?: TaskStatus[]
-      tagIds?: string[]
-    } = {}
+      status?: TaskStatus[];
+      tagIds?: string[];
+    } = {};
 
     if (statusFilters.length > 0) {
-      filterObj.status = statusFilters as TaskStatus[]
+      filterObj.status = statusFilters as TaskStatus[];
     }
 
     if (tagFilters.length > 0) {
-      filterObj.tagIds = tagFilters
+      filterObj.tagIds = tagFilters;
     }
 
-    tasks = await filterTasks(userId, filterObj)
+    tasks = await filterTasks(userId, filterObj);
   } else {
     // No filters, get all tasks
-    tasks = await getTasksByUser(userId)
+    tasks = await getTasksByUser(userId);
   }
 
-  return <TaskListWithFilters tasks={tasks} tags={tags} />
+  return <TaskListWithFilters tasks={tasks} tags={tags} />;
 }
 
 export default async function TasksPage({
   searchParams,
 }: {
-  searchParams: Promise<Record<string, string | string[] | undefined>>
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   // Parse URL search params
-  const params = await searchParams
-  const { q, status, tags } = searchParamsCache.parse(params)
+  const params = await searchParams;
+  const { q, status, tags } = searchParamsCache.parse(params);
 
   return (
     <div>
@@ -197,5 +197,5 @@ export default async function TasksPage({
         />
       </Suspense>
     </div>
-  )
+  );
 }

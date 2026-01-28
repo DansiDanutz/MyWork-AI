@@ -1,8 +1,21 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { LuRefreshCw, LuExternalLink, LuStar, LuGitFork, LuTrendingUp, LuCode, LuPlay } from 'react-icons/lu';
-import { getProjects, getTrendingProjects, triggerScraper, Project } from '@/lib/api';
+import { useEffect, useState } from "react";
+import {
+  LuRefreshCw,
+  LuExternalLink,
+  LuStar,
+  LuGitFork,
+  LuTrendingUp,
+  LuCode,
+  LuPlay,
+} from "react-icons/lu";
+import {
+  getProjects,
+  getTrendingProjects,
+  triggerScraper,
+  Project,
+} from "@/lib/api";
 
 export default function ProjectsClient() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -18,11 +31,13 @@ export default function ProjectsClient() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const data = showTrending ? await getTrendingProjects(20) : await getProjects(50);
+      const data = showTrending
+        ? await getTrendingProjects(20)
+        : await getProjects(50);
       setProjects(data);
       setError(null);
     } catch (err) {
-      setError('Failed to load projects');
+      setError("Failed to load projects");
       console.error(err);
     } finally {
       setLoading(false);
@@ -32,10 +47,10 @@ export default function ProjectsClient() {
   const handleScrape = async () => {
     try {
       setScraping(true);
-      await triggerScraper('projects');
+      await triggerScraper("projects");
       await fetchProjects();
     } catch (err) {
-      setError('Scraping failed');
+      setError("Scraping failed");
       console.error(err);
     } finally {
       setScraping(false);
@@ -43,24 +58,24 @@ export default function ProjectsClient() {
   };
 
   const formatNumber = (num: number) => {
-    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
-    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+    if (num >= 1000) return (num / 1000).toFixed(1) + "K";
     return num.toString();
   };
 
   const getLanguageColor = (lang: string | null) => {
     const colors: Record<string, string> = {
-      Python: 'bg-blue-500',
-      JavaScript: 'bg-yellow-500',
-      TypeScript: 'bg-blue-600',
-      Rust: 'bg-orange-500',
-      Go: 'bg-cyan-500',
-      Java: 'bg-red-500',
-      'C++': 'bg-pink-500',
-      C: 'bg-gray-600',
-      Jupyter: 'bg-orange-400',
+      Python: "bg-blue-500",
+      JavaScript: "bg-yellow-500",
+      TypeScript: "bg-blue-600",
+      Rust: "bg-orange-500",
+      Go: "bg-cyan-500",
+      Java: "bg-red-500",
+      "C++": "bg-pink-500",
+      C: "bg-gray-600",
+      Jupyter: "bg-orange-400",
     };
-    return colors[lang || ''] || 'bg-gray-400';
+    return colors[lang || ""] || "bg-gray-400";
   };
 
   if (loading) {
@@ -77,15 +92,17 @@ export default function ProjectsClient() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">GitHub Projects</h1>
-          <p className="text-gray-500 mt-1">Top AI and ML open source projects</p>
+          <p className="text-gray-500 mt-1">
+            Top AI and ML open source projects
+          </p>
         </div>
         <div className="flex gap-3">
           <button
             onClick={() => setShowTrending(!showTrending)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
               showTrending
-                ? 'bg-green-600 text-white'
-                : 'bg-gray-100 hover:bg-gray-200'
+                ? "bg-green-600 text-white"
+                : "bg-gray-100 hover:bg-gray-200"
             }`}
           >
             <LuTrendingUp className="w-4 h-4" />
@@ -108,15 +125,13 @@ export default function ProjectsClient() {
             ) : (
               <LuPlay className="w-4 h-4" />
             )}
-            {scraping ? 'Scraping...' : 'Scrape Now'}
+            {scraping ? "Scraping..." : "Scrape Now"}
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg">
-          {error}
-        </div>
+        <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>
       )}
 
       {/* Projects Grid */}
@@ -130,18 +145,22 @@ export default function ProjectsClient() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
                   {showTrending && (
-                    <span className="text-lg font-bold text-gray-400">#{index + 1}</span>
+                    <span className="text-lg font-bold text-gray-400">
+                      #{index + 1}
+                    </span>
                   )}
                   <h3 className="text-lg font-semibold text-gray-900 truncate">
                     {project.name}
                   </h3>
                 </div>
-                <p className="text-sm text-gray-500 truncate">{project.full_name}</p>
+                <p className="text-sm text-gray-500 truncate">
+                  {project.full_name}
+                </p>
               </div>
               {project.weekly_stars > 0 && (
                 <span className="flex items-center gap-1 text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded-full">
-                  <LuTrendingUp className="w-3 h-3" />
-                  +{formatNumber(project.weekly_stars)} this week
+                  <LuTrendingUp className="w-3 h-3" />+
+                  {formatNumber(project.weekly_stars)} this week
                 </span>
               )}
             </div>
@@ -176,7 +195,9 @@ export default function ProjectsClient() {
               <div className="flex items-center gap-4 text-sm text-gray-500">
                 {project.language && (
                   <div className="flex items-center gap-1">
-                    <span className={`w-3 h-3 rounded-full ${getLanguageColor(project.language)}`} />
+                    <span
+                      className={`w-3 h-3 rounded-full ${getLanguageColor(project.language)}`}
+                    />
                     {project.language}
                   </div>
                 )}

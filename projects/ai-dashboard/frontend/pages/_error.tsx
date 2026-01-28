@@ -1,38 +1,44 @@
 function Error({ statusCode }: { statusCode?: number }) {
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#f9fafb'
-    }}>
-      <div style={{ textAlign: 'center' }}>
-        <h1 style={{
-          fontSize: '3.75rem',
-          fontWeight: 'bold',
-          color: '#111827',
-          marginBottom: '1rem'
-        }}>
-          {statusCode || 'Error'}
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#f9fafb",
+      }}
+    >
+      <div style={{ textAlign: "center" }}>
+        <h1
+          style={{
+            fontSize: "3.75rem",
+            fontWeight: "bold",
+            color: "#111827",
+            marginBottom: "1rem",
+          }}
+        >
+          {statusCode || "Error"}
         </h1>
-        <p style={{
-          fontSize: '1.25rem',
-          color: '#4b5563',
-          marginBottom: '2rem'
-        }}>
+        <p
+          style={{
+            fontSize: "1.25rem",
+            color: "#4b5563",
+            marginBottom: "2rem",
+          }}
+        >
           {statusCode
             ? `An error ${statusCode} occurred on server`
-            : 'An error occurred on client'}
+            : "An error occurred on client"}
         </p>
         <a
           href="/"
           style={{
-            padding: '0.75rem 1.5rem',
-            backgroundColor: '#2563eb',
-            color: 'white',
-            borderRadius: '0.5rem',
-            textDecoration: 'none'
+            padding: "0.75rem 1.5rem",
+            backgroundColor: "#2563eb",
+            color: "white",
+            borderRadius: "0.5rem",
+            textDecoration: "none",
           }}
         >
           Go Home
@@ -42,7 +48,13 @@ function Error({ statusCode }: { statusCode?: number }) {
   );
 }
 
-Error.getInitialProps = ({ res, err }: { res?: { statusCode?: number }; err?: { statusCode?: number } }) => {
+Error.getInitialProps = ({
+  res,
+  err,
+}: {
+  res?: { statusCode?: number };
+  err?: { statusCode?: number };
+}) => {
   const statusCode = res ? res.statusCode : err ? err.statusCode : 404;
   return { statusCode };
 };

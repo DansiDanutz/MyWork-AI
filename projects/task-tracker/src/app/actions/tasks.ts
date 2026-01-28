@@ -1,53 +1,55 @@
-'use server'
+"use server";
 
-import { revalidatePath } from 'next/cache'
-import { z } from 'zod'
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
-import { prisma } from '@/shared/lib/db'
-import { getUser } from '@/shared/lib/dal'
-import { trackEvent } from '@/shared/lib/analytics'
+import { prisma } from "@/shared/lib/db";
+import { getUser } from "@/shared/lib/dal";
+import { trackEvent } from "@/shared/lib/analytics";
 
 // Validation schemas
 const CreateTaskSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(255, 'Title too long'),
+  title: z.string().min(1, "Title is required").max(255, "Title too long"),
   description: z.string().optional(),
-})
+});
 
 const UpdateTaskSchema = z.object({
-  title: z.string().min(1, 'Title is required').max(255, 'Title too long'),
+  title: z.string().min(1, "Title is required").max(255, "Title too long"),
   description: z.string().optional(),
-  status: z.enum(['TODO', 'IN_PROGRESS', 'DONE']).optional(),
-})
+  status: z.enum(["TODO", "IN_PROGRESS", "DONE"]).optional(),
+});
 
-const TaskStatusSchema = z.enum(['TODO', 'IN_PROGRESS', 'DONE'])
+const TaskStatusSchema = z.enum(["TODO", "IN_PROGRESS", "DONE"]);
 
 // Action result types
 type ActionResult<T = void> =
   | { success: true; data?: T }
-  | { success: false; error: string }
+  | { success: false; error: string };
 
 /**
  * Create a new task for the authenticated user
  */
-export async function createTask(formData: FormData): Promise<ActionResult<{ taskId: string }>> {
+export async function createTask(
+  formData: FormData,
+): Promise<ActionResult<{ taskId: string }>> {
   try {
     // Verify authentication
-    const user = await getUser()
+    const user = await getUser();
     if (!user) {
-      return { success: false, error: 'You must be logged in to create tasks' }
+      return { success: false, error: "You must be logged in to create tasks" };
     }
 
     // Validate input
     const result = CreateTaskSchema.safeParse({
-      title: formData.get('title'),
-      description: formData.get('description'),
-    })
+      title: formData.get("title"),
+      description: formData.get("description"),
+    });
 
     if (!result.success) {
-      return { success: false, error: result.error.issues[0].message }
+      return { success: false, error: result.error.issues[0].message };
     }
 
-    const { title, description } = result.data
+    const { title, description } = result.data;
 
     // Create task
     const task = await prisma.task.create({
@@ -56,155 +58,161 @@ export async function createTask(formData: FormData): Promise<ActionResult<{ tas
         description: description || null,
         userId: user.id,
       },
-    })
+    });
 
     // Track analytics
     trackEvent({
-      type: 'task_created',
+      type: "task_created",
       userId: user.id,
       properties: {
         taskId: task.id,
         hasDescription: !!description,
       },
-    })
+    });
 
     // Revalidate relevant pages
-    revalidatePath('/tasks')
-    revalidatePath('/dashboard')
+    revalidatePath("/tasks");
+    revalidatePath("/dashboard");
 
-    return { success: true, data: { taskId: task.id } }
+    return { success: true, data: { taskId: task.id } };
   } catch (error) {
-    console.error('Create task error:', error)
-    return { success: false, error: 'Failed to create task' }
+    console.error("Create task error:", error);
+    return { success: false, error: "Failed to create task" };
   }
 }
 
 /**
  * Update an existing task (title/description only, not status)
  */
-export async function updateTask(taskId: string, formData: FormData): Promise<ActionResult> {
+export async function updateTask(
+  taskId: string,
+  formData: FormData,
+): Promise<ActionResult> {
   try {
-    const user = await getUser()
+    const user = await getUser();
     if (!user) {
-      return { success: false, error: 'You must be logged in to update tasks' }
+      return { success: false, error: "You must be logged in to update tasks" };
     }
 
     // Validate input
     const result = UpdateTaskSchema.safeParse({
-      title: formData.get('title'),
-      description: formData.get('description'),
-      status: formData.get('status'),
-    })
+      title: formData.get("title"),
+      description: formData.get("description"),
+      status: formData.get("status"),
+    });
 
     if (!result.success) {
-      return { success: false, error: result.error.issues[0].message }
+      return { success: false, error: result.error.issues[0].message };
     }
 
-    const { title, description, status } = result.data
+    const { title, description, status } = result.data;
 
     // Verify task ownership and update
     const task = await prisma.task.findFirst({
       where: { id: taskId, userId: user.id },
-    })
+    });
 
     if (!task) {
-      return { success: false, error: 'Task not found or access denied' }
+      return { success: false, error: "Task not found or access denied" };
     }
 
     // Build update data object
     const updateData: {
-      title: string
-      description: string | null
-      status?: 'TODO' | 'IN_PROGRESS' | 'DONE'
+      title: string;
+      description: string | null;
+      status?: "TODO" | "IN_PROGRESS" | "DONE";
     } = {
       title,
       description: description || null,
-    }
+    };
 
     if (status) {
-      updateData.status = status
+      updateData.status = status;
     }
 
     await prisma.task.update({
       where: { id: taskId },
       data: updateData,
-    })
+    });
 
     // Track analytics with changed fields
-    const fieldsChanged: string[] = ['title']
-    if (description !== undefined) fieldsChanged.push('description')
-    if (status) fieldsChanged.push('status')
+    const fieldsChanged: string[] = ["title"];
+    if (description !== undefined) fieldsChanged.push("description");
+    if (status) fieldsChanged.push("status");
 
     trackEvent({
-      type: 'task_updated',
+      type: "task_updated",
       userId: user.id,
       properties: {
         taskId,
         fieldsChanged,
         ...(status && { newStatus: status }),
       },
-    })
+    });
 
     // Revalidate pages
-    revalidatePath('/tasks')
-    revalidatePath(`/tasks/${taskId}/edit`)
-    revalidatePath('/dashboard')
+    revalidatePath("/tasks");
+    revalidatePath(`/tasks/${taskId}/edit`);
+    revalidatePath("/dashboard");
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    console.error('Update task error:', error)
-    return { success: false, error: 'Failed to update task' }
+    console.error("Update task error:", error);
+    return { success: false, error: "Failed to update task" };
   }
 }
 
 /**
  * Update task status (separate action for optimistic UI)
  */
-export async function updateTaskStatus(taskId: string, status: string): Promise<ActionResult> {
+export async function updateTaskStatus(
+  taskId: string,
+  status: string,
+): Promise<ActionResult> {
   try {
-    const user = await getUser()
+    const user = await getUser();
     if (!user) {
-      return { success: false, error: 'You must be logged in to update tasks' }
+      return { success: false, error: "You must be logged in to update tasks" };
     }
 
     // Validate status
-    const result = TaskStatusSchema.safeParse(status)
+    const result = TaskStatusSchema.safeParse(status);
     if (!result.success) {
-      return { success: false, error: 'Invalid task status' }
+      return { success: false, error: "Invalid task status" };
     }
 
     // Verify ownership and update
     const task = await prisma.task.findFirst({
       where: { id: taskId, userId: user.id },
-    })
+    });
 
     if (!task) {
-      return { success: false, error: 'Task not found or access denied' }
+      return { success: false, error: "Task not found or access denied" };
     }
 
     await prisma.task.update({
       where: { id: taskId },
       data: { status: result.data },
-    })
+    });
 
     // Track analytics
     trackEvent({
-      type: 'task_updated',
+      type: "task_updated",
       userId: user.id,
       properties: {
         taskId,
-        fieldsChanged: ['status'],
+        fieldsChanged: ["status"],
         newStatus: result.data,
       },
-    })
+    });
 
     // Revalidate pages
-    revalidatePath('/tasks')
+    revalidatePath("/tasks");
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    console.error('Update task status error:', error)
-    return { success: false, error: 'Failed to update task status' }
+    console.error("Update task status error:", error);
+    return { success: false, error: "Failed to update task status" };
   }
 }
 
@@ -213,41 +221,41 @@ export async function updateTaskStatus(taskId: string, status: string): Promise<
  */
 export async function deleteTask(taskId: string): Promise<ActionResult> {
   try {
-    const user = await getUser()
+    const user = await getUser();
     if (!user) {
-      return { success: false, error: 'You must be logged in to delete tasks' }
+      return { success: false, error: "You must be logged in to delete tasks" };
     }
 
     // Verify ownership
     const task = await prisma.task.findFirst({
       where: { id: taskId, userId: user.id },
-    })
+    });
 
     if (!task) {
-      return { success: false, error: 'Task not found or access denied' }
+      return { success: false, error: "Task not found or access denied" };
     }
 
     // Delete task
     await prisma.task.delete({
       where: { id: taskId },
-    })
+    });
 
     // Track analytics
     trackEvent({
-      type: 'task_deleted',
+      type: "task_deleted",
       userId: user.id,
       properties: {
         taskId,
       },
-    })
+    });
 
     // Revalidate pages
-    revalidatePath('/tasks')
-    revalidatePath('/dashboard')
+    revalidatePath("/tasks");
+    revalidatePath("/dashboard");
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    console.error('Delete task error:', error)
-    return { success: false, error: 'Failed to delete task' }
+    console.error("Delete task error:", error);
+    return { success: false, error: "Failed to delete task" };
   }
 }

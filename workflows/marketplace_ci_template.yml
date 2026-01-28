@@ -2,7 +2,7 @@ name: Deploy Marketplace
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -25,17 +25,23 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       - name: Install CLI dependencies
+        env:
+          VERCEL_CLI_VERSION: ${{ vars.VERCEL_CLI_VERSION }}
+          RAILWAY_CLI_VERSION: ${{ vars.RAILWAY_CLI_VERSION }}
         run: |
-          npm install -g vercel@latest
-          npm install -g @railway/cli
+          VERCEL_CLI_VERSION=${VERCEL_CLI_VERSION:-latest}
+          RAILWAY_CLI_VERSION=${RAILWAY_CLI_VERSION:-latest}
+          echo "Using vercel@${VERCEL_CLI_VERSION} and @railway/cli@${RAILWAY_CLI_VERSION}"
+          npm install -g vercel@${VERCEL_CLI_VERSION}
+          npm install -g @railway/cli@${RAILWAY_CLI_VERSION}
 
       - name: Install QA dependencies
         working-directory: mywork-ai

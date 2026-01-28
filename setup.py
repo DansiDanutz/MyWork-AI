@@ -36,9 +36,7 @@ extras_require = {
     ],
     "all": [],  # Will be populated below
 }
-extras_require["all"] = list(set(
-    req for reqs in extras_require.values() for req in reqs
-))
+extras_require["all"] = list(set(req for reqs in extras_require.values() for req in reqs))
 
 setup(
     name="mywork-ai",

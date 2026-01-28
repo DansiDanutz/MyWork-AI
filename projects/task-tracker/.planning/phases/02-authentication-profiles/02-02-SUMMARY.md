@@ -25,37 +25,43 @@ affects:
 key-files:
   created:
 
-```
+```markdown
+
 - src/shared/lib/dal.ts
 - src/middleware.ts
 - src/shared/hooks/useDebounce.ts
 - src/shared/hooks/index.ts
 
-```
+```yaml
+
   modified: []
 
 tech-stack:
   added:
 
-```
+```markdown
+
 - React cache() for request deduplication
 - Next.js middleware for route protection
 
 ```
+
   patterns:
 
-```
+```markdown
+
 - "Server-only modules with 'server-only' import"
 - "React cache() for deduplication within single request"
 - "Middleware lightweight auth check (no DB query)"
 - "Debounce with callbackRef to prevent stale closures"
 
-```
+```yaml
+
 decisions:
 
   - id: AUTH-004
 
-```
+```yaml
 date: 2026-01-24
 decision: Use React cache() in DAL for request deduplication
 rationale: Prevents multiple auth checks within single server request
@@ -63,25 +69,28 @@ without custom memoization
 alternatives: Custom memoization, per-request context
 
 ```
+
   - id: AUTH-005
 
-```
+```yaml
 date: 2026-01-24
 decision: Middleware only checks session cookie, not database
 rationale: Performance - middleware runs on every request, DB query would be
 too slow
 impact: Full auth validation must be done in Server Components via DAL
 
-```
+```yaml
+
   - id: PATTERN-003
 
-```
+```yaml
 date: 2026-01-24
 decision: 3000ms debounce delay for auto-save
 rationale: Balance between responsiveness and server load per RESEARCH.md
 alternatives: 1000ms (too frequent), 5000ms (feels sluggish)
 
 ```
+
 ---
 
 # Phase 02 Plan 02: Authorization Layer Summary
@@ -99,10 +108,11 @@ Created the authorization foundation that all protected features will use:
    - `getSession()`: Non-redirecting auth check for conditional UI
    - All functions use React cache() to prevent duplicate queries within single
 
-```
+```text
  request
 
-```
+```markdown
+
 2. **Route Protection Middleware (src/middleware.ts)**
    - Protects /settings, /dashboard, /tasks routes
    - Redirects unauthenticated users to /login with callbackUrl parameter
@@ -163,7 +173,7 @@ export default async function Header() {
   return session ? <LogoutButton /> : <LoginButton />
 }
 
-```
+```markdown
 
 ### For User Data
 
@@ -189,15 +199,16 @@ function ProfileEditor() {
   const handleChange = useDebounce((value: string) => {
 
 ```
+
 saveToServer(value)
 
-```
+```javascript
   }, 3000)
 
   return <input onChange={(e) => handleChange(e.target.value)} />
 }
 
-```
+```markdown
 
 ## Testing Notes
 
@@ -227,12 +238,19 @@ None - plan executed exactly as written.
 ## Lessons Learned
 
 1. **React cache() is powerful:** Built-in request deduplication without custom
+
 code
+
 2. **Middleware must be lightweight:** Database queries would create performance
+
 issues on every request
+
 3. **Debounce needs care:** CallbackRef pattern essential to prevent stale
+
 closure bugs
+
 4. **'server-only' import:** Good practice to prevent accidental client-side
+
 usage of server functions
 
 ## Performance Impact

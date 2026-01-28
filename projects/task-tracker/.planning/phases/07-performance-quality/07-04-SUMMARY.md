@@ -10,22 +10,25 @@ requires:
 
   - phase: 07-01
 
-```
+```yaml
 deliverable: Loading states with skeleton screens
 
-```
+```yaml
+
   - phase: 07-02
 
-```
+```yaml
 deliverable: Code splitting for file components
 
 ```
+
   - phase: 07-03
 
-```
+```yaml
 deliverable: Mobile responsive navigation and swipe gestures
 
-```
+```yaml
+
 provides:
 
   - Core Web Vitals monitoring infrastructure
@@ -39,55 +42,65 @@ affects:
 
   - future: Deployment & Monitoring
 
-```
+```yaml
 why: Establishes performance baseline and monitoring infrastructure for
 production
 
 ```
+
   - future: Analytics Dashboard
 
-```
+```yaml
 why: Could visualize collected Web Vitals data for trend analysis
 
-```
+```yaml
+
 tech-stack:
   added:
 
-```
+```markdown
+
 - next/web-vitals (useReportWebVitals hook)
 - navigator.sendBeacon API for reliable metric reporting
 
 ```
+
   patterns:
 
-```
+```markdown
+
 - Core Web Vitals monitoring pattern with client-side reporter
 - Dual reporting strategy (console in dev, API in all environments)
 - sendBeacon for reliable analytics reporting
 - Color-coded console logging for metric ratings
 - Threshold-based metric classification (GOOD/NEEDS_IMPROVEMENT/POOR)
 
-```
+```yaml
+
 key-files:
   created:
 
-```
+```markdown
+
 - src/shared/components/WebVitalsReporter.tsx
 - src/app/api/analytics/vitals/route.ts
 
 ```
+
   modified:
 
-```
+```markdown
+
 - src/app/layout.tsx
 - src/shared/components/index.ts
 
-```
+```yaml
+
 decisions:
 
   - id: VITALS-001
 
-```
+```yaml
 date: 2026-01-26
 choice: useReportWebVitals hook over manual web-vitals library
 why: Next.js provides built-in hook that integrates with App Router
@@ -98,9 +111,10 @@ alternatives: Manual web-vitals library (more control but requires
 integration work)
 
 ```
+
   - id: VITALS-002
 
-```
+```yaml
 date: 2026-01-26
 choice: Dual reporting (console + API) over API-only
 why: Console logging aids development debugging, API provides production
@@ -110,10 +124,11 @@ monitoring
 alternatives: API-only (cleaner but harder to debug), Console-only (no
 production data)
 
-```
+```yaml
+
   - id: VITALS-003
 
-```
+```yaml
 date: 2026-01-26
 choice: sendBeacon with fetch fallback over fetch-only
 why: sendBeacon reliably sends data even when user navigates away
@@ -123,6 +138,7 @@ events
 alternatives: fetch-only (simpler but can lose data on rapid navigation)
 
 ```
+
 metrics:
   duration: 5 minutes (implementation) + verification checkpoint
   tasks: 3 (2 auto + 1 checkpoint)
@@ -147,20 +163,28 @@ collection and performance verification:
 
 - **Client-side reporter** using Next.js `useReportWebVitals` hook
 - **Development logging**: Color-coded console output (green/yellow/red) for
+
   quick debugging
+
 - **Production telemetry**: Sends metrics to `/api/analytics/vitals` endpoint
 - **Reliable delivery**: Uses `navigator.sendBeacon` with `fetch` fallback
 - **Tracked metrics**: LCP, INP, CLS, FCP, TTFB with ratings
+
   (good/needs-improvement/poor)
 
 ### Analytics API Endpoint
 
 - **POST /api/analytics/vitals**: Receives Web Vitals metrics from client
 - **Threshold validation**: Compares metrics against Google Core Web Vitals
+
   thresholds
+
 - **Server-side logging**: Logs metric status (GOOD/NEEDS_IMPROVEMENT/POOR) for
+
   monitoring
+
 - **Extensibility**: Ready to integrate with analytics services (Vercel
+
   Analytics, Google Analytics, etc.)
 
 ### Performance Verification Results
@@ -168,9 +192,13 @@ collection and performance verification:
 ✅ **All benchmarks passed during human verification checkpoint:**
 
 1. **Loading States (LCP < 2.5s target)**: Skeleton appears immediately, content
+
 loads within 2-3s
+
 2. **Layout Stability (CLS < 0.1 target)**: No visible layout shifts during page
+
 load
+
 3. **Mobile Experience**: Hamburger menu and swipe gestures work smoothly
 4. **Lazy Loading**: File dropzone loads lazily with skeleton placeholder
 5. **Core Web Vitals Logging**: Console shows metrics with accurate ratings
@@ -188,14 +216,16 @@ import { useReportWebVitals } from 'next/web-vitals'
 export function WebVitalsReporter() {
   useReportWebVitals((metric) => {
 
-```
+```javascript
+
 // Automatic metric collection on every page transition
 console.log(`[Web Vitals] ${metric.name}: ${metric.value}ms (${metric.rating})`)
 
 // Send to analytics
 navigator.sendBeacon('/api/analytics/vitals', JSON.stringify(metric))
 
-```
+```markdown
+
   })
   return null
 }
@@ -215,7 +245,9 @@ Based on Google Core Web Vitals standards:
 ### Dual Reporting Strategy
 
 - **Development**: Console logging with color-coded ratings for immediate
+
   feedback
+
 - **Production**: API endpoint ready for integration with analytics platforms
 - **Reliability**: sendBeacon ensures metrics sent even during rapid navigation
 
@@ -395,11 +427,16 @@ production quality standards
 ### What Worked Well
 
 - **Next.js hook integration**: useReportWebVitals worked out-of-the-box, no
+
   manual integration needed
+
 - **Dual reporting strategy**: Console logging made debugging easy, API ready for
+
   production
+
 - **sendBeacon pattern**: Standard approach for analytics, reliable delivery
 - **Checkpoint verification**: Human testing caught real performance wins (2-3s
+
   loads, smooth mobile UX)
 
 ### Patterns to Extract for Brain

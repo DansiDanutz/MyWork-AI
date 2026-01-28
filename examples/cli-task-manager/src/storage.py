@@ -56,23 +56,28 @@ class TaskStorage:
             self._create_backup_if_needed()
 
             # Write to temporary file first, then move (atomic operation)
-            temp_path = self.file_path.with_suffix('.tmp')
-            with open(temp_path, 'w', encoding='utf-8') as f:
-                json.dump({
-                    'tasks': tasks_data,
-                    'metadata': {
-                        'last_updated': datetime.now().isoformat(),
-                        'version': '1.0',
-                        'task_count': len(tasks)
-                    }
-                }, f, indent=2, ensure_ascii=False)
+            temp_path = self.file_path.with_suffix(".tmp")
+            with open(temp_path, "w", encoding="utf-8") as f:
+                json.dump(
+                    {
+                        "tasks": tasks_data,
+                        "metadata": {
+                            "last_updated": datetime.now().isoformat(),
+                            "version": "1.0",
+                            "task_count": len(tasks),
+                        },
+                    },
+                    f,
+                    indent=2,
+                    ensure_ascii=False,
+                )
 
             # Atomic move
             temp_path.replace(self.file_path)
 
         except Exception as e:
             # Clean up temp file if it exists
-            temp_path = self.file_path.with_suffix('.tmp')
+            temp_path = self.file_path.with_suffix(".tmp")
             if temp_path.exists():
                 temp_path.unlink()
             raise RuntimeError(f"Failed to save tasks: {str(e)}") from e
@@ -83,14 +88,14 @@ class TaskStorage:
             if not self.file_path.exists() or self.file_path.stat().st_size == 0:
                 return []
 
-            with open(self.file_path, 'r', encoding='utf-8') as f:
+            with open(self.file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
 
             # Handle both old format (direct list) and new format (with metadata)
             if isinstance(data, list):
                 tasks_data = data
-            elif isinstance(data, dict) and 'tasks' in data:
-                tasks_data = data['tasks']
+            elif isinstance(data, dict) and "tasks" in data:
+                tasks_data = data["tasks"]
             else:
                 raise ValueError("Invalid file format")
 
@@ -108,7 +113,7 @@ class TaskStorage:
 
         except (json.JSONDecodeError, ValueError) as e:
             # Try to restore from backup
-            backup_path = self.file_path.with_suffix('.backup')
+            backup_path = self.file_path.with_suffix(".backup")
             if backup_path.exists():
                 print(f"Warning: Corrupted tasks file, restoring from backup...")
                 shutil.copy(backup_path, self.file_path)
@@ -121,7 +126,7 @@ class TaskStorage:
     def _create_backup_if_needed(self) -> None:
         """Create a backup copy of the tasks file."""
         if self.file_path.exists():
-            backup_path = self.file_path.with_suffix('.backup')
+            backup_path = self.file_path.with_suffix(".backup")
             shutil.copy(self.file_path, backup_path)
 
     def get_tasks(self, include_completed: bool = True) -> List[Task]:
@@ -309,8 +314,11 @@ class TaskStorage:
         """
         tasks = self._load_tasks_from_file()
         today = datetime.now().date()
-        return [task for task in tasks
-                if task.due_date and task.due_date.date() == today and not task.completed]
+        return [
+            task
+            for task in tasks
+            if task.due_date and task.due_date.date() == today and not task.completed
+        ]
 
     def get_tasks_by_priority(self, priority: Priority) -> List[Task]:
         """
@@ -349,13 +357,13 @@ class TaskStorage:
         """
         tasks = self._load_tasks_from_file()
         export_data = {
-            'exported_at': datetime.now().isoformat(),
-            'source_file': str(self.file_path),
-            'task_count': len(tasks),
-            'tasks': [task.to_dict() for task in tasks]
+            "exported_at": datetime.now().isoformat(),
+            "source_file": str(self.file_path),
+            "task_count": len(tasks),
+            "tasks": [task.to_dict() for task in tasks],
         }
 
-        with open(export_path, 'w', encoding='utf-8') as f:
+        with open(export_path, "w", encoding="utf-8") as f:
             json.dump(export_data, f, indent=2, ensure_ascii=False)
 
     def import_from_json(self, import_path: str, merge: bool = True) -> int:
@@ -369,12 +377,12 @@ class TaskStorage:
         Returns:
             Number of tasks imported
         """
-        with open(import_path, 'r', encoding='utf-8') as f:
+        with open(import_path, "r", encoding="utf-8") as f:
             data = json.load(f)
 
         # Handle different export formats
-        if 'tasks' in data:
-            import_tasks_data = data['tasks']
+        if "tasks" in data:
+            import_tasks_data = data["tasks"]
         else:
             import_tasks_data = data
 
@@ -408,15 +416,15 @@ class TaskStorage:
             Dictionary with file metadata
         """
         if not self.file_path.exists():
-            return {'exists': False, 'path': str(self.file_path)}
+            return {"exists": False, "path": str(self.file_path)}
 
         stat = self.file_path.stat()
         task_count = len(self._load_tasks_from_file())
 
         return {
-            'exists': True,
-            'path': str(self.file_path.absolute()),
-            'size': stat.st_size,
-            'modified': datetime.fromtimestamp(stat.st_mtime),
-            'task_count': task_count
+            "exists": True,
+            "path": str(self.file_path.absolute()),
+            "size": stat.st_size,
+            "modified": datetime.fromtimestamp(stat.st_mtime),
+            "task_count": task_count,
         }

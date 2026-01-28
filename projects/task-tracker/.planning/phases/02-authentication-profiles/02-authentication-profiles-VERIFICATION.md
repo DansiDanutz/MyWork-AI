@@ -119,7 +119,9 @@ documented in SUMMARY.md.**
 All required artifacts exist in the codebase:
 
 - ✓ Database schema includes all Auth.js models (User, Account, Session,
+
   VerificationToken)
+
 - ✓ Auth configuration file exists with proper exports
 - ✓ Auth API routes exist at correct path
 - ✓ Middleware exists for route protection
@@ -208,7 +210,7 @@ Migration verification:
 ✓ Custom fields (bio, customAvatar) present in User model
 ✓ Relations properly defined (user -> accounts, sessions)
 
-```
+```markdown
 
 ### Package Verification
 
@@ -218,7 +220,7 @@ Auth.js packages installed:
 ✓ next-auth@5.0.0-beta.30 (Auth.js v5)
 ✓ @auth/prisma-adapter@2.11.1
 
-```
+```markdown
 
 ---
 
@@ -350,7 +352,7 @@ export const verifySession = cache(async () => {
   return { userId: session.user.id }
 })
 
-```
+```yaml
 
 **When to use:** Apps with authenticated and public routes
 
@@ -393,17 +395,18 @@ useEffect(() => {
   function handleClickOutside(event) {
 
 ```
+
 if (menuRef.current && !menuRef.current.contains(event.target)) {
   setIsOpen(false)
 }
 
-```
+```javascript
   }
   document.addEventListener('mousedown', handleClickOutside)
   return () => document.removeEventListener('mousedown', handleClickOutside)
 }, [])
 
-```
+```yaml
 
 **When to use:** Dropdowns, popovers, modals with click-outside close
 

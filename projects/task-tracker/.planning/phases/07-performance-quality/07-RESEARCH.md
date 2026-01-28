@@ -17,12 +17,19 @@ loading patterns.
 **Key findings:**
 
 - Next.js 15 provides automatic optimizations (Server Components, route-based
+
   code splitting, prefetching) that are already active
+
 - Core Web Vitals now measure LCP (<2.5s), INP (<200ms), and CLS (<0.1) — note
+
   FID was replaced by INP in March 2024
+
 - The standard stack uses `next/dynamic` for lazy loading, `react-swipeable` for
+
   mobile gestures, and built-in `loading.js` for skeleton screens
+
 - Bundle analysis with `@next/bundle-analyzer` identifies optimization
+
   opportunities; the project should target <100KB initial JavaScript for fast
   loads
 
@@ -72,7 +79,7 @@ npm install --save-dev lighthouse web-vitals
 
 ### Recommended Project Structure
 
-```
+```text
 src/app/
 ├── (routes)/
 │   ├── loading.tsx         # Route-level skeleton screens
@@ -88,11 +95,17 @@ src/app/
 │           └── client.tsx  # Dynamic client parts (use next/dynamic)
 └── lib/
 
-```
+```text
+
 └── analytics/
-    └── web-vitals.ts   # Core Web Vitals reporting
 
 ```
+└── web-vitals.ts   # Core Web Vitals reporting
+
+```markdown
+
+```markdown
+
 ```markdown
 
 ### Pattern 1: Progressive Loading with loading.js
@@ -110,17 +123,18 @@ export default function Loading() {
   return (
 
 ```
+
 <div className="space-y-4">
   <div className="h-8 w-64 bg-gray-200 rounded animate-pulse" />
   <div className="h-32 bg-gray-200 rounded animate-pulse" />
   <div className="h-32 bg-gray-200 rounded animate-pulse" />
 </div>
 
-```
+```text
   )
 }
 
-```
+```yaml
 
 **Key points:**
 
@@ -144,7 +158,8 @@ const FileDropzone = dynamic(
   () => import('./FileDropzone'),
   {
 
-```
+```javascript
+
 loading: () => <div className="animate-pulse bg-gray-100 h-64 rounded" />,
 ssr: false // Client-only (uses browser APIs)
 
@@ -155,14 +170,15 @@ ssr: false // Client-only (uses browser APIs)
 export default function TaskEditPage() {
   return (
 
-```
+```html
+
 <div>
   <h1>Edit Task</h1>
   {/* FileDropzone loads only when component mounts */}
   <FileDropzone />
 </div>
 
-```
+```yaml
   )
 }
 
@@ -189,7 +205,8 @@ import { useSwipeable } from 'react-swipeable'
 export function TaskCard({ task, onComplete, onDelete }) {
   const handlers = useSwipeable({
 
-```
+```javascript
+
 onSwipedLeft: () => onDelete(task.id),
 onSwipedRight: () => onComplete(task.id),
 delta: 50, // Minimum swipe distance (px)
@@ -201,21 +218,24 @@ trackMouse: false // Disable on desktop
 
   return (
 
-```
+```html
+
 <div {...handlers} className="touch-pan-y">
   {/* Task content */}
 </div>
 
-```
+```yaml
   )
 }
 
-```
+```yaml
 
 **Configuration options:**
 
 - `delta`: Minimum swipe distance (default 10px, recommend 50px for intentional
+
   swipes)
+
 - `preventScrollOnSwipe`: Prevents page scroll during swipe
 - `trackMouse`: Enable mouse swipes (useful for testing, disable in production)
 
@@ -234,6 +254,7 @@ export function TaskThumbnail({ file }) {
   return (
 
 ```
+
 <Image
   src={file.url}
   alt={file.name}
@@ -245,7 +266,7 @@ export function TaskThumbnail({ file }) {
   className="object-cover rounded"
 />
 
-```
+```yaml
   )
 }
 
@@ -264,7 +285,7 @@ export function TaskThumbnail({ file }) {
   sizes="100vw"
 />
 
-```
+```markdown
 
 ### Pattern 5: Bundle Analysis and Code Splitting
 
@@ -280,7 +301,8 @@ rarely used
 module.exports = {
   experimental: {
 
-```
+```yaml
+
 // Optimize heavy icon/utility libraries
 optimizePackageImports: ['@heroicons/react', 'date-fns']
 
@@ -303,7 +325,7 @@ npm install @next/bundle-analyzer
 
 ANALYZE=true npm run build
 
-```
+```markdown
 
 ### Pattern 6: Core Web Vitals Monitoring
 
@@ -321,14 +343,15 @@ import { useReportWebVitals } from 'next/web-vitals'
 export function WebVitalsReporter() {
   useReportWebVitals((metric) => {
 
-```
+```yaml
+
 // Send to analytics endpoint
 fetch('/api/analytics/vitals', {
   method: 'POST',
   body: JSON.stringify(metric)
 })
 
-```
+```yaml
   })
 
   return null
@@ -347,15 +370,24 @@ fetch('/api/analytics/vitals', {
 ### Anti-Patterns to Avoid
 
 - **Don't lazy load entire pages** — Only lazy load specific heavy components,
+
   not whole page modules
+
 - **Don't use `React.lazy()` in Next.js** — Use `next/dynamic` for SSR
+
   compatibility
+
 - **Don't set `priority` on multiple images** — Only mark true LCP element (or
+
   use `preload` in v16)
+
 - **Don't skip width/height on images** — Causes layout shift (CLS penalty)
 - **Don't lazy load above-the-fold content** — Hurts LCP; only lazy load below
+
   the fold
+
 - **Don't use custom loading without testing** — Over-lazy loading increases
+
   latency
 
 ## Don't Hand-Roll
@@ -470,29 +502,45 @@ export default function TasksLoading() {
   return (
 
 ```
+
 <div className="container mx-auto p-4">
   {/* Header skeleton */}
   <div className="flex justify-between items-center mb-6">
-    <div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
-    <div className="h-10 w-32 bg-gray-200 rounded animate-pulse" />
+
+```html
+
+<div className="h-8 w-48 bg-gray-200 rounded animate-pulse" />
+<div className="h-10 w-32 bg-gray-200 rounded animate-pulse" />
+
+```
+
   </div>
 
   {/* Task list skeletons */}
   <div className="space-y-4">
-    {[1, 2, 3, 4, 5].map((i) => (
-      <div key={i} className="border rounded-lg p-4">
-        <div className="h-6 w-3/4 bg-gray-200 rounded animate-pulse mb-2" />
-        <div className="h-4 w-1/2 bg-gray-200 rounded animate-pulse" />
-      </div>
-    ))}
+
+```javascript
+{[1, 2, 3, 4, 5].map((i) => (
+  <div key={i} className="border rounded-lg p-4">
+
+```
+<div className="h-6 w-3/4 bg-gray-200 rounded animate-pulse mb-2" />
+<div className="h-4 w-1/2 bg-gray-200 rounded animate-pulse" />
+
+```
+  </div>
+))}
+
+```
+
   </div>
 </div>
 
-```
+```text
   )
 }
 
-```
+```markdown
 
 ### Error Boundary Pattern
 
@@ -513,7 +561,8 @@ export default function TasksError({
 }) {
   useEffect(() => {
 
-```
+```yaml
+
 // Log to error monitoring service
 console.error('Tasks error:', error)
 
@@ -522,25 +571,33 @@ console.error('Tasks error:', error)
 
   return (
 
-```
+```html
+
 <div className="container mx-auto p-4">
   <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-    <h2 className="text-xl font-semibold text-red-900 mb-2">
-      Failed to load tasks
-    </h2>
-    <p className="text-red-700 mb-4">
-      {error.message || 'An unexpected error occurred'}
-    </p>
-    <button
-      onClick={reset}
-      className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-    >
-      Try again
-    </button>
+
+```html
+
+<h2 className="text-xl font-semibold text-red-900 mb-2">
+  Failed to load tasks
+</h2>
+<p className="text-red-700 mb-4">
+  {error.message || 'An unexpected error occurred'}
+</p>
+<button
+  onClick={reset}
+  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+>
+  Try again
+</button>
+
+```
+
   </div>
 </div>
 
-```
+```markdown
+
   )
 }
 
@@ -558,13 +615,19 @@ const FileDropzone = dynamic(
   () => import('@/components/features/files/FileDropzone'),
   {
 
-```
+```javascript
+
 loading: () => (
   <div className="border-2 border-dashed border-gray-300 rounded-lg p-8">
-    <div className="animate-pulse text-center">
-      <div className="h-12 w-12 bg-gray-200 rounded-full mx-auto mb-4" />
-      <div className="h-4 w-32 bg-gray-200 rounded mx-auto" />
-    </div>
+
+```
+<div className="animate-pulse text-center">
+  <div className="h-12 w-12 bg-gray-200 rounded-full mx-auto mb-4" />
+  <div className="h-4 w-32 bg-gray-200 rounded mx-auto" />
+</div>
+
+```html
+
   </div>
 ),
 ssr: false // File APIs are browser-only
@@ -577,16 +640,18 @@ ssr: false // File APIs are browser-only
 export default function TaskEditPage() {
   return (
 
-```
+```html
+
 <div>
   <FileDropzone onUpload={handleUpload} />
 </div>
 
-```
+```markdown
+
   )
 }
 
-```
+```markdown
 
 ### Mobile-First Responsive Design
 
@@ -598,38 +663,79 @@ export function TaskCard({ task }) {
   return (
 
 ```
+
 <div className="border rounded-lg p-4
-                sm:p-6
-                md:flex md:items-center md:justify-between">
+
+```yaml
+
+```
+        sm:p-6
+        md:flex md:items-center md:justify-between">
+
+```
+
+```
+
   {/* Content: Full width on mobile, flex on desktop */}
   <div className="mb-4 md:mb-0 md:flex-1">
-    <h3 className="text-lg font-semibold
-                   sm:text-xl
-                   lg:text-2xl">
-      {task.title}
-    </h3>
-    <p className="text-sm text-gray-600
-                  sm:text-base">
-      {task.description}
-    </p>
+
+```yaml
+<h3 className="text-lg font-semibold
+
+```
+           sm:text-xl
+           lg:text-2xl">
+
+```
+  {task.title}
+</h3>
+<p className="text-sm text-gray-600
+
+```
+          sm:text-base">
+
+```
+  {task.description}
+</p>
+
+```
+
   </div>
 
   {/* Actions: Stacked on mobile, inline on desktop */}
   <div className="flex flex-col gap-2
-                  sm:flex-row
-                  md:flex-shrink-0 md:ml-4">
-    <button className="px-4 py-2 bg-blue-600 text-white rounded
-                       min-w-[44px] min-h-[44px]">
-      Edit
-    </button>
-    <button className="px-4 py-2 bg-red-600 text-white rounded
-                       min-w-[44px] min-h-[44px]">
-      Delete
-    </button>
+
+```yaml
+
+```
+          sm:flex-row
+          md:flex-shrink-0 md:ml-4">
+
+```
+<button className="px-4 py-2 bg-blue-600 text-white rounded
+
+```
+               min-w-[44px] min-h-[44px]">
+
+```
+  Edit
+</button>
+<button className="px-4 py-2 bg-red-600 text-white rounded
+
+```
+               min-w-[44px] min-h-[44px]">
+
+```
+  Delete
+</button>
+
+```
+
   </div>
 </div>
 
-```
+```markdown
+
   )
 }
 
@@ -649,20 +755,31 @@ export function SwipeableTaskCard({ task, onComplete, onDelete }) {
 
   const handlers = useSwipeable({
 
-```
+```javascript
+
 onSwiping: (eventData) => {
   // Visual feedback during swipe
   setSwipeOffset(eventData.deltaX)
 },
 onSwipedRight: () => {
   if (Math.abs(swipeOffset) > 100) {
-    onComplete(task.id)
+
+```
+onComplete(task.id)
+
+```javascript
+
   }
   setSwipeOffset(0)
 },
 onSwipedLeft: () => {
   if (Math.abs(swipeOffset) > 100) {
-    onDelete(task.id)
+
+```
+onDelete(task.id)
+
+```yaml
+
   }
   setSwipeOffset(0)
 },
@@ -670,23 +787,29 @@ delta: 50, // Minimum distance for swipe
 preventScrollOnSwipe: true,
 trackMouse: false // Desktop uses buttons
 
-```
+```text
   })
 
   return (
 
 ```
+
 <div {...handlers}
-     style={{ transform: `translateX(${swipeOffset}px)` }}
-     className="touch-pan-y transition-transform">
+
+```yaml
+ style={{ transform: `translateX(${swipeOffset}px)` }}
+ className="touch-pan-y transition-transform">
+
+```
+
   {/* Task content */}
 </div>
 
-```
+```text
   )
 }
 
-```
+```markdown
 
 ### Image Optimization Pattern
 
@@ -699,16 +822,22 @@ export function FileThumbnail({ file }) {
   // For uploaded files
   if (file.type.startsWith('image/')) {
 
-```
+```yaml
+
 return (
   <Image
-    src={`/api/files/thumbnail/${file.id}`}
-    alt={file.name}
-    width={200}
-    height={150}
-    sizes="(max-width: 768px) 100vw, 200px"
-    className="object-cover rounded"
-    loading="lazy" // Below-the-fold images
+
+```
+src={`/api/files/thumbnail/${file.id}`}
+alt={file.name}
+width={200}
+height={150}
+sizes="(max-width: 768px) 100vw, 200px"
+className="object-cover rounded"
+loading="lazy" // Below-the-fold images
+
+```text
+
   />
 )
 
@@ -723,7 +852,8 @@ return (
 export function HeroImage() {
   return (
 
-```
+```text
+
 <Image
   src="/hero.jpg"
   alt="Hero banner"
@@ -734,7 +864,8 @@ export function HeroImage() {
   className="w-full h-auto"
 />
 
-```
+```markdown
+
   )
 }
 
@@ -752,7 +883,8 @@ import { useReportWebVitals } from 'next/web-vitals'
 export function WebVitalsReporter() {
   useReportWebVitals((metric) => {
 
-```
+```javascript
+
 const body = JSON.stringify(metric)
 const url = '/api/analytics/vitals'
 
@@ -775,19 +907,27 @@ import { WebVitalsReporter } from './components/WebVitalsReporter'
 export default function RootLayout({ children }) {
   return (
 
-```
+```html
+
 <html>
   <body>
-    <WebVitalsReporter />
-    {children}
+
+```html
+
+<WebVitalsReporter />
+{children}
+
+```
+
   </body>
 </html>
 
-```
+```markdown
+
   )
 }
 
-```
+```markdown
 
 ## State of the Art
 
@@ -819,38 +959,44 @@ Things that couldn't be fully resolved:
 ```
  JS for initial load
 
-```
+```yaml
+
    - What's unclear: Specific bundle size limits for this project (depends on
 
-```
+```yaml
  features)
 
-```
+```yaml
+
    - Recommendation: Run bundle analyzer first, then set realistic budgets based
 
 ```
  on current state
 
-```
+```yaml
+
 2. **Real User Monitoring vs Synthetic Testing**
    - What we know: RUM (Real User Monitoring) tracks actual users, synthetic
 
-```
+```yaml
  tests (Lighthouse) are lab-based
 
-```
+```yaml
+
    - What's unclear: Best balance for this project phase (RUM requires user
 
 ```
  traffic)
 
-```
+```yaml
+
    - Recommendation: Start with Lighthouse CI (synthetic), add RUM in Phase 8
 
-```
+```yaml
  (Deployment) when users exist
 
-```
+```yaml
+
 3. **Mobile Browser Testing Coverage**
    - What we know: Should test iOS Safari and Android Chrome at minimum
    - What's unclear: Which specific device/OS versions to target
@@ -859,15 +1005,17 @@ Things that couldn't be fully resolved:
 ```
  versions if needed
 
-```
+```yaml
+
 4. **Progressive Web App (PWA) Features**
    - What we know: PWA adds offline support, install prompts, service workers
    - What's unclear: Whether PWA is in scope for this phase (not mentioned in
 
-```
+```yaml
  requirements)
 
-```
+```yaml
+
    - Recommendation: Defer PWA to future phase; focus on core performance first
 
 ## Sources
@@ -875,50 +1023,77 @@ Things that couldn't be fully resolved:
 ### Primary (HIGH confidence)
 
 - [Next.js Production
+
   Checklist](https://nextjs.org/docs/app/guides/production-checklist) -
   Performance optimization, Core Web Vitals, bundle analysis
+
 - [Next.js Loading UI and
+
   Streaming](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming)
+
   - loading.js patterns, Suspense boundaries, streaming
 - [Next.js Error
+
   Handling](https://nextjs.org/docs/app/getting-started/error-handling) - Error
   boundaries, recovery mechanisms, user feedback
+
 - [Next.js Lazy Loading](https://nextjs.org/docs/app/guides/lazy-loading) -
+
   next/dynamic usage, SSR options, pitfalls
+
 - [Next.js Image
+
   Component](https://nextjs.org/docs/app/api-reference/components/image) -
   Automatic optimization, lazy loading, responsive images
+
 - [Next.js Package Bundling](https://nextjs.org/docs/app/guides/package-bundling)
   - optimizePackageImports, serverExternalPackages, bundle reduction
 - [Google Core Web
-  Vitals](https://developers.google.com/search/docs/appearance/core-web-vitals) -
+
+  Vitals](https://developers.google.com/search/docs/appearance/core-web-vitals)
+  -
   LCP, INP, CLS metrics and thresholds
+
 - [Tailwind Responsive Design](https://tailwindcss.com/docs/responsive-design) -
+
   Mobile-first breakpoint system
+
 - [react-swipeable npm](https://www.npmjs.com/package/react-swipeable) - API
+
   documentation, configuration options
 
 ### Secondary (MEDIUM confidence)
 
 - [Mastering Lazy Loading in Next.js
+
   15](https://medium.com/@sureshdotariya/mastering-lazy-loading-in-next-js-15-advanced-patterns-for-peak-performance-75e0bd574c76)
+
   - Advanced patterns, performance impact (WebSearch verified with official docs)
 - [Core Web Vitals 2026 Guide](https://senorit.de/en/blog/core-web-vitals-2026) -
+
   INP replacement of FID, current thresholds (WebSearch verified with Google
   docs)
+
 - [Next.js Performance Optimization
+
   Guide](https://www.aniq-ui.com/en/blog/performance-optimization-nextjs) - Code
   splitting strategies (WebSearch verified with official docs)
+
 - [Best Practices for Loading States in
+
   Next.js](https://www.getfishtank.com/insights/best-practices-for-loading-states-in-nextjs)
+
   - Skeleton patterns (WebSearch verified with official docs)
 
 ### Tertiary (LOW confidence)
 
 - [47% of websites fail Core Web
+
   Vitals](https://nitropack.io/blog/most-important-core-web-vitals-metrics/) -
   Industry statistics (WebSearch only, not critical for implementation)
+
 - [React Swipeable Tutorial](https://codingcops.com/react-swipeable/) - Community
+
   usage examples (WebSearch only, official docs preferred)
 
 ## Metadata
@@ -926,14 +1101,23 @@ Things that couldn't be fully resolved:
 **Confidence breakdown:**
 
 - Standard stack: HIGH - All libraries verified via official documentation and
+
   npm registry
+
 - Architecture: HIGH - Patterns from official Next.js documentation and
+
   established conventions
+
 - Pitfalls: HIGH - Based on official docs warnings and verified community
+
   patterns
+
 - Mobile gestures: MEDIUM - react-swipeable is well-documented but implementation
+
   details need testing
+
 - Performance budgets: LOW - Project-specific thresholds require bundle analysis
+
   to determine
 
 **Research date:** 2026-01-26

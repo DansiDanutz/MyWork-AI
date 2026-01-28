@@ -53,7 +53,7 @@ class YouTubeScraper:
         db: Session,
         queries: List[str] = None,
         max_results_per_query: int = 20,
-        published_after_days: int = 7
+        published_after_days: int = 7,
     ) -> List[Dict]:
         """
         Scrape AI-related videos from YouTube
@@ -71,10 +71,7 @@ class YouTubeScraper:
         all_videos = []
 
         # Log scraper start
-        log = ScraperLog(
-            scraper_name="youtube",
-            status="running"
-        )
+        log = ScraperLog(scraper_name="youtube", status="running")
         db.add(log)
         db.commit()
 
@@ -117,10 +114,7 @@ class YouTubeScraper:
             raise
 
     async def _scrape_with_apify(
-        self,
-        queries: List[str],
-        max_results: int,
-        published_after_days: int
+        self, queries: List[str], max_results: int, published_after_days: int
     ) -> List[Dict]:
         """Scrape using Apify YouTube Scraper actor"""
         all_videos = []
@@ -140,15 +134,16 @@ class YouTubeScraper:
             try:
                 # Run with timeout
                 run = self.client.actor("streamers/youtube-scraper").call(
-                    run_input=run_input,
-                    timeout_secs=APIFY_TIMEOUT
+                    run_input=run_input, timeout_secs=APIFY_TIMEOUT
                 )
 
                 # Check run status
                 if run.get("status") != "SUCCEEDED":
                     logger.warning(f"Apify run status: {run.get('status')} for '{query}'")
                     if run.get("status") == "FAILED":
-                        logger.error(f"Apify run failed: {run.get('statusMessage', 'Unknown error')}")
+                        logger.error(
+                            f"Apify run failed: {run.get('statusMessage', 'Unknown error')}"
+                        )
                         continue
 
                 # Fetch results
@@ -167,14 +162,13 @@ class YouTubeScraper:
         return all_videos
 
     async def _scrape_with_youtube_api(
-        self,
-        queries: List[str],
-        max_results: int,
-        published_after_days: int
+        self, queries: List[str], max_results: int, published_after_days: int
     ) -> List[Dict]:
         """Fallback: Scrape using YouTube Data API"""
         all_videos = []
-        published_after = (datetime.utcnow() - timedelta(days=published_after_days)).isoformat() + "Z"
+        published_after = (
+            datetime.utcnow() - timedelta(days=published_after_days)
+        ).isoformat() + "Z"
 
         async with httpx.AsyncClient(timeout=REQUEST_TIMEOUT) as client:
             for query in queries:
@@ -190,7 +184,7 @@ class YouTubeScraper:
                         "maxResults": max_results,
                         "order": "rating",
                         "publishedAfter": published_after,
-                        "key": self.youtube_api_key
+                        "key": self.youtube_api_key,
                     }
 
                     response = await client.get(search_url, params=params)
@@ -205,7 +199,7 @@ class YouTubeScraper:
                         stats_params = {
                             "part": "statistics,contentDetails,snippet",
                             "id": ",".join(video_ids),
-                            "key": self.youtube_api_key
+                            "key": self.youtube_api_key,
                         }
 
                         stats_response = await client.get(stats_url, params=stats_params)
@@ -275,9 +269,11 @@ class YouTubeScraper:
         """Save video to database, skip if already exists"""
         try:
             # Check if video already exists
-            existing = db.query(YouTubeVideo).filter(
-                YouTubeVideo.video_id == video_data["video_id"]
-            ).first()
+            existing = (
+                db.query(YouTubeVideo)
+                .filter(YouTubeVideo.video_id == video_data["video_id"])
+                .first()
+            )
 
             if existing:
                 # Update stats
@@ -323,18 +319,15 @@ class YouTubeScraper:
             return False
 
     def get_top_videos(
-        self,
-        db: Session,
-        limit: int = 20,
-        min_views: int = 1000,
-        days: int = 7
+        self, db: Session, limit: int = 20, min_views: int = 1000, days: int = 7
     ) -> List[YouTubeVideo]:
         """Get top rated AI videos from database"""
         cutoff_date = datetime.utcnow() - timedelta(days=days)
 
-        return db.query(YouTubeVideo).filter(
-            YouTubeVideo.view_count >= min_views,
-            YouTubeVideo.scraped_at >= cutoff_date
-        ).order_by(
-            YouTubeVideo.quality_score.desc()
-        ).limit(limit).all()
+        return (
+            db.query(YouTubeVideo)
+            .filter(YouTubeVideo.view_count >= min_views, YouTubeVideo.scraped_at >= cutoff_date)
+            .order_by(YouTubeVideo.quality_score.desc())
+            .limit(limit)
+            .all()
+        )

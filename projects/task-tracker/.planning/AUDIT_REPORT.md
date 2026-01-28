@@ -291,7 +291,9 @@ performance optimization, and mobile responsiveness.
 ### Database & Infrastructure
 
 - **PostgreSQL over SQLite**: Chosen for full-text search capabilities and
+
   production scaling
+
 - **Database sessions over JWT**: Enhanced security and revocation capability
 - **Prisma 7**: Latest version for connection pooling and performance
 - **TUS protocol**: Resumable uploads for files >5MB
@@ -309,6 +311,7 @@ performance optimization, and mobile responsiveness.
 - **3-second debounce**: Optimal balance for auto-save features
 - **Atomic commits**: Granular version control for better rollback capability
 - **Wave-based execution**: Parallel plan execution for maximum development
+
   velocity
 
 ---

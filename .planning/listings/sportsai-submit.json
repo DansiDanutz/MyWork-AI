@@ -7,7 +7,14 @@
   "tags": ["sports", "betting", "arbitrage", "trading", "ai", "real-time"],
   "price": 399,
   "license_type": "MIT",
-  "tech_stack": ["React Native", "TypeScript", "Node.js", "NestJS", "PostgreSQL", "Redis"],
+  "tech_stack": [
+    "React Native",
+    "TypeScript",
+    "Node.js",
+    "NestJS",
+    "PostgreSQL",
+    "Redis"
+  ],
   "framework": "React Native + NestJS",
   "requirements": "Node.js 20+, PostgreSQL 16+, Redis, API keys for The Odds API",
   "demo_url": "https://sports-ai-one.vercel.app",

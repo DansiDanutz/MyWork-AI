@@ -7,28 +7,32 @@ requires:
 
   - phase: 02-01
 
-```
+```yaml
 provides: Auth.js infrastructure with GitHub OAuth and Prisma adapter
 
-```
+```yaml
+
   - phase: 02-02
 
-```
+```yaml
 provides: Authorization layer with DAL and middleware
 
 ```
+
   - phase: 02-03
 
-```
+```yaml
 provides: Login page, homepage CTA, and welcome/onboarding page
 
-```
+```yaml
+
   - phase: 02-04
 
-```
+```yaml
 provides: Profile settings with auto-save and user menu
 
 ```
+
 provides:
 
   - Dashboard placeholder page with personalized greeting and stats cards
@@ -42,10 +46,12 @@ tech-stack:
 key-files:
   created:
 
-```
+```markdown
+
 - src/app/(app)/dashboard/page.tsx
 
-```
+```yaml
+
   modified: []
 key-decisions: []
 patterns-established:
@@ -102,6 +108,7 @@ Each task was committed atomically:
 **Created:**
 
 - `src/app/(app)/dashboard/page.tsx` - Dashboard page with personalized greeting,
+
   placeholder stats cards, and getting started section
 
 **Modified (auto-fixes):**
@@ -122,9 +129,13 @@ None - plan executed as specified with standard patterns from previous plans.
 
 - **Found during:** Task 1 (Post-task TypeScript verification)
 - **Issue:** Generic constraint was too permissive, allowing incorrect usage
+
   patterns
+
 - **Fix:** Refined constraint from `any[]` to proper generic bounds for better
+
   type safety
+
 - **Files modified:** src/shared/hooks/useDebounce.ts
 - **Verification:** `npx tsc --noEmit` passes with stricter types
 - **Committed in:** 7816388
@@ -133,7 +144,9 @@ None - plan executed as specified with standard patterns from previous plans.
 
 - **Found during:** Task 1 (Post-task TypeScript verification)
 - **Issue:** Prisma JSON type requires explicit casting for custom property
+
   structures
+
 - **Fix:** Added proper type assertions for analytics event properties
 - **Files modified:** src/shared/lib/analytics/tracker.ts
 - **Verification:** TypeScript compilation succeeds
@@ -177,7 +190,7 @@ designed.
    AUTH_SECRET=generate_with_npx_auth_secret
    DATABASE_URL=postgresql://dansidanutz@localhost:5432/tasktracker
 
-   ```
+```yaml
 
 3. **Generate AUTH_SECRET:**
 
@@ -310,27 +323,40 @@ export default async function DashboardPage() {
   return (
 
 ```
+
 <div>
   <h1>Welcome back, {user?.name}!</h1>
 
   {/* Placeholder stats */}
   <div className="grid gap-6 md:grid-cols-3">
-    <StatsCard title="Tasks" value={0} description="Total tasks" />
-    {/* More placeholder cards */}
+
+```html
+
+<StatsCard title="Tasks" value={0} description="Total tasks" />
+{/* More placeholder cards */}
+
+```
+
   </div>
 
   {/* Getting started guide */}
   <div className="mt-8 bg-blue-50 p-6 rounded-lg">
-    <h2>Getting Started</h2>
-    <p>Task management features coming in Phase 3.</p>
+
+```html
+
+<h2>Getting Started</h2>
+<p>Task management features coming in Phase 3.</p>
+
+```
+
   </div>
 </div>
 
-```
+```text
   )
 }
 
-```
+```yaml
 
 **When to use:**
 

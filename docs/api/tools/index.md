@@ -49,15 +49,18 @@ from tools.brain import search_knowledge, add_pattern
 results = search_knowledge("authentication patterns")
 for pattern in results:
 
-```
+```python
+
 print(f"📋 {pattern.title}: {pattern.description}")
 
-```
+```markdown
+
 # Add new knowledge
 
 add_pattern(
 
-```
+```text
+
 title="JWT Best Practice",
 description="Always validate tokens server-side",
 pattern_type="security",
@@ -77,19 +80,20 @@ from tools.scaffold import create_project
 
 project = create_project(
 
-```
+```text
+
 name="my-api",
 template="fastapi",
 path="./projects",
 gsd_enabled=True,
 autocoder_ready=True
 
-```
+```python
 )
 
 print(f"✅ Created {project.path}")
 
-```
+```markdown
 
 ### Check System Health
 
@@ -103,19 +107,23 @@ results = run_diagnostics()
 for check in results.checks:
 
 ```
+
 status = "✅" if check.passed else "❌"
 print(f"{status} {check.name}: {check.message}")
 
-```
+```markdown
+
 # Auto-fix issues
 
 if results.has_errors:
 
-```
+```python
+
 fix_results = fix_issues(results.errors)
 print(f"🔧 Fixed {fix_results.fixed_count} issues")
 
-```
+```markdown
+
 ```markdown
 
 ### Control Autocoder
@@ -132,23 +140,26 @@ client = AutocoderClient("http://127.0.0.1:8888")
 session = client.start_project(
 
 ```
+
 project_name="my-app",
 concurrency=3,
 model="claude-opus-4-5-20251101"
 
-```
+```markdown
+
 )
 
 # Monitor progress
 
 while not session.is_complete():
 
-```
+```python
+
 progress = client.get_progress(session.id)
 print(f"Progress: {progress.percentage}% - {progress.current_task}")
 time.sleep(30)
 
-```
+```text
 
 ```
 
@@ -161,13 +172,15 @@ from tools.exceptions import MyWorkError, ProjectNotFoundError
 
 try:
 
-```
+```text
+
 result = some_framework_operation()
 
-```
+```yaml
 except ProjectNotFoundError as e:
 
-```
+```python
+
 print(f"❌ Project error: {e.message}")
 
 # Handle missing project
@@ -175,20 +188,23 @@ print(f"❌ Project error: {e.message}")
 ```
 except MyWorkError as e:
 
-```
+```python
+
 print(f"⚠️ Framework error: {e.message}")
 
 # Handle framework-specific issues
 
-```
+```yaml
 except Exception as e:
 
-```
+```python
+
 print(f"🔥 Unexpected error: {e}")
 
 # Handle unexpected issues
 
 ```
+
 ```markdown
 
 ### Configuration Management
@@ -207,7 +223,7 @@ print(f"Autocoder enabled: {config.autocoder.enabled}")
 brain_enabled = get_framework_setting("brain.auto_learning", default=True)
 update_check = get_framework_setting("updates.auto_check", default=False)
 
-```
+```markdown
 
 ### Logging & Output
 
@@ -225,25 +241,33 @@ log.error("❌ Failed to initialize GSD")
 
 with log.progress("Scanning modules...") as progress:
 
-```
+```yaml
+
 for i, module in enumerate(modules):
-    progress.update(f"Processing {module.name}")
-
-    # Do work
-
-    progress.advance()
 
 ```
+progress.update(f"Processing {module.name}")
+
+# Do work
+
+progress.advance()
+
+```markdown
+
+```markdown
+
 # Rich output formatting
 
 log.table("Project Status", [
 
 ```
+
 ["Name", "Status", "Progress"],
 ["my-app", "Building", "73%"],
 ["api-server", "Complete", "100%"]
 
-```
+```markdown
+
 ])
 
 ```markdown
@@ -266,12 +290,13 @@ from tools.framework import initialize_framework
 
 framework = initialize_framework(
 
-```
+```python
+
 root_path=os.getcwd(),
 auto_update=True,
 brain_learning=True
 
-```
+```python
 )
 
 print(f"🚀 Framework initialized: {framework.version}")
@@ -288,19 +313,22 @@ from tools.config_manager import validate_environment
 
 required_vars = [
 
-```
+```text
+
 'MYWORK_ROOT',        # Framework root directory
 'ANTHROPIC_API_KEY',  # For AI operations
 'GITHUB_TOKEN',       # For git operations
 
-```
+```markdown
+
 ]
 
 # Optional environment variables
 
 optional_vars = {
 
-```
+```yaml
+
 'OPENAI_API_KEY': 'Alternative AI provider',
 'VERCEL_TOKEN': 'For deployment operations',
 'N8N_API_KEY': 'For n8n workflow management'
@@ -313,11 +341,12 @@ optional_vars = {
 env_status = validate_environment(required_vars, optional_vars)
 if not env_status.is_valid:
 
-```
+```python
+
 print(f"❌ Missing: {', '.join(env_status.missing_required)}")
 sys.exit(1)
 
-```
+```python
 print("✅ Environment validated")
 
 ```markdown
@@ -329,7 +358,8 @@ All tools use consistent data models for type safety and clarity:
 ```python
 from tools.models import (
 
-```
+```text
+
 Project, ProjectConfig, ProjectStatus,
 KnowledgePattern, BrainEntry,
 HealthCheck, DiagnosticResult,
@@ -342,25 +372,33 @@ AutocoderSession, ProgressUpdate
 
 project = Project(
 
-```
+```text
+
 name="my-app",
 path="./projects/my-app",
 template="fastapi",
 config=ProjectConfig(
-    gsd_enabled=True,
-    autocoder_ready=True,
-    brain_learning=True
+
+```text
+gsd_enabled=True,
+autocoder_ready=True,
+brain_learning=True
+
+```
+
 ),
 status=ProjectStatus.ACTIVE
 
-```
+```markdown
+
 )
 
 # Knowledge pattern
 
 pattern = KnowledgePattern(
 
-```
+```javascript
+
 title="FastAPI Auth Middleware",
 description="JWT validation with session fallback",
 pattern_type="security",
@@ -372,7 +410,7 @@ success_rate=1.0
 ```
 )
 
-```
+```markdown
 
 ## 🧪 Testing
 
@@ -385,25 +423,40 @@ from tools.test_utils import mock_knowledge_base
 
 class TestBrainSearch(unittest.TestCase):
 
-```
+```python
+
 def setUp(self):
-    self.mock_brain = mock_knowledge_base([
-        {"title": "Auth Pattern", "type": "security"},
-        {"title": "React Hook", "type": "frontend"}
-    ])
+
+```
+self.mock_brain = mock_knowledge_base([
+
+```
+{"title": "Auth Pattern", "type": "security"},
+{"title": "React Hook", "type": "frontend"}
+
+```
+])
+
+```python
 
 def test_search_by_type(self):
-    results = search_knowledge("auth", pattern_type="security")
-    self.assertEqual(len(results), 1)
-    self.assertEqual(results[0].title, "Auth Pattern")
 
 ```
+results = search_knowledge("auth", pattern_type="security")
+self.assertEqual(len(results), 1)
+self.assertEqual(results[0].title, "Auth Pattern")
+
+```python
+
+```python
 if __name__ == '__main__':
 
 ```
+
 unittest.main()
 
-```
+```markdown
+
 ```markdown
 
 ### Integration Testing
@@ -413,28 +466,33 @@ from tools.integration_test import IntegrationTest
 
 class TestProjectCreation(IntegrationTest):
 
-```
+```python
+
 def test_full_project_lifecycle(self):
 
-    # Create project
-
-    project = self.create_test_project("test-app", "fastapi")
-    self.assertTrue(project.exists())
-
-    # Initialize GSD
-
-    gsd_result = self.run_gsd_init(project)
-    self.assertTrue(gsd_result.success)
-
-    # Verify structure
-
-    self.assert_project_structure(project, "fastapi")
-
-    # Cleanup
-
-    self.cleanup_project(project)
-
 ```
+
+# Create project
+
+project = self.create_test_project("test-app", "fastapi")
+self.assertTrue(project.exists())
+
+# Initialize GSD
+
+gsd_result = self.run_gsd_init(project)
+self.assertTrue(gsd_result.success)
+
+# Verify structure
+
+self.assert_project_structure(project, "fastapi")
+
+# Cleanup
+
+self.cleanup_project(project)
+
+```text
+
+```text
 
 ```
 
@@ -449,26 +507,30 @@ from tools.gsd_integration import execute_gsd_command
 
 result = execute_gsd_command(
 
-```
+```yaml
+
 skill="gsd:plan-phase",
 args="3",
 project_path="./projects/my-app"
 
-```
+```yaml
 )
 
 if result.success:
 
-```
+```python
+
 print(f"✅ Phase 3 planned: {result.plans_created} plans")
 
 ```
 else:
 
-```
+```python
+
 print(f"❌ Planning failed: {result.error}")
 
-```
+```markdown
+
 ```markdown
 
 ### With n8n Workflows
@@ -480,12 +542,18 @@ from tools.n8n_integration import create_workflow_from_template
 
 workflow = create_workflow_from_template(
 
-```
+```yaml
+
 template_id=1234,  # From n8n.io
 name="GitHub Webhook Handler",
 environment_vars={
-    "WEBHOOK_SECRET": "example-secret",
-    "GITHUB_TOKEN": "github_token_example"
+
+```
+"WEBHOOK_SECRET": "example-secret",
+"GITHUB_TOKEN": "github_token_example"
+
+```text
+
 }
 
 ```
@@ -493,7 +561,7 @@ environment_vars={
 
 print(f"🔗 Workflow created: {workflow.url}")
 
-```
+```markdown
 
 ## 📚 Advanced Usage
 
@@ -505,38 +573,47 @@ from tools.decorators import requires_project, logs_execution
 
 class CustomTool(BaseTool):
 
-```
+```python
+
 """Custom tool for specialized operations."""
 
 @requires_project
 @logs_execution
 def custom_operation(self, project_path: str, options: dict):
-    """Perform custom operation on project."""
-
-    # Load project
-
-    project = self.load_project(project_path)
-
-    # Validate options
-
-    self.validate_options(options, required=['param1'])
-
-    # Perform work
-
-    result = self.do_work(project, options)
-
-    # Update brain if successful
-
-    if result.success:
-        self.brain.add_pattern(
-            title=f"Custom operation on {project.name}",
-            pattern=result.pattern,
-            confidence=0.8
-        )
-
-    return result
 
 ```
+"""Perform custom operation on project."""
+
+# Load project
+
+project = self.load_project(project_path)
+
+# Validate options
+
+self.validate_options(options, required=['param1'])
+
+# Perform work
+
+result = self.do_work(project, options)
+
+# Update brain if successful
+
+if result.success:
+
+```
+self.brain.add_pattern(
+    title=f"Custom operation on {project.name}",
+    pattern=result.pattern,
+    confidence=0.8
+)
+
+```
+return result
+
+```markdown
+
+```markdown
+
 # Usage
 
 tool = CustomTool()

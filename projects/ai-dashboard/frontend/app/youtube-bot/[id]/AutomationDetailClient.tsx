@@ -1,13 +1,26 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
 import {
-  LuRefreshCw, LuArrowLeft, LuSave, LuCheck, LuPlay, LuUpload,
-  LuPencil, LuEye, LuClock, LuCircleAlert
-} from 'react-icons/lu';
-import { getAutomation, updateAutomation, approveAutomation, Automation } from '@/lib/api';
+  LuRefreshCw,
+  LuArrowLeft,
+  LuSave,
+  LuCheck,
+  LuPlay,
+  LuUpload,
+  LuPencil,
+  LuEye,
+  LuClock,
+  LuCircleAlert,
+} from "react-icons/lu";
+import {
+  getAutomation,
+  updateAutomation,
+  approveAutomation,
+  Automation,
+} from "@/lib/api";
 
 export default function AutomationDetailClient() {
   const params = useParams();
@@ -21,10 +34,10 @@ export default function AutomationDetailClient() {
   const [success, setSuccess] = useState<string | null>(null);
 
   // Editable fields
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [script, setScript] = useState('');
-  const [tags, setTags] = useState('');
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [script, setScript] = useState("");
+  const [tags, setTags] = useState("");
 
   useEffect(() => {
     fetchAutomation();
@@ -36,12 +49,12 @@ export default function AutomationDetailClient() {
       const data = await getAutomation(automationId);
       setAutomation(data);
       setTitle(data.video_title);
-      setDescription(data.video_description || '');
-      setScript(data.video_script || '');
-      setTags(data.video_tags?.join(', ') || '');
+      setDescription(data.video_description || "");
+      setScript(data.video_script || "");
+      setTags(data.video_tags?.join(", ") || "");
       setError(null);
     } catch (err) {
-      setError('Failed to load automation');
+      setError("Failed to load automation");
       console.error(err);
     } finally {
       setLoading(false);
@@ -65,7 +78,10 @@ export default function AutomationDetailClient() {
         (updates as any).script = script;
       }
 
-      const tagArray = tags.split(',').map(t => t.trim()).filter(t => t);
+      const tagArray = tags
+        .split(",")
+        .map((t) => t.trim())
+        .filter((t) => t);
       if (JSON.stringify(tagArray) !== JSON.stringify(automation?.video_tags)) {
         (updates as any).tags = tagArray;
       }
@@ -73,10 +89,10 @@ export default function AutomationDetailClient() {
       if (Object.keys(updates).length > 0) {
         const updated = await updateAutomation(automationId, updates);
         setAutomation(updated);
-        setSuccess('Changes saved successfully!');
+        setSuccess("Changes saved successfully!");
       }
     } catch (err) {
-      setError('Failed to save changes');
+      setError("Failed to save changes");
       console.error(err);
     } finally {
       setSaving(false);
@@ -88,10 +104,12 @@ export default function AutomationDetailClient() {
       setApproving(true);
       setError(null);
       const result = await approveAutomation(automationId);
-      setSuccess(`Video approved! ${result.youtube_url ? `URL: ${result.youtube_url}` : ''}`);
+      setSuccess(
+        `Video approved! ${result.youtube_url ? `URL: ${result.youtube_url}` : ""}`,
+      );
       await fetchAutomation();
     } catch (err) {
-      setError('Failed to approve video');
+      setError("Failed to approve video");
       console.error(err);
     } finally {
       setApproving(false);
@@ -99,14 +117,45 @@ export default function AutomationDetailClient() {
   };
 
   const getStatusInfo = (status: string) => {
-    const info: Record<string, { color: string; icon: React.ElementType; text: string }> = {
-      draft: { color: 'bg-gray-100 text-gray-700', icon: LuPencil, text: 'Draft - Edit and review' },
-      generating: { color: 'bg-yellow-100 text-yellow-700', icon: LuClock, text: 'Video is being generated...' },
-      pending_review: { color: 'bg-blue-100 text-blue-700', icon: LuEye, text: 'Ready for review' },
-      approved: { color: 'bg-green-100 text-green-700', icon: LuCheck, text: 'Approved' },
-      ready_for_upload: { color: 'bg-purple-100 text-purple-700', icon: LuUpload, text: 'Ready for YouTube upload' },
-      uploaded: { color: 'bg-emerald-100 text-emerald-700', icon: LuCheck, text: 'Uploaded to YouTube!' },
-      failed: { color: 'bg-red-100 text-red-700', icon: LuCircleAlert, text: 'Generation failed' },
+    const info: Record<
+      string,
+      { color: string; icon: React.ElementType; text: string }
+    > = {
+      draft: {
+        color: "bg-gray-100 text-gray-700",
+        icon: LuPencil,
+        text: "Draft - Edit and review",
+      },
+      generating: {
+        color: "bg-yellow-100 text-yellow-700",
+        icon: LuClock,
+        text: "Video is being generated...",
+      },
+      pending_review: {
+        color: "bg-blue-100 text-blue-700",
+        icon: LuEye,
+        text: "Ready for review",
+      },
+      approved: {
+        color: "bg-green-100 text-green-700",
+        icon: LuCheck,
+        text: "Approved",
+      },
+      ready_for_upload: {
+        color: "bg-purple-100 text-purple-700",
+        icon: LuUpload,
+        text: "Ready for YouTube upload",
+      },
+      uploaded: {
+        color: "bg-emerald-100 text-emerald-700",
+        icon: LuCheck,
+        text: "Uploaded to YouTube!",
+      },
+      failed: {
+        color: "bg-red-100 text-red-700",
+        icon: LuCircleAlert,
+        text: "Generation failed",
+      },
     };
     return info[status] || info.draft;
   };
@@ -124,7 +173,10 @@ export default function AutomationDetailClient() {
       <div className="text-center py-12">
         <LuCircleAlert className="w-12 h-12 mx-auto mb-4 text-red-500" />
         <p className="text-gray-500">Automation not found</p>
-        <Link href="/youtube-bot" className="text-blue-600 hover:underline mt-4 inline-block">
+        <Link
+          href="/youtube-bot"
+          className="text-blue-600 hover:underline mt-4 inline-block"
+        >
           Back to YouTube Bot
         </Link>
       </div>
@@ -152,7 +204,9 @@ export default function AutomationDetailClient() {
         </div>
 
         <div className="flex items-center gap-3">
-          <span className={`flex items-center gap-2 px-3 py-2 rounded-lg ${statusInfo.color}`}>
+          <span
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg ${statusInfo.color}`}
+          >
             <StatusIcon className="w-4 h-4" />
             {statusInfo.text}
           </span>
@@ -249,10 +303,10 @@ export default function AutomationDetailClient() {
                 ) : (
                   <LuSave className="w-4 h-4" />
                 )}
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? "Saving..." : "Save Changes"}
               </button>
 
-              {automation.status !== 'uploaded' && (
+              {automation.status !== "uploaded" && (
                 <button
                   onClick={handleApprove}
                   disabled={approving}
@@ -263,7 +317,7 @@ export default function AutomationDetailClient() {
                   ) : (
                     <LuUpload className="w-4 h-4" />
                   )}
-                  {approving ? 'Approving...' : 'Approve & Upload'}
+                  {approving ? "Approving..." : "Approve & Upload"}
                 </button>
               )}
 

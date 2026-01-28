@@ -29,6 +29,7 @@ class TestGetMyworkRoot:
 
         try:
             from config import get_mywork_root
+
             result = get_mywork_root()
 
             # Should return a valid Path
@@ -46,6 +47,7 @@ class TestPathConstants:
         # Force reimport with new MYWORK_ROOT
         import importlib
         import config
+
         importlib.reload(config)
 
         assert config.TOOLS_DIR == temp_mywork_root / "tools"
@@ -54,6 +56,7 @@ class TestPathConstants:
         """PROJECTS_DIR should be correct."""
         import importlib
         import config
+
         importlib.reload(config)
 
         assert config.PROJECTS_DIR == temp_mywork_root / "projects"
@@ -62,6 +65,7 @@ class TestPathConstants:
         """PLANNING_DIR should be correct."""
         import importlib
         import config
+
         importlib.reload(config)
 
         assert config.PLANNING_DIR == temp_mywork_root / ".planning"
@@ -74,10 +78,12 @@ class TestEnsureDirectories:
         """Should create all required directories."""
         import importlib
         import config
+
         importlib.reload(config)
 
         # Remove directories to test creation
         import shutil
+
         shutil.rmtree(temp_mywork_root / "projects", ignore_errors=True)
         shutil.rmtree(temp_mywork_root / ".planning", ignore_errors=True)
         shutil.rmtree(temp_mywork_root / ".tmp", ignore_errors=True)
@@ -96,6 +102,7 @@ class TestHelperFunctions:
         """Should return correct project path."""
         import importlib
         import config
+
         importlib.reload(config)
 
         result = config.get_project_path("my-project")
@@ -106,6 +113,7 @@ class TestHelperFunctions:
         """Should return empty list when no projects exist."""
         import importlib
         import config
+
         importlib.reload(config)
 
         result = config.list_projects()
@@ -116,6 +124,7 @@ class TestHelperFunctions:
         """Should return list of project paths."""
         import importlib
         import config
+
         importlib.reload(config)
 
         result = config.list_projects()
@@ -127,6 +136,7 @@ class TestHelperFunctions:
         """Should exclude hidden and template directories."""
         import importlib
         import config
+
         importlib.reload(config)
 
         # Create hidden and template directories

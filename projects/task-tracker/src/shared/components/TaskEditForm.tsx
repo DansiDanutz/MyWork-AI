@@ -1,60 +1,67 @@
-'use client'
+"use client";
 
-import { useActionState, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { updateTask, deleteTask } from '@/app/actions/tasks'
+import { useActionState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { updateTask, deleteTask } from "@/app/actions/tasks";
 
 type Task = {
-  id: string
-  title: string
-  description: string | null
-  status: 'TODO' | 'IN_PROGRESS' | 'DONE'
-}
+  id: string;
+  title: string;
+  description: string | null;
+  status: "TODO" | "IN_PROGRESS" | "DONE";
+};
 
 type TaskEditFormProps = {
-  task: Task
-}
+  task: Task;
+};
 
 type FormState = {
-  success: boolean
-  error?: string
-} | null
+  success: boolean;
+  error?: string;
+} | null;
 
 export function TaskEditForm({ task }: TaskEditFormProps) {
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition()
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   // Create a bound action that includes taskId
-  const updateTaskWithId = async (prevState: FormState, formData: FormData): Promise<FormState> => {
-    return updateTask(task.id, formData)
-  }
+  const updateTaskWithId = async (
+    prevState: FormState,
+    formData: FormData,
+  ): Promise<FormState> => {
+    return updateTask(task.id, formData);
+  };
 
   const [state, formAction, pending] = useActionState<FormState, FormData>(
     updateTaskWithId,
-    null
-  )
+    null,
+  );
 
   // Handle successful update - redirect to tasks list
   if (state?.success) {
-    router.push('/tasks')
+    router.push("/tasks");
   }
 
   // Handle delete
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
-      return
+    if (
+      !confirm(
+        "Are you sure you want to delete this task? This action cannot be undone.",
+      )
+    ) {
+      return;
     }
 
     startTransition(async () => {
-      const result = await deleteTask(task.id)
+      const result = await deleteTask(task.id);
       if (result.success) {
-        router.push('/tasks')
+        router.push("/tasks");
       } else {
-        alert(`Failed to delete task: ${result.error}`)
+        alert(`Failed to delete task: ${result.error}`);
       }
-    })
-  }
+    });
+  };
 
   return (
     <form action={formAction} className="space-y-6 max-w-2xl">
@@ -81,7 +88,7 @@ export function TaskEditForm({ task }: TaskEditFormProps) {
             bg-white dark:bg-gray-800
             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
             disabled:opacity-50 disabled:cursor-not-allowed
-            ${state && !state.success ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}
+            ${state && !state.success ? "border-red-500" : "border-gray-300 dark:border-gray-600"}
           `}
           placeholder="e.g., Complete project proposal"
         />
@@ -105,7 +112,7 @@ export function TaskEditForm({ task }: TaskEditFormProps) {
           name="description"
           rows={4}
           maxLength={2000}
-          defaultValue={task.description || ''}
+          defaultValue={task.description || ""}
           disabled={pending || isPending}
           className="
             w-full px-3 py-2
@@ -164,7 +171,7 @@ export function TaskEditForm({ task }: TaskEditFormProps) {
             transition-colors
           "
         >
-          {pending ? 'Saving...' : 'Save Changes'}
+          {pending ? "Saving..." : "Save Changes"}
         </button>
 
         {/* Cancel button */}
@@ -202,9 +209,9 @@ export function TaskEditForm({ task }: TaskEditFormProps) {
             transition-colors
           "
         >
-          {isPending ? 'Deleting...' : 'Delete Task'}
+          {isPending ? "Deleting..." : "Delete Task"}
         </button>
       </div>
     </form>
-  )
+  );
 }

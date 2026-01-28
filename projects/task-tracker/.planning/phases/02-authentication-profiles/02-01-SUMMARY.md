@@ -10,20 +10,22 @@ requires:
 
   - phase: 01-foundation-setup
 
-```
+```yaml
 provides: Next.js app, Prisma with PostgreSQL, modular architecture
 
-```
+```yaml
+
 provides:
 
   - Auth.js v5 with GitHub OAuth provider configured
   - Database models for User, Account, Session, VerificationToken
   - Auth API routes at /api/auth/* (signin, callback, signout, session, csrf,
 
-```
+```text
 providers)
 
 ```
+
   - Database-backed sessions with 24h expiry and 1h refresh
   - Type-safe session with user.id access
 
@@ -39,41 +41,48 @@ tech-stack:
 key-files:
   created:
 
-```
+```markdown
+
 - src/shared/lib/auth.ts
 - src/app/api/auth/[...nextauth]/route.ts
 - src/shared/types/next-auth.d.ts
 - prisma/migrations/20260124210303_add_auth_models/migration.sql
 
-```
+```yaml
+
   modified:
 
-```
+```markdown
+
 - prisma/schema.prisma
 - package.json
 - .env.example
 
 ```
+
 key-decisions:
 
   - "Use database sessions instead of JWT for better security and revocation
 
-```
+```text
 capability"
 
-```
+```markdown
+
   - "Configure GitHub OAuth with repo read scope for future GitHub integration
 
-```
+```text
 features"
 
 ```
+
   - "24-hour session expiry with 1-hour silent refresh for balance between
 
-```
+```text
 security and UX"
 
-```
+```markdown
+
   - "Redirect first-time users to /welcome for onboarding flow"
 
 patterns-established:
@@ -82,10 +91,11 @@ patterns-established:
   - "Type extension pattern for next-auth Session interface"
   - "Environment variable templates in .env.example with clear generation
 
-```
+```text
 instructions"
 
 ```
+
 # Metrics
 
 duration: 8min
@@ -119,37 +129,59 @@ Each task was committed atomically:
 
 1. **Task 1: Update Prisma Schema with Auth.js Models** - `58943b0` (feat)
 2. **Task 2: Install Auth.js Dependencies and Create Configuration** - `3cdbb93`
+
 (feat)
+
 3. **Task 3: Create Auth API Route Handler** - `bcdabe2` (feat)
 
 ## Files Created/Modified
 
 - `prisma/schema.prisma` - Added User, Account, Session, VerificationToken models
+
   with custom profile fields (bio, customAvatar)
+
 - `prisma/migrations/20260124210303_add_auth_models/migration.sql` - Database
+
   migration for auth tables
+
 - `src/shared/lib/auth.ts` - Auth.js configuration with GitHub provider, database
+
   adapter, session callbacks
+
 - `src/app/api/auth/[...nextauth]/route.ts` - Catch-all route handler for all
+
   Auth.js endpoints
+
 - `src/shared/types/next-auth.d.ts` - TypeScript declaration extending Session
+
   with user.id
+
 - `package.json` - Added next-auth@5.0.0-beta.30 and @auth/prisma-adapter@2.11.1
 - `.env.example` - Added AUTH_GITHUB_ID, AUTH_GITHUB_SECRET, AUTH_SECRET
+
   templates
 
 ## Decisions Made
 
 - **Database sessions over JWT:** Chose database-backed sessions for better
+
   security (revocation capability) and server-side control per RESEARCH.md
   findings
+
 - **GitHub OAuth scopes:** Included `read:user user:email repo` for future GitHub
+
   integration features (task tracking from repo issues)
+
 - **Session timing:** 24-hour expiry with 1-hour silent refresh balances security
+
   with user experience
+
 - **First-time user flow:** Redirect to /welcome for onboarding instead of
+
   default page
+
 - **Text column for tokens:** Used @db.Text for GitHub token fields to handle
+
   long tokens that exceed varchar(191) limit
 
 ## Deviations from Plan
@@ -161,12 +193,19 @@ None - plan executed exactly as written.
 **1. Shell environment NODE_ENV interference**
 
 - **Issue:** Build failed with "non-standard NODE_ENV value" error due to global
+
   shell environment variable
+
 - **Solution:** Identified that NODE_ENV was set in shell environment (not
+
   project). Build succeeds when unsetting NODE_ENV before build command
+
 - **Impact:** None on production - Next.js manages NODE_ENV automatically in
+
   deployment environments
+
 - **Note:** This is a local development environment quirk, not a code issue.
+
   Documented for awareness.
 
 ## User Setup Required
@@ -187,7 +226,7 @@ authentication will work:
    AUTH_GITHUB_SECRET=your_github_client_secret
    AUTH_SECRET=generate_with_npx_auth_secret
 
-   ```
+```yaml
 
 3. **Generate AUTH_SECRET:**
 
@@ -204,7 +243,7 @@ authentication will work:
    curl http://localhost:3000/api/auth/providers
    curl http://localhost:3000/api/auth/csrf
 
-   ```
+```markdown
 
 ## Next Phase Readiness
 
@@ -220,7 +259,9 @@ authentication will work:
 **Pending work:**
 
 - User must configure GitHub OAuth app and environment variables before testing
+
   sign-in flow
+
 - Login/signup UI pages needed (Plan 02)
 - Profile management UI needed (Plan 03)
 

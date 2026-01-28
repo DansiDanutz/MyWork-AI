@@ -29,6 +29,7 @@ file attachments are separate phases.
 - Card-based layout with shadow and padding for modern feel
 - Tasks grouped by status (Todo, In Progress, Done sections)
 - Empty state shows friendly illustration with "No tasks yet! Create your first
+
   task to get started"
 
 ### Claude's Discretion

@@ -1,24 +1,24 @@
-'use client'
+"use client";
 
-import { XMarkIcon } from '@heroicons/react/24/outline'
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 type TagBadgeProps = {
-  name: string
-  color?: string
-  onRemove?: () => void
-  size?: 'sm' | 'md'
-}
+  name: string;
+  color?: string;
+  onRemove?: () => void;
+  size?: "sm" | "md";
+};
 
 export function TagBadge({
   name,
-  color = '#6b7280',
+  color = "#6b7280",
   onRemove,
-  size = 'sm',
+  size = "sm",
 }: TagBadgeProps) {
   const sizeClasses = {
-    sm: 'text-xs px-2 py-0.5',
-    md: 'text-sm px-2.5 py-1',
-  }
+    sm: "text-xs px-2 py-0.5",
+    md: "text-sm px-2.5 py-1",
+  };
 
   return (
     <span
@@ -33,7 +33,7 @@ export function TagBadge({
         backgroundColor: `${color}20`, // 20% opacity background
         color: color,
         borderColor: `${color}40`, // 40% opacity border
-        borderWidth: '1px',
+        borderWidth: "1px",
       }}
     >
       <span
@@ -45,9 +45,9 @@ export function TagBadge({
         <button
           type="button"
           onClick={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            onRemove()
+            e.preventDefault();
+            e.stopPropagation();
+            onRemove();
           }}
           className="
             ml-0.5 -mr-1
@@ -61,5 +61,5 @@ export function TagBadge({
         </button>
       )}
     </span>
-  )
+  );
 }

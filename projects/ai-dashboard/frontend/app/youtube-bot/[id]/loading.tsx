@@ -36,5 +36,5 @@ export default function AutomationDetailLoading() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -17,48 +17,57 @@ affects: ["05-04", "05-05", "05-06"]
 tech-stack:
   added:
 
-```
+```yaml
+
 - "sharp: image thumbnail generation"
 
-```
+```yaml
+
   patterns:
 
-```
+```markdown
+
 - "Server Action file upload pattern"
 - "Authenticated file serving pattern"
 
 ```
+
 key-files:
   created:
 
-```
+```markdown
+
 - "src/shared/lib/thumbnail-generator.ts"
 - "src/shared/lib/file-storage.ts"
 - "src/app/actions/files.ts"
 - "src/app/api/files/download/[id]/route.ts"
 
-```
+```yaml
+
   modified:
 
-```
+```markdown
+
 - "src/shared/lib/dal.ts"
 
 ```
+
 decisions:
 
   - id: "THUMB-001"
 
-```
+```yaml
 context: "Thumbnail format and size selection"
 decision: "200px square WebP thumbnails at 80% quality"
 rationale: "WebP provides best compression, 200px sufficient for previews,
 80% quality balances size and clarity"
 date: "2026-01-25"
 
-```
+```yaml
+
   - id: "FILE-001"
 
-```
+```yaml
 context: "File upload size threshold for Server Actions vs TUS"
 decision: "Server Actions handle files < 5MB, TUS for larger files"
 rationale: "Server Actions have payload limits, TUS provides resumable
@@ -66,16 +75,18 @@ uploads for large files"
 date: "2026-01-25"
 
 ```
+
   - id: "SECURITY-001"
 
-```
+```yaml
 context: "File download authentication approach"
 decision: "Verify ownership on every download request via database query"
 rationale: "Cannot rely on URL security alone - must verify user owns the
 file before serving"
 date: "2026-01-25"
 
-```
+```yaml
+
 metrics:
   duration: "5 minutes"
   completed: "2026-01-25"
@@ -104,7 +115,9 @@ authenticated download endpoint with ownership verification
 
 - `generateThumbnail()` - Creates thumbnail from source file
 - `canGenerateThumbnail()` - Checks if MIME type supports thumbnails (JPEG, PNG,
+
   GIF, WebP)
+
 - `deleteThumbnail()` - Cleanup on file deletion
 - `getThumbnailUrl()` - Generate URL for thumbnail display
 
@@ -125,6 +138,7 @@ SVG may contain scripts)
 - `deleteFile()` - Remove file and thumbnail
 - `getThumbnailDir()` - Get/create thumbnail directory
 - Directory structure: `uploads/userId/taskId/` and
+
   `uploads/userId/taskId/thumbs/`
 
 ### 3. Server Actions (`actions/files.ts`)
@@ -291,7 +305,8 @@ const buffer = await readFile(userId, taskId, storedFilename)
 return new NextResponse(buffer, {
   headers: {
 
-```
+```yaml
+
 'Content-Type': file.mimeType,
 'Content-Disposition': inline or attachment based on type,
 'Cache-Control': 'private, max-age=3600'
@@ -300,7 +315,7 @@ return new NextResponse(buffer, {
   }
 })
 
-```
+```yaml
 
 **Reusability:** Can be extracted to shared utility for any file serving
 scenario.
@@ -345,12 +360,19 @@ scenario.
 ## Known Limitations
 
 1. **No progress tracking:** Server Actions are all-or-nothing (handled by TUS
+
 for large files in 05-02)
+
 2. **No file_deleted analytics:** Event type doesn't exist in schema (would need
+
 to add)
+
 3. **Thumbnail generation blocking:** Could be moved to background queue for
+
 optimization
+
 4. **No image optimization:** Could add Sharp options for different sizes
+
 (preview, full, etc.)
 
 ## Deviations from Plan
@@ -370,7 +392,9 @@ the storage utilities.
 ## Brain-Worthy Patterns
 
 1. **Sharp thumbnail generation pattern** - 200px WebP at 80% quality is sweet
+
 spot
+
 2. **Server Action file upload** - Clean pattern for < 5MB files
 3. **Authenticated file serving** - Always verify ownership before serving
 4. **Thumbnail failure handling** - Don't block upload if thumbnail fails

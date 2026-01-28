@@ -41,14 +41,14 @@ tools.
    search_templates({searchMode: 'by_metadata', complexity: 'simple'})
    search_templates({searchMode: 'by_nodes', nodeTypes: ['required-node-type']})
 
-   ```
+```yaml
 
 2. **If template found**
 
 ```yaml
    get_template(templateId, {mode: 'full'})
 
-   ```
+```markdown
 
    - Adapt template to requirements
    - Skip to Phase 3 (Validation)
@@ -64,7 +64,7 @@ tools.
    search_nodes({query: 'node_type_1', includeExamples: true})
    search_nodes({query: 'node_type_2', includeExamples: true})
 
-   ```
+```yaml
 
 2. **Get node details** (execute in parallel)
 
@@ -86,14 +86,14 @@ tools.
 ```yaml
    validate_node({nodeType: 'type', config: {...}, mode: 'minimal'})
 
-   ```
+```yaml
 
 2. **Full validation with runtime profile**
 
 ```yaml
    validate_node({nodeType: 'type', config: {...}, mode: 'full', profile: 'runtime'})
 
-   ```
+```markdown
 
 3. **Fix ALL errors before proceeding**
 
@@ -111,7 +111,7 @@ tools.
    validate_workflow_connections(workflow)
    validate_workflow_expressions(workflow)
 
-   ```
+```markdown
 
 ### Phase 5: Deploy
 
@@ -127,28 +127,29 @@ tools.
 ```yaml
    n8n_validate_workflow({id: workflowId})
 
-   ```
+```yaml
 
 3. **Auto-fix if needed**
 
 ```yaml
    n8n_autofix_workflow({id: workflowId})
 
-   ```
+```yaml
 
 4. **Activate workflow**
 
 ```yaml
    n8n_update_partial_workflow({
 
-```
+```yaml
+
  id: workflowId,
  operations: [{type: 'activateWorkflow'}]
 
 ```
    })
 
-   ```
+```markdown
 
 ### Phase 6: Test
 
@@ -157,14 +158,14 @@ tools.
 ```text
    n8n_test_workflow({workflowId})
 
-   ```
+```yaml
 
 2. **Check execution status**
 
 ```yaml
    n8n_executions({action: 'list', workflowId: workflowId})
 
-   ```
+```markdown
 
 ## Expected Outputs
 
@@ -175,11 +176,15 @@ tools.
 ## Critical Rules
 
 1. **Templates First** - Always search 2,709 templates before building from
+
 scratch
+
 2. **Never Trust Defaults** - Explicitly set ALL parameters
 3. **Parallel Execution** - Run independent operations simultaneously
 4. **Silent Execution** - Execute tools without commentary, respond after
+
 completion
+
 5. **Multi-Level Validation** - minimal → full → workflow
 
 ## Edge Cases

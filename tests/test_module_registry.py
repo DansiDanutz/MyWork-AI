@@ -16,8 +16,9 @@ class TestModuleRegistry:
     def test_load_empty_registry(self, temp_mywork_root):
         """Should handle empty/missing registry file gracefully."""
         import sys
-        if 'module_registry' in sys.modules:
-            del sys.modules['module_registry']
+
+        if "module_registry" in sys.modules:
+            del sys.modules["module_registry"]
 
         from module_registry import ModuleRegistry
 
@@ -28,8 +29,9 @@ class TestModuleRegistry:
     def test_load_existing_registry(self, temp_mywork_root, sample_module_registry):
         """Should load existing registry data correctly."""
         import sys
-        if 'module_registry' in sys.modules:
-            del sys.modules['module_registry']
+
+        if "module_registry" in sys.modules:
+            del sys.modules["module_registry"]
 
         from module_registry import ModuleRegistry
 
@@ -42,8 +44,9 @@ class TestModuleRegistry:
     def test_search_modules(self, temp_mywork_root, sample_module_registry):
         """Should search modules by query."""
         import sys
-        if 'module_registry' in sys.modules:
-            del sys.modules['module_registry']
+
+        if "module_registry" in sys.modules:
+            del sys.modules["module_registry"]
 
         from module_registry import ModuleRegistry
 
@@ -55,8 +58,9 @@ class TestModuleRegistry:
     def test_search_by_type_filter(self, temp_mywork_root, sample_module_registry):
         """Should filter search by type."""
         import sys
-        if 'module_registry' in sys.modules:
-            del sys.modules['module_registry']
+
+        if "module_registry" in sys.modules:
+            del sys.modules["module_registry"]
 
         from module_registry import ModuleRegistry
 
@@ -70,8 +74,9 @@ class TestModuleRegistry:
     def test_get_by_type(self, temp_mywork_root, sample_module_registry):
         """Should get modules by type."""
         import sys
-        if 'module_registry' in sys.modules:
-            del sys.modules['module_registry']
+
+        if "module_registry" in sys.modules:
+            del sys.modules["module_registry"]
 
         from module_registry import ModuleRegistry
 
@@ -84,8 +89,9 @@ class TestModuleRegistry:
     def test_get_by_project(self, temp_mywork_root, sample_module_registry):
         """Should get modules by project."""
         import sys
-        if 'module_registry' in sys.modules:
-            del sys.modules['module_registry']
+
+        if "module_registry" in sys.modules:
+            del sys.modules["module_registry"]
 
         from module_registry import ModuleRegistry
 
@@ -97,8 +103,9 @@ class TestModuleRegistry:
     def test_get_stats(self, temp_mywork_root, sample_module_registry):
         """Should return correct statistics."""
         import sys
-        if 'module_registry' in sys.modules:
-            del sys.modules['module_registry']
+
+        if "module_registry" in sys.modules:
+            del sys.modules["module_registry"]
 
         from module_registry import ModuleRegistry
 
@@ -130,7 +137,7 @@ class TestModule:
             dependencies=["react"],
             exports=["TestModule"],
             last_modified="2024-01-01T00:00:00",
-            hash="abc123"
+            hash="abc123",
         )
 
         assert module.id == "test-123"
@@ -154,7 +161,7 @@ class TestModule:
             dependencies=["react"],
             exports=["TestModule"],
             last_modified="2024-01-01T00:00:00",
-            hash="abc123"
+            hash="abc123",
         )
 
         result = module.to_dict()
@@ -170,8 +177,9 @@ class TestProjectScanner:
     def test_scan_empty_projects_dir(self, temp_mywork_root):
         """Should handle empty projects directory."""
         import sys
-        if 'module_registry' in sys.modules:
-            del sys.modules['module_registry']
+
+        if "module_registry" in sys.modules:
+            del sys.modules["module_registry"]
 
         from module_registry import ModuleRegistry, ProjectScanner
 
@@ -185,8 +193,9 @@ class TestProjectScanner:
     def test_scan_project_with_files(self, temp_mywork_root, temp_project):
         """Should scan project and find modules."""
         import sys
-        if 'module_registry' in sys.modules:
-            del sys.modules['module_registry']
+
+        if "module_registry" in sys.modules:
+            del sys.modules["module_registry"]
 
         # Create a Python file with a function
         src_dir = temp_project / "src"

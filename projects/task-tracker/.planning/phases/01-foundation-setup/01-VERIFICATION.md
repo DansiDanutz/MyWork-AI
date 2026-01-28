@@ -8,10 +8,12 @@ re_verification:
   previous_score: 3/4
   gaps_closed:
 
-```
+```markdown
+
 - "Development server starts without errors and serves base application"
 
-```
+```yaml
+
   gaps_remaining: []
   regressions: []
 ---
@@ -49,8 +51,11 @@ schema
 - `.env` no longer contains NODE_ENV (verified)
 - `.env.example` documents that Next.js manages NODE_ENV automatically
 - `src/shared/lib/env.ts` removed NODE_ENV from Zod schema, added isDev/isProd
+
   helpers
+
 - `npm run build` succeeds when executed in clean environment (with `unset
+
   NODE_ENV`)
 
 **Session-specific caveat:**
@@ -140,7 +145,9 @@ None. All phase objectives are programmatically verifiable and verified.
 - `.env` - Removed NODE_ENV
 - `.env.example` - Removed NODE_ENV, added documentation
 - `src/shared/lib/env.ts` - Removed NODE_ENV from schema, added isDev/isProd
+
   helpers
+
 - `src/app/api/health/route.ts` - Use process.env.NODE_ENV directly
 
 **Gaps closed:** 1/1
@@ -161,7 +168,9 @@ None. All phase objectives are programmatically verifiable and verified.
 **Evidence:**
 
 - Development server: `npm run dev` launches successfully on localhost:3000 in
+
   1136ms
+
 - Homepage accessible: GET / returns HTML content
 - Health endpoint: GET /api/health returns JSON with status "ok" in 200ms
 - TypeScript compilation: `npx tsc --noEmit` succeeds with no errors
@@ -173,6 +182,7 @@ None. All phase objectives are programmatically verifiable and verified.
 - Fix: Removed NODE_ENV from .env files, updated env.ts schema
 - Current status: Build succeeds when NODE_ENV is not set in environment
 - Shell caveat: Current session has NODE_ENV=development from previous work (not
+
   a code issue)
 
 **Test results:**
@@ -196,7 +206,7 @@ unset NODE_ENV && npm run build
 ✓ Generating static pages (6/6)
 ✓ Build completed
 
-```
+```markdown
 
 ### Truth 2: Database schema is initialized and migrations work
 
@@ -216,9 +226,18 @@ unset NODE_ENV && npm run build
 psql -h localhost -U dansidanutz -d tasktracker -c "\dt"
 
 ```
-             List of relations
+
+```text
 
 ```
+     List of relations
+
+```
+
+```
+
+```markdown
+
  Schema |        Name        | Type  |    Owner    
 --------+--------------------+-------+-------------
  public | HealthCheck        | table | dansidanutz
@@ -235,7 +254,9 @@ psql -h localhost -U dansidanutz -d tasktracker -c "\dt"
 - .env file contains DATABASE_URL and NEXT_PUBLIC_APP_URL (NO NODE_ENV)
 - .env.example template committed with documentation
 - env.ts validates environment with Zod schema (DATABASE_URL, NEXT_PUBLIC_APP_URL
+
   only)
+
 - NODE_ENV accessed directly via process.env.NODE_ENV (managed by Next.js)
 - Health endpoint confirms environment validation working
 
@@ -261,7 +282,7 @@ NEXT_PUBLIC_APP_URL="http://localhost:3000"
 curl http://localhost:3000/api/health | jq .environment
 "development"
 
-```
+```markdown
 
 ### Truth 4: All modules follow reusable pattern conventions for brain extraction
 
@@ -291,7 +312,8 @@ src/
 │   └── README.md      # Pattern documentation
 └── shared/            # Cross-cutting concerns
 
-```
+```text
+
 ├── components/
 ├── lib/
 │   ├── db/
@@ -299,11 +321,15 @@ src/
 │   │   └── index.ts
 │   └── env.ts
 └── types/
-    └── index.ts   # ApiResponse<T> type
+
+```
+└── index.ts   # ApiResponse<T> type
+
+```text
 
 ```
 
-```
+```markdown
 
 ## Phase Goal Assessment
 

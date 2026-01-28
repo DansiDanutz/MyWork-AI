@@ -16,11 +16,17 @@ in PostgreSQL with optimized JSONB indexing.
 The standard approach is to:
 
 1. Track events using Next.js 15's `after()` API to avoid blocking user
+
 operations
+
 2. Store events in a simple PostgreSQL table with JSONB properties for
+
 flexibility
+
 3. Use GitHub's OAuth access tokens (already available from Phase 2) for API
+
 calls
+
 4. Implement exponential backoff and ETag caching for rate limit management
 5. Design for GDPR compliance with configurable retention periods
 
@@ -75,7 +81,7 @@ The established libraries/tools for this domain:
 
 ### Recommended Project Structure
 
-```
+```yaml
 src/
 ├── app/
 │   ├── actions/
@@ -119,14 +125,15 @@ export async function POST(request: Request) {
   // Track event AFTER response is sent (non-blocking)
   after(async () => {
 
-```
+```yaml
+
 await trackEvent({
   type: 'task_created',
   userId: result.userId,
   properties: { taskId: result.id, category: data.category }
 })
 
-```
+```yaml
   })
 
   return Response.json({ success: true, id: result.id })
@@ -155,7 +162,8 @@ interface RateLimitInfo {
 async function fetchGitHubUser(accessToken: string): Promise<GitHubUser> {
   const response = await fetch('https://api.github.com/user', {
 
-```
+```yaml
+
 headers: {
   'Authorization': `Bearer ${accessToken}`,
   'Accept': 'application/vnd.github.v3+json',
@@ -163,13 +171,14 @@ headers: {
   'If-None-Match': cachedEtag || ''
 }
 
-```
+```javascript
   })
 
   // Extract rate limit info
   const rateLimitInfo: RateLimitInfo = {
 
-```
+```bash
+
 limit: parseInt(response.headers.get('x-ratelimit-limit') || '5000'),
 remaining: parseInt(response.headers.get('x-ratelimit-remaining') || '0'),
 reset: parseInt(response.headers.get('x-ratelimit-reset') || '0')
@@ -180,11 +189,12 @@ reset: parseInt(response.headers.get('x-ratelimit-reset') || '0')
   // If rate limited, wait until reset time
   if (response.status === 403 && rateLimitInfo.remaining === 0) {
 
-```
+```javascript
+
 const waitTime = (rateLimitInfo.reset * 1000) - Date.now()
 throw new Error(`Rate limited. Retry after ${waitTime}ms`)
 
-```
+```javascript
   }
 
   // Cache ETag for next request
@@ -193,7 +203,8 @@ throw new Error(`Rate limited. Retry after ${waitTime}ms`)
 
   if (response.status === 304) {
 
-```
+```text
+
 return getCachedUser() // Not modified, use cache
 
 ```
@@ -228,7 +239,7 @@ model AnalyticsEvent {
   @@index([createdAt]) // BRIN-like pattern for time-series queries
 }
 
-```
+```markdown
 
 ### Pattern 4: Event Type System with Zod
 
@@ -247,12 +258,13 @@ const TaskCreatedEventSchema = z.object({
   userId: z.string(),
   properties: z.object({
 
-```
+```yaml
+
 taskId: z.string(),
 category: z.string().optional(),
 fileCount: z.number().optional()
 
-```
+```javascript
   })
 })
 
@@ -262,12 +274,13 @@ const FileUploadedEventSchema = z.object({
   properties: z.object({
 
 ```
+
 fileId: z.string(),
 taskId: z.string(),
 fileSize: z.number(),
 mimeType: z.string()
 
-```
+```javascript
   })
 })
 
@@ -284,14 +297,23 @@ export type AnalyticsEvent = z.infer<typeof AnalyticsEventSchema>
 ### Anti-Patterns to Avoid
 
 - **Blocking user operations for analytics** - Never await analytics calls in
+
   user-facing code paths; always use `after()` or background jobs
+
 - **Tracking everything without purpose** - Only track events that inform brain
+
   learning; more data ≠ more insights
+
 - **Missing rate limit checks** - Always check GitHub API rate limit headers
+
   before making calls; hitting limits breaks user features
+
 - **Over-indexing JSONB columns** - GIN indexes on JSONB have high write
+
   overhead; only index frequently queried properties
+
 - **Storing PII without consent** - GDPR requires explicit consent for personal
+
   data; anonymize or pseudonymize where possible
 
 ## Don't Hand-Roll
@@ -334,10 +356,12 @@ on every event
   - Cache GitHub user data in database with 24-hour TTL
   - Use ETag headers for conditional requests (304 responses don't count against
 
-```
+```markdown
+
 limit)
 
-```
+```markdown
+
   - Only enrich data once per user session, not on every event
 
 **Warning signs:** Logs showing 403 errors with "x-ratelimit-remaining: 0"; user
@@ -357,7 +381,8 @@ might be useful"
 ```
 all
 
-```
+```markdown
+
   - Only store what's needed for brain pattern analysis
 
 **Warning signs:** Analytics queries taking >1s; database storage growing faster
@@ -404,16 +429,18 @@ to refresh simultaneously
 
   - Use "stale-while-revalidate" pattern: serve cached data while refreshing in
 
-```
+```yaml
 background
 
-```
+```yaml
+
   - Implement request coalescing: deduplicate concurrent requests for same
 
 ```
 resource
 
-```
+```markdown
+
   - Add jitter to cache TTLs to avoid synchronized expiration
 
 **Warning signs:** Periodic spikes in GitHub API usage; rate limit errors in
@@ -440,14 +467,15 @@ export async function trackEvent(event: unknown) {
   // Store in database (async, doesn't block caller)
   await prisma.analyticsEvent.create({
 
-```
+```yaml
+
 data: {
   userId: validatedEvent.userId,
   eventType: validatedEvent.type,
   properties: validatedEvent.properties
 }
 
-```
+```javascript
   })
 }
 
@@ -459,19 +487,20 @@ export async function createTaskAction(formData: FormData) {
   after(() => {
 
 ```
+
 trackEvent({
   type: 'task_created',
   userId: task.userId,
   properties: { taskId: task.id }
 })
 
-```
+```yaml
   })
 
   return { success: true, task }
 }
 
-```
+```markdown
 
 ### GitHub User Enrichment with Rate Limiting
 
@@ -498,7 +527,8 @@ export async function enrichUserWithGitHubData(
   // Return cached if still valid
   if (cached && (now - cached.cachedAt) < CACHE_TTL) {
 
-```
+```text
+
 return cached.data
 
 ```
@@ -506,12 +536,18 @@ return cached.data
 
   try {
 
-```
-const response = await fetch('https://api.github.com/user', {
+```javascript
+
+const response = await fetch('<https://api.github.com/user',> {
   headers: {
-    'Authorization': `Bearer ${accessToken}`,
-    'Accept': 'application/vnd.github.v3+json',
-    'If-None-Match': cached?.etag || ''
+
+```yaml
+'Authorization': `Bearer ${accessToken}`,
+'Accept': 'application/vnd.github.v3+json',
+'If-None-Match': cached?.etag || ''
+
+```
+
   },
   // Prevent hanging requests
   signal: AbortSignal.timeout(5000)
@@ -529,17 +565,32 @@ if (remaining < 100) {
 if (response.status === 304) {
   // Not modified, extend cache
   if (cached) {
-    userCache.set(userId, { ...cached, cachedAt: now })
-    return cached.data
+
+```yaml
+userCache.set(userId, { ...cached, cachedAt: now })
+return cached.data
+
+```
+
   }
 }
 
 if (response.status === 403 || response.status === 429) {
   const resetTime = parseInt(
-    response.headers.get('x-ratelimit-reset') || '0'
+
+```bash
+response.headers.get('x-ratelimit-reset') || '0'
+
+```
+
   )
   console.error(
-    `GitHub API rate limited. Resets at ${new Date(resetTime * 1000)}`
+
+```text
+`GitHub API rate limited. Resets at ${new Date(resetTime * 1000)}`
+
+```
+
   )
   return cached?.data || null // Return stale data if available
 }
@@ -550,10 +601,11 @@ const etag = response.headers.get('etag') || ''
 userCache.set(userId, { data, etag, cachedAt: now })
 return data
 
-```
+```yaml
   } catch (error) {
 
-```
+```yaml
+
 console.error('GitHub API error:', error)
 return cached?.data || null // Graceful degradation
 
@@ -575,11 +627,17 @@ export async function getUserEventTimeline(
 ) {
   return prisma.analyticsEvent.findMany({
 
-```
+```yaml
+
 where: {
   userId,
   createdAt: {
-    gte: new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+
+```yaml
+gte: new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+
+```
+
   }
 },
 orderBy: { createdAt: 'desc' },
@@ -589,7 +647,7 @@ select: {
   createdAt: true
 }
 
-```
+```javascript
   })
 }
 
@@ -597,7 +655,8 @@ export async function getFeatureUsageStats(eventType: string) {
   // Use raw SQL for complex aggregations
   return prisma.$queryRaw`
 
-```
+```text
+
 SELECT
   DATE_TRUNC('day', "createdAt") as date,
   COUNT(*) as event_count,
@@ -619,11 +678,17 @@ export async function exportEventsForBrain(
   // Export format optimized for brain analysis scripts
   return prisma.analyticsEvent.findMany({
 
-```
+```yaml
+
 where: {
   createdAt: {
-    gte: startDate,
-    lte: endDate
+
+```yaml
+gte: startDate,
+lte: endDate
+
+```
+
   }
 },
 select: {
@@ -631,18 +696,24 @@ select: {
   properties: true,
   createdAt: true,
   user: {
-    select: {
-      id: true // Only user ID, no PII
-    }
+
+```yaml
+select: {
+  id: true // Only user ID, no PII
+}
+
+```
+
   }
 },
 orderBy: { createdAt: 'asc' }
 
-```
+```markdown
+
   })
 }
 
-```
+```markdown
 
 ### GDPR-Compliant Data Retention
 
@@ -656,21 +727,28 @@ export async function purgeExpiredEvents() {
   const cutoffDate = new Date(
 
 ```
+
 Date.now() - DEFAULT_RETENTION_DAYS * 24 * 60 * 60 * 1000
 
-```
+```javascript
   )
 
   const result = await prisma.analyticsEvent.deleteMany({
 
-```
+```yaml
+
 where: {
   createdAt: {
-    lt: cutoffDate
+
+```
+lt: cutoffDate
+
+```javascript
+
   }
 }
 
-```
+```javascript
   })
 
   console.log(`Purged ${result.count} events older than ${DEFAULT_RETENTION_DAYS} days`)
@@ -694,12 +772,19 @@ where: {
 **Deprecated/outdated:**
 
 - **Next.js Middleware for analytics** - While still supported, `after()` API is
+
   more efficient and doesn't add middleware overhead to every request
+
 - **Custom error boundaries for event tracking** - Next.js 15 added
+
   `onRequestError` hook for better error tracking integration
+
 - **@vercel/analytics** - Vercel's analytics package; ties you to Vercel platform
+
   and sends data externally (conflicts with brain learning goal)
+
 - **React Context for event tracking** - Server Actions + `after()` eliminates
+
   need for client-side tracking context in most cases
 
 ## Open Questions
@@ -712,113 +797,146 @@ Things that couldn't be fully resolved:
 ```
  platforms typically use 90 days default
 
-```
+```yaml
+
    - What's unclear: How long does the brain learning system need data before
 
-```
+```yaml
  patterns are extracted?
 
-```
+```yaml
+
    - Recommendation: Start with 90-day retention, make configurable, extend if
 
 ```
  brain analysis shows longer periods improve pattern quality
 
-```
+```yaml
+
 2. **Event sampling vs. full tracking**
    - What we know: High-traffic apps sample events (e.g., 10%) to reduce storage
 
-```
+```yaml
  costs
 
-```
+```yaml
+
    - What's unclear: At what scale does sampling become necessary? Will brain
 
 ```
  learning need 100% data fidelity?
 
-```
+```yaml
+
    - Recommendation: Track 100% initially; add sampling configuration if database
 
-```
+```yaml
  exceeds 1M events/month
 
-```
+```yaml
+
 3. **Real-time vs. batch export for brain**
    - What we know: Brain analysis scripts could pull data real-time (API) or
 
 ```
  batch (daily export)
 
-```
+```yaml
+
    - What's unclear: Brain architecture hasn't specified preferred data ingestion
 
-```
+```yaml
  method
 
-```
+```yaml
+
    - Recommendation: Implement both - API endpoint for real-time queries,
 
 ```
  scheduled export for batch analysis
 
-```
+```python
+
 4. **Multi-project pattern aggregation**
    - What we know: Brain should learn from patterns across all MyWork projects
    - What's unclear: Should events include project metadata? How to correlate
 
-```
+```yaml
  patterns across projects?
 
-```
+```yaml
+
    - Recommendation: Add `projectId` to events, defer cross-project aggregation
 
 ```
  to brain analysis layer
 
-```
+```markdown
+
 ## Sources
 
 ### Primary (HIGH confidence)
 
 - [Next.js `after()` API
+
   Documentation](https://nextjs.org/docs/app/api-reference/functions/after) -
   Official Next.js 15 feature documentation
+
 - [Next.js Analytics Guide](https://nextjs.org/docs/pages/guides/analytics) -
+
   Official framework analytics guidance
+
 - [GitHub REST API Rate
+
   Limits](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api)
+
   - Authoritative GitHub API documentation
 - [GitHub REST API Best
+
   Practices](https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api)
+
   - Official GitHub guidance
 - [Prisma Documentation](https://www.prisma.io/docs/orm/prisma-schema) - Prisma
+
   schema and querying documentation
 
 ### Secondary (MEDIUM confidence)
 
 - [Event Storage in
+
   Postgres](https://dev.to/kspeakman/event-storage-in-postgres-4dk2) - Verified
   PostgreSQL event schema patterns
+
 - [BRIN Indexes in
+
   PostgreSQL](https://www.sqlpassion.at/archive/2026/01/19/brin-indexes-in-postgresql/)
+
   - Time-series indexing strategy
 - [GDPR Data Retention Best
+
   Practices](https://usercentrics.com/knowledge-hub/gdpr-data-retention/) -
   Compliance guidance
+
 - [PostgreSQL JSONB
+
   Indexing](https://www.tigerdata.com/learn/how-to-index-json-columns-in-postgresql)
+
   - Performance optimization
 - [API Rate Limiting Best Practices
+
   2025](https://zuplo.com/learning-center/10-best-practices-for-api-rate-limiting-in-2025)
+
   - Verified rate limiting patterns
 
 ### Tertiary (LOW confidence)
 
 - [Next.js Server Actions Analytics
+
   Patterns](https://medium.com/@beenakumawat002/next-js-app-router-advanced-patterns-for-2026-server-actions-ppr-streaming-edge-first-b76b1b3dcac7)
+
   - Community patterns (Medium article)
 - [Event Tracking Schema Design](https://snowplow.io/blog/event-data-structure) -
+
   General analytics schema guidance (not Next.js-specific)
 
 ## Metadata
@@ -826,10 +944,15 @@ Things that couldn't be fully resolved:
 **Confidence breakdown:**
 
 - Standard stack: HIGH - Next.js 15 `after()` API is official, PostgreSQL +
+
   Prisma already in use
+
 - Architecture: HIGH - Patterns verified with official documentation and
+
   real-world implementations
+
 - Pitfalls: MEDIUM - Common issues documented across multiple sources, some
+
   inferred from general analytics experience
 
 **Research date:** 2026-01-25

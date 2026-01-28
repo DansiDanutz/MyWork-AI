@@ -1,17 +1,17 @@
-'use client'
+"use client";
 
-import { useEffect } from 'react'
+import { useEffect } from "react";
 
 export default function Error({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
   useEffect(() => {
-    console.error('Application error:', error)
-  }, [error])
+    console.error("Application error:", error);
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
@@ -24,9 +24,11 @@ export default function Error({
           <p className="text-gray-600 mb-4">
             An unexpected error occurred. Please try again.
           </p>
-          {process.env.NODE_ENV === 'development' && (
+          {process.env.NODE_ENV === "development" && (
             <details className="text-left bg-gray-100 p-4 rounded-lg mb-4">
-              <summary className="cursor-pointer font-medium mb-2">Error Details</summary>
+              <summary className="cursor-pointer font-medium mb-2">
+                Error Details
+              </summary>
               <pre className="text-sm text-red-600 overflow-auto">
                 {error.message}
               </pre>
@@ -51,5 +53,5 @@ export default function Error({
         </div>
       </div>
     </div>
-  )
+  );
 }

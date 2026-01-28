@@ -1,11 +1,11 @@
-'use client'
+"use client";
 
-import dynamic from 'next/dynamic'
+import dynamic from "next/dynamic";
 
 // Lazy load FileDropzone with loading fallback
 // ssr: false because it uses browser file APIs
 const FileDropzone = dynamic(
-  () => import('./FileDropzone').then((mod) => mod.FileDropzone),
+  () => import("./FileDropzone").then((mod) => mod.FileDropzone),
   {
     loading: () => (
       <div className="border-2 border-dashed border-zinc-600 rounded-lg p-8">
@@ -17,9 +17,9 @@ const FileDropzone = dynamic(
       </div>
     ),
     ssr: false,
-  }
-)
+  },
+);
 
 // Re-export with same props interface
-export { FileDropzone as LazyFileDropzone }
-export type { FileDropzoneProps } from './FileDropzone'
+export { FileDropzone as LazyFileDropzone };
+export type { FileDropzoneProps } from "./FileDropzone";

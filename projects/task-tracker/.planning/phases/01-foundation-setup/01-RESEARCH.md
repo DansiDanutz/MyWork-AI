@@ -87,7 +87,8 @@ npx prisma init
 
 **Modular Monolith (Feature-Based)**
 
-```
+```markdown
+
 project-root/
 ├── src/
 │   ├── app/                    # Next.js App Router (routes only)
@@ -165,7 +166,7 @@ if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma
 }
 
-```
+```yaml
 
 **Why it matters:** Prevents connection pool exhaustion during Next.js hot
 reloads. Without this, each file change creates a new PrismaClient with its own
@@ -217,7 +218,7 @@ export type { Task, TaskStatus } from './types'
 
 // Internal implementation stays private
 
-```
+```yaml
 
 **Why it matters:** Enables clean extraction to other projects. When building
 the MyWork framework brain, modules with clear public APIs can be copied to new
@@ -250,18 +251,20 @@ export async function createTask(formData: FormData) {
   const validated = createTaskSchema.parse({
 
 ```
+
 title: formData.get('title'),
 description: formData.get('description'),
 
-```
+```javascript
   })
 
   const task = await prisma.task.create({
 
-```
+```yaml
+
 data: validated,
 
-```
+```yaml
   })
 
   // Revalidate cache
@@ -298,13 +301,15 @@ import { Button } from '@/shared/components/Button'
 {
   "compilerOptions": {
 
-```
+```yaml
+
 "baseUrl": ".",
 "paths": {
   "@/*": ["./src/*"]
 }
 
-```
+```markdown
+
   }
 }
 
@@ -313,18 +318,31 @@ import { Button } from '@/shared/components/Button'
 ### Anti-Patterns to Avoid
 
 - **Creating multiple PrismaClient instances:** Leads to connection pool
+
   exhaustion. Always use singleton pattern.
+
 - **Mixing Server and Client Components incorrectly:** Adding 'use client' at
+
   root forces entire tree to client. Push 'use client' to leaf components.
+
 - **Using useEffect for data fetching:** Causes flash of empty content, slower
+
   load times. Use Server Components or Server Actions instead.
+
 - **Storing secrets in client-exposed variables:** Never prefix secrets with
+
   NEXT_PUBLIC_. Only server-side code can access non-prefixed env vars.
+
 - **Hand-rolling authentication:** Custom auth costs $250k-500k initial
+
   investment. Use Auth.js, Clerk, or WorkOS instead.
+
 - **Skipping migration files in git:** Migrations are your database's source of
+
   truth. Always commit `prisma/migrations/` directory.
+
 - **Technical layering (models/, views/, controllers/):** Organize by
+
   feature/domain for better reusability and brain extraction.
 
 ## Don't Hand-Roll
@@ -361,6 +379,7 @@ exhausting PostgreSQL's max_connections.
 - Implement Prisma singleton pattern (see Pattern 1)
 - Store client on globalThis in development
 - Configure connection pool limits in DATABASE_URL:
+
   `postgresql://user:pass@host:5432/db?connection_limit=10&pool_timeout=20`
 
 **Warning signs:**
@@ -501,7 +520,7 @@ npx prisma init
 
 # - .env (with DATABASE_URL placeholder)
 
-```
+```markdown
 
 ### Configure Environment Variables
 
@@ -594,7 +613,7 @@ npm run dev
 
 # File changes reflect immediately in browser
 
-```
+```markdown
 
 ### Verify Setup Checklist
 
@@ -609,7 +628,8 @@ import { NextResponse } from 'next/server'
 export async function GET() {
   try {
 
-```
+```javascript
+
 // Verify database connection
 await prisma.$queryRaw`SELECT 1`
 
@@ -623,16 +643,17 @@ return NextResponse.json({
   hasDbUrl,
 })
 
-```
+```text
   } catch (error) {
 
 ```
+
 return NextResponse.json({
   status: 'error',
   message: error instanceof Error ? error.message : 'Unknown error',
 }, { status: 500 })
 
-```
+```yaml
   }
 }
 
@@ -650,7 +671,7 @@ Expected response:
   "hasDbUrl": true
 }
 
-```
+```markdown
 
 ## State of the Art
 
@@ -667,15 +688,24 @@ Expected response:
 **Deprecated/outdated:**
 
 - **Pages Router for new projects:** Still supported but App Router is
+
   recommended default. Use Pages Router only for incremental migration or
   specific edge cases.
+
 - **prisma db push for development:** Use `prisma migrate dev` instead. db push
+
   skips migration history, causing team sync issues.
+
 - **next.config.js (CommonJS):** Prefer `next.config.ts` (TypeScript) or
+
   `next.config.mjs` (ESM) for type safety.
+
 - **experimental.turbopack config:** Moved to top-level `turbopack` key in
+
   Next.js 16.
+
 - **Custom authentication from scratch:** Industry moved to managed auth
+
   providers (Auth.js, Clerk, WorkOS) due to security complexity.
 
 ## Open Questions
@@ -683,150 +713,205 @@ Expected response:
 1. **PostgreSQL Connection Pooling Strategy**
    - What we know: Prisma supports connection pooling via Prisma Accelerate or
 
-```
+```text
  direct connection string params
 
 ```
+
    - What's unclear: Optimal pool size for development vs. production, whether to
 
-```
+```text
  use Accelerate for this project
 
-```
+```yaml
+
    - Recommendation: Start with default connection pool (num_cpus * 2 + 1), add
 
-```
+```text
  explicit `connection_limit=10` in development DATABASE_URL, defer Accelerate
  until production deployment
 
 ```
+
 2. **Module Boundary Enforcement**
    - What we know: TypeScript path aliases and index.ts exports create public
 
-```
+```text
  APIs
 
-```
+```python
+
    - What's unclear: How to prevent developers from importing internal files
 
-```
+```text
  directly (e.g., `@/modules/tasks/lib/internal` instead of `@/modules/tasks`)
 
 ```
+
    - Recommendation: Document convention in ARCHITECTURE.md, consider ESLint
 
-```
+```text
  plugin `eslint-plugin-boundaries` for enforcement, validate during code
  review
 
-```
+```yaml
+
 3. **Prisma 7 Breaking Changes Impact**
    - What we know: Prisma 7 moved datasource.url to prisma.config.ts, introduced
 
-```
+```text
  Rust-free client
 
 ```
+
    - What's unclear: Whether to use Prisma 6 (stable, widely documented) or
 
-```
+```text
  Prisma 7 (latest, fewer examples)
 
-```
+```yaml
+
    - Recommendation: Use Prisma 6.x for this project (proven stable), monitor
 
-```
+```text
  Prisma 7 adoption, plan migration when ecosystem documentation catches up
 
 ```
+
 4. **Environment Variable Validation Timing**
    - What we know: Zod validation should happen at startup
    - What's unclear: Best location to trigger validation (middleware, layout,
 
-```
+```text
  separate script)
 
-```
+```yaml
+
    - Recommendation: Create `src/shared/lib/env.ts` that validates on import,
 
-```
+```python
  import it in root layout.tsx to ensure validation before any route handler
  executes
 
 ```
+
 ## Sources
 
 ### Primary (HIGH confidence)
 
 - Next.js Official Documentation -
+
   [Installation](https://nextjs.org/docs/app/getting-started/installation) -
   Verified CLI setup, configuration options
+
 - Next.js Official Documentation - [Project
+
   Structure](https://nextjs.org/docs/app/getting-started/project-structure) -
   Verified folder organization, special files
+
 - Next.js Official Documentation - [TypeScript
+
   Configuration](https://nextjs.org/docs/app/api-reference/config/next-config-js/typescript)
+
   - Verified tsconfig setup
 - Next.js Official Documentation - [Environment
+
   Variables](https://nextjs.org/docs/pages/guides/environment-variables) -
   Verified NEXT_PUBLIC_ behavior
+
 - Next.js Official Documentation - [Forms and
+
   Mutations](https://nextjs.org/docs/pages/building-your-application/data-fetching/forms-and-mutations)
+
   - Verified Server Actions pattern
 - Next.js Official Documentation - [Path
+
   Aliases](https://nextjs.org/docs/app/building-your-application/configuring/absolute-imports-and-module-aliases)
+
   - Verified @/* alias configuration
 - Next.js Official Documentation -
+
   [Turbopack](https://nextjs.org/docs/app/api-reference/turbopack) - Verified
   default bundler status in v16
+
 - Prisma Official Documentation - [Next.js
+
   Guide](https://www.prisma.io/docs/guides/nextjs) - Verified Prisma setup,
   singleton pattern
+
 - Prisma Official Documentation - [Migrations Getting
+
   Started](https://www.prisma.io/docs/orm/prisma-migrate/getting-started) -
   Verified migrate dev workflow
+
 - Prisma Official Documentation - [Development and
+
   Production](https://www.prisma.io/docs/orm/prisma-migrate/workflows/development-and-production)
+
   - Verified deployment workflow
 
 ### Secondary (MEDIUM confidence)
 
 - [How To Set Up Next.js 15 For Production In
+
   2025](https://janhesters.com/blog/how-to-set-up-nextjs-15-for-production-in-2025)
+
   - Verified ESLint/Prettier setup
 - [Prisma ORM Production Guide: Next.js Complete Setup
-  2025](https://www.digitalapplied.com/blog/prisma-orm-production-guide-nextjs) -
+
+  2025](https://www.digitalapplied.com/blog/prisma-orm-production-guide-nextjs)
+  -
   Verified connection pooling recommendations
+
 - [Scaling React & Next.js Apps: A Feature-Based
+
   Architecture](https://medium.com/@nishibuch25/scaling-react-next-js-apps-a-feature-based-architecture-that-actually-works-c0c89c25936d)
+
   - Verified modular structure pattern
 - [The Ultimate Guide to Software Architecture in
+
   Next.js](https://dev.to/shayan_saed/the-ultimate-guide-to-software-architecture-in-nextjs-from-monolith-to-microservices-i2c)
+
   - Verified modular monolith approach
 - [Optimizing Connection Pools with PrismaClient Singleton
+
   Pattern](https://dev.to/_877737de2d34ff8c6265/optimizing-connection-pools-with-prismaclient-singleton-pattern-in-nextjs-3emf)
+
   - Verified connection pool exhaustion issue
 - [User Authentication for Next.js: Top Tools
+
   2025](https://clerk.com/articles/user-authentication-for-nextjs-top-tools-and-recommendations-for-2025)
+
   - Verified custom auth cost analysis
 - [Complete Next.js Security Guide
+
   2025](https://www.turbostarter.dev/blog/complete-nextjs-security-guide-2025-authentication-api-protection-and-best-practices)
+
   - Verified security best practices
 - [5 Mistakes Beginners Make with
+
   Next.js](https://javascript.plainenglish.io/5-mistakes-beginners-make-with-next-js-and-how-to-avoid-them-2025-shit-68959119a612)
+
   - Verified common pitfalls
 - [All 29 Next.js Mistakes Beginners
+
   Make](https://dev.to/azeem_shafeeq/all-29-nextjs-mistakes-beginners-make-56nj)
+
   - Cross-verified pitfall patterns
 - [Prisma Pitfalls: Top Errors & Pro
+
   Fixes](https://medium.com/@nui_x/prisma-pitfalls-top-errors-pro-fixes-you-cant-ignore-852a0fe87565)
+
   - Verified Prisma 7 breaking changes
 
 ### Tertiary (LOW confidence)
 
 - Various Stack Overflow discussions on Prisma connection pooling (not linked,
+
   used for pattern validation only)
+
 - Community blog posts on TypeScript configuration (cross-verified with official
+
   docs)
 
 ## Metadata
@@ -834,12 +919,19 @@ Expected response:
 **Confidence breakdown:**
 
 - Standard stack: HIGH - All recommendations verified with official documentation
+
   and multiple authoritative sources
+
 - Architecture patterns: HIGH - Official Next.js docs confirm project structure,
+
   community consensus on modular monolith for 2025
+
 - Pitfalls: HIGH - Verified through official documentation, multiple recent
+
   articles (2025), and official error references
+
 - Code examples: HIGH - All examples sourced from official documentation or
+
   verified production setups
 
 **Research date:** 2026-01-24
@@ -852,4 +944,5 @@ release cycles)
 - Prisma 7 released November 2025, consider using Prisma 6.x for stability
 - All environment variable patterns verified against Next.js 15/16 behavior
 - Modular architecture patterns specifically selected for MyWork framework
+
   reusability (SYS-06)

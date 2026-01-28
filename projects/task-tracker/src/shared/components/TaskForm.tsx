@@ -1,23 +1,23 @@
-'use client'
+"use client";
 
-import { useActionState } from 'react'
-import { createTask } from '@/app/actions/tasks'
-import Link from 'next/link'
+import { useActionState } from "react";
+import { createTask } from "@/app/actions/tasks";
+import Link from "next/link";
 
 type FormState = {
-  success: boolean
-  error?: string
-  data?: { taskId: string }
-} | null
+  success: boolean;
+  error?: string;
+  data?: { taskId: string };
+} | null;
 
 export function TaskForm() {
   const [state, formAction, pending] = useActionState<FormState, FormData>(
     async (_prevState, formData) => {
-      const result = await createTask(formData)
-      return result
+      const result = await createTask(formData);
+      return result;
     },
-    null
-  )
+    null,
+  );
 
   return (
     <form action={formAction} className="space-y-6 max-w-2xl">
@@ -43,7 +43,7 @@ export function TaskForm() {
             bg-white dark:bg-gray-800
             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
             disabled:opacity-50 disabled:cursor-not-allowed
-            ${state && !state.success ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}
+            ${state && !state.success ? "border-red-500" : "border-gray-300 dark:border-gray-600"}
           `}
           placeholder="e.g., Complete project proposal"
         />
@@ -97,7 +97,7 @@ export function TaskForm() {
             transition-colors
           "
         >
-          {pending ? 'Creating...' : 'Create Task'}
+          {pending ? "Creating..." : "Create Task"}
         </button>
 
         {/* Cancel button */}
@@ -126,5 +126,5 @@ export function TaskForm() {
         </div>
       )}
     </form>
-  )
+  );
 }

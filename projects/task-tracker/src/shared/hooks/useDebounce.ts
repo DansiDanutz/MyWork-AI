@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { useEffect, useCallback, useRef } from 'react'
+import { useEffect, useCallback, useRef } from "react";
 
 /**
  * Debounce a callback function to prevent excessive calls.
@@ -17,36 +17,39 @@ import { useEffect, useCallback, useRef } from 'react'
  */
 export function useDebounce<T extends (...args: never[]) => unknown>(
   callback: T,
-  delay: number = 3000
+  delay: number = 3000,
 ): (...args: Parameters<T>) => void {
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const callbackRef = useRef(callback)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const callbackRef = useRef(callback);
 
   // Update callback ref on each render to capture latest closure
   useEffect(() => {
-    callbackRef.current = callback
-  }, [callback])
+    callbackRef.current = callback;
+  }, [callback]);
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
+        clearTimeout(timeoutRef.current);
       }
-    }
-  }, [])
+    };
+  }, []);
 
-  const debouncedCallback = useCallback((...args: Parameters<T>) => {
-    // Clear existing timeout
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current)
-    }
+  const debouncedCallback = useCallback(
+    (...args: Parameters<T>) => {
+      // Clear existing timeout
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
 
-    // Set new timeout
-    timeoutRef.current = setTimeout(() => {
-      callbackRef.current(...args)
-    }, delay)
-  }, [delay])
+      // Set new timeout
+      timeoutRef.current = setTimeout(() => {
+        callbackRef.current(...args);
+      }, delay);
+    },
+    [delay],
+  );
 
-  return debouncedCallback
+  return debouncedCallback;
 }

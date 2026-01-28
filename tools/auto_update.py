@@ -25,15 +25,18 @@ from typing import Optional, Dict, Any, Tuple
 # Configuration - Import from shared config with fallback
 try:
     from config import MYWORK_ROOT, TMP_DIR
+
     BACKUP_DIR = MYWORK_ROOT / ".backups"
     UPDATE_LOG = TMP_DIR / "update.log"
     VERSION_CACHE = TMP_DIR / "versions.json"
 except ImportError:
+
     def _get_mywork_root():
         if env_root := os.environ.get("MYWORK_ROOT"):
             return Path(env_root)
         script_dir = Path(__file__).resolve().parent
         return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+
     MYWORK_ROOT = _get_mywork_root()
     BACKUP_DIR = MYWORK_ROOT / ".backups"
     UPDATE_LOG = MYWORK_ROOT / ".tmp" / "update.log"
@@ -112,11 +115,7 @@ def run_command(cmd: list, cwd: Optional[Path] = None, capture: bool = True) -> 
     """Run a shell command and return success status and output."""
     try:
         result = subprocess.run(
-            cmd,
-            cwd=cwd,
-            capture_output=capture,
-            text=True,
-            timeout=300  # 5 minute timeout
+            cmd, cwd=cwd, capture_output=capture, text=True, timeout=300  # 5 minute timeout
         )
         output = result.stdout + result.stderr if capture else ""
         return result.returncode == 0, output.strip()
@@ -160,10 +159,7 @@ def get_git_info(path: Path) -> Dict[str, str]:
     info["has_updates"] = local != remote if local and remote else False
 
     if info["has_updates"]:
-        success, output = run_command(
-            ["git", "log", "--oneline", "HEAD..@{u}"],
-            cwd=path
-        )
+        success, output = run_command(["git", "log", "--oneline", "HEAD..@{u}"], cwd=path)
         info["pending_commits"] = len(output.split("\n")) if success and output else 0
     else:
         info["pending_commits"] = 0
@@ -204,11 +200,14 @@ def check_autocoder_running() -> Tuple[bool, str]:
     import socket
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    result = sock.connect_ex(('127.0.0.1', 8888))
+    result = sock.connect_ex(("127.0.0.1", 8888))
     sock.close()
 
     if result == 0:
-        return False, "Autocoder server is running. Please stop it before updating (python tools/autocoder_api.py stop)"
+        return (
+            False,
+            "Autocoder server is running. Please stop it before updating (python tools/autocoder_api.py stop)",
+        )
     return True, "Autocoder server is not running, safe to update"
 
 
@@ -291,7 +290,10 @@ def update_git_component(component: str, dry_run: bool = False) -> Tuple[bool, s
         return False, f"Local changes detected in {path}. Please commit or stash them first."
 
     if dry_run:
-        return True, f"[DRY RUN] Would update {component} from {config['remote']}/{config['branch']}"
+        return (
+            True,
+            f"[DRY RUN] Would update {component} from {config['remote']}/{config['branch']}",
+        )
 
     # Create backup
     backup_component(component)
@@ -304,17 +306,16 @@ def update_git_component(component: str, dry_run: bool = False) -> Tuple[bool, s
 
     # Get current and remote commits
     success, local = run_command(["git", "rev-parse", "HEAD"], cwd=path)
-    success, remote = run_command(["git", "rev-parse", f"{config['remote']}/{config['branch']}"], cwd=path)
+    success, remote = run_command(
+        ["git", "rev-parse", f"{config['remote']}/{config['branch']}"], cwd=path
+    )
 
     if local == remote:
         return True, f"{component} is already up to date"
 
     # Pull updates
     logger.info(f"Pulling updates for {component}...")
-    success, output = run_command(
-        ["git", "pull", config["remote"], config["branch"]],
-        cwd=path
-    )
+    success, output = run_command(["git", "pull", config["remote"], config["branch"]], cwd=path)
     if not success:
         return False, f"Failed to pull: {output}"
 

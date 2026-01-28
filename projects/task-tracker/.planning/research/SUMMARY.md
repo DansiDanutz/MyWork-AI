@@ -50,26 +50,42 @@ package versions.
 **Core technologies:**
 
 - **Next.js 16+**: Full-stack framework with stable Turbopack, React 19 support,
+
   SSR/SSG built-in — industry standard for rapid MVP with production-ready
   defaults
+
 - **TypeScript 5.x**: De facto standard for maintainable Node.js, native support
+
   in Node.js with experimental flag, critical for brain reusability
+
 - **Prisma 6.19+**: Type-safe ORM with automatic migrations, visual data
+
   explorer, gold standard for database access
+
 - **PostgreSQL 16.x**: Production-grade RDBMS with excellent scaling, complex
+
   query support, data integrity — required for multi-user concurrent access
+
 - **shadcn/ui**: Beautifully designed accessible components you own (copy-paste,
+
   not npm), official task management example available
 
 **Supporting libraries:**
 
 - **@octokit/oauth-app**: Official GitHub OAuth toolset for Node.js, better than
+
   generic OAuth for GitHub-specific features
+
 - **uploadthing**: Type-safe file uploads built for Next.js, simpler than AWS S3
+
   for MVP, serverless-friendly
+
 - **zod**: Runtime validation with TypeScript inference, pairs perfectly with
+
   tRPC and Prisma
+
 - **@tanstack/react-query**: Server state management with cache, background
+
   refetching, optimistic updates — critical for responsive task UX
 
 **What NOT to use:**
@@ -102,9 +118,13 @@ competitive advantage, and anti-features that create problems.
 **Should have (competitive advantage):**
 
 - **File attachments** (REQUIRED for this project) — Todoist offers this
+
   premium-only, competitors lack it — context without leaving app
+
 - **GitHub integration** (REQUIRED for this project) — usage tracking for
+
   technical users, unique differentiator
+
 - Tags/labels — cross-project categorization (defer to v1.1+)
 - Keyboard shortcuts — speed for power users (defer to v1.1+)
 - Bulk operations — batch edit/delete when users have 50+ tasks (defer to v1.1+)
@@ -122,14 +142,21 @@ competitive advantage, and anti-features that create problems.
 **Anti-features (avoid):**
 
 - Real-time collaboration — adds months of engineering for individual
+
   productivity tool, simple sharing with refresh-to-update is adequate
+
 - Gantt charts — project management, not personal task lists, scope creep
 - Time tracking built-in — separate concern, adds UI complexity with unclear
+
   value
+
 - Custom fields everywhere — analysis paralysis, cluttered UI, users want
+
   structure not infinite flexibility
+
 - Gamification — can feel gimmicky, requires careful psychological design
 - AI task suggestions — 2026 AI hype, users want control not AI deciding
+
   priorities
 
 ### Architecture Approach
@@ -143,34 +170,54 @@ tested independently.
 **Major components:**
 
 1. **Presentation Layer (React)** — UI components, routing, client state
+
 management with Context API, unidirectional data flow
+
 2. **Application Layer (Express.js)** — API routes, middleware chain (auth,
+
 validation, error handling), request/response transformation
+
 3. **Business Logic (Services)** — Task operations, validation, authorization,
+
 coordination between repositories and external APIs
+
 4. **Data Access (Repositories)** — Database operations abstracted via
+
 repository pattern, file storage, GitHub API clients
+
 5. **Integration Services** — GitHub API client with rate limiting, file upload
+
 service with security validation
 
 **Key patterns to follow:**
 
 - **Repository Pattern** — abstracts database operations, enables testing and
+
   storage backend swapping
+
 - **Service Layer Pattern** — centralizes business logic for reuse across
+
   different entry points (API, CLI, background jobs)
+
 - **Middleware Chain** — composable processing pipeline for cross-cutting
+
   concerns (auth, validation, logging)
+
 - **DTO (Data Transfer Object)** — separate database schema from API responses,
+
   prevents exposing internal fields
 
 **What NOT to do:**
 
 - God controllers — put business logic in services, not controllers
 - Premature microservices — start with modular monolith, extract services only at
+
   proven scale
+
 - Mix database schema with API responses — exposes sensitive fields, couples API
+
   to schema
+
 - No error boundaries — implement centralized error handling from start
 - No file validation — validate size, MIME type, scan for malware
 
@@ -180,6 +227,7 @@ Research reveals eight critical pitfalls, ranked by impact and frequency in task
 management projects.
 
 1. **Prototype code shipped to production** — Unstable systems with poor error
+
 handling, weak security, duplicated logic. AI-accelerated development makes it
 tempting to ship fast prototypes directly. **Prevention:** Establish automated
 guardrails preventing merges without tests/error handling/security. Each module
@@ -187,24 +235,28 @@ must pass reusability checklist before integration. Never skip error handling or
 validation in initial implementation.
 
 2. **Tight coupling between modules** — Direct imports, shared global state,
+
 framework-specific types exposed across boundaries prevents brain extraction.
 **Prevention:** Define explicit module boundaries and interfaces before
 implementation, use dependency injection, keep React/database types within
 module boundaries, export only public APIs.
 
 3. **Database schema for single use case only** — Schema too specific to task
+
 tracker prevents reuse of user management, file storage, activity tracking
 modules. **Prevention:** Design tables with single responsibilities mapping to
 reusable modules, separate users table (auth), files table (storage), tasks
 table (domain-specific), use foreign keys not embedded JSON.
 
 4. **GitHub API rate limiting not handled** — Integration gets banned for
+
 continuing requests while rate-limited (1,000 requests/hour with GITHUB_TOKEN).
 **Prevention:** Always authenticate (5,000 req/hr), check x-ratelimit-remaining
 header, implement exponential backoff, batch operations, cache GitHub data
 locally, batch events and sync periodically not per-action.
 
 5. **File upload limits and security not validated** — Large uploads impact
+
 performance, malicious files uploaded without validation (25% of phishing uses
 attachments per Cisco Talos). **Prevention:** Enforce size limits client and
 server-side, validate extension AND MIME type server-side, scan for malware,
@@ -212,17 +264,20 @@ store files outside web root with randomized names, use pre-signed URLs for
 downloads.
 
 6. **Search and filter performance not planned** — Works with 100 tasks,
+
 sluggish at 10,000+ tasks due to missing indexes and client-side filtering.
 **Prevention:** Add database indexes on filterable columns, implement pagination
 from day one, use database queries not in-memory filtering, test with 10,000+
 tasks before shipping.
 
 7. **Vague task state management** — Unclear states, invalid transitions allowed
+
 (e.g., "not started" directly to "completed"). **Prevention:** Keep states
 minimal (TODO, IN_PROGRESS, DONE), define valid transitions explicitly in code,
 validate server-side, document state meanings.
 
 8. **Missing audit trail for debugging** — Cannot debug production issues, no
+
 logging of who did what when. **Prevention:** Log all state changes with
 user_id/timestamp/old_value/new_value, implement soft deletes (deleted_at)
 instead of hard deletes, include request IDs for tracing.
@@ -262,12 +317,17 @@ everything builds on.
 **Avoids pitfalls:**
 
 - Pitfall #1 (prototype code) — establish code quality standards and automated
+
   checks from start
+
 - Pitfall #2 (tight coupling) — define module boundaries and interfaces upfront
 - Pitfall #3 (database schema) — design tables with clear module
+
   responsibilities, plan for extraction
+
 - Pitfall #7 (vague states) — implement state machine with validation
 - Pitfall #8 (missing audit) — build audit logging infrastructure before CRUD
+
   operations
 
 **Research flag:** Standard patterns — skip research-phase. Authentication and
@@ -296,6 +356,7 @@ performance problems at scale.
 **Avoids pitfalls:**
 
 - Pitfall #6 (search performance) — indexes, pagination, database queries from
+
   start, test with realistic dataset
 
 **Uses stack:**
@@ -329,8 +390,11 @@ size limits, malware scanning from start.
 **Avoids pitfalls:**
 
 - Pitfall #5 (file security) — validation, limits, security checklist before any
+
   uploads go to production
+
 - Pitfall #2 (tight coupling) — file service abstracted, works independently of
+
   task domain
 
 **Uses stack:**
@@ -371,6 +435,7 @@ from start.
 **Avoids pitfalls:**
 
 - Pitfall #4 (GitHub rate limiting) — rate limit handling, caching, batching
+
   before production usage
 
 **Uses stack:**
@@ -414,23 +479,28 @@ established libraries (shadcn/ui themes).
 ### Phase Ordering Rationale
 
 - **Foundation first prevents technical debt:** Establishing production
+
   standards, error handling, audit logging, and modular architecture upfront
   prevents the #1 pitfall (shipping prototype code). You can't "add quality
   later" — it must be built-in from start.
 
 - **Search after CRUD stabilizes schema:** Can't index efficiently until data
+
   model is finalized. Building search early leads to performance problems when
   schema changes.
 
 - **Integrations after core features work:** File attachments and GitHub
+
   integration are complex. Attempting them before authentication and task
   management are stable leads to scope creep and coupling issues.
 
 - **Polish last enables feedback-driven iteration:** Responsive design and dark
+
   mode are important but can be refined based on real usage patterns.
   Prioritizing them too early wastes effort on features users might not value.
 
 - **Dependency order prevents rework:** User auth → Task CRUD → Search/Filter →
+
   File Attachments → GitHub Integration. Each depends on previous phases being
   stable. Building out of order causes integration friction and refactoring.
 
@@ -439,14 +509,18 @@ established libraries (shadcn/ui themes).
 **Phases needing deeper research during planning:**
 
 - **Phase 3 (File Attachments):** Complex security and storage concerns. Need
+
   research on:
+
   - Virus scanning options (ClamAV, cloud services)
   - Cloud storage migration patterns (local → S3)
   - File validation best practices beyond MIME checks
   - Backup and disaster recovery for attachments
 
 - **Phase 4 (GitHub Integration):** External API integration patterns. Need
+
   research on:
+
   - GitHub API rate limit strategies and monitoring tools
   - Webhook setup and event processing
   - OAuth token management and refresh
@@ -455,10 +529,15 @@ established libraries (shadcn/ui themes).
 **Phases with standard patterns (skip research-phase):**
 
 - **Phase 1 (Foundation):** Well-documented authentication (NextAuth,
+
   Passport.js), CRUD patterns established, Prisma documentation comprehensive
+
 - **Phase 2 (Search/Filter):** PostgreSQL full-text search documented, Prisma
+
   filtering well-supported
+
 - **Phase 5 (Polish):** shadcn/ui provides theme support, responsive design
+
   patterns established
 
 ## Confidence Assessment
@@ -524,7 +603,9 @@ resolve in initial research.
 **Official Documentation:**
 
 - Next.js 16.1.4 Documentation — Current stable version, App Router best
+
   practices
+
 - React 19.2 Release — Stable release with Server Components
 - Prisma Documentation — TypeScript ORM, Rust-free as of 6.16
 - PostgreSQL Documentation — Database capabilities and best practices

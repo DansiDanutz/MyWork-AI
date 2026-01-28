@@ -36,7 +36,7 @@ What actually happened.
 ```text
 Paste any error messages here
 
-```
+```markdown
 
 ## Additional Context
 

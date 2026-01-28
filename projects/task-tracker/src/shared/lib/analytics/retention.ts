@@ -1,8 +1,8 @@
-import 'server-only'
-import { prisma } from '@/shared/lib/db'
+import "server-only";
+import { prisma } from "@/shared/lib/db";
 
 // Default retention period per research - GDPR safe
-const DEFAULT_RETENTION_DAYS = 90
+const DEFAULT_RETENTION_DAYS = 90;
 
 /**
  * Purge analytics events older than the retention period.
@@ -12,11 +12,9 @@ const DEFAULT_RETENTION_DAYS = 90
  * @returns Number of events deleted
  */
 export async function purgeExpiredEvents(
-  retentionDays: number = DEFAULT_RETENTION_DAYS
+  retentionDays: number = DEFAULT_RETENTION_DAYS,
 ): Promise<{ deleted: number; cutoffDate: Date }> {
-  const cutoffDate = new Date(
-    Date.now() - retentionDays * 24 * 60 * 60 * 1000
-  )
+  const cutoffDate = new Date(Date.now() - retentionDays * 24 * 60 * 60 * 1000);
 
   const result = await prisma.analyticsEvent.deleteMany({
     where: {
@@ -24,17 +22,17 @@ export async function purgeExpiredEvents(
         lt: cutoffDate,
       },
     },
-  })
+  });
 
   console.log(
     `[Analytics] Purged ${result.count} events older than ${retentionDays} days ` +
-    `(before ${cutoffDate.toISOString()})`
-  )
+      `(before ${cutoffDate.toISOString()})`,
+  );
 
   return {
     deleted: result.count,
     cutoffDate,
-  }
+  };
 }
 
 /**
@@ -42,7 +40,7 @@ export async function purgeExpiredEvents(
  * Shows event distribution by age to plan retention policies.
  */
 export async function getRetentionStats() {
-  const now = new Date()
+  const now = new Date();
 
   // Count events in different age buckets
   const [last7Days, last30Days, last90Days, total] = await Promise.all([
@@ -62,19 +60,19 @@ export async function getRetentionStats() {
       },
     }),
     prisma.analyticsEvent.count(),
-  ])
+  ]);
 
   // Get oldest and newest events
   const [oldest, newest] = await Promise.all([
     prisma.analyticsEvent.findFirst({
-      orderBy: { createdAt: 'asc' },
+      orderBy: { createdAt: "asc" },
       select: { createdAt: true },
     }),
     prisma.analyticsEvent.findFirst({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       select: { createdAt: true },
     }),
-  ])
+  ]);
 
   return {
     total,
@@ -89,7 +87,7 @@ export async function getRetentionStats() {
       newest: newest?.createdAt || null,
     },
     retentionDays: DEFAULT_RETENTION_DAYS,
-  }
+  };
 }
 
 /**
@@ -100,13 +98,13 @@ export async function getRetentionStats() {
  * @returns Number of events deleted
  */
 export async function purgeUserData(
-  userId: string
+  userId: string,
 ): Promise<{ deleted: number }> {
   const result = await prisma.analyticsEvent.deleteMany({
     where: { userId },
-  })
+  });
 
-  console.log(`[Analytics] Purged ${result.count} events for user ${userId}`)
+  console.log(`[Analytics] Purged ${result.count} events for user ${userId}`);
 
-  return { deleted: result.count }
+  return { deleted: result.count };
 }

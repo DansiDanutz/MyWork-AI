@@ -1,34 +1,34 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
-import { TaskCard } from './TaskCard'
-import { SwipeableTaskCard } from './SwipeableTaskCard'
-import { EmptyState } from './EmptyState'
+import { useEffect, useState } from "react";
+import { TaskCard } from "./TaskCard";
+import { SwipeableTaskCard } from "./SwipeableTaskCard";
+import { EmptyState } from "./EmptyState";
 
 type Task = {
-  id: string
-  title: string
-  description: string | null
-  status: 'TODO' | 'IN_PROGRESS' | 'DONE'
-  createdAt: Date
-  updatedAt: Date
-  tags?: { id: string; name: string; color: string | null }[]
-  attachments?: { id: string }[]
-}
+  id: string;
+  title: string;
+  description: string | null;
+  status: "TODO" | "IN_PROGRESS" | "DONE";
+  createdAt: Date;
+  updatedAt: Date;
+  tags?: { id: string; name: string; color: string | null }[];
+  attachments?: { id: string }[];
+};
 
 type TaskListProps = {
-  tasks: Task[]
-}
+  tasks: Task[];
+};
 
 type TaskSectionProps = {
-  title: string
-  tasks: Task[]
-  status: Task['status']
-  isMobile: boolean
-}
+  title: string;
+  tasks: Task[];
+  status: Task["status"];
+  isMobile: boolean;
+};
 
 function TaskSection({ title, tasks, status, isMobile }: TaskSectionProps) {
-  const sectionTasks = tasks.filter((task) => task.status === status)
+  const sectionTasks = tasks.filter((task) => task.status === status);
 
   return (
     <div>
@@ -46,41 +46,41 @@ function TaskSection({ title, tasks, status, isMobile }: TaskSectionProps) {
               <SwipeableTaskCard key={task.id} task={task} />
             ) : (
               <TaskCard key={task.id} task={task} />
-            )
+            ),
           )}
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export function TaskList({ tasks }: TaskListProps) {
-  const [isMobile, setIsMobile] = useState(false)
+  const [isMobile, setIsMobile] = useState(false);
 
   // Detect mobile/touch device
   useEffect(() => {
     const checkMobile = () => {
       // Check for touch support and screen width
-      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
-      const isNarrow = window.innerWidth < 768
-      setIsMobile(hasTouch && isNarrow)
-    }
+      const hasTouch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+      const isNarrow = window.innerWidth < 768;
+      setIsMobile(hasTouch && isNarrow);
+    };
 
-    checkMobile()
-    window.addEventListener('resize', checkMobile)
-    return () => window.removeEventListener('resize', checkMobile)
-  }, [])
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
-  const isEmpty = tasks.length === 0
+  const isEmpty = tasks.length === 0;
 
   if (isEmpty) {
     return (
       <EmptyState
         title="No tasks yet!"
         description="Create your first task to get started organizing your work."
-        action={{ label: 'Create your first task', href: '/tasks/new' }}
+        action={{ label: "Create your first task", href: "/tasks/new" }}
       />
-    )
+    );
   }
 
   return (
@@ -91,9 +91,24 @@ export function TaskList({ tasks }: TaskListProps) {
           Swipe right to complete, left to delete
         </p>
       )}
-      <TaskSection title="To Do" tasks={tasks} status="TODO" isMobile={isMobile} />
-      <TaskSection title="In Progress" tasks={tasks} status="IN_PROGRESS" isMobile={isMobile} />
-      <TaskSection title="Done" tasks={tasks} status="DONE" isMobile={isMobile} />
+      <TaskSection
+        title="To Do"
+        tasks={tasks}
+        status="TODO"
+        isMobile={isMobile}
+      />
+      <TaskSection
+        title="In Progress"
+        tasks={tasks}
+        status="IN_PROGRESS"
+        isMobile={isMobile}
+      />
+      <TaskSection
+        title="Done"
+        tasks={tasks}
+        status="DONE"
+        isMobile={isMobile}
+      />
     </div>
-  )
+  );
 }

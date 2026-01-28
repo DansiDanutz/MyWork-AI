@@ -15,11 +15,16 @@ extended rather than reinvented.
 **Key findings:**
 
 - Next.js 15's Server Actions with useActionState provide type-safe form handling
+
   and validation
+
 - Prisma 7's one-to-many relations naturally model user-task ownership
 - React 18's useOptimistic hook enables instant UI feedback before server
+
   confirmation
+
 - Established project patterns (field-level actions, debounced saves, status
+
   indicators) should be reused
 
 **Primary recommendation:** Extend existing patterns from profile management
@@ -69,7 +74,7 @@ The project's existing stack already includes all necessary libraries:
 
 ### Project Structure (Extends Existing)
 
-```
+```yaml
 src/
 ├── app/
 │   ├── (app)/
@@ -93,10 +98,12 @@ src/
 │       └── TaskList.tsx        # New: Status-grouped list
 └── prisma/
 
-```
+```markdown
+
 └── schema.prisma           # Add Task model
 
-```
+```markdown
+
 ```markdown
 
 ### Pattern 1: Task Model with User Ownership (Prisma)
@@ -164,7 +171,8 @@ export async function createTask(
 ): Promise<TaskActionResult> {
   try {
 
-```
+```javascript
+
 const { userId } = await verifySession()
 
 const data = {
@@ -175,25 +183,36 @@ const data = {
 const validation = taskSchema.safeParse(data)
 if (!validation.success) {
   return {
-    success: false,
-    error: validation.error.issues[0]?.message || 'Invalid input',
+
+```yaml
+success: false,
+error: validation.error.issues[0]?.message || 'Invalid input',
+
+```
+
   }
 }
 
 const task = await prisma.task.create({
   data: {
-    ...validation.data,
-    userId,
+
+```text
+...validation.data,
+userId,
+
+```
+
   },
 })
 
 revalidatePath('/tasks')
 return { success: true, taskId: task.id }
 
-```
+```yaml
   } catch (error) {
 
-```
+```yaml
+
 console.error('Task creation error:', error)
 return {
   success: false,
@@ -224,16 +243,18 @@ import { updateTaskStatus } from '@/app/actions/tasks'
 function TaskCard({ task }) {
   const [optimisticTask, addOptimisticUpdate] = useOptimistic(
 
-```
+```javascript
+
 task,
 (state, newStatus: string) => ({ ...state, status: newStatus })
 
-```
+```javascript
   )
 
   async function handleStatusChange(newStatus: string) {
 
-```
+```text
+
 // 1. Update UI immediately
 addOptimisticUpdate(newStatus)
 
@@ -245,24 +266,37 @@ await updateTaskStatus(task.id, newStatus)
 
   return (
 
-```
+```html
+
 <div>
   <h3>{optimisticTask.title}</h3>
   <select
-    value={optimisticTask.status}
-    onChange={(e) => handleStatusChange(e.target.value)}
+
+```javascript
+value={optimisticTask.status}
+onChange={(e) => handleStatusChange(e.target.value)}
+
+```
+
   >
-    <option value="todo">To Do</option>
-    <option value="in_progress">In Progress</option>
-    <option value="done">Done</option>
+
+```html
+
+<option value="todo">To Do</option>
+<option value="in_progress">In Progress</option>
+<option value="done">Done</option>
+
+```
+
   </select>
 </div>
 
-```
+```markdown
+
   )
 }
 
-```
+```markdown
 
 ### Pattern 4: DAL Extension with React cache()
 
@@ -284,13 +318,14 @@ export const getTasksByUser = cache(async () => {
   const tasks = await prisma.task.findMany({
 
 ```
+
 where: { userId },
 orderBy: [
   { status: 'asc' },      // Group by status
   { createdAt: 'desc' },  // Then chronological
 ],
 
-```
+```javascript
   })
 
   return tasks
@@ -301,13 +336,15 @@ export const getTask = cache(async (taskId: string) => {
 
   const task = await prisma.task.findFirst({
 
-```
+```yaml
+
 where: {
   id: taskId,
   userId,  // Ensure user owns the task
 },
 
-```
+```markdown
+
   })
 
   return task
@@ -344,61 +381,88 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
   return (
 
 ```
+
 <div className="space-y-8">
   <TaskSection title="To Do" tasks={todoTasks} />
   <TaskSection title="In Progress" tasks={inProgressTasks} />
   <TaskSection title="Done" tasks={doneTasks} />
 </div>
 
-```
+```javascript
   )
 }
 
 function TaskSection({ title, tasks }: { title: string; tasks: Task[] }) {
   if (tasks.length === 0) {
 
-```
+```html
+
 return (
   <section>
-    <h2 className="text-lg font-semibold mb-4">{title}</h2>
-    <p className="text-gray-500">No tasks yet</p>
+
+```
+<h2 className="text-lg font-semibold mb-4">{title}</h2>
+<p className="text-gray-500">No tasks yet</p>
+
+```html
+
   </section>
 )
 
-```
+```text
   }
 
   return (
 
 ```
+
 <section>
   <h2 className="text-lg font-semibold mb-4">
-    {title} ({tasks.length})
+
+```text
+{title} ({tasks.length})
+
+```
+
   </h2>
   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-    {tasks.map(task => (
-      <TaskCard key={task.id} task={task} />
-    ))}
+
+```javascript
+{tasks.map(task => (
+  <TaskCard key={task.id} task={task} />
+))}
+
+```
+
   </div>
 </section>
 
-```
+```text
   )
 }
 
-```
+```markdown
 
 ### Anti-Patterns to Avoid
 
 - **Don't put session in client state** - Use Server Components and Server
+
   Actions, keep sessions server-only
+
 - **Don't skip revalidatePath after mutations** - UI won't update automatically,
+
   causing stale data
+
 - **Don't fetch tasks in Client Components** - Use Server Components for initial
+
   data, Client Components only for interactions
+
 - **Don't use useEffect for data fetching** - Leads to waterfall requests; use
+
   Server Components and streaming
+
 - **Don't hand-roll optimistic updates** - Use React's useOptimistic hook for
+
   built-in rollback on error
 
 ## Don't Hand-Roll
@@ -430,7 +494,9 @@ Mutations don't automatically invalidate cache.
 
 - Always call `revalidatePath('/tasks')` at the end of Server Actions
 - Call before `redirect()` if redirecting (redirect throws, preventing subsequent
+
   code)
+
 - Use `revalidatePath('/tasks', 'page')` for route patterns with dynamic segments
 
 **Warning signs:**
@@ -482,7 +548,7 @@ model Task {
   @@index([userId, updatedAt])   // Fast: Recently modified
 }
 
-```
+```yaml
 
 **Warning signs:**
 
@@ -544,14 +610,15 @@ export async function createTask(formData: FormData) {
   if (!validation.success) {
 
 ```
+
 return { success: false, error: ... }
 
-```
+```text
   }
   // Only proceed with validated data
 }
 
-```
+```yaml
 
 **Warning signs:**
 
@@ -572,7 +639,8 @@ confusion.
 {tasks.length === 0 ? (
   <div className="text-center py-12">
 
-```
+```html
+
 <p className="text-gray-500 mb-4">
   No tasks yet! Create your first task to get started
 </p>
@@ -618,7 +686,8 @@ const taskSchema = z.object({
 export async function createTask(formData: FormData) {
   try {
 
-```
+```javascript
+
 const { userId } = await verifySession()
 
 const data = {
@@ -629,25 +698,36 @@ const data = {
 const validation = taskSchema.safeParse(data)
 if (!validation.success) {
   return {
-    success: false,
-    error: validation.error.issues[0]?.message || 'Invalid input',
+
+```yaml
+success: false,
+error: validation.error.issues[0]?.message || 'Invalid input',
+
+```
+
   }
 }
 
 await prisma.task.create({
   data: {
-    ...validation.data,
-    userId,
-    status: 'todo',
+
+```yaml
+...validation.data,
+userId,
+status: 'todo',
+
+```
+
   },
 })
 
 revalidatePath('/tasks')
 
-```
+```yaml
   } catch (error) {
 
-```
+```yaml
+
 console.error('Task creation error:', error)
 return {
   success: false,
@@ -661,7 +741,7 @@ return {
   redirect('/tasks')
 }
 
-```
+```markdown
 
 ### Server Action: Update Task Status (Optimistic)
 
@@ -683,7 +763,8 @@ export async function updateTaskStatus(
 ): Promise<{ success: boolean; error?: string }> {
   try {
 
-```
+```javascript
+
 const { userId } = await verifySession()
 
 const validation = statusSchema.safeParse(status)
@@ -708,14 +789,16 @@ await prisma.task.update({
 revalidatePath('/tasks')
 return { success: true }
 
-```
+```text
   } catch (error) {
 
 ```
+
 console.error('Status update error:', error)
 return { success: false, error: 'Failed to update status' }
 
-```
+```markdown
+
   }
 }
 
@@ -737,14 +820,20 @@ export async function deleteTask(
 ): Promise<{ success: boolean; error?: string }> {
   try {
 
-```
+```javascript
+
 const { userId } = await verifySession()
 
 // Delete only if user owns task (CASCADE handles relations)
 const result = await prisma.task.deleteMany({
   where: {
-    id: taskId,
-    userId,  // Security: Only delete own tasks
+
+```
+id: taskId,
+userId,  // Security: Only delete own tasks
+
+```yaml
+
   },
 })
 
@@ -755,18 +844,19 @@ if (result.count === 0) {
 revalidatePath('/tasks')
 return { success: true }
 
-```
+```text
   } catch (error) {
 
 ```
+
 console.error('Task deletion error:', error)
 return { success: false, error: 'Failed to delete task' }
 
-```
+```text
   }
 }
 
-```
+```markdown
 
 ### Client Component: Task Card with Optimistic Status
 
@@ -790,7 +880,8 @@ export function TaskCard({ task }: { task: Task }) {
   const [isPending, startTransition] = useTransition()
   const [optimisticTask, setOptimisticTask] = useOptimistic(
 
-```
+```javascript
+
 task,
 (state, newStatus: Task['status']) => ({ ...state, status: newStatus })
 
@@ -799,7 +890,8 @@ task,
 
   function handleStatusChange(newStatus: Task['status']) {
 
-```
+```javascript
+
 startTransition(async () => {
   // Update optimistically
   setOptimisticTask(newStatus)
@@ -809,22 +901,33 @@ startTransition(async () => {
 
   // On error, optimistic state automatically rolls back
   if (!result.success) {
-    console.error('Failed to update status:', result.error)
+
+```yaml
+console.error('Failed to update status:', result.error)
+
+```
+
   }
 })
 
-```
+```javascript
   }
 
   function handleDelete() {
 
-```
+```javascript
+
 if (!confirm('Delete this task?')) return
 
 startTransition(async () => {
   const result = await deleteTask(task.id)
   if (!result.success) {
-    alert(result.error || 'Failed to delete task')
+
+```
+alert(result.error || 'Failed to delete task')
+
+```text
+
   }
 })
 
@@ -833,43 +936,61 @@ startTransition(async () => {
 
   return (
 
-```
+```yaml
+
 <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 space-y-3">
   <h3 className="font-semibold text-lg">{optimisticTask.title}</h3>
 
   {optimisticTask.description && (
-    <p className="text-gray-600 dark:text-gray-300 text-sm">
-      {optimisticTask.description}
-    </p>
+
+```yaml
+<p className="text-gray-600 dark:text-gray-300 text-sm">
+  {optimisticTask.description}
+</p>
+
+```
+
   )}
 
   <div className="flex items-center justify-between">
-    <select
-      value={optimisticTask.status}
-      onChange={(e) => handleStatusChange(e.target.value as Task['status'])}
-      disabled={isPending}
-      className="text-sm border rounded px-2 py-1"
-    >
-      <option value="todo">To Do</option>
-      <option value="in_progress">In Progress</option>
-      <option value="done">Done</option>
-    </select>
 
-    <button
-      onClick={handleDelete}
-      disabled={isPending}
-      className="text-red-600 hover:text-red-800 text-sm"
-    >
-      Delete
-    </button>
+```javascript
+<select
+  value={optimisticTask.status}
+  onChange={(e) => handleStatusChange(e.target.value as Task['status'])}
+  disabled={isPending}
+  className="text-sm border rounded px-2 py-1"
+>
+  <option value="todo">To Do</option>
+  <option value="in_progress">In Progress</option>
+  <option value="done">Done</option>
+</select>
+
+<button
+  onClick={handleDelete}
+  disabled={isPending}
+  className="text-red-600 hover:text-red-800 text-sm"
+>
+  Delete
+</button>
+
+```
+
   </div>
 
   {isPending && (
-    <div className="text-xs text-gray-500">Saving...</div>
+
+```html
+
+<div className="text-xs text-gray-500">Saving...</div>
+
+```
+
   )}
 </div>
 
-```
+```markdown
+
   )
 }
 
@@ -888,19 +1009,35 @@ import { TaskList } from '@/shared/components/TaskList'
 export default async function TasksPage() {
   return (
 
-```
+```html
+
 <div className="container mx-auto px-4 py-8">
   <div className="flex justify-between items-center mb-8">
-    <h1 className="text-3xl font-bold">My Tasks</h1>
-    <Link href="/tasks/new">
-      <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-        + New Task
-      </button>
-    </Link>
+
+```
+<h1 className="text-3xl font-bold">My Tasks</h1>
+<Link href="/tasks/new">
+  <button className="bg-blue-600 text-white px-4 py-2 rounded-lg
+  hover:bg-blue-700">
+
+```
++ New Task
+
+```
+  </button>
+</Link>
+
+```html
+
   </div>
 
   <Suspense fallback={<TaskListSkeleton />}>
-    <TaskListContent />
+
+```
+<TaskListContent />
+
+```html
+
   </Suspense>
 </div>
 
@@ -913,21 +1050,33 @@ async function TaskListContent() {
 
   if (tasks.length === 0) {
 
-```
+```html
+
 return (
   <div className="text-center py-12">
-    <p className="text-gray-500 text-lg mb-4">
-      No tasks yet! Create your first task to get started
-    </p>
-    <Link href="/tasks/new">
-      <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
-        Create Your First Task
-      </button>
-    </Link>
+
+```html
+
+<p className="text-gray-500 text-lg mb-4">
+  No tasks yet! Create your first task to get started
+</p>
+<Link href="/tasks/new">
+  <button className="bg-blue-600 text-white px-6 py-3 rounded-lg
+  hover:bg-blue-700">
+
+```
+Create Your First Task
+
+```
+  </button>
+</Link>
+
+```
+
   </div>
 )
 
-```
+```javascript
   }
 
   return <TaskList tasks={tasks} />
@@ -936,17 +1085,27 @@ return (
 function TaskListSkeleton() {
   return (
 
-```
+```html
+
 <div className="space-y-8">
   {['To Do', 'In Progress', 'Done'].map(status => (
-    <div key={status}>
-      <div className="h-6 w-32 bg-gray-200 rounded mb-4 animate-pulse" />
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {[1, 2, 3].map(i => (
-          <div key={i} className="h-32 bg-gray-100 rounded-lg animate-pulse" />
-        ))}
-      </div>
-    </div>
+
+```
+<div key={status}>
+  <div className="h-6 w-32 bg-gray-200 rounded mb-4 animate-pulse" />
+  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+
+```
+{[1, 2, 3].map(i => (
+  <div key={i} className="h-32 bg-gray-100 rounded-lg animate-pulse" />
+))}
+
+```
+  </div>
+</div>
+
+```html
+
   ))}
 </div>
 
@@ -954,7 +1113,7 @@ function TaskListSkeleton() {
   )
 }
 
-```
+```markdown
 
 ## State of the Art
 
@@ -971,12 +1130,17 @@ function TaskListSkeleton() {
 **Deprecated/outdated:**
 
 - **API routes for mutations** - Use Server Actions instead (less code,
+
   type-safe, no API layer)
+
 - **getServerSideProps/getStaticProps** - Use Server Components (streaming,
+
   better UX)
+
 - **useFormState** - Renamed to useActionState in Next.js 15 (API unchanged)
 - **Pages directory** - App directory is stable and recommended for new projects
 - **Prisma 6 and earlier** - Prisma 7 has 3x faster queries, 90% smaller bundles
+
   (Rust-free architecture)
 
 ## Open Questions
@@ -986,44 +1150,51 @@ Things that couldn't be fully resolved:
 1. **Task Edit UX**
    - What we know: CONTEXT.md leaves editing approach to Claude's discretion
 
-```
+```yaml
  (inline, modal, or page)
 
-```
+```yaml
+
    - What's unclear: Tradeoffs between approaches for this specific use case
    - Recommendation: Research in planning phase. Options:
 
 ```
+
  - **Inline editing**: Fastest UX, but complex state management
  - **Modal**: Good balance, reuses form component
  - **Dedicated page**: Simplest implementation, consistent with `/tasks/new`
+
    pattern
 
-```
+```yaml
+
 2. **Auto-save vs Manual Save for Task Edits**
    - What we know: Profile uses auto-save with 3-second debounce (PATTERN-003)
    - What's unclear: Whether same pattern fits task editing (longer descriptions,
 
-```
+```yaml
  more fields)
 
-```
+```yaml
+
    - Recommendation: Manual save for dedicated edit page, auto-save only if
 
 ```
  inline editing. Align with user expectations (tasks feel more
  "document-like" than profile fields).
 
-```
+```yaml
+
 3. **Completed Task Visual Treatment**
    - What we know: CONTEXT.md leaves to discretion (fade, hide, or normal)
    - What's unclear: User preference for this validation project
    - Recommendation: Normal visibility in "Done" section for MVP. Track analytics
 
-```
+```yaml
  to see if users want to hide/archive completed tasks in future phase.
 
-```
+```yaml
+
 4. **Task Deletion Confirmation**
    - What we know: CONTEXT.md mentions "confirmation style, undo options" as open
    - What's unclear: Confirmation dialog vs undo toast vs require typing "delete"
@@ -1033,52 +1204,78 @@ Things that couldn't be fully resolved:
  extra code). Consider toast-based undo in future iteration if analytics show
  frequent accidental deletions.
 
-```
+```markdown
+
 ## Sources
 
 ### Primary (HIGH confidence)
 
 - [Next.js Forms Guide](https://nextjs.org/docs/app/guides/forms) - Server
+
   Actions, useActionState, Zod validation
+
 - [Next.js revalidatePath
+
   API](https://nextjs.org/docs/app/api-reference/functions/revalidatePath) -
   Cache invalidation after mutations
+
 - [React useOptimistic Hook](https://react.dev/reference/react/useOptimistic) -
+
   Optimistic UI updates
+
 - [Prisma Models
+
   Documentation](https://www.prisma.io/docs/orm/prisma-schema/data-model/models)
+
   - Model definition, relations, indexes
 - Existing codebase patterns:
   - `/src/app/actions/profile.ts` - Server Action structure with Zod
   - `/src/shared/lib/dal.ts` - DAL pattern with React cache()
   - `/src/shared/components/ProfileForm.tsx` - Auto-save pattern with status
 
-```
+```markdown
+
 indicators
 
-```
+```markdown
+
 ### Secondary (MEDIUM confidence)
 
 - [Next.js 15 Server Actions Complete
+
   Guide](https://medium.com/@saad.minhas.codes/next-js-15-server-actions-complete-guide-with-real-examples-2026-6320fbfa01c3)
+
   - Real-world examples (Jan 2026)
 - [How to Build a Task Management App Using Next.js 16 and Prisma
+
   7](https://dev.to/myogeshchavan97/how-to-build-a-task-management-app-using-nextjs-16-and-prisma-7-4mcf)
+
   - Task model patterns
 - [Server Actions Best
+
   Practices](https://medium.com/@lior_amsalem/nextjs-15-actions-best-practice-bf5cc023301e)
+
   - Organization and patterns
 - [Prisma 7 Performance
-  Gains](https://www.infoq.com/news/2026/01/prisma-7-performance/) - Why Prisma 7
+
+  Gains](https://www.infoq.com/news/2026/01/prisma-7-performance/) - Why Prisma
+  7
   (Jan 2026)
+
 - [React Server Components + TanStack
+
   Query](https://dev.to/krish_kakadiya_5f0eaf6342/react-server-components-tanstack-query-the-2026-data-fetching-power-duo-you-cant-ignore-21fj)
+
   - Data fetching patterns (2026)
 - [Server Actions Error
+
   Handling](https://medium.com/@pawantripathi648/next-js-server-actions-error-handling-the-pattern-i-wish-i-knew-earlier-e717f28f2f75)
+
   - Production-ready error patterns (Dec 2025)
 - [React Performance Optimization
+
   2026](https://medium.com/@muhammadshakir4152/react-js-optimization-every-react-developer-must-know-2026-edition-e1c098f55ee9)
+
   - Current best practices
 
 ### Tertiary (LOW confidence)
@@ -1092,8 +1289,11 @@ indicators
 - Standard stack: HIGH - All libraries already in package.json, versions verified
 - Architecture patterns: HIGH - Extended from existing Phase 2 implementation
 - Pitfalls: HIGH - Sourced from official docs, GitHub discussions, and
+
   established anti-patterns
+
 - Code examples: HIGH - Adapted from official Next.js/React docs and existing
+
   codebase
 
 **Research date:** 2026-01-25
@@ -1108,4 +1308,5 @@ expected)
 - ✅ Tasks grouped by status (Todo, In Progress, Done sections)
 - ✅ Empty state with friendly illustration and CTA
 - 🤷 Required fields, card content, status UI, editing approach - Claude's
+
   discretion

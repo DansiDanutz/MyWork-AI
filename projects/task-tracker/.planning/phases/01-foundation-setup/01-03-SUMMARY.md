@@ -10,10 +10,11 @@ requires:
 
   - phase: 01-02
 
-```
+```yaml
 provides: Environment validation with Zod schema
 
-```
+```yaml
+
 provides:
 
   - Next.js production builds work without NODE_ENV conflicts
@@ -28,21 +29,25 @@ tech-stack:
   added: []
   patterns:
 
-```
+```markdown
+
 - "Next.js manages NODE_ENV automatically - never set in .env"
 - "Use process.env.NODE_ENV directly for runtime environment checks"
 
 ```
+
 key-files:
   created: []
   modified:
 
-```
+```markdown
+
 - .env.example
 - src/shared/lib/env.ts
 - src/app/api/health/route.ts
 
-```
+```yaml
+
 key-decisions:
 
   - "Remove NODE_ENV from environment files - Next.js manages it automatically"
@@ -52,10 +57,11 @@ patterns-established:
 
   - "Environment variables: User-controlled only in Zod schema, framework-managed
 
-```
+```text
 accessed directly"
 
 ```
+
 # Metrics
 
 duration: 3min
@@ -93,10 +99,15 @@ Each task was committed atomically:
 ## Files Created/Modified
 
 - `.env.example` - Removed NODE_ENV, added documentation explaining Next.js
+
   manages it
+
 - `src/shared/lib/env.ts` - Removed NODE_ENV from Zod schema, added isDev/isProd
+
   exports
+
 - `src/app/api/health/route.ts` - Use process.env.NODE_ENV directly for
+
   environment reporting
 
 ## Decisions Made
@@ -104,15 +115,21 @@ Each task was committed atomically:
 **Remove NODE_ENV from environment configuration:**
 
 - Next.js automatically sets NODE_ENV based on the command (`dev` = development,
+
   `build`/`start` = production)
+
 - Having NODE_ENV in .env causes conflicts during builds ("non-standard NODE_ENV
+
   value")
+
 - User should never need to manually set NODE_ENV
 
 **Simplify environment validation:**
 
 - Zod schema validates only user-controlled variables (DATABASE_URL,
+
   NEXT_PUBLIC_APP_URL)
+
 - Framework-managed variables (NODE_ENV) accessed directly via process.env
 - Provides isDev/isProd helpers for convenience
 
@@ -129,6 +146,7 @@ None - plan executed exactly as written.
 - Resolution: Not a code issue - shell environment persists between sessions
 - Documentation: Added comment in .env.example explaining NODE_ENV management
 - User action: If build shows NODE_ENV warning, check `echo $NODE_ENV` and unset
+
   if needed
 
 ## User Setup Required

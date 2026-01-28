@@ -1,28 +1,32 @@
-import { notFound } from 'next/navigation'
-import Link from 'next/link'
-import { getTaskWithTags, getTagsByUser, verifySession } from '@/shared/lib/dal'
-import { TaskEditFormWithTags } from '@/shared/components/TaskEditFormWithTags'
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import {
+  getTaskWithTags,
+  getTagsByUser,
+  verifySession,
+} from "@/shared/lib/dal";
+import { TaskEditFormWithTags } from "@/shared/components/TaskEditFormWithTags";
 
 type Props = {
-  params: Promise<{ id: string }>
-}
+  params: Promise<{ id: string }>;
+};
 
 export default async function EditTaskPage({ params }: Props) {
   // Verify authentication and get user ID
-  const { userId } = await verifySession()
+  const { userId } = await verifySession();
 
   // Await params (Next.js 15 requirement)
-  const { id } = await params
+  const { id } = await params;
 
   // Fetch task with tags and all available tags for autocomplete
   const [task, tags] = await Promise.all([
     getTaskWithTags(id, userId),
     getTagsByUser(userId),
-  ])
+  ]);
 
   // If task doesn't exist or user doesn't own it, show 404
   if (!task) {
-    notFound()
+    notFound();
   }
 
   return (
@@ -52,5 +56,5 @@ export default async function EditTaskPage({ params }: Props) {
         <TaskEditFormWithTags task={task} availableTags={tags} />
       </div>
     </div>
-  )
+  );
 }

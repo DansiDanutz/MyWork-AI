@@ -56,7 +56,7 @@ tail -f auto_linter.log
 
 pkill -f auto_lint_scheduler
 
-```
+```markdown
 
 ### Manual Scheduling
 
@@ -110,7 +110,8 @@ python3 tools/auto_lint_scheduler.py --daemon --interval 1800
 
 The tools scan these locations:
 
-```
+```markdown
+
 ✅ Root documentation (README.md, CHANGELOG.md, etc.)
 ✅ docs/ directory (all tutorials, guides, API reference)
 ✅ examples/ directory (example project documentation)
@@ -139,7 +140,7 @@ Uses standard markdownlint rules. To customize, create `.markdownlint.json`:
   "MD036": false
 }
 
-```
+```markdown
 
 ### Automation Settings
 
@@ -179,7 +180,7 @@ git log --oneline | grep "auto-lint"
 
 ### Expected Log Output
 
-```
+```yaml
 🔍 [14:32:15] Checking for markdown lint issues...
 🔧 Fixed 12 violations in 3 files
    • MD022: 8
@@ -209,7 +210,7 @@ Add to `.git/hooks/pre-commit`:
 
 python3 tools/auto_lint_fixer.py
 
-```
+```markdown
 
 ### With CI/CD
 
@@ -230,7 +231,7 @@ Configure your IDE to run on save:
 ```bash
 python3 /path/to/MyWork/tools/auto_lint_fixer.py
 
-```
+```yaml
 
 ---
 

@@ -28,13 +28,16 @@ affects:
 tech-stack:
   added:
 
-```
+```yaml
+
 - react-swipeable: "^7.0.2"
 
-```
+```yaml
+
   patterns:
 
-```
+```markdown
+
 - Mobile detection via touch support + screen width
 - Conditional rendering (mobile vs desktop components)
 - Swipe gesture thresholds (100px to trigger action)
@@ -42,72 +45,82 @@ tech-stack:
 - 44x44px minimum touch targets (WCAG 2.1 AAA compliance)
 
 ```
+
 key-files:
   created:
 
-```
+```markdown
+
 - src/shared/components/SwipeableTaskCard.tsx
 - src/shared/components/MobileNav.tsx
 
-```
+```yaml
+
   modified:
 
-```
+```markdown
+
 - src/shared/components/TaskList.tsx
 - src/app/(app)/layout.tsx
 - src/shared/components/index.ts
 - package.json
 
 ```
+
 decisions:
 
   - id: MOBILE-001
 
-```
+```yaml
 date: 2026-01-26
 decision: Use react-swipeable over custom gesture implementation
 rationale: Mature library with proper touch event handling and scroll
 prevention
 alternatives: Custom touch handlers, Framer Motion gestures
 
-```
+```yaml
+
   - id: GESTURE-001
 
-```
+```yaml
 date: 2026-01-26
 decision: 100px swipe threshold to trigger actions
 rationale: Prevents accidental triggers while keeping gestures responsive
 context: Tested threshold balances safety and UX
 
 ```
+
   - id: UX-001
 
-```
+```yaml
 date: 2026-01-26
 decision: Confirmation dialog for delete gesture, none for complete
 rationale: Completing task is non-destructive (reversible), delete is
 permanent
 impact: Reduces accidental data loss while keeping complete gesture fluid
 
-```
+```yaml
+
   - id: NAV-001
 
-```
+```yaml
 date: 2026-01-26
 decision: Hamburger menu over tab bar for mobile navigation
 rationale: Only 2 nav items, hamburger simpler than bottom tab bar
 alternatives: Bottom tab bar, drawer navigation
 
 ```
+
   - id: ACCESSIBILITY-001
 
-```
+```yaml
 date: 2026-01-26
 decision: 44x44px minimum touch targets throughout
 rationale: WCAG 2.1 Level AAA compliance (guideline 2.5.5)
 impact: All interactive elements accessible on mobile
 
-```
+```yaml
+
 metrics:
   duration: 3 minutes
   completed: 2026-01-26
@@ -262,9 +275,12 @@ Conditional rendering based on device capabilities:
 ### Downstream Impact
 
 - **Image optimization (07-04):** Should consider mobile viewport sizes for
+
   srcset
+
 - **Error boundaries (07-05):** Should handle swipe gesture failures gracefully
 - **Deployment (08-XX):** Must test on real mobile devices, not just DevTools
+
   emulation
 
 ## Reusable Patterns for Brain
@@ -278,7 +294,8 @@ const [isMobile, setIsMobile] = useState(false)
 useEffect(() => {
   const checkMobile = () => {
 
-```
+```bash
+
 const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
 const isNarrow = window.innerWidth < 768
 setIsMobile(hasTouch && isNarrow)
@@ -308,17 +325,19 @@ setIsMobile(hasTouch && isNarrow)
 const handlers = useSwipeable({
   onSwiping: (eventData) => {
 
-```
+```yaml
+
 if (Math.abs(eventData.deltaX) > Math.abs(eventData.deltaY)) {
   setSwipeOffset(eventData.deltaX)
   setSwipeDirection(eventData.deltaX > 0 ? 'right' : 'left')
 }
 
-```
+```javascript
   },
   onSwipedRight: () => {
 
-```
+```text
+
 if (Math.abs(swipeOffset) > 100) {
   handleAction()
 } else {
@@ -332,7 +351,7 @@ if (Math.abs(swipeOffset) > 100) {
   trackMouse: false,
 })
 
-```
+```yaml
 
 **Key elements:**
 
@@ -351,23 +370,33 @@ if (Math.abs(swipeOffset) > 100) {
 <div className="md:hidden">
   <button className="min-w-[44px] min-h-[44px]" onClick={() => setIsOpen(!isOpen)}>
 
-```
+```html
+
 {/* Icon */}
 
-```
+```html
+
   </button>
 
   {isOpen && (
 
 ```
+
 <>
-  <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setIsOpen(false)} />
+  <div className="fixed inset-0 bg-black/50 z-40" onClick={() =>
+  setIsOpen(false)} />
   <nav className="fixed top-16 left-0 right-0 z-50">
-    {/* Menu items */}
+
+```text
+{/* Menu items */}
+
+```
+
   </nav>
 </>
 
-```
+```html
+
   )}
 </div>
 
@@ -395,7 +424,7 @@ if (Math.abs(swipeOffset) > 100) {
 // Desktop nav (also compliant)
 <Link className="px-2 py-2 min-h-[44px] flex items-center">
 
-```
+```yaml
 
 **Why 44px:**
 
@@ -454,7 +483,9 @@ Recommend adding these to framework brain:
 1. **SwipeableTaskCard** - Generic swipeable card with left/right actions
 2. **MobileNav** - Hamburger menu with backdrop and active route highlighting
 3. **Mobile detection hook** - Touch + width detection for accurate mobile
+
 targeting
+
 4. **Swipe gesture pattern** - Threshold-based gesture with visual feedback
 5. **44px touch target pattern** - WCAG AAA compliant interactive elements
 

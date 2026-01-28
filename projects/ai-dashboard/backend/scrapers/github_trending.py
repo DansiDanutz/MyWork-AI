@@ -52,10 +52,7 @@ class GitHubTrendingScraper:
             self.headers["Authorization"] = f"token {self.token}"
 
     async def scrape_trending(
-        self,
-        db: Session,
-        queries: List[str] = None,
-        max_results: int = 100
+        self, db: Session, queries: List[str] = None, max_results: int = 100
     ) -> List[Dict]:
         """
         Scrape trending AI projects from GitHub
@@ -73,10 +70,7 @@ class GitHubTrendingScraper:
         seen_ids = set()
 
         # Log scraper start
-        log = ScraperLog(
-            scraper_name="github",
-            status="running"
-        )
+        log = ScraperLog(scraper_name="github", status="running")
         db.add(log)
         db.commit()
 
@@ -128,10 +122,7 @@ class GitHubTrendingScraper:
             raise
 
     async def _search_repositories(
-        self,
-        client: httpx.AsyncClient,
-        query: str,
-        per_page: int = 30
+        self, client: httpx.AsyncClient, query: str, per_page: int = 30
     ) -> List[Dict]:
         """Search GitHub repositories with rate limit handling"""
         url = f"{GITHUB_API}/search/repositories"
@@ -140,12 +131,7 @@ class GitHubTrendingScraper:
         pushed_after = (datetime.utcnow() - timedelta(days=30)).strftime("%Y-%m-%d")
         full_query = f"{query} pushed:>{pushed_after}"
 
-        params = {
-            "q": full_query,
-            "sort": "stars",
-            "order": "desc",
-            "per_page": per_page
-        }
+        params = {"q": full_query, "sort": "stars", "order": "desc", "per_page": per_page}
 
         response = await client.get(url, params=params)
 
@@ -210,9 +196,11 @@ class GitHubTrendingScraper:
         """Save repository to database"""
         try:
             # Check if repository already exists
-            existing = db.query(GitHubProject).filter(
-                GitHubProject.repo_id == repo_data["repo_id"]
-            ).first()
+            existing = (
+                db.query(GitHubProject)
+                .filter(GitHubProject.repo_id == repo_data["repo_id"])
+                .first()
+            )
 
             if existing:
                 # Update stats and calculate trending score
@@ -256,39 +244,33 @@ class GitHubTrendingScraper:
             return False
 
     def get_top_projects(
-        self,
-        db: Session,
-        limit: int = 20,
-        min_stars: int = 100
+        self, db: Session, limit: int = 20, min_stars: int = 100
     ) -> List[GitHubProject]:
         """Get top AI projects by stars"""
-        return db.query(GitHubProject).filter(
-            GitHubProject.stars >= min_stars
-        ).order_by(
-            GitHubProject.stars.desc()
-        ).limit(limit).all()
+        return (
+            db.query(GitHubProject)
+            .filter(GitHubProject.stars >= min_stars)
+            .order_by(GitHubProject.stars.desc())
+            .limit(limit)
+            .all()
+        )
 
-    def get_trending_projects(
-        self,
-        db: Session,
-        limit: int = 20
-    ) -> List[GitHubProject]:
+    def get_trending_projects(self, db: Session, limit: int = 20) -> List[GitHubProject]:
         """Get trending AI projects by weekly growth"""
-        return db.query(GitHubProject).order_by(
-            GitHubProject.trending_score.desc()
-        ).limit(limit).all()
+        return (
+            db.query(GitHubProject).order_by(GitHubProject.trending_score.desc()).limit(limit).all()
+        )
 
     def get_recently_updated(
-        self,
-        db: Session,
-        limit: int = 20,
-        days: int = 7
+        self, db: Session, limit: int = 20, days: int = 7
     ) -> List[GitHubProject]:
         """Get recently updated AI projects"""
         cutoff_date = datetime.utcnow() - timedelta(days=days)
 
-        return db.query(GitHubProject).filter(
-            GitHubProject.pushed_at >= cutoff_date
-        ).order_by(
-            GitHubProject.pushed_at.desc()
-        ).limit(limit).all()
+        return (
+            db.query(GitHubProject)
+            .filter(GitHubProject.pushed_at >= cutoff_date)
+            .order_by(GitHubProject.pushed_at.desc())
+            .limit(limit)
+            .all()
+        )

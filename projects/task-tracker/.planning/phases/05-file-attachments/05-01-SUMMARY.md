@@ -14,52 +14,60 @@ tech-stack:
 key-files:
   created:
 
-```
+```markdown
+
 - src/shared/lib/file-validation.ts
 
-```
+```yaml
+
   modified:
 
-```
+```markdown
+
 - prisma/schema.prisma
 - next.config.ts
 - package.json
 
 ```
+
 decisions:
 
   - id: FILE-001
 
-```
+```yaml
 title: Content-based MIME validation over client-provided types
 rationale: Security-critical to validate actual file content using magic
 bytes, not trust client-provided MIME types or extensions
 
-```
+```yaml
+
   - id: FILE-002
 
-```
+```yaml
 title: 25MB file size limit with 5MB Server Actions threshold
 rationale: 25MB generous enough for documents/media, 5MB threshold
 determines Server Actions vs TUS protocol for resumable uploads
 
 ```
+
   - id: FILE-003
 
-```
+```yaml
 title: FileAttachment with denormalized userId
 rationale: Enables direct ownership checks without joining through Task,
 improves query performance
 
-```
+```yaml
+
   - id: FILE-004
 
-```
+```yaml
 title: Cascade delete file attachments when task deleted
 rationale: Clean orphan file prevention, no abandoned attachments in
 database or filesystem
 
 ```
+
 metrics:
   duration: 4 minutes
   completed: 2026-01-26
@@ -196,7 +204,7 @@ deleted.
 
 task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
-```
+```yaml
 
 **Cleanup flow:**
 
@@ -230,7 +238,7 @@ task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
 
 ### Upload Strategy Decision Tree
 
-```
+```python
 File size ≤ 5MB → Server Actions (simple, fast)
 File size > 5MB → TUS protocol (resumable, network-safe)
 File size > 25MB → Reject with error
@@ -279,7 +287,7 @@ validateFileSize(size: number) → FileValidationResult
 ALLOWED_MIME_TYPES: readonly string[]
 MAX_FILE_SIZE: number
 
-```
+```yaml
 
 **Security guarantee:** Validates actual file content, not client metadata
 

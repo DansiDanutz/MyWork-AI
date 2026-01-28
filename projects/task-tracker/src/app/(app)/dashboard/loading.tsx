@@ -22,7 +22,10 @@ export default function Loading() {
       {/* Task statistics grid skeleton */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {[1, 2, 3].map((stat) => (
-          <div key={stat} className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+          <div
+            key={stat}
+            className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm"
+          >
             <div className="h-6 w-24 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2" />
             <div className="h-10 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2" />
             <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
@@ -40,5 +43,5 @@ export default function Loading() {
         </div>
       </div>
     </div>
-  )
+  );
 }

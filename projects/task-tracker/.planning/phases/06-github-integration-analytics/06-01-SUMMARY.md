@@ -13,13 +13,15 @@ tech-stack:
 key-files:
   created:
 
-```
+```markdown
+
 - prisma/schema.prisma (AnalyticsEvent model)
 - src/shared/lib/analytics/types.ts
 - src/shared/lib/analytics/tracker.ts
 - src/shared/lib/analytics/index.ts
 
-```
+```yaml
+
   modified: []
 decisions:
 
@@ -28,10 +30,11 @@ decisions:
   - ANALYTICS-003: Zod discriminated unions for type-safe event validation
   - ANALYTICS-004: Time-series indexes (userId+createdAt, eventType+createdAt,
 
-```
+```text
 createdAt)
 
 ```
+
   - ANALYTICS-005: trackSessionEvent helper auto-injects userId from auth session
 
 metrics:
@@ -139,6 +142,7 @@ aggregations).
 - `eventType + createdAt` - Fast feature usage aggregations
 - `createdAt` alone - Global time-series queries
 - Research recommends avoiding JSONB GIN indexes until proven necessary (high
+
   write overhead)
 
 **Impact:** Fast queries for brain analysis. Write performance unaffected.
@@ -156,6 +160,7 @@ available.
 - DRY principle - don't require manual `auth()` call in every tracking call
 - Follows existing pattern from `verifySession()` in `dal.ts`
 - Makes event tracking one-liner: `trackSessionEvent('page_view', { path:
+
   '/dashboard' })`
 
 **Impact:** Simpler event tracking code. Less boilerplate in Server Actions.
@@ -200,7 +205,9 @@ None - plan executed exactly as written.
 - ✅ Prisma client regenerated: `npx prisma generate`
 - ✅ Event types validate correctly: Tested with `AnalyticsEventSchema.parse()`
 - ✅ Tracker exports correctly: `import { trackEvent } from
+
   '@/shared/lib/analytics'`
+
 - ✅ Files can be imported (server-only context required for after() API)
 
 **Not tested (requires runtime):**
@@ -221,7 +228,9 @@ None introduced.
 **Reusable patterns added to framework brain:**
 
 1. **Non-blocking analytics with after() API**
+
 (`src/shared/lib/analytics/tracker.ts`)
+
    - Pattern: Defer database writes until after response sent
    - Use case: Any logging/analytics that shouldn't block users
    - Extractable: Yes - can be framework module with minimal changes
@@ -268,6 +277,7 @@ None introduced.
 - [x] trackSessionEvent() helper auto-injects userId from session
 - [x] No TypeScript errors in the analytics module
 - [x] Pattern follows existing codebase conventions (server-only, module
+
   structure)
 
 **All success criteria met.**
@@ -288,14 +298,23 @@ None introduced.
 ## Lessons Learned
 
 1. **Next.js 15's after() API is perfect for analytics** - Native, simple, no
+
 external dependencies
+
 2. **JSONB + Zod = flexible yet type-safe** - Best of both worlds for event
+
 storage
+
 3. **Time-series indexes matter** - User timeline queries will be common for
+
 brain learning
+
 4. **Session helpers reduce boilerplate** - Auto-injecting userId makes tracking
+
 trivial
+
 5. **Gitignore can block lib/ directories** - Had to use `git add -f` due to
+
 parent repo's ignore rules
 
 ## Next Steps

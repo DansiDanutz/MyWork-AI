@@ -17,13 +17,20 @@ load_dotenv()
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 logger = logging.getLogger(__name__)
 
 # Import database
-from database import get_db, init_db, YouTubeVideo, AINews, GitHubProject, YouTubeAutomation, ScraperLog
+from database import (
+    get_db,
+    init_db,
+    YouTubeVideo,
+    AINews,
+    GitHubProject,
+    YouTubeAutomation,
+    ScraperLog,
+)
 
 # Import scrapers and services
 from scrapers import YouTubeScraper, NewsAggregator, GitHubTrendingScraper
@@ -79,15 +86,14 @@ app = FastAPI(
     title="AI Dashboard API",
     description="Personal AI Dashboard for YouTube videos, news, and GitHub projects",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # CORS middleware - configured via ALLOWED_ORIGINS env var
 # Production: Set ALLOWED_ORIGINS to your frontend domain(s)
-allowed_origins = os.getenv(
-    "ALLOWED_ORIGINS",
-    "http://localhost:3000,http://127.0.0.1:3000"
-).split(",")
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000").split(
+    ","
+)
 
 # Validate allowed origins (strip whitespace, remove empty)
 allowed_origins = [origin.strip() for origin in allowed_origins if origin.strip()]
@@ -105,6 +111,7 @@ app.add_middleware(
 
 
 # ============ Pydantic Models ============
+
 
 class VideoResponse(BaseModel):
     id: int
@@ -190,6 +197,7 @@ class AutomationResponse(BaseModel):
 
 # ============ API Endpoints ============
 
+
 @app.get("/")
 async def root():
     """API root endpoint"""
@@ -201,18 +209,19 @@ async def root():
             "news": "/api/news",
             "projects": "/api/projects",
             "automation": "/api/automation",
-            "scheduler": "/api/scheduler"
-        }
+            "scheduler": "/api/scheduler",
+        },
     }
 
 
 # ---------- YouTube Videos ----------
 
+
 @app.get("/api/videos", response_model=List[VideoResponse])
 async def get_videos(
     limit: int = Query(20, ge=1, le=100),
     min_views: int = Query(1000, ge=0),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Get top AI videos"""
     scraper = YouTubeScraper()
@@ -233,11 +242,12 @@ async def trigger_video_scrape(db: Session = Depends(get_db)):
 
 # ---------- AI News ----------
 
+
 @app.get("/api/news", response_model=List[NewsResponse])
 async def get_news(
     limit: int = Query(50, ge=1, le=200),
     source: Optional[str] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Get latest AI news"""
     aggregator = NewsAggregator()
@@ -246,10 +256,7 @@ async def get_news(
 
 
 @app.get("/api/news/trending", response_model=List[NewsResponse])
-async def get_trending_news(
-    limit: int = Query(20, ge=1, le=50),
-    db: Session = Depends(get_db)
-):
+async def get_trending_news(limit: int = Query(20, ge=1, le=50), db: Session = Depends(get_db)):
     """Get trending AI news"""
     aggregator = NewsAggregator()
     news = aggregator.get_trending_news(db, limit=limit)
@@ -269,11 +276,12 @@ async def trigger_news_scrape(db: Session = Depends(get_db)):
 
 # ---------- GitHub Projects ----------
 
+
 @app.get("/api/projects", response_model=List[ProjectResponse])
 async def get_projects(
     limit: int = Query(20, ge=1, le=100),
     min_stars: int = Query(100, ge=0),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Get top AI GitHub projects"""
     scraper = GitHubTrendingScraper()
@@ -282,10 +290,7 @@ async def get_projects(
 
 
 @app.get("/api/projects/trending", response_model=List[ProjectResponse])
-async def get_trending_projects(
-    limit: int = Query(20, ge=1, le=50),
-    db: Session = Depends(get_db)
-):
+async def get_trending_projects(limit: int = Query(20, ge=1, le=50), db: Session = Depends(get_db)):
     """Get trending AI GitHub projects"""
     scraper = GitHubTrendingScraper()
     projects = scraper.get_trending_projects(db, limit=limit)
@@ -305,11 +310,12 @@ async def trigger_projects_scrape(db: Session = Depends(get_db)):
 
 # ---------- YouTube Automation ----------
 
+
 @app.get("/api/automation", response_model=List[AutomationResponse])
 async def get_automations(
     status: Optional[str] = None,
     limit: int = Query(50, ge=1, le=100),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
 ):
     """Get all video automations"""
     drafts = youtube_automation.get_all_drafts(db, status=status, limit=limit)
@@ -317,10 +323,7 @@ async def get_automations(
 
 
 @app.get("/api/automation/{automation_id}", response_model=AutomationResponse)
-async def get_automation(
-    automation_id: int,
-    db: Session = Depends(get_db)
-):
+async def get_automation(automation_id: int, db: Session = Depends(get_db)):
     """Get a specific automation"""
     draft = youtube_automation.get_draft(db, automation_id)
     if not draft:
@@ -329,17 +332,14 @@ async def get_automation(
 
 
 @app.post("/api/automation", response_model=AutomationResponse)
-async def create_automation(
-    data: AutomationCreate,
-    db: Session = Depends(get_db)
-):
+async def create_automation(data: AutomationCreate, db: Session = Depends(get_db)):
     """Create a new video automation from prompt"""
     try:
         draft = await youtube_automation.create_video_draft(
             db,
             user_prompt=data.prompt,
             target_audience=data.target_audience,
-            video_length=data.video_length
+            video_length=data.video_length,
         )
         return draft
     except Exception as e:
@@ -348,9 +348,7 @@ async def create_automation(
 
 @app.patch("/api/automation/{automation_id}", response_model=AutomationResponse)
 async def update_automation(
-    automation_id: int,
-    data: AutomationUpdate,
-    db: Session = Depends(get_db)
+    automation_id: int, data: AutomationUpdate, db: Session = Depends(get_db)
 ):
     """Update a video automation draft"""
     try:
@@ -364,10 +362,7 @@ async def update_automation(
 
 
 @app.post("/api/automation/{automation_id}/generate-video")
-async def generate_video(
-    automation_id: int,
-    db: Session = Depends(get_db)
-):
+async def generate_video(automation_id: int, db: Session = Depends(get_db)):
     """Generate HeyGen video for automation"""
     try:
         draft = await youtube_automation.generate_heygen_video(db, automation_id)
@@ -379,20 +374,14 @@ async def generate_video(
 
 
 @app.get("/api/automation/{automation_id}/video-status")
-async def check_video_status(
-    automation_id: int,
-    db: Session = Depends(get_db)
-):
+async def check_video_status(automation_id: int, db: Session = Depends(get_db)):
     """Check HeyGen video generation status"""
     status = await youtube_automation.check_heygen_status(db, automation_id)
     return status
 
 
 @app.post("/api/automation/{automation_id}/approve")
-async def approve_automation(
-    automation_id: int,
-    db: Session = Depends(get_db)
-):
+async def approve_automation(automation_id: int, db: Session = Depends(get_db)):
     """Approve and upload video to YouTube"""
     try:
         draft = await youtube_automation.approve_and_upload(db, automation_id)
@@ -400,7 +389,7 @@ async def approve_automation(
             "status": "success",
             "automation_id": draft.id,
             "youtube_url": draft.youtube_url,
-            "upload_status": draft.status
+            "upload_status": draft.status,
         }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -409,6 +398,7 @@ async def approve_automation(
 
 
 # ---------- Scheduler ----------
+
 
 @app.get("/api/scheduler/status")
 async def get_scheduler_status():
@@ -430,6 +420,7 @@ async def run_job(job_id: str):
 
 # ---------- Stats ----------
 
+
 @app.get("/api/stats")
 async def get_stats(db: Session = Depends(get_db)):
     """Get dashboard statistics"""
@@ -439,9 +430,7 @@ async def get_stats(db: Session = Depends(get_db)):
     automation_count = db.query(YouTubeAutomation).count()
 
     # Get recent scraper logs
-    recent_logs = db.query(ScraperLog).order_by(
-        ScraperLog.started_at.desc()
-    ).limit(10).all()
+    recent_logs = db.query(ScraperLog).order_by(ScraperLog.started_at.desc()).limit(10).all()
 
     return {
         "videos": video_count,
@@ -453,13 +442,14 @@ async def get_stats(db: Session = Depends(get_db)):
                 "scraper": log.scraper_name,
                 "status": log.status,
                 "items": log.items_scraped,
-                "started_at": log.started_at.isoformat() if log.started_at else None
+                "started_at": log.started_at.isoformat() if log.started_at else None,
             }
             for log in recent_logs
-        ]
+        ],
     }
 
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

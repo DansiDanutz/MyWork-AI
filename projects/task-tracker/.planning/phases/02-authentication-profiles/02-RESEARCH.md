@@ -67,7 +67,8 @@ npm install -D @types/bcrypt
 
 ### Recommended Project Structure
 
-```
+```markdown
+
 src/
 ├── app/
 │   ├── api/
@@ -112,32 +113,40 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
 
-```
+```yaml
+
 GitHub({
   clientId: process.env.AUTH_GITHUB_ID!,
   clientSecret: process.env.AUTH_GITHUB_SECRET!,
   authorization: {
-    params: {
-      // Scopes: user profile + email + repo read access
-      scope: "read:user user:email repo"
-    }
+
+```
+params: {
+  // Scopes: user profile + email + repo read access
+  scope: "read:user user:email repo"
+}
+
+```yaml
+
   }
 })
 
-```
+```yaml
   ],
   session: {
 
 ```
+
 strategy: "database",  // Use database sessions (not JWT)
 maxAge: 24 * 60 * 60,  // 24 hours (per user context)
 updateAge: 60 * 60,    // Refresh every hour (silent refresh)
 
-```
+```yaml
   },
   callbacks: {
 
-```
+```javascript
+
 async session({ session, user }) {
   // Add user ID to session
   session.user.id = user.id
@@ -149,19 +158,20 @@ async redirect({ url, baseUrl }) {
   return `${baseUrl}/welcome`
 }
 
-```
+```yaml
   },
   pages: {
 
 ```
+
 signIn: '/login',
 error: '/login',  // Redirect errors to login (per user context)
 
-```
+```text
   }
 })
 
-```
+```markdown
 
 ### Pattern 2: Data Access Layer (DAL) with Authorization
 
@@ -185,7 +195,8 @@ export const verifySession = cache(async () => {
 
   if (!session?.user?.id) {
 
-```
+```text
+
 redirect('/login')
 
 ```
@@ -199,7 +210,8 @@ export const getUser = cache(async () => {
 
   const user = await prisma.user.findUnique({
 
-```
+```yaml
+
 where: { id: session.userId },
 select: {
   id: true,
@@ -209,7 +221,8 @@ select: {
   // Don't select sensitive fields
 }
 
-```
+```markdown
+
   })
 
   return user
@@ -241,7 +254,8 @@ export async function updateProfile(formData: FormData) {
 
   await prisma.user.update({
 
-```
+```yaml
+
 where: { id: session.userId },
 data: { name, bio }
 
@@ -263,7 +277,8 @@ export function ProfileForm({ user }) {
 
   const handleChange = useDebounce((e: React.ChangeEvent<HTMLInputElement>) => {
 
-```
+```javascript
+
 const formData = new FormData()
 formData.set(e.target.name, e.target.value)
 
@@ -271,12 +286,14 @@ startTransition(async () => {
   await updateProfile(formData)
 })
 
-```
+```html
+
   }, 3000)  // 3 second debounce (standard pattern)
 
   return (
 
-```
+```html
+
 <form>
   <input name="name" defaultValue={user.name} onChange={handleChange} />
   {isPending && <span>Saving...</span>}
@@ -286,7 +303,7 @@ startTransition(async () => {
   )
 }
 
-```
+```markdown
 
 ### Pattern 4: GitHub API Caching with Conditional Requests
 
@@ -316,21 +333,23 @@ export async function fetchGitHubData(
 
   const headers: HeadersInit = {
 
-```
+```yaml
+
 'Authorization': `Bearer ${accessToken}`,
 'Accept': 'application/vnd.github.v3+json'
 
-```
+```text
   }
 
   // Add conditional request headers
   if (cached) {
 
 ```
+
 if (cached.etag) headers['If-None-Match'] = cached.etag
 if (cached.lastModified) headers['If-Modified-Since'] = cached.lastModified
 
-```
+```javascript
   }
 
   const response = await fetch(url, { headers })
@@ -338,10 +357,11 @@ if (cached.lastModified) headers['If-Modified-Since'] = cached.lastModified
   // 304 Not Modified - no rate limit impact!
   if (response.status === 304 && cached) {
 
-```
+```bash
+
 return cached.data
 
-```
+```bash
   }
 
   // Store new etag/last-modified
@@ -384,18 +404,20 @@ export async function middleware(req: NextRequest) {
   if (isProtected && !session?.user) {
 
 ```
+
 return NextResponse.redirect(new URL('/login', req.url))
 
-```
+```python
   }
 
   // Redirect authenticated users away from login
   if (isPublic && session?.user && path === '/login') {
 
-```
+```javascript
+
 return NextResponse.redirect(new URL('/dashboard', req.url))
 
-```
+```javascript
   }
 
   return NextResponse.next()
@@ -410,14 +432,23 @@ export const config = {
 ### Anti-Patterns to Avoid
 
 - **Querying database in middleware:** Middleware runs on every request including
+
   prefetches, causing performance issues. Use cookie-based checks only.
+
 - **Storing sensitive data in session payload:** Never store PII, passwords, or
+
   tokens in JWT payload. Store only user ID and minimal metadata.
+
 - **Not using Data Access Layer:** Calling `auth()` directly in components leads
+
   to duplicate queries. Use DAL with `cache()` for deduplication.
+
 - **Manual CSRF tokens:** Auth.js includes CSRF protection by default. Don't
+
   build custom CSRF handling.
+
 - **Polling GitHub API:** Use webhooks or aggressive caching with ETags. Polling
+
   burns rate limits (5,000/hour for authenticated users).
 
 ## Don't Hand-Roll
@@ -468,7 +499,9 @@ cookies
 **Why it happens:** Server Components can't set cookies during render,
 middleware cookie updates aren't automatic
 **How to avoid:** Auth.js handles session refresh automatically via `updateAge`
+
 - don't try to manually refresh in middleware
+
 **Warning signs:** Session expires despite user activity, manual cookie setting
 in middleware
 
@@ -598,7 +631,7 @@ import { handlers } from "@/lib/auth"
 
 export const { GET, POST } = handlers
 
-```
+```markdown
 
 ### Server Component with DAL
 
@@ -616,13 +649,15 @@ export default async function ProfilePage() {
 
   return (
 
-```
+```html
+
 <div>
   <h1>Profile Settings</h1>
   <ProfileForm user={user} />
 </div>
 
-```
+```markdown
+
   )
 }
 
@@ -646,6 +681,7 @@ export function useDebounce<T extends (...args: any[]) => any>(
   const debouncedCallback = useCallback((...args: Parameters<T>) => {
 
 ```
+
 if (timeoutRef.current) {
   clearTimeout(timeoutRef.current)
 }
@@ -654,19 +690,25 @@ timeoutRef.current = setTimeout(() => {
   callback(...args)
 }, delay)
 
-```
+```javascript
   }, [callback, delay])
 
   useEffect(() => {
 
-```
+```javascript
+
 return () => {
   if (timeoutRef.current) {
-    clearTimeout(timeoutRef.current)
+
+```
+clearTimeout(timeoutRef.current)
+
+```text
+
   }
 }
 
-```
+```text
   }, [])
 
   return debouncedCallback as T
@@ -684,20 +726,22 @@ return () => {
 export async function checkRateLimit(accessToken: string) {
   const response = await fetch('https://api.github.com/rate_limit', {
 
-```
+```yaml
+
 headers: {
   'Authorization': `Bearer ${accessToken}`,
   'Accept': 'application/vnd.github.v3+json'
 }
 
-```
+```javascript
   })
 
   const data = await response.json()
 
   return {
 
-```
+```yaml
+
 limit: data.resources.core.limit,        // 5000 for authenticated
 remaining: data.resources.core.remaining,
 reset: new Date(data.resources.core.reset * 1000),  // UTC timestamp
@@ -722,12 +766,19 @@ reset: new Date(data.resources.core.reset * 1000),  // UTC timestamp
 **Deprecated/outdated:**
 
 - **`NEXTAUTH_*` environment variables:** Now use `AUTH_*` prefix (Auth.js v5
+
   migration)
+
 - **Credentials provider without JWT:** Database sessions can't work with
+
   credentials provider unless JWT is enabled (Auth.js limitation)
+
 - **Middleware with database queries:** Next.js App Router middleware should only
+
   do cookie checks (performance)
+
 - **`repo` scope for read-only access:** GitHub OAuth doesn't support read-only
+
   repo scope; use GitHub Apps for fine-grained permissions
 
 ## Open Questions
@@ -737,64 +788,73 @@ Things that couldn't be fully resolved:
 1. **Optimal GitHub data refresh cadence**
    - What we know: User context says "sync every login", conditional requests are
 
-```
+```text
  free (304 responses)
 
-```
+```yaml
+
    - What's unclear: Should we also refresh on interval (e.g., hourly) or only on
 
-```
+```text
  explicit user actions?
 
 ```
+
    - Recommendation: Start with login-only refresh, add background refresh if
 
-```
+```text
  users report stale data
 
-```
+```yaml
+
 2. **Avatar upload size validation**
    - What we know: Vercel Blob has 4.5MB server limit, client uploads bypass this
    - What's unclear: Should we enforce a client-side size limit? If so, what's
 
-```
+```text
  reasonable?
 
 ```
+
    - Recommendation: Enforce 5MB client-side limit (covers profile photos,
 
-```
+```text
  prevents abuse), use client uploads
 
-```
+```yaml
+
 3. **Session refresh UX during auto-save**
    - What we know: Sessions refresh silently every hour (`updateAge: 3600`),
 
-```
+```text
  auto-save happens every 3 seconds
 
 ```
+
    - What's unclear: If session expires during typing, does auto-save fail
 
-```
+```text
  gracefully or lose data?
 
-```
+```yaml
+
    - Recommendation: Test session expiry during active editing, may need to
 
-```
+```text
  handle 401 by saving to localStorage
 
 ```
+
 4. **GitHub webhook integration scope**
    - What we know: User context mentions "bidirectional sync" with GitHub repos
    - What's unclear: Is webhook setup part of Phase 2 or deferred to later phase?
    - Recommendation: Confirm with user - context says "deferred decisions"
 
-```
+```text
  includes "advanced webhook integration"
 
-```
+```markdown
+
 ## Sources
 
 ### Primary (HIGH confidence)
@@ -802,31 +862,48 @@ Things that couldn't be fully resolved:
 - Auth.js Next.js Reference: <https://authjs.dev/reference/nextjs>
 - Auth.js Prisma Adapter: <https://authjs.dev/getting-started/adapters/prisma>
 - Next.js Authentication Docs:
+
   <https://nextjs.org/docs/app/building-your-application/authentication>
+
 - GitHub OAuth Scopes:
+
   <https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/scopes-for-oauth-apps>
+
 - GitHub API Rate Limits:
+
   <https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api>
+
 - GitHub API Best Practices:
+
   <https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api>
 
 ### Secondary (MEDIUM confidence)
 
 - Top 5 Authentication Solutions for Next.js 2026:
+
   <https://workos.com/blog/top-authentication-solutions-nextjs-2026>
+
 - Next.js 15 Tutorial File Upload with Server Actions:
+
   <https://strapi.io/blog/epic-next-js-15-tutorial-part-5-file-upload-using-server-actions>
+
 - React Auto-Save with Debounce and React Query:
+
   <https://darius-marlowe.medium.com/smarter-forms-in-react-building-a-useautosave-hook-with-debounce-and-react-query-d4d7f9bb052e>
+
 - React Query Autosave: Preventing Data Loss & Race Conditions:
+
   <https://www.pz.com.au/avoiding-race-conditions-and-data-loss-when-autosaving-in-react-query>
 
 ### Tertiary (LOW confidence)
 
 - Auth.js vs BetterAuth Comparison:
+
   <https://www.wisp.blog/blog/authjs-vs-betterauth-for-nextjs-a-comprehensive-comparison>
   (WebSearch only, marked for validation)
+
 - Common Next.js & NextAuth Authentication Pitfalls:
+
   <https://infinitejs.com/posts/nextjs-nextauth-auth-pitfalls/> (WebSearch only,
   marked for validation)
 
@@ -835,10 +912,15 @@ Things that couldn't be fully resolved:
 **Confidence breakdown:**
 
 - Standard stack: HIGH - Auth.js is official and widely documented for Next.js
+
   15, Prisma adapter is official
+
 - Architecture: HIGH - Patterns verified from official Next.js docs and Auth.js
+
   reference
+
 - Pitfalls: MEDIUM - Combination of official docs (rate limits, env vars) and
+
   community reports (Vercel upload limit, race conditions)
 
 **Research date:** 2026-01-24

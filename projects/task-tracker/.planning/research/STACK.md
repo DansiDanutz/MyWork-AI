@@ -111,7 +111,9 @@ npm install -D tsx @types/node
 - Use Railway or self-hosted for compute
 - Use managed PostgreSQL (e.g., Supabase, Neon, or AWS RDS)
 - Use AWS S3 + CloudFront for files (costs 60-85% less than Cloudinary at
+
   >2TB/month)
+
 - Authentication: Custom GitHub OAuth implementation (no per-user pricing)
 
 **If prioritizing code ownership and framework portability:**
@@ -143,14 +145,15 @@ Add postinstall script to package.json for Vercel deployments:
 {
   "scripts": {
 
-```
+```yaml
+
 "postinstall": "prisma generate"
 
-```
+```yaml
   }
 }
 
-```
+```yaml
 
 **TypeScript Strict Mode:**
 Enable strict mode in tsconfig.json for maximum type safety (critical for brain
@@ -161,11 +164,12 @@ reusability):
   "compilerOptions": {
 
 ```
+
 "strict": true,
 "strictNullChecks": true,
 "noUncheckedIndexedAccess": true
 
-```
+```yaml
   }
 }
 
@@ -177,7 +181,7 @@ Use Next.js ESLint config with TypeScript:
 ```bash
 npm install -D eslint-config-next @typescript-eslint/eslint-plugin
 
-```
+```yaml
 
 **Environment Variables:**
 Use .env.local for development (gitignored). Vercel auto-loads these in
@@ -194,58 +198,92 @@ Required variables:
 ### HIGH Confidence (Official Documentation)
 
 - [Next.js 16.1.4 Documentation](https://nextjs.org/docs) — Current stable
+
   version, App Router best practices
+
 - [Next.js 16 Release Blog](https://nextjs.org/blog/next-16) — Turbopack stable,
+
   React 19 support, proxy.ts
+
 - [React 19.2 Release](https://react.dev/blog/2025/10/01/react-19-2) — Stable
+
   release with Server Components
+
 - [Prisma Documentation](https://www.prisma.io/docs) — TypeScript ORM, Rust-free
+
   as of 6.16
+
 - [shadcn/ui Documentation](https://ui.shadcn.com/) — Component library, task
+
   example available
+
 - [GitHub OAuth Apps
+
   Documentation](https://docs.github.com/en/apps/oauth-apps/building-oauth-apps)
   — Official OAuth implementation guide
 
 ### MEDIUM Confidence (Verified with Multiple Sources)
 
 - [Strapi: React & Next.js in 2025 Best
+
   Practices](https://strapi.io/blog/react-and-nextjs-in-2025-modern-best-practices)
   — Modern patterns
+
 - [Vercel: React Best
+
   Practices](https://vercel.com/blog/introducing-react-best-practices) — 10+
   years optimization knowledge
+
 - [Talent500: React & Next.js State,
+
   Performance](https://talent500.com/blog/modern-frontend-best-practices-with-react-and-next-js-2025/)
   — 2025 standards
+
 - [Backend Stack 2025 - DEV
+
   Community](https://dev.to/rutvikmakvana4/backend-stack-2025-3nmh) — Node.js
   ecosystem trends
+
 - [Fastify vs Express
+
   2025](https://medium.com/codetodeploy/express-or-fastify-in-2025-whats-the-right-node-js-framework-for-you-6ea247141a86)
   — Framework comparison
+
 - [PostgreSQL vs SQLite -
+
   Astera](https://www.astera.com/knowledge-center/postgresql-vs-sqlite/) —
   Database selection criteria
+
 - [Cloudinary vs AWS S3 -
-  Bytescale](https://www.bytescale.com/blog/cloudinary-vs-s3/) — Cost analysis at
+
+  Bytescale](https://www.bytescale.com/blog/cloudinary-vs-s3/) — Cost analysis
+  at
   scale
+
 - [Clerk Auth Guide for Next.js
+
   2025](https://clerk.com/articles/user-authentication-for-nextjs-top-tools-and-recommendations-for-2025)
   — Authentication options
+
 - [NextAuth vs Clerk
+
   Comparison](https://medium.com/@sagarsangwan/next-js-authentication-showdown-nextauth-free-databases-vs-clerk-vs-auth0-in-2025-e40b3e8b0c45)
   — Auth stack decision
 
 ### Additional References
 
 - [Vercel Next.js + PostgreSQL
+
   Guide](https://vercel.com/kb/guide/nextjs-prisma-postgres) — Deployment
   patterns
+
 - [Node.js TypeScript Best Practices
+
   2025](https://medium.com/@chirag.dave/node-js-in-2025-modern-practices-you-should-be-using-65f202c6651d)
   — Modern Node.js patterns
+
 - [Prisma Deep Dive
+
   2025](https://dev.to/mihir_bhadak/prisma-deep-dive-handbook-2025-from-zero-to-expert-1761)
   — ORM best practices
 

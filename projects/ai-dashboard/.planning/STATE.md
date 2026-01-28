@@ -70,6 +70,7 @@ All 6 pages + 1 detail view are complete:
 ## Known Issues
 
 1. **Build SSG Error** - `npm run build` fails during static generation due to
+
 lucide-react/useContext incompatibility. **Dev mode works perfectly** (`npm run
 dev`). Vercel deployments may handle this better.
 
@@ -89,7 +90,7 @@ ANTHROPIC_API_KEY=      # For Claude scripts
 HEYGEN_API_KEY=         # For video generation
 GITHUB_TOKEN=           # For higher rate limits
 
-```
+```markdown
 
 ### API Keys Status
 
@@ -125,7 +126,7 @@ npm run dev
 
 # Dashboard: http://localhost:3000
 
-```
+```yaml
 
 **Both (using start script):**
 
@@ -204,7 +205,7 @@ start.bat   # Windows
 
 # 4. Deploy (uses Dockerfile automatically)
 
-```
+```markdown
 
 ### Frontend → Vercel
 

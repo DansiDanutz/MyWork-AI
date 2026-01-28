@@ -27,14 +27,17 @@ from pathlib import Path
 # Configuration - Import from shared config with fallback
 try:
     from config import MYWORK_ROOT, TMP_DIR, AUTOCODER_ROOT as AUTOCODER_PATH
+
     LOG_PATH = TMP_DIR / "autocoder.log"
     ERROR_LOG_PATH = TMP_DIR / "autocoder.error.log"
 except ImportError:
+
     def _get_mywork_root():
         if env_root := os.environ.get("MYWORK_ROOT"):
             return Path(env_root)
         script_dir = Path(__file__).resolve().parent
         return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+
     MYWORK_ROOT = _get_mywork_root()
     LOG_PATH = MYWORK_ROOT / ".tmp" / "autocoder.log"
     ERROR_LOG_PATH = MYWORK_ROOT / ".tmp" / "autocoder.error.log"
@@ -43,6 +46,7 @@ except ImportError:
 SERVICE_NAME = "com.mywork.autocoder"
 PLIST_PATH = Path.home() / "Library/LaunchAgents" / f"{SERVICE_NAME}.plist"
 SERVER_URL = "http://127.0.0.1:8888"
+
 
 def get_autocoder_python() -> str:
     """Prefer Autocoder venv python when available."""
@@ -56,6 +60,7 @@ def get_autocoder_python() -> str:
         if candidate.exists():
             return str(candidate)
     return sys.executable
+
 
 def generate_plist() -> dict:
     """Generate LaunchAgent plist content."""
@@ -74,6 +79,7 @@ def generate_plist() -> dict:
             "AUTOCODER_ROOT": str(AUTOCODER_PATH),
         },
     }
+
 
 def setup():
     """Create or update the LaunchAgent plist."""
@@ -116,6 +122,7 @@ def is_running() -> bool:
     """Check if the server is actually responding."""
     try:
         import httpx
+
         response = httpx.get(f"{SERVER_URL}/health", timeout=5.0)
         return response.status_code == 200
     except:
@@ -126,9 +133,9 @@ def get_pid() -> int | None:
     """Get the PID of the running service."""
     result = run_cmd(["launchctl", "list", SERVICE_NAME], check=False)
     if result.returncode == 0:
-        lines = result.stdout.strip().split('\n')
+        lines = result.stdout.strip().split("\n")
         for line in lines:
-            parts = line.split('\t')
+            parts = line.split("\t")
             if len(parts) >= 1 and parts[0].isdigit():
                 return int(parts[0])
     return None
@@ -298,7 +305,7 @@ Examples:
   python tools/autocoder_service.py install   # First time setup
   python tools/autocoder_service.py status    # Check if running
   python tools/autocoder_service.py logs -f   # Follow logs live
-"""
+""",
     )
 
     subparsers = parser.add_subparsers(dest="command", required=True)

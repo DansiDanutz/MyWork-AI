@@ -16,36 +16,42 @@ decisions:
 
   - CACHE-001: 24-hour in-memory cache for GitHub user data (validation project
 
-```
+```text
 scale)
 
-```
+```yaml
+
   - RATE-001: Warn at 100 remaining requests, graceful degradation on exhaustion
   - PATTERN-005: ETag-based conditional requests to minimize rate limit
 
-```
+```text
 consumption
 
 ```
+
 tech-stack:
   added: []
   patterns:
 
-```
+```markdown
+
 - In-memory Map cache with TTL for API responses
 - ETag caching pattern for GitHub API
 - Graceful degradation with stale data fallback
 
-```
+```yaml
+
 key-files:
   created:
 
-```
+```markdown
+
 - src/shared/lib/analytics/github.ts
 - src/shared/lib/analytics/index.ts
 - src/shared/lib/analytics/__tests__/github.test.ts
 
 ```
+
   modified: []
 metrics:
   duration: 3 min
@@ -63,13 +69,20 @@ Created a production-ready GitHub API integration for fetching enriched user
 data (repos, activity patterns) with comprehensive rate limit handling:
 
 1. **Rate Limit Monitoring**: Parse `x-ratelimit-*` headers, warn when low,
+
 graceful degradation on exhaustion
+
 2. **ETag Caching**: Support `If-None-Match` headers - 304 responses don't count
+
 against rate limits
+
 3. **24-Hour Cache**: In-memory Map cache reduces API calls for validation
+
 project scale
+
 4. **Timeout Protection**: 5-second timeout prevents hanging requests
 5. **Helper Functions**: Token retrieval from Prisma, user enrichment
+
 convenience wrapper
 
 ### Key Implementation Details
@@ -150,13 +163,16 @@ requests
 **Risks:**
 
 - Cache stampede: If cache expires during high traffic, many requests hit API
+
   simultaneously
+
   - Mitigation: Add jitter to TTL in production (not needed for validation
 
-```
+```text
 project)
 
-```
+```yaml
+
 - Memory usage: Map cache grows unbounded if many users
   - Mitigation: Add LRU eviction or max size limit if needed
 
@@ -168,6 +184,7 @@ project)
 **Ready for:**
 
 - Plan 06-03: Export API endpoint can now fetch enriched GitHub data for brain
+
   analysis
 
 ## Brain Learning Opportunities
@@ -180,10 +197,11 @@ project)
    - Use ETag caching for free cache validation
    - Applicable to: Any GitHub API integration, similar to other rate-limited
 
-```
+```text
  APIs
 
 ```
+
 2. **In-Memory Cache with TTL** (MEDIUM value)
    - Map-based cache with timestamp tracking
    - Stale-while-revalidate pattern (return old data on error)
@@ -198,7 +216,9 @@ project)
 
 - In-memory cache doesn't survive server restarts (Redis would)
 - No request coalescing (multiple concurrent requests for same user duplicate API
+
   calls)
+
 - No cache warming strategy (first request always hits API)
 
 **Production Considerations:**

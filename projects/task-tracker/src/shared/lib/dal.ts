@@ -1,9 +1,9 @@
-import 'server-only'
-import { cache } from 'react'
-import { auth } from '@/shared/lib/auth'
-import { prisma } from '@/shared/lib/db'
-import { redirect } from 'next/navigation'
-import { Task, TaskStatus, Tag, FileAttachment, Prisma } from '@prisma/client'
+import "server-only";
+import { cache } from "react";
+import { auth } from "@/shared/lib/auth";
+import { prisma } from "@/shared/lib/db";
+import { redirect } from "next/navigation";
+import { Task, TaskStatus, Tag, FileAttachment, Prisma } from "@prisma/client";
 
 /**
  * Verify the current session and redirect to login if not authenticated.
@@ -13,14 +13,14 @@ import { Task, TaskStatus, Tag, FileAttachment, Prisma } from '@prisma/client'
  * @throws Redirects to /login if not authenticated
  */
 export const verifySession = cache(async () => {
-  const session = await auth()
+  const session = await auth();
 
   if (!session?.user?.id) {
-    redirect('/login')
+    redirect("/login");
   }
 
-  return { isAuth: true, userId: session.user.id }
-})
+  return { isAuth: true, userId: session.user.id };
+});
 
 /**
  * Get the current authenticated user with profile data.
@@ -30,7 +30,7 @@ export const verifySession = cache(async () => {
  * @returns User object with profile fields, or null if not found
  */
 export const getUser = cache(async () => {
-  const { userId } = await verifySession()
+  const { userId } = await verifySession();
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -44,11 +44,11 @@ export const getUser = cache(async () => {
       createdAt: true,
       updatedAt: true,
       // Exclude sensitive fields like accounts/sessions
-    }
-  })
+    },
+  });
 
-  return user
-})
+  return user;
+});
 
 /**
  * Get session without redirect - for checking auth status in UI.
@@ -56,85 +56,95 @@ export const getUser = cache(async () => {
  * rather than forcing a redirect.
  */
 export const getSession = cache(async () => {
-  return await auth()
-})
+  return await auth();
+});
 
 /**
  * Get all tasks for a user, grouped by status and sorted by creation date.
  * Uses React cache() for request deduplication.
  */
-export const getTasksByUser = cache(async (userId: string): Promise<(Task & { tags: Tag[], attachments: { id: string }[] })[]> => {
-  try {
-    const tasks = await prisma.task.findMany({
-      where: { userId },
-      include: {
-        tags: true,
-        attachments: {
-          select: { id: true }, // Only need ID for count
-          orderBy: { createdAt: 'desc' }
-        }
-      },
-      orderBy: [
-        { status: 'asc' }, // TODO first, then IN_PROGRESS, then DONE
-        { createdAt: 'desc' } // Newest first within each status
-      ]
-    })
+export const getTasksByUser = cache(
+  async (
+    userId: string,
+  ): Promise<(Task & { tags: Tag[]; attachments: { id: string }[] })[]> => {
+    try {
+      const tasks = await prisma.task.findMany({
+        where: { userId },
+        include: {
+          tags: true,
+          attachments: {
+            select: { id: true }, // Only need ID for count
+            orderBy: { createdAt: "desc" },
+          },
+        },
+        orderBy: [
+          { status: "asc" }, // TODO first, then IN_PROGRESS, then DONE
+          { createdAt: "desc" }, // Newest first within each status
+        ],
+      });
 
-    return tasks
-  } catch (error) {
-    console.error('Error fetching user tasks:', error)
-    return []
-  }
-})
+      return tasks;
+    } catch (error) {
+      console.error("Error fetching user tasks:", error);
+      return [];
+    }
+  },
+);
 
 /**
  * Get a single task by ID with ownership verification.
  * Returns null if task doesn't exist or user doesn't have access.
  */
-export const getTask = cache(async (taskId: string, userId: string): Promise<Task | null> => {
-  try {
-    const task = await prisma.task.findFirst({
-      where: {
-        id: taskId,
-        userId // Ensures user can only access their own tasks
-      }
-    })
+export const getTask = cache(
+  async (taskId: string, userId: string): Promise<Task | null> => {
+    try {
+      const task = await prisma.task.findFirst({
+        where: {
+          id: taskId,
+          userId, // Ensures user can only access their own tasks
+        },
+      });
 
-    return task
-  } catch (error) {
-    console.error('Error fetching task:', error)
-    return null
-  }
-})
+      return task;
+    } catch (error) {
+      console.error("Error fetching task:", error);
+      return null;
+    }
+  },
+);
 
 /**
  * Get task counts by status for dashboard statistics.
  * Useful for dashboard widgets showing task summary.
  */
-export const getTaskCounts = cache(async (userId: string): Promise<{
-  todo: number
-  inProgress: number
-  done: number
-  total: number
-}> => {
-  try {
-    const [todo, inProgress, done] = await Promise.all([
-      prisma.task.count({ where: { userId, status: 'TODO' } }),
-      prisma.task.count({ where: { userId, status: 'IN_PROGRESS' } }),
-      prisma.task.count({ where: { userId, status: 'DONE' } }),
-    ])
+export const getTaskCounts = cache(
+  async (
+    userId: string,
+  ): Promise<{
+    todo: number;
+    inProgress: number;
+    done: number;
+    total: number;
+  }> => {
+    try {
+      const [todo, inProgress, done] = await Promise.all([
+        prisma.task.count({ where: { userId, status: "TODO" } }),
+        prisma.task.count({ where: { userId, status: "IN_PROGRESS" } }),
+        prisma.task.count({ where: { userId, status: "DONE" } }),
+      ]);
 
-    return {
-      todo,
-      inProgress,
-      done,
-      total: todo + inProgress + done,
+      return {
+        todo,
+        inProgress,
+        done,
+        total: todo + inProgress + done,
+      };
+    } catch (error) {
+      console.error("Error fetching task counts:", error);
+      return { todo: 0, inProgress: 0, done: 0, total: 0 };
     }
-  } catch (error) {
-    console.error('Error fetching task counts:', error)
-    return { todo: 0, inProgress: 0, done: 0, total: 0 }
-  }
-})
+  },
+);
 
 /**
  * Get all tags for a user
@@ -143,30 +153,33 @@ export const getTagsByUser = cache(async (userId: string): Promise<Tag[]> => {
   try {
     const tags = await prisma.tag.findMany({
       where: { userId },
-      orderBy: { name: 'asc' }
-    })
-    return tags
+      orderBy: { name: "asc" },
+    });
+    return tags;
   } catch (error) {
-    console.error('Error fetching user tags:', error)
-    return []
+    console.error("Error fetching user tags:", error);
+    return [];
   }
-})
+});
 
 /**
  * Full-text search tasks using PostgreSQL tsvector.
  * Falls back to fuzzy trigram search if no FTS matches.
  */
-export const searchTasks = cache(async (
-  userId: string,
-  query: string
-): Promise<(Task & { tags: Tag[], attachments: { id: string }[], rank?: number })[]> => {
-  if (!query.trim()) {
-    return []
-  }
+export const searchTasks = cache(
+  async (
+    userId: string,
+    query: string,
+  ): Promise<
+    (Task & { tags: Tag[]; attachments: { id: string }[]; rank?: number })[]
+  > => {
+    if (!query.trim()) {
+      return [];
+    }
 
-  try {
-    // First try full-text search
-    const ftsResults = await prisma.$queryRaw<(Task & { rank: number })[]>`
+    try {
+      // First try full-text search
+      const ftsResults = await prisma.$queryRaw<(Task & { rank: number })[]>`
       SELECT id, title, description, status, "createdAt", "updatedAt", "userId",
              ts_rank(search_vector, websearch_to_tsquery('english', ${query})) as rank
       FROM tasks
@@ -174,40 +187,40 @@ export const searchTasks = cache(async (
         AND search_vector @@ websearch_to_tsquery('english', ${query})
       ORDER BY rank DESC, "createdAt" DESC
       LIMIT 50
-    `
+    `;
 
-    // If FTS returns results, fetch with tags
-    if (ftsResults.length > 0) {
-      const taskIds = ftsResults.map(r => r.id)
-      const tasksWithTags = await prisma.task.findMany({
-        where: { id: { in: taskIds } },
-        include: {
-          tags: true,
-          attachments: {
-            select: { id: true },
-            orderBy: { createdAt: 'desc' }
-          }
-        }
-      })
+      // If FTS returns results, fetch with tags
+      if (ftsResults.length > 0) {
+        const taskIds = ftsResults.map((r) => r.id);
+        const tasksWithTags = await prisma.task.findMany({
+          where: { id: { in: taskIds } },
+          include: {
+            tags: true,
+            attachments: {
+              select: { id: true },
+              orderBy: { createdAt: "desc" },
+            },
+          },
+        });
 
-      // Preserve FTS ranking order
-      const taskMap = new Map(tasksWithTags.map(t => [t.id, t]))
-      return ftsResults.map(r => ({
-        ...taskMap.get(r.id)!,
-        rank: r.rank
-      }))
-    }
+        // Preserve FTS ranking order
+        const taskMap = new Map(tasksWithTags.map((t) => [t.id, t]));
+        return ftsResults.map((r) => ({
+          ...taskMap.get(r.id)!,
+          rank: r.rank,
+        }));
+      }
 
-    // Fallback to fuzzy trigram search
-    const fuzzyResults = await prisma.$queryRaw<Task[]>`
+      // Fallback to fuzzy trigram search
+      const fuzzyResults = await prisma.$queryRaw<Task[]>`
       SELECT id, title, description, status, "createdAt", "updatedAt", "userId"
       FROM tasks
       WHERE "userId" = ${userId}
         AND (
           title % ${query}
           OR description % ${query}
-          OR title ILIKE ${'%' + query + '%'}
-          OR description ILIKE ${'%' + query + '%'}
+          OR title ILIKE ${"%" + query + "%"}
+          OR description ILIKE ${"%" + query + "%"}
         )
       ORDER BY
         GREATEST(
@@ -216,178 +229,183 @@ export const searchTasks = cache(async (
         ) DESC,
         "createdAt" DESC
       LIMIT 50
-    `
+    `;
 
-    if (fuzzyResults.length > 0) {
-      const taskIds = fuzzyResults.map(r => r.id)
-      const tasksWithTags = await prisma.task.findMany({
-        where: { id: { in: taskIds } },
-        include: {
-          tags: true,
-          attachments: {
-            select: { id: true },
-            orderBy: { createdAt: 'desc' }
-          }
-        }
-      })
-      const taskMap = new Map(tasksWithTags.map(t => [t.id, t]))
-      return fuzzyResults.map(r => taskMap.get(r.id)!)
+      if (fuzzyResults.length > 0) {
+        const taskIds = fuzzyResults.map((r) => r.id);
+        const tasksWithTags = await prisma.task.findMany({
+          where: { id: { in: taskIds } },
+          include: {
+            tags: true,
+            attachments: {
+              select: { id: true },
+              orderBy: { createdAt: "desc" },
+            },
+          },
+        });
+        const taskMap = new Map(tasksWithTags.map((t) => [t.id, t]));
+        return fuzzyResults.map((r) => taskMap.get(r.id)!);
+      }
+
+      return [];
+    } catch (error) {
+      console.error("Error searching tasks:", error);
+      return [];
     }
-
-    return []
-  } catch (error) {
-    console.error('Error searching tasks:', error)
-    return []
-  }
-})
+  },
+);
 
 /**
  * Filter tasks by status, tags, and date range.
  * All filters are optional and combined with AND logic.
  */
-export const filterTasks = cache(async (
-  userId: string,
-  filters: {
-    status?: TaskStatus[]
-    tagIds?: string[]
-    dateFrom?: Date
-    dateTo?: Date
-  }
-): Promise<(Task & { tags: Tag[], attachments: { id: string }[] })[]> => {
-  try {
-    const where: Prisma.TaskWhereInput = {
-      userId,
-      ...(filters.status?.length && { status: { in: filters.status } }),
-      ...(filters.tagIds?.length && {
-        tags: {
-          some: { id: { in: filters.tagIds } }
-        }
-      }),
-      ...(filters.dateFrom && { createdAt: { gte: filters.dateFrom } }),
-      ...(filters.dateTo && { createdAt: { lte: filters.dateTo } }),
+export const filterTasks = cache(
+  async (
+    userId: string,
+    filters: {
+      status?: TaskStatus[];
+      tagIds?: string[];
+      dateFrom?: Date;
+      dateTo?: Date;
+    },
+  ): Promise<(Task & { tags: Tag[]; attachments: { id: string }[] })[]> => {
+    try {
+      const where: Prisma.TaskWhereInput = {
+        userId,
+        ...(filters.status?.length && { status: { in: filters.status } }),
+        ...(filters.tagIds?.length && {
+          tags: {
+            some: { id: { in: filters.tagIds } },
+          },
+        }),
+        ...(filters.dateFrom && { createdAt: { gte: filters.dateFrom } }),
+        ...(filters.dateTo && { createdAt: { lte: filters.dateTo } }),
+      };
+
+      const tasks = await prisma.task.findMany({
+        where,
+        include: {
+          tags: true,
+          attachments: {
+            select: { id: true },
+            orderBy: { createdAt: "desc" },
+          },
+        },
+        orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+      });
+
+      return tasks;
+    } catch (error) {
+      console.error("Error filtering tasks:", error);
+      return [];
     }
-
-    const tasks = await prisma.task.findMany({
-      where,
-      include: {
-        tags: true,
-        attachments: {
-          select: { id: true },
-          orderBy: { createdAt: 'desc' }
-        }
-      },
-      orderBy: [
-        { status: 'asc' },
-        { createdAt: 'desc' }
-      ]
-    })
-
-    return tasks
-  } catch (error) {
-    console.error('Error filtering tasks:', error)
-    return []
-  }
-})
+  },
+);
 
 /**
  * Get task with tags and attachments for display.
  */
-export const getTaskWithTags = cache(async (
-  taskId: string,
-  userId: string
-): Promise<(Task & { tags: Tag[], attachments: FileAttachment[] }) | null> => {
-  try {
-    const task = await prisma.task.findFirst({
-      where: { id: taskId, userId },
-      include: {
-        tags: true,
-        attachments: {
-          orderBy: { createdAt: 'desc' }
-        }
-      }
-    })
-    return task
-  } catch (error) {
-    console.error('Error fetching task with tags and attachments:', error)
-    return null
-  }
-})
+export const getTaskWithTags = cache(
+  async (
+    taskId: string,
+    userId: string,
+  ): Promise<
+    (Task & { tags: Tag[]; attachments: FileAttachment[] }) | null
+  > => {
+    try {
+      const task = await prisma.task.findFirst({
+        where: { id: taskId, userId },
+        include: {
+          tags: true,
+          attachments: {
+            orderBy: { createdAt: "desc" },
+          },
+        },
+      });
+      return task;
+    } catch (error) {
+      console.error("Error fetching task with tags and attachments:", error);
+      return null;
+    }
+  },
+);
 
 /**
  * Get all file attachments for a task with ownership verification.
  */
-export const getFilesByTask = cache(async (
-  taskId: string,
-  userId: string
-): Promise<FileAttachment[]> => {
-  try {
-    const files = await prisma.fileAttachment.findMany({
-      where: { taskId, userId },
-      orderBy: { createdAt: 'desc' },
-    })
-    return files
-  } catch (error) {
-    console.error('Error fetching task files:', error)
-    return []
-  }
-})
+export const getFilesByTask = cache(
+  async (taskId: string, userId: string): Promise<FileAttachment[]> => {
+    try {
+      const files = await prisma.fileAttachment.findMany({
+        where: { taskId, userId },
+        orderBy: { createdAt: "desc" },
+      });
+      return files;
+    } catch (error) {
+      console.error("Error fetching task files:", error);
+      return [];
+    }
+  },
+);
 
 /**
  * Get a single file attachment with ownership verification.
  */
-export const getFile = cache(async (
-  fileId: string,
-  userId: string
-): Promise<FileAttachment | null> => {
-  try {
-    const file = await prisma.fileAttachment.findFirst({
-      where: { id: fileId, userId },
-    })
-    return file
-  } catch (error) {
-    console.error('Error fetching file:', error)
-    return null
-  }
-})
+export const getFile = cache(
+  async (fileId: string, userId: string): Promise<FileAttachment | null> => {
+    try {
+      const file = await prisma.fileAttachment.findFirst({
+        where: { id: fileId, userId },
+      });
+      return file;
+    } catch (error) {
+      console.error("Error fetching file:", error);
+      return null;
+    }
+  },
+);
 
 /**
  * Get file count for a task (for UI indicators).
  */
-export const getTaskFileCount = cache(async (
-  taskId: string,
-  userId: string
-): Promise<number> => {
-  try {
-    const count = await prisma.fileAttachment.count({
-      where: { taskId, userId },
-    })
-    return count
-  } catch (error) {
-    console.error('Error counting task files:', error)
-    return 0
-  }
-})
+export const getTaskFileCount = cache(
+  async (taskId: string, userId: string): Promise<number> => {
+    try {
+      const count = await prisma.fileAttachment.count({
+        where: { taskId, userId },
+      });
+      return count;
+    } catch (error) {
+      console.error("Error counting task files:", error);
+      return 0;
+    }
+  },
+);
 
 /**
  * Get task with files included.
  */
-export const getTaskWithFiles = cache(async (
-  taskId: string,
-  userId: string
-): Promise<(Task & { attachments: FileAttachment[], tags: Tag[] }) | null> => {
-  try {
-    const task = await prisma.task.findFirst({
-      where: { id: taskId, userId },
-      include: {
-        attachments: {
-          orderBy: { createdAt: 'desc' },
+export const getTaskWithFiles = cache(
+  async (
+    taskId: string,
+    userId: string,
+  ): Promise<
+    (Task & { attachments: FileAttachment[]; tags: Tag[] }) | null
+  > => {
+    try {
+      const task = await prisma.task.findFirst({
+        where: { id: taskId, userId },
+        include: {
+          attachments: {
+            orderBy: { createdAt: "desc" },
+          },
+          tags: true,
         },
-        tags: true,
-      },
-    })
-    return task
-  } catch (error) {
-    console.error('Error fetching task with files:', error)
-    return null
-  }
-})
+      });
+      return task;
+    } catch (error) {
+      console.error("Error fetching task with files:", error);
+      return null;
+    }
+  },
+);

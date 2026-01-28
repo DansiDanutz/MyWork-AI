@@ -1,9 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { LuVideo, LuNewspaper, LuFolderGit2, LuBot, LuRefreshCw, LuClock } from 'react-icons/lu';
-import { getStats, Stats } from '@/lib/api';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import {
+  LuVideo,
+  LuNewspaper,
+  LuFolderGit2,
+  LuBot,
+  LuRefreshCw,
+  LuClock,
+} from "react-icons/lu";
+import { getStats, Stats } from "@/lib/api";
 
 export default function DashboardClient() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -21,7 +28,7 @@ export default function DashboardClient() {
       setStats(data);
       setError(null);
     } catch (err) {
-      setError('Failed to load dashboard stats');
+      setError("Failed to load dashboard stats");
       console.error(err);
     } finally {
       setLoading(false);
@@ -30,32 +37,32 @@ export default function DashboardClient() {
 
   const statCards = [
     {
-      title: 'AI Videos',
+      title: "AI Videos",
       count: stats?.videos || 0,
       icon: LuVideo,
-      href: '/videos',
-      color: 'from-red-500 to-pink-500',
+      href: "/videos",
+      color: "from-red-500 to-pink-500",
     },
     {
-      title: 'AI News',
+      title: "AI News",
       count: stats?.news || 0,
       icon: LuNewspaper,
-      href: '/news',
-      color: 'from-blue-500 to-cyan-500',
+      href: "/news",
+      color: "from-blue-500 to-cyan-500",
     },
     {
-      title: 'GitHub Projects',
+      title: "GitHub Projects",
       count: stats?.projects || 0,
       icon: LuFolderGit2,
-      href: '/projects',
-      color: 'from-green-500 to-emerald-500',
+      href: "/projects",
+      color: "from-green-500 to-emerald-500",
     },
     {
-      title: 'Automations',
+      title: "Automations",
       count: stats?.automations || 0,
       icon: LuBot,
-      href: '/youtube-bot',
-      color: 'from-purple-500 to-violet-500',
+      href: "/youtube-bot",
+      color: "from-purple-500 to-violet-500",
     },
   ];
 
@@ -109,9 +116,13 @@ export default function DashboardClient() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-500">{card.title}</p>
-                <p className="text-3xl font-bold mt-1">{card.count.toLocaleString()}</p>
+                <p className="text-3xl font-bold mt-1">
+                  {card.count.toLocaleString()}
+                </p>
               </div>
-              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${card.color} flex items-center justify-center`}>
+              <div
+                className={`w-12 h-12 rounded-xl bg-gradient-to-br ${card.color} flex items-center justify-center`}
+              >
                 <card.icon className="w-6 h-6 text-white" />
               </div>
             </div>
@@ -123,26 +134,41 @@ export default function DashboardClient() {
       <div className="bg-white rounded-xl shadow-sm border border-gray-100">
         <div className="p-6 border-b border-gray-100">
           <h2 className="text-xl font-semibold">Recent Scrapes</h2>
-          <p className="text-sm text-gray-500 mt-1">Latest data collection activity</p>
+          <p className="text-sm text-gray-500 mt-1">
+            Latest data collection activity
+          </p>
         </div>
         <div className="divide-y divide-gray-100">
           {stats?.recent_scrapes && stats.recent_scrapes.length > 0 ? (
             stats.recent_scrapes.map((scrape, index) => (
-              <div key={index} className="p-4 flex items-center justify-between">
+              <div
+                key={index}
+                className="p-4 flex items-center justify-between"
+              >
                 <div className="flex items-center gap-4">
-                  <div className={`w-3 h-3 rounded-full ${
-                    scrape.status === 'success' ? 'bg-green-500' :
-                    scrape.status === 'running' ? 'bg-yellow-500 animate-pulse' :
-                    'bg-red-500'
-                  }`} />
+                  <div
+                    className={`w-3 h-3 rounded-full ${
+                      scrape.status === "success"
+                        ? "bg-green-500"
+                        : scrape.status === "running"
+                          ? "bg-yellow-500 animate-pulse"
+                          : "bg-red-500"
+                    }`}
+                  />
                   <div>
-                    <p className="font-medium capitalize">{scrape.scraper.replace('_', ' ')}</p>
-                    <p className="text-sm text-gray-500">{scrape.items} items collected</p>
+                    <p className="font-medium capitalize">
+                      {scrape.scraper.replace("_", " ")}
+                    </p>
+                    <p className="text-sm text-gray-500">
+                      {scrape.items} items collected
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-gray-500">
                   <LuClock className="w-4 h-4" />
-                  {scrape.started_at ? new Date(scrape.started_at).toLocaleString() : 'N/A'}
+                  {scrape.started_at
+                    ? new Date(scrape.started_at).toLocaleString()
+                    : "N/A"}
                 </div>
               </div>
             ))

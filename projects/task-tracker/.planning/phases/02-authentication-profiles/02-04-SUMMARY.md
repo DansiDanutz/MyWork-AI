@@ -19,7 +19,8 @@ tech-stack:
 key-files:
   created:
 
-```
+```markdown
+
 - src/app/(app)/layout.tsx
 - src/shared/components/UserMenu.tsx
 - src/app/actions/profile.ts
@@ -27,14 +28,17 @@ key-files:
 - src/app/(app)/settings/layout.tsx
 - src/app/(app)/settings/profile/page.tsx
 
-```
+```yaml
+
   modified:
 
-```
+```markdown
+
 - src/shared/components/index.ts
 - src/shared/hooks/useDebounce.ts
 
 ```
+
 duration: 4 minutes
 completed: 2026-01-24
 ---
@@ -105,7 +109,9 @@ functionality and user menu navigation.
 - Initial implementation used single debounced function with field parameter
 - TypeScript generic constraint `unknown[]` prevented proper type inference
 - **Solution:** Changed useDebounce constraint from `unknown[]` to `any[]` for
+
   better inference
+
 - Created separate save functions per field for type safety
 
 **Code Structure:**
@@ -136,7 +142,7 @@ async function handleSignOut() {
 // Passed to client component:
 <UserMenu user={session.user} signOutAction={handleSignOut} />
 
-```
+```markdown
 
 This pattern keeps auth logic server-side while enabling client interactivity.
 
@@ -182,7 +188,9 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 
 - **Found during:** Task 2 (Profile Server Actions)
 - **Issue:** Used `validation.error.errors[0]` instead of
+
   `validation.error.issues[0]`
+
 - **Fix:** Changed to correct Zod API (`issues` instead of `errors`)
 - **Files modified:** src/app/actions/profile.ts
 - **Commit:** f9088b6
@@ -191,14 +199,20 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 
 - **Found during:** Task 3 (ProfileForm component)
 - **Issue:** Generic constraint `unknown[]` prevented TypeScript from inferring
+
   function types
+
 - **Fix:** Changed constraint to `any[]` for proper inference with typed
+
   callbacks
+
 - **Files modified:** src/shared/hooks/useDebounce.ts
 - **Commit:** 640ba49
 - **Justification:** The `any[]` constraint still preserves type safety through
+
   `Parameters<T>` inference, but allows TypeScript to accept explicitly typed
-  functions. Alternative would have been to weaken all type checking or duplicate
+  functions. Alternative would have been to weaken all type checking or
+  duplicate
   the hook.
 
 ## Testing Notes
@@ -211,7 +225,9 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 **Build Status:**
 
 - Production build fails due to known Next.js 15.0.3 bug (documented in STATE.md
+
   blocker)
+
 - Development server works correctly
 - Not a regression from this plan
 
@@ -275,12 +291,13 @@ This pattern keeps auth logic server-side while enabling client interactivity.
 const saveField = useCallback<(value: string) => Promise<void>>(
   async (value) => {
 
-```
+```javascript
+
 setStatus('saving')
 const result = await updateProfileField('field', value)
 setStatus(result.success ? 'saved' : 'error')
 
-```
+```javascript
   }, []
 )
 
@@ -371,7 +388,7 @@ function hook<T extends (...args: unknown[]) => unknown>(cb: T) { }
 // Use:
 function hook<T extends (...args: any[]) => any>(cb: T) { }
 
-```
+```yaml
 
 **When to use:**
 

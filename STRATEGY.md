@@ -11,9 +11,13 @@ project to marketplace product.
 MyWork is composed of three engines:
 
 - Framework Engine: tooling, workflows, and automation that improve delivery
+
   speed.
+
 - Brain Engine: knowledge vault that captures patterns, fixes, and reusable
+
   solutions.
+
 - Marketplace Engine: distribution and monetization of production-ready projects.
 
 The loop: build -> capture -> package -> sell -> feedback -> improve.

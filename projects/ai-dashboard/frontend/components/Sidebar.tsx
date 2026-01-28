@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   LuHouse,
   LuVideo,
@@ -9,15 +9,15 @@ import {
   LuFolderGit2,
   LuBot,
   LuSettings,
-  LuActivity
-} from 'react-icons/lu';
+  LuActivity,
+} from "react-icons/lu";
 
 const navigation = [
-  { name: 'Dashboard', href: '/', icon: LuHouse },
-  { name: 'AI Videos', href: '/videos', icon: LuVideo },
-  { name: 'AI News', href: '/news', icon: LuNewspaper },
-  { name: 'GitHub Projects', href: '/projects', icon: LuFolderGit2 },
-  { name: 'YouTube Bot', href: '/youtube-bot', icon: LuBot },
+  { name: "Dashboard", href: "/", icon: LuHouse },
+  { name: "AI Videos", href: "/videos", icon: LuVideo },
+  { name: "AI News", href: "/news", icon: LuNewspaper },
+  { name: "GitHub Projects", href: "/projects", icon: LuFolderGit2 },
+  { name: "YouTube Bot", href: "/youtube-bot", icon: LuBot },
 ];
 
 export function Sidebar() {
@@ -49,8 +49,8 @@ export function Sidebar() {
                   href={item.href}
                   className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                     isActive
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-300 hover:bg-gray-800 hover:text-white"
                   }`}
                 >
                   <item.icon className="w-5 h-5" />

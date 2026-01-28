@@ -48,7 +48,7 @@ Before we start building, let's understand what makes GSD different:
    ↓
 🔄 Endless refactoring
 
-```
+```markdown
 
 ### **GSD Approach:**
 
@@ -65,7 +65,7 @@ Before we start building, let's understand what makes GSD different:
    ↓
 ✅ Verify each phase before continuing
 
-```
+```yaml
 
 **Result:** Faster development, higher quality, fewer bugs.
 
@@ -87,7 +87,7 @@ cd projects/todo-web-app
 ```bash
 mw gsd new-project
 
-```
+```yaml
 
 **Follow the prompts with these responses:**
 
@@ -103,21 +103,21 @@ A modern web-based todo application with user authentication, task categories, a
 ```python
 Individual users who want a clean, fast todo app accessible from any device. Power users who need categories and organization features.
 
-```
+```yaml
 
 **Key features:**
 
 ```text
 User registration and authentication, task CRUD operations, task categories/projects, responsive mobile-first design, data persistence, search and filtering, task due dates, priority levels.
 
-```
+```yaml
 
 **Success criteria:**
 
 ```text
 Users can register, log in, create and manage tasks with categories, and use the app effectively on both desktop and mobile devices. App should be fast, intuitive, and reliable.
 
-```
+```markdown
 
 ### **1.3 Review the generated roadmap**
 
@@ -156,7 +156,7 @@ Before planning, let's gather context about authentication decisions:
 ```bash
 mw gsd discuss-phase 1
 
-```
+```yaml
 
 **GSD will ask about gray areas like:**
 
@@ -183,7 +183,7 @@ mw gsd plan-phase 1
 
 **Watch GSD work:**
 
-```
+```yaml
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  GSD ► RESEARCHING PHASE 1
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -199,7 +199,7 @@ mw gsd plan-phase 1
 - Identify security requirements
 - Find recommended libraries (NextAuth, bcrypt, etc.)
 
-```
+```yaml
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
  GSD ► PLANNING PHASE 1
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -237,7 +237,7 @@ mw gsd execute-phase 1
 
 ◆ Plan 01-03: Login and register UI... ✅ (commit i7j8k9l)
 
-```
+```markdown
 
 ### **2.4 Verify Phase 1**
 
@@ -271,7 +271,7 @@ If verification passes:
 mw gsd progress  # Check status
 mw gsd execute-phase 2  # Build core task management
 
-```
+```yaml
 
 **Phase 2 will add:**
 
@@ -316,7 +316,7 @@ None
 
 Complete Phase 2 execution, then move to Phase 3 (Categories)
 
-```
+```markdown
 
 ### **3.2 Cross-session memory**
 
@@ -363,7 +363,7 @@ mw gsd progress
 ```bash
 tree src/ -I node_modules  # See the generated structure
 
-```
+```yaml
 
 **You'll find:**
 
@@ -384,10 +384,11 @@ src/
 │   └── validations.ts      # Form validation schemas
 └── types/
 
-```
+```text
+
 └── index.ts            # TypeScript type definitions
 
-```
+```text
 
 ```
 
@@ -461,7 +462,7 @@ npm run dev
 
 # 5. Test mobile responsiveness
 
-```
+```markdown
 
 ---
 
@@ -485,7 +486,7 @@ Phase 4: UI polish (depends on Phases 1-3)
 
 Within phases, GSD runs independent tasks in parallel:
 
-```
+```yaml
 Wave 1: Database setup + API routes (parallel)
 Wave 2: UI components (after Wave 1)
 Wave 3: Integration tests (after Wave 2)
@@ -510,7 +511,7 @@ mw gsd add-phase
 
 mw gsd remove-phase 5
 
-```
+```markdown
 
 ---
 
@@ -615,7 +616,7 @@ mw gsd discuss-phase [next-phase]
 
 # Then plan and execute normally
 
-```
+```markdown
 
 ---
 

@@ -35,7 +35,7 @@ together.
 
    # Add your API keys
 
-   ```
+```yaml
 
 4. Install pre-commit hooks:
 
@@ -50,7 +50,7 @@ together.
    ```bash
    python tools/mw.py doctor
 
-   ```
+```markdown
 
 ## How to Contribute
 
@@ -90,7 +90,7 @@ type(scope): description
 
 [optional footer]
 
-```
+```yaml
 
 Types:
 
@@ -108,7 +108,7 @@ feat(brain): add auto-discovery from git commits
 fix(mw): handle missing projects directory
 docs(readme): update installation instructions
 
-```
+```markdown
 
 #### Pull Request Process
 
@@ -138,22 +138,32 @@ docs(readme): update installation instructions
 ```python
 def search_modules(query: str, limit: int = 10) -> List[Module]:
 
-```
+```yaml
+
 """
 Search the module registry.
 
 Args:
-    query: Search term
-    limit: Maximum results to return
+
+```yaml
+query: Search term
+limit: Maximum results to return
+
+```
 
 Returns:
-    List of matching modules
+
+```text
+List of matching modules
+
+```markdown
+
 """
 pass
 
-```
+```markdown
 
-```
+```markdown
 
 #### Documentation
 
@@ -187,19 +197,21 @@ MyWork/
    ```python
    def main():
 
-```
+```text
+
    """Main entry point."""
    pass
 
-```
+```python
    if __name__ == "__main__":
 
-```
+```text
+
    main()
 
-```
+```markdown
 
-   ```
+```markdown
 
 3. Add to `mw.py` if user-facing
 
@@ -249,7 +261,7 @@ python tools/mw.py status
 
 python tools/my_tool.py --help
 
-```
+```markdown
 
 ## Questions?
 

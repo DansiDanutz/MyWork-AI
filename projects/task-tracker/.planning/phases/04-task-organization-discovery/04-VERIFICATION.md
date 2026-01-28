@@ -73,9 +73,13 @@ score: 5/5 must-haves verified
 **Notes:**
 
 - 4 instances of "TODO" found but all were CSS classes (`TODO` status) or
+
   documentation comments, not stub markers
+
 - No `return null`, `return {}`, or `return []` stub patterns found in key
+
   components
+
 - All components have substantive implementations (60-191 lines each)
 - All functions have real logic (not console.log stubs)
 
@@ -140,7 +144,9 @@ All required files exist:
 - ✅ DAL functions (searchTasks, filterTasks, getTagsByUser)
 - ✅ Server Actions (tags.ts with 4 actions, search.ts with 3 actions)
 - ✅ UI components (TagBadge, TagInput, TaskSearchBar, TaskFilters, EmptyState,
+
   TaskListWithFilters)
+
 - ✅ URL state management (search-params.ts with nuqs parsers)
 - ✅ Integrated tasks page
 
@@ -201,7 +207,7 @@ User types in TaskSearchBar
   → Results passed to TaskListWithFilters
   → TaskList renders TaskCards with TagBadges
 
-```
+```markdown
 
 All steps verified functional ✅
 
@@ -265,7 +271,7 @@ model Tag {
   @@index([userId])
 }
 
-```
+```yaml
 
 ✅ All fields present
 ✅ Implicit many-to-many with Task (Prisma generates _TagToTask)

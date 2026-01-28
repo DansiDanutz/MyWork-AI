@@ -73,7 +73,7 @@ responsibly.
    ```bash
    python tools/mw.py update check
 
-   ```
+```markdown
 
 ### For Contributors
 

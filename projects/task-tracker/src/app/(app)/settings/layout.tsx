@@ -1,9 +1,9 @@
-import Link from 'next/link'
+import Link from "next/link";
 
 export default function SettingsLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <div className="max-w-4xl mx-auto">
@@ -33,5 +33,5 @@ export default function SettingsLayout({
         </div>
       </div>
     </div>
-  )
+  );
 }

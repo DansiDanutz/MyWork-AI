@@ -28,5 +28,5 @@ export default function ProjectsLoading() {
         ))}
       </div>
     </div>
-  )
+  );
 }

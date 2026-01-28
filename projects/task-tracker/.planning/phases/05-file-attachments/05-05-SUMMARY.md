@@ -121,17 +121,22 @@ FileList
 │   └── FileTypeIcon (fallback)
 └── FilePreview (modal)
 
-```
+```text
+
 ├── Download action
 ├── Delete action (optional)
 └── Content display
-    ├── Image preview
-    ├── PDF iframe
-    └── Download prompt
+
+```text
+├── Image preview
+├── PDF iframe
+└── Download prompt
 
 ```
 
-```
+```markdown
+
+```markdown
 
 ### State Management
 

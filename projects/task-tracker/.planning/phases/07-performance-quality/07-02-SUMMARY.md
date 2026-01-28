@@ -12,48 +12,55 @@ tech-stack:
 key-files:
   created:
 
-```
+```markdown
+
 - src/shared/components/LazyFileDropzone.tsx
 - src/shared/components/LazyFileList.tsx
 
-```
+```yaml
+
   modified:
 
-```
+```markdown
+
 - src/shared/components/FileDropzone.tsx
 - src/shared/components/TaskEditFormWithTags.tsx
 - src/shared/components/index.ts
 - next.config.ts
 
 ```
+
 decisions:
 
   - id: LAZY-001
 
-```
+```yaml
 date: 2026-01-26
 decision: Use next/dynamic with ssr: false for file components
 rationale: File components use browser APIs (FileReader, drag-drop) and
 heavy libraries (tus-js-client, react-dropzone, file-type)
 
-```
+```yaml
+
   - id: LAZY-002
 
-```
+```yaml
 date: 2026-01-26
 decision: Show skeleton loading fallbacks during component load
 rationale: Visual feedback improves perceived performance and prevents
 layout shift
 
 ```
+
   - id: BUNDLE-001
 
-```
+```yaml
 date: 2026-01-26
 decision: Use optimizePackageImports for @heroicons/react
 rationale: Tree-shake unused icons to reduce bundle size
 
-```
+```yaml
+
 metrics:
   duration: 5 minutes
   completed: 2026-01-26
@@ -73,7 +80,9 @@ imports:
 **Lazy Wrappers:**
 
 - `LazyFileDropzone` - Wraps FileDropzone with loading fallback (skeleton upload
+
   area)
+
 - `LazyFileList` - Wraps FileList with loading fallback (skeleton file items)
 - Both use `ssr: false` since they rely on browser-only APIs
 
@@ -151,7 +160,9 @@ appears
 
 - **Found during:** Task 1 TypeScript verification
 - **Issue:** FileAttachment type uses `storedFilename` but code referenced
+
   `filePath`
+
 - **Fix:** Updated handleFileUploadComplete to use correct field name
 - **Files modified:** src/shared/components/TaskEditFormWithTags.tsx
 - **Commit:** 2c46656
@@ -160,12 +171,18 @@ appears
 
 - **Found during:** Task 3 build verification
 - **Issue:** Production build fails with "Html should not be imported outside
+
   pages/_document"
+
 - **Analysis:** Pre-existing error (confirmed by testing before my changes),
+
   related to Next.js 15 error page generation
+
 - **Impact:** Affects production builds but not development server
 - **Decision:** Documented but not fixed (out of scope for lazy loading task,
+
   would require significant investigation)
+
 - **Tracked in:** Commit message for 6a5284c
 
 ## Files Changed
@@ -224,6 +241,7 @@ appears
 
 - ⚠️ Production build error (pre-existing, affects deployments)
 - Recommend investigating Next.js 15 error page issue before production
+
   deployment
 
 **Recommendations:**
@@ -249,17 +267,24 @@ appears
 ### What Worked Well
 
 1. **next/dynamic pattern** - Simple wrapper approach keeps original components
+
 unchanged
+
 2. **Loading fallbacks** - Skeleton UI provides good perceived performance
 3. **Bundle optimization config** - Zero-code-change optimizations via Next.js
+
 config
 
 ### What Could Be Improved
 
 1. **Bundle size measurement** - Should have measured actual bundle reduction
+
 with webpack-bundle-analyzer
+
 2. **Production build testing** - Pre-existing build error should have been
+
 flagged earlier in phase
+
 3. **Lazy loading metrics** - Could track component load times and user impact
 
 ### Reusable Patterns
@@ -270,7 +295,8 @@ flagged earlier in phase
 
    const LazyComponent = dynamic(
 
-```
+```javascript
+
  () => import('./Component').then((mod) => mod.Component),
  {
    loading: () => <SkeletonUI />,
@@ -293,14 +319,15 @@ flagged earlier in phase
 
    experimental: {
 
-```
+```yaml
+
  optimizePackageImports: ['@heroicons/react'],
 
-```
+```yaml
    },
    serverExternalPackages: ['sharp'], // server-only packages
 
-   ```
+```markdown
 
 ## Framework Brain Contributions
 
@@ -320,4 +347,5 @@ flagged earlier in phase
 - optimizePackageImports can tree-shake icon libraries effectively
 - Loading fallbacks should match component dimensions to prevent layout shift
 - Pre-existing build errors can be difficult to isolate during new feature
+
   development

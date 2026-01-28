@@ -10,10 +10,11 @@ requires:
 
   - phase: 04-01
 
-```
+```yaml
 provides: Tag database schema, Server Actions, DAL functions
 
-```
+```yaml
+
 provides:
 
   - TagBadge component with color-coded display
@@ -33,23 +34,27 @@ tech-stack:
 key-files:
   created:
 
-```
+```markdown
+
 - src/shared/components/TagBadge.tsx
 - src/shared/components/TagInput.tsx
 - src/shared/components/TaskFormWithTags.tsx
 - src/shared/components/TaskEditFormWithTags.tsx
 
 ```
+
   modified:
 
-```
+```markdown
+
 - src/shared/components/TaskCard.tsx
 - src/shared/components/TaskList.tsx
 - src/app/(app)/tasks/new/page.tsx
 - src/app/(app)/tasks/[id]/edit/page.tsx
 - src/shared/lib/dal.ts
 
-```
+```yaml
+
 key-decisions:
 
   - "UI-010: Tag colors assigned randomly from preset palette for visual variety"
@@ -86,7 +91,9 @@ in creation and edit forms, syncing immediately to server**
 
 - TagBadge component displays colored tag pills with optional remove button
 - TagInput autocomplete dropdown filters existing tags and creates new ones on
+
   Enter
+
 - Task cards show up to 3 tags with "+N more" overflow indicator
 - Task creation form includes tag input with temporary tag display
 - Task edit form syncs tag changes immediately to server with rollback on error
@@ -100,6 +107,7 @@ Each task was committed atomically:
 3. **Task 3: Update TaskCard to display tags** - `90062d2` (feat)
 4. **Task 4: Update TaskForm to include tag input** - `80cd350` (feat)
 5. **Task 5: Update TaskEditForm to include tag management** - `be548ed` +
+
 `af8ca06` (feat)
 
 **Auto-fixes:**
@@ -114,12 +122,19 @@ Each task was committed atomically:
 **Created:**
 
 - `src/shared/components/TagBadge.tsx` - Color-coded tag pill with optional
+
   remove button
+
 - `src/shared/components/TagInput.tsx` - Autocomplete tag input with
+
   create-on-enter
+
 - `src/shared/components/TaskFormWithTags.tsx` - Task creation form with tag
+
   support
+
 - `src/shared/components/TaskEditFormWithTags.tsx` - Task edit form with
+
   real-time tag sync
 
 **Modified:**
@@ -128,7 +143,9 @@ Each task was committed atomically:
 - `src/shared/components/TaskList.tsx` - Accept tasks with tags in type signature
 - `src/app/(app)/tasks/new/page.tsx` - Fetch tags and use TaskFormWithTags
 - `src/app/(app)/tasks/[id]/edit/page.tsx` - Fetch tags and use
+
   TaskEditFormWithTags
+
 - `src/shared/lib/dal.ts` - Include tags in getTasksByUser query
 - `src/shared/components/index.ts` - Export new tag components
 - `package.json` - Add @heroicons/react dependency
@@ -178,7 +195,9 @@ Each task was committed atomically:
 
 - **Found during:** Build verification
 - **Issue:** getRandomColor function defined but never used in TagInput,
+
   UpdateTaskTagsSchema unused in tags.ts
+
 - **Fix:** Removed unused function and schema
 - **Files modified:** src/shared/components/TagInput.tsx, src/app/actions/tags.ts
 - **Verification:** Lint passes, build succeeds
@@ -188,9 +207,13 @@ Each task was committed atomically:
 
 - **Found during:** Build verification
 - **Issue:** TypeScript `any[]` types and unescaped apostrophes blocking
+
   production build
+
 - **Fix:** Replaced `any[]` with `unknown[]`, escaped apostrophes in
+
   not-found.tsx
+
 - **Files modified:** src/app/actions/search.ts, src/app/not-found.tsx
 - **Verification:** Lint passes
 - **Committed in:** 5119b35
@@ -199,9 +222,13 @@ Each task was committed atomically:
 
 - **Found during:** Build verification
 - **Issue:** search_performed and filter_applied events used but not defined in
+
   analytics schema
+
 - **Fix:** Added FilterAppliedEventSchema and corrected
+
   SearchPerformedEventSchema properties
+
 - **Files modified:** src/shared/lib/analytics/types.ts
 - **Verification:** TypeScript compiles, events type-safe
 - **Committed in:** 83d60c3
@@ -219,9 +246,13 @@ Each task was committed atomically:
 
 - **Found during:** Task 3 implementation
 - **Issue:** getTasksByUser returned tasks without tags, breaking TaskCard
+
   display
+
 - **Fix:** Added `include: { tags: true }` to getTasksByUser query, updated
+
   return type
+
 - **Files modified:** src/shared/lib/dal.ts
 - **Verification:** TypeScript compiles, tasks have tags
 - **Committed in:** be548ed
@@ -239,7 +270,9 @@ No scope creep.
 - Production builds fail with webpack bundling error
 - Workaround: Development server works correctly, TypeScript compilation succeeds
 - Impact: Tags UI fully functional in development, production deployment blocked
+
   by framework bug
+
 - Resolution: Awaiting Next.js fix or Edge Runtime workaround
 
 ## User Setup Required
@@ -259,6 +292,7 @@ None - no external service configuration required.
 **Blockers:**
 
 - Production deployment still blocked by Next.js 15.0.3 bug (affects all builds,
+
   not tag-specific)
 
 **Concerns:**

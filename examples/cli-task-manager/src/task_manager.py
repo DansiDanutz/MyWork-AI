@@ -27,9 +27,10 @@ from storage import TaskStorage
 # Initialize rich console for colored output
 console = Console()
 
+
 @click.group(invoke_without_command=True)
 @click.pass_context
-@click.option('--version', is_flag=True, help='Show version information')
+@click.option("--version", is_flag=True, help="Show version information")
 def cli(ctx, version):
     """🚀 Simple Task Manager - Built with MyWork Framework
 
@@ -42,23 +43,28 @@ def cli(ctx, version):
 
     # If no command provided, show help
     if ctx.invoked_subcommand is None:
-        console.print(Panel(
-            "Welcome to Task Manager CLI!\n\n"
-            "Try: [bold cyan]python task_manager.py --help[/bold cyan]\n"
-            "Or: [bold green]python task_manager.py add 'My first task'[/bold green]",
-            title="🚀 Task Manager",
-            border_style="blue"
-        ))
+        console.print(
+            Panel(
+                "Welcome to Task Manager CLI!\n\n"
+                "Try: [bold cyan]python task_manager.py --help[/bold cyan]\n"
+                "Or: [bold green]python task_manager.py add 'My first task'[/bold green]",
+                title="🚀 Task Manager",
+                border_style="blue",
+            )
+        )
+
 
 @cli.command()
-@click.argument('title')
-@click.option('--priority',
-              type=click.Choice(['low', 'normal', 'high'], case_sensitive=False),
-              default='normal',
-              help='Task priority level')
-@click.option('--due',
-              type=click.DateTime(formats=['%Y-%m-%d', '%Y/%m/%d']),
-              help='Due date (YYYY-MM-DD)')
+@click.argument("title")
+@click.option(
+    "--priority",
+    type=click.Choice(["low", "normal", "high"], case_sensitive=False),
+    default="normal",
+    help="Task priority level",
+)
+@click.option(
+    "--due", type=click.DateTime(formats=["%Y-%m-%d", "%Y/%m/%d"]), help="Due date (YYYY-MM-DD)"
+)
 def add(title: str, priority: str, due: Optional[datetime]):
     """📝 Add a new task to your list.
 
@@ -73,7 +79,7 @@ def add(title: str, priority: str, due: Optional[datetime]):
             id=storage.get_next_id(),
             title=title.strip(),
             priority=Priority(priority.lower()),
-            due_date=due
+            due_date=due,
         )
 
         storage.add_task(task)
@@ -88,15 +94,20 @@ def add(title: str, priority: str, due: Optional[datetime]):
         console.print(f"❌ Error adding task: {str(e)}", style="bold red")
         raise click.Abort()
 
+
 @cli.command()
-@click.option('--status',
-              type=click.Choice(['pending', 'completed', 'all'], case_sensitive=False),
-              default='all',
-              help='Filter by task status')
-@click.option('--priority',
-              type=click.Choice(['low', 'normal', 'high'], case_sensitive=False),
-              help='Filter by priority level')
-@click.option('--overdue', is_flag=True, help='Show only overdue tasks')
+@click.option(
+    "--status",
+    type=click.Choice(["pending", "completed", "all"], case_sensitive=False),
+    default="all",
+    help="Filter by task status",
+)
+@click.option(
+    "--priority",
+    type=click.Choice(["low", "normal", "high"], case_sensitive=False),
+    help="Filter by priority level",
+)
+@click.option("--overdue", is_flag=True, help="Show only overdue tasks")
 def list(status: str, priority: Optional[str], overdue: bool):
     """📋 List your tasks.
 
@@ -110,9 +121,12 @@ def list(status: str, priority: Optional[str], overdue: bool):
     tasks = storage.get_tasks()
 
     # Apply filters
-    if status != 'all':
-        tasks = [t for t in tasks if (t.completed and status == 'completed') or
-                                    (not t.completed and status == 'pending')]
+    if status != "all":
+        tasks = [
+            t
+            for t in tasks
+            if (t.completed and status == "completed") or (not t.completed and status == "pending")
+        ]
 
     if priority:
         tasks = [t for t in tasks if t.priority.value == priority.lower()]
@@ -126,7 +140,7 @@ def list(status: str, priority: Optional[str], overdue: bool):
         return
 
     # Create rich table
-    table = Table(title="📋 Your Tasks" + (f" ({status.title()})" if status != 'all' else ""))
+    table = Table(title="📋 Your Tasks" + (f" ({status.title()})" if status != "all" else ""))
 
     table.add_column("ID", justify="right", style="cyan", no_wrap=True)
     table.add_column("Status", justify="center", width=8)
@@ -142,7 +156,7 @@ def list(status: str, priority: Optional[str], overdue: bool):
         due_str = ""
         due_style = ""
         if task.due_date:
-            due_str = task.due_date.strftime('%Y-%m-%d')
+            due_str = task.due_date.strftime("%Y-%m-%d")
             if task.due_date < datetime.now() and not task.completed:
                 due_style = "bold red"
             elif task.due_date.date() == datetime.now().date():
@@ -155,13 +169,14 @@ def list(status: str, priority: Optional[str], overdue: bool):
             task.priority.value.title(),
             due_str,
             style=priority_color if not task.completed else "dim",
-            end_section=False
+            end_section=False,
         )
 
     console.print(table)
 
+
 @cli.command()
-@click.argument('task_id', type=int)
+@click.argument("task_id", type=int)
 def complete(task_id: int):
     """✅ Mark a task as completed.
 
@@ -187,9 +202,10 @@ def complete(task_id: int):
         console.print(f"❌ Error completing task: {str(e)}", style="bold red")
         raise click.Abort()
 
+
 @cli.command()
-@click.argument('task_id', type=int)
-@click.confirmation_option(prompt='Are you sure you want to delete this task?')
+@click.argument("task_id", type=int)
+@click.confirmation_option(prompt="Are you sure you want to delete this task?")
 def delete(task_id: int):
     """🗑️  Delete a task permanently.
 
@@ -211,9 +227,10 @@ def delete(task_id: int):
         console.print(f"❌ Error deleting task: {str(e)}", style="bold red")
         raise click.Abort()
 
+
 @cli.command()
-@click.argument('query')
-@click.option('--case-sensitive', is_flag=True, help='Case-sensitive search')
+@click.argument("query")
+@click.option("--case-sensitive", is_flag=True, help="Case-sensitive search")
 def search(query: str, case_sensitive: bool):
     """🔍 Search tasks by title.
 
@@ -232,7 +249,8 @@ def search(query: str, case_sensitive: bool):
 
     # Reuse list display logic
     ctx = click.get_current_context()
-    ctx.invoke(list, status='all', priority=None, overdue=False)
+    ctx.invoke(list, status="all", priority=None, overdue=False)
+
 
 @cli.command()
 def stats():
@@ -254,9 +272,9 @@ def stats():
     pending = total - completed
 
     priority_stats = {
-        'high': len([t for t in tasks if t.priority == Priority.HIGH]),
-        'normal': len([t for t in tasks if t.priority == Priority.NORMAL]),
-        'low': len([t for t in tasks if t.priority == Priority.LOW])
+        "high": len([t for t in tasks if t.priority == Priority.HIGH]),
+        "normal": len([t for t in tasks if t.priority == Priority.NORMAL]),
+        "low": len([t for t in tasks if t.priority == Priority.LOW]),
     }
 
     # Overdue tasks
@@ -279,11 +297,12 @@ def stats():
 
     console.print(Panel(stats_text, title="📊 Task Statistics", border_style="blue"))
 
+
 @cli.command()
-@click.argument('task_id', type=int)
-@click.option('--title', help='New task title')
-@click.option('--priority', type=click.Choice(['low', 'normal', 'high']), help='New priority')
-@click.option('--due', type=click.DateTime(formats=['%Y-%m-%d']), help='New due date (YYYY-MM-DD)')
+@click.argument("task_id", type=int)
+@click.option("--title", help="New task title")
+@click.option("--priority", type=click.Choice(["low", "normal", "high"]), help="New priority")
+@click.option("--due", type=click.DateTime(formats=["%Y-%m-%d"]), help="New due date (YYYY-MM-DD)")
 def edit(task_id: int, title: Optional[str], priority: Optional[str], due: Optional[datetime]):
     """✏️  Edit an existing task.
 
@@ -315,7 +334,10 @@ def edit(task_id: int, title: Optional[str], priority: Optional[str], due: Optio
             changes.append(f"due date → {due.strftime('%Y-%m-%d')}")
 
         if not changes:
-            console.print("ℹ️  No changes specified. Use --title, --priority, or --due options.", style="yellow")
+            console.print(
+                "ℹ️  No changes specified. Use --title, --priority, or --due options.",
+                style="yellow",
+            )
             return
 
         storage.update_task(task)
@@ -325,5 +347,6 @@ def edit(task_id: int, title: Optional[str], priority: Optional[str], due: Optio
         console.print(f"❌ Error editing task: {str(e)}", style="bold red")
         raise click.Abort()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     cli()

@@ -1,15 +1,15 @@
-import { redirect } from 'next/navigation'
-import Link from 'next/link'
-import Image from 'next/image'
-import { getUser } from '@/shared/lib/dal'
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
+import { getUser } from "@/shared/lib/dal";
 
 export default async function WelcomePage() {
   // This page requires authentication
-  const user = await getUser()
+  const user = await getUser();
 
   // If somehow not authenticated, redirect to login
   if (!user) {
-    redirect('/login')
+    redirect("/login");
   }
 
   return (
@@ -19,7 +19,7 @@ export default async function WelcomePage() {
         {user.image && (
           <Image
             src={user.image}
-            alt={user.name || 'User avatar'}
+            alt={user.name || "User avatar"}
             width={80}
             height={80}
             className="w-20 h-20 rounded-full mx-auto mb-4 border-4 border-blue-100 dark:border-blue-900"
@@ -27,7 +27,7 @@ export default async function WelcomePage() {
         )}
 
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-          Welcome, {user.name || 'there'}!
+          Welcome, {user.name || "there"}!
         </h1>
         <p className="text-gray-600 dark:text-gray-400">
           Your account is all set up. Let&apos;s get you started.
@@ -38,10 +38,14 @@ export default async function WelcomePage() {
       <div className="space-y-4 mb-8">
         <div className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
           <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
-            <span className="text-blue-600 dark:text-blue-400 font-semibold">1</span>
+            <span className="text-blue-600 dark:text-blue-400 font-semibold">
+              1
+            </span>
           </div>
           <div>
-            <h3 className="font-medium text-gray-900 dark:text-white">Create your first task</h3>
+            <h3 className="font-medium text-gray-900 dark:text-white">
+              Create your first task
+            </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Click the &quot;New Task&quot; button to add your first item
             </p>
@@ -50,10 +54,14 @@ export default async function WelcomePage() {
 
         <div className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
           <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
-            <span className="text-blue-600 dark:text-blue-400 font-semibold">2</span>
+            <span className="text-blue-600 dark:text-blue-400 font-semibold">
+              2
+            </span>
           </div>
           <div>
-            <h3 className="font-medium text-gray-900 dark:text-white">Organize with categories</h3>
+            <h3 className="font-medium text-gray-900 dark:text-white">
+              Organize with categories
+            </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Group related tasks together for better organization
             </p>
@@ -62,10 +70,14 @@ export default async function WelcomePage() {
 
         <div className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
           <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
-            <span className="text-blue-600 dark:text-blue-400 font-semibold">3</span>
+            <span className="text-blue-600 dark:text-blue-400 font-semibold">
+              3
+            </span>
           </div>
           <div>
-            <h3 className="font-medium text-gray-900 dark:text-white">Track your progress</h3>
+            <h3 className="font-medium text-gray-900 dark:text-white">
+              Track your progress
+            </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               Mark tasks as done and watch your productivity soar
             </p>
@@ -89,5 +101,5 @@ export default async function WelcomePage() {
         </Link>
       </div>
     </div>
-  )
+  );
 }

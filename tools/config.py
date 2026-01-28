@@ -108,24 +108,22 @@ def list_projects() -> list[Path]:
     """List all projects in the projects directory."""
     if not PROJECTS_DIR.exists():
         return []
-    return [
-        p for p in PROJECTS_DIR.iterdir()
-        if p.is_dir() and not p.name.startswith((".", "_"))
-    ]
+    return [p for p in PROJECTS_DIR.iterdir() if p.is_dir() and not p.name.startswith((".", "_"))]
 
 
 # === Color Codes for Terminal ===
 class Colors:
     """ANSI color codes for terminal output."""
-    HEADER = '\033[95m'
-    BLUE = '\033[94m'
-    CYAN = '\033[96m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+
+    HEADER = "\033[95m"
+    BLUE = "\033[94m"
+    CYAN = "\033[96m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
 
 
 def color(text: str, color_code: str) -> str:

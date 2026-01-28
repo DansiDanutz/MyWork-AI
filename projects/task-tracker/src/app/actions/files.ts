@@ -1,23 +1,30 @@
-'use server'
+"use server";
 
-import { auth } from '@/shared/lib/auth'
-import { prisma } from '@/shared/lib/db'
-import { revalidatePath } from 'next/cache'
+import { auth } from "@/shared/lib/auth";
+import { prisma } from "@/shared/lib/db";
+import { revalidatePath } from "next/cache";
 import {
   validateFileType,
   validateFileSize,
   getExtensionFromMime,
   SERVER_ACTION_SIZE_LIMIT,
-} from '@/shared/lib/file-validation'
-import { saveFile, deleteFile as deleteFileFromDisk } from '@/shared/lib/file-storage'
-import { generateThumbnail, canGenerateThumbnail, deleteThumbnail } from '@/shared/lib/thumbnail-generator'
-import { trackEvent } from '@/shared/lib/analytics'
+} from "@/shared/lib/file-validation";
+import {
+  saveFile,
+  deleteFile as deleteFileFromDisk,
+} from "@/shared/lib/file-storage";
+import {
+  generateThumbnail,
+  canGenerateThumbnail,
+  deleteThumbnail,
+} from "@/shared/lib/thumbnail-generator";
+import { trackEvent } from "@/shared/lib/analytics";
 
 interface UploadResult {
-  success: boolean
-  error?: string
-  fileId?: string
-  filename?: string
+  success: boolean;
+  error?: string;
+  fileId?: string;
+  filename?: string;
 }
 
 /**
@@ -27,23 +34,23 @@ interface UploadResult {
 export async function uploadFile(formData: FormData): Promise<UploadResult> {
   try {
     // Authenticate
-    const session = await auth()
+    const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: 'Unauthorized' }
+      return { success: false, error: "Unauthorized" };
     }
 
-    const userId = session.user.id
+    const userId = session.user.id;
 
     // Get file and taskId from form data
-    const file = formData.get('file') as File | null
-    const taskId = formData.get('taskId') as string | null
+    const file = formData.get("file") as File | null;
+    const taskId = formData.get("taskId") as string | null;
 
     if (!file) {
-      return { success: false, error: 'No file provided' }
+      return { success: false, error: "No file provided" };
     }
 
     if (!taskId) {
-      return { success: false, error: 'No task ID provided' }
+      return { success: false, error: "No task ID provided" };
     }
 
     // Check file size for Server Action limit
@@ -51,41 +58,52 @@ export async function uploadFile(formData: FormData): Promise<UploadResult> {
       return {
         success: false,
         error: `File too large for direct upload. Files over 5MB should use the upload endpoint.`,
-      }
+      };
     }
 
     // Validate file size (overall limit)
-    const sizeValidation = validateFileSize(file.size)
+    const sizeValidation = validateFileSize(file.size);
     if (!sizeValidation.isValid) {
-      return { success: false, error: sizeValidation.error }
+      return { success: false, error: sizeValidation.error };
     }
 
     // Verify user owns the task
     const task = await prisma.task.findFirst({
       where: { id: taskId, userId },
-    })
+    });
 
     if (!task) {
-      return { success: false, error: 'Task not found or access denied' }
+      return { success: false, error: "Task not found or access denied" };
     }
 
     // Read file content
-    const buffer = Buffer.from(await file.arrayBuffer())
+    const buffer = Buffer.from(await file.arrayBuffer());
 
     // Validate file type by content (security-critical)
-    const typeValidation = await validateFileType(buffer)
+    const typeValidation = await validateFileType(buffer);
     if (!typeValidation.isValid) {
-      return { success: false, error: typeValidation.error }
+      return { success: false, error: typeValidation.error };
     }
 
     // Save file to disk
-    const extension = typeValidation.ext || getExtensionFromMime(typeValidation.mime!)
-    const { storedFilename, filePath } = await saveFile(buffer, userId, taskId, extension)
+    const extension =
+      typeValidation.ext || getExtensionFromMime(typeValidation.mime!);
+    const { storedFilename, filePath } = await saveFile(
+      buffer,
+      userId,
+      taskId,
+      extension,
+    );
 
     // Generate thumbnail for images
-    let thumbnailPath: string | null = null
+    let thumbnailPath: string | null = null;
     if (canGenerateThumbnail(typeValidation.mime!)) {
-      thumbnailPath = await generateThumbnail(filePath, userId, taskId, storedFilename)
+      thumbnailPath = await generateThumbnail(
+        filePath,
+        userId,
+        taskId,
+        storedFilename,
+      );
     }
 
     // Create database record
@@ -99,11 +117,11 @@ export async function uploadFile(formData: FormData): Promise<UploadResult> {
         size: file.size,
         thumbnailPath,
       },
-    })
+    });
 
     // Track analytics
     trackEvent({
-      type: 'file_uploaded',
+      type: "file_uploaded",
       userId,
       properties: {
         fileId: attachment.id,
@@ -111,70 +129,77 @@ export async function uploadFile(formData: FormData): Promise<UploadResult> {
         fileSize: file.size,
         mimeType: typeValidation.mime!,
       },
-    })
+    });
 
     // Revalidate task page
-    revalidatePath(`/tasks/${taskId}`)
-    revalidatePath(`/tasks/${taskId}/edit`)
+    revalidatePath(`/tasks/${taskId}`);
+    revalidatePath(`/tasks/${taskId}/edit`);
 
     return {
       success: true,
       fileId: attachment.id,
       filename: file.name,
-    }
+    };
   } catch (error) {
-    console.error('Upload error:', error)
+    console.error("Upload error:", error);
     return {
       success: false,
-      error: 'An unexpected error occurred during upload',
-    }
+      error: "An unexpected error occurred during upload",
+    };
   }
 }
 
 /**
  * Delete a file attachment.
  */
-export async function deleteFileAction(fileId: string): Promise<{ success: boolean; error?: string }> {
+export async function deleteFileAction(
+  fileId: string,
+): Promise<{ success: boolean; error?: string }> {
   try {
     // Authenticate
-    const session = await auth()
+    const session = await auth();
     if (!session?.user?.id) {
-      return { success: false, error: 'Unauthorized' }
+      return { success: false, error: "Unauthorized" };
     }
 
-    const userId = session.user.id
+    const userId = session.user.id;
 
     // Find file and verify ownership
     const file = await prisma.fileAttachment.findFirst({
       where: { id: fileId, userId },
       include: { task: true },
-    })
+    });
 
     if (!file) {
-      return { success: false, error: 'File not found or access denied' }
+      return { success: false, error: "File not found or access denied" };
     }
 
     // Delete from filesystem
-    await deleteFileFromDisk(userId, file.taskId, file.storedFilename, file.thumbnailPath)
+    await deleteFileFromDisk(
+      userId,
+      file.taskId,
+      file.storedFilename,
+      file.thumbnailPath,
+    );
 
     // Delete thumbnail if exists
     if (file.thumbnailPath) {
-      await deleteThumbnail(file.thumbnailPath)
+      await deleteThumbnail(file.thumbnailPath);
     }
 
     // Delete from database
     await prisma.fileAttachment.delete({
       where: { id: fileId },
-    })
+    });
 
     // Revalidate
-    revalidatePath(`/tasks/${file.taskId}`)
-    revalidatePath(`/tasks/${file.taskId}/edit`)
+    revalidatePath(`/tasks/${file.taskId}`);
+    revalidatePath(`/tasks/${file.taskId}/edit`);
 
-    return { success: true }
+    return { success: true };
   } catch (error) {
-    console.error('Delete file error:', error)
-    return { success: false, error: 'Failed to delete file' }
+    console.error("Delete file error:", error);
+    return { success: false, error: "Failed to delete file" };
   }
 }
 
@@ -182,15 +207,15 @@ export async function deleteFileAction(fileId: string): Promise<{ success: boole
  * Get file attachments for a task.
  */
 export async function getTaskFiles(taskId: string) {
-  const session = await auth()
+  const session = await auth();
   if (!session?.user?.id) {
-    return []
+    return [];
   }
 
   const files = await prisma.fileAttachment.findMany({
     where: { taskId, userId: session.user.id },
-    orderBy: { createdAt: 'desc' },
-  })
+    orderBy: { createdAt: "desc" },
+  });
 
-  return files
+  return files;
 }

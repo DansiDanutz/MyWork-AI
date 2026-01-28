@@ -1,8 +1,8 @@
-'use client'
+"use client";
 
-import { useQueryState } from 'nuqs'
-import { useEffect, useState, useTransition } from 'react'
-import { taskSearchParams } from '@/app/(app)/tasks/search-params'
+import { useQueryState } from "nuqs";
+import { useEffect, useState, useTransition } from "react";
+import { taskSearchParams } from "@/app/(app)/tasks/search-params";
 
 /**
  * TaskSearchBar: Debounced search input that updates URL state
@@ -14,38 +14,38 @@ import { taskSearchParams } from '@/app/(app)/tasks/search-params'
  * - Clears search with X button
  */
 export function TaskSearchBar() {
-  const [isPending, startTransition] = useTransition()
+  const [isPending, startTransition] = useTransition();
 
   // URL state for search query
-  const [query, setQuery] = useQueryState('q', taskSearchParams.q)
+  const [query, setQuery] = useQueryState("q", taskSearchParams.q);
 
   // Local state for immediate UI feedback
-  const [localQuery, setLocalQuery] = useState(query)
+  const [localQuery, setLocalQuery] = useState(query);
 
   // Sync local state with URL state on mount/navigation
   useEffect(() => {
-    setLocalQuery(query)
-  }, [query])
+    setLocalQuery(query);
+  }, [query]);
 
   // Debounced update to URL state
   useEffect(() => {
     const timer = setTimeout(() => {
       if (localQuery !== query) {
         startTransition(() => {
-          setQuery(localQuery || null) // null removes param from URL
-        })
+          setQuery(localQuery || null); // null removes param from URL
+        });
       }
-    }, 500) // 500ms debounce
+    }, 500); // 500ms debounce
 
-    return () => clearTimeout(timer)
-  }, [localQuery, query, setQuery])
+    return () => clearTimeout(timer);
+  }, [localQuery, query, setQuery]);
 
   const handleClear = () => {
-    setLocalQuery('')
+    setLocalQuery("");
     startTransition(() => {
-      setQuery(null)
-    })
-  }
+      setQuery(null);
+    });
+  };
 
   return (
     <div className="relative">
@@ -129,5 +129,5 @@ export function TaskSearchBar() {
         ) : null}
       </div>
     </div>
-  )
+  );
 }

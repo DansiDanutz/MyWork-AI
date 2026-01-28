@@ -1,12 +1,12 @@
-import { getUser, getTaskCounts } from '@/shared/lib/dal'
-import Link from 'next/link'
+import { getUser, getTaskCounts } from "@/shared/lib/dal";
+import Link from "next/link";
 
 export default async function DashboardPage() {
   // Get user first (cached via React cache())
-  const user = await getUser()
+  const user = await getUser();
 
   // Then get task counts for that user
-  const taskCounts = await getTaskCounts(user?.id || '')
+  const taskCounts = await getTaskCounts(user?.id || "");
 
   return (
     <div>
@@ -17,7 +17,7 @@ export default async function DashboardPage() {
             Dashboard
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Welcome back, {user?.name || 'there'}!
+            Welcome back, {user?.name || "there"}!
           </p>
         </div>
 
@@ -99,7 +99,8 @@ export default async function DashboardPage() {
               Getting Started
             </h2>
             <p className="text-blue-700 dark:text-blue-300 mb-4">
-              You&apos;re all set up! Create your first task to start tracking your work.
+              You&apos;re all set up! Create your first task to start tracking
+              your work.
             </p>
             <div className="flex gap-4">
               <Link
@@ -122,7 +123,8 @@ export default async function DashboardPage() {
               Quick Actions
             </h2>
             <p className="text-blue-700 dark:text-blue-300 mb-4">
-              You have {taskCounts.total} task{taskCounts.total !== 1 ? 's' : ''} in your list.
+              You have {taskCounts.total} task
+              {taskCounts.total !== 1 ? "s" : ""} in your list.
             </p>
             <div className="flex gap-4">
               <Link
@@ -142,5 +144,5 @@ export default async function DashboardPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

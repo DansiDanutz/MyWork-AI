@@ -14,9 +14,13 @@ standard Server Actions body size limit (1MB default, configurable to ~5MB max).
 **Key findings:**
 
 - Server Actions work great for small-to-medium files (< 5MB) with simple
+
   implementation
+
 - Chunked uploads with resume capability require dedicated API routes or
+
   third-party protocols (TUS)
+
 - react-dropzone is the de facto standard for drag & drop UI
 - file-type (npm) provides content-based MIME validation (critical for security)
 - Sharp is the fastest library for thumbnail generation
@@ -82,7 +86,7 @@ npm install clamscan          # Requires ClamAV daemon
 
 ### Recommended Project Structure
 
-```
+```text
 src/
 ├── app/
 │   ├── api/
@@ -103,14 +107,23 @@ src/
 │   └── thumbnail-generator.ts         # Sharp integration
 └── uploads/                            # File storage (gitignored)
 
-```
+```text
+
 └── [userId]/
-    └── [taskId]/
-        ├── [fileId].ext
-        └── thumbs/
-            └── [fileId].webp
 
 ```
+└── [taskId]/
+
+```
+├── [fileId].ext
+└── thumbs/
+    └── [fileId].webp
+
+```
+```markdown
+
+```markdown
+
 ```markdown
 
 ### Pattern 1: Server Actions for Small Files (< 5MB)
@@ -148,9 +161,10 @@ export async function uploadFileSimple(formData: FormData) {
   if (!fileType.isValid) {
 
 ```
+
 return { error: 'Invalid file type' }
 
-```
+```javascript
   }
 
   // Store file
@@ -163,7 +177,8 @@ return { error: 'Invalid file type' }
   // Save metadata
   const attachment = await prisma.fileAttachment.create({
 
-```
+```yaml
+
 data: {
   taskId,
   filename: file.name,
@@ -173,7 +188,7 @@ data: {
   userId: session.user.id,
 },
 
-```
+```yaml
   })
 
   return { success: true, id: attachment.id }
@@ -188,12 +203,14 @@ data: {
 const nextConfig: NextConfig = {
   experimental: {
 
-```
+```yaml
+
 serverActions: {
   bodySizeLimit: '5mb', // Increase from default 1mb
 },
 
-```
+```markdown
+
   },
 }
 
@@ -226,7 +243,8 @@ const tusServer = new Server({
   // Security: validate on upload complete
   async onUploadFinish(req, upload) {
 
-```
+```javascript
+
 const userId = req.headers['user-id'] // From auth middleware
 const taskId = upload.metadata?.taskId
 
@@ -254,7 +272,7 @@ export async function OPTIONS(request: NextRequest) {
   return tusServer.handle(request)
 }
 
-```
+```yaml
 
 **Example Client:**
 
@@ -271,83 +289,119 @@ export function FileDropzone({ taskId }: { taskId: string }) {
 
   const onDrop = (acceptedFiles: File[]) => {
 
-```
+```javascript
+
 acceptedFiles.forEach((file) => {
   const upload = new tus.Upload(file, {
-    endpoint: '/api/files/upload',
-    retryDelays: [0, 3000, 5000, 10000, 20000],
-    metadata: {
-      filename: file.name,
-      filetype: file.type,
-      taskId,
-    },
-    onProgress: (bytesUploaded, bytesTotal) => {
-      const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2)
-      setProgress((prev) => ({ ...prev, [file.name]: Number(percentage) }))
-    },
-    onSuccess: () => {
-      console.log('Upload complete:', file.name)
-      setUploads((prev) => {
-        const { [file.name]: _, ...rest } = prev
-        return rest
-      })
-    },
-    onError: (error) => {
-      console.error('Upload failed:', error)
-    },
+
+```
+endpoint: '/api/files/upload',
+retryDelays: [0, 3000, 5000, 10000, 20000],
+metadata: {
+  filename: file.name,
+  filetype: file.type,
+  taskId,
+},
+onProgress: (bytesUploaded, bytesTotal) => {
+  const percentage = ((bytesUploaded / bytesTotal) * 100).toFixed(2)
+  setProgress((prev) => ({ ...prev, [file.name]: Number(percentage) }))
+},
+onSuccess: () => {
+  console.log('Upload complete:', file.name)
+  setUploads((prev) => {
+
+```
+const { [file.name]: _, ...rest } = prev
+return rest
+
+```
+  })
+},
+onError: (error) => {
+  console.error('Upload failed:', error)
+},
+
+```javascript
+
   })
 
   setUploads((prev) => ({ ...prev, [file.name]: upload }))
   upload.start()
 })
 
-```
+```javascript
   }
 
   const cancelUpload = (filename: string) => {
 
 ```
+
 uploads[filename]?.abort()
 setUploads((prev) => {
   const { [filename]: _, ...rest } = prev
   return rest
 })
 
-```
+```javascript
   }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
 
-```
+```yaml
+
 onDrop,
 maxSize: 25 * 1024 * 1024, // 25MB
 
-```
+```text
   })
 
   return (
 
 ```
+
 <div {...getRootProps()} className="border-2 border-dashed p-8">
   <input {...getInputProps()} />
   {isDragActive ? (
-    <p>Drop files here...</p>
+
+```html
+
+<p>Drop files here...</p>
+
+```
+
   ) : (
-    <p>Drag files here, or click to select</p>
+
+```html
+
+<p>Drag files here, or click to select</p>
+
+```
+
   )}
 
   {Object.entries(progress).map(([filename, pct]) => (
-    <div key={filename} className="mt-2">
-      <div className="flex justify-between">
-        <span>{filename}</span>
-        <button onClick={() => cancelUpload(filename)}>Cancel</button>
-      </div>
-      <progress value={pct} max="100" className="w-full" />
-    </div>
-  ))}
+
+```html
+
+<div key={filename} className="mt-2">
+  <div className="flex justify-between">
+
+```
+<span>{filename}</span>
+<button onClick={() => cancelUpload(filename)}>Cancel</button>
+
+```
+  </div>
+  <progress value={pct} max="100" className="w-full" />
 </div>
 
 ```
+
+  ))}
+</div>
+
+```markdown
+
   )
 }
 
@@ -386,32 +440,35 @@ export async function validateFileType(buffer: Buffer) {
 
   if (!type) {
 
-```
+```yaml
+
 return { isValid: false, error: 'Unable to detect file type' }
 
-```
+```text
   }
 
   if (!ALLOWED_MIME_TYPES.includes(type.mime)) {
 
 ```
+
 return {
   isValid: false,
   error: `File type ${type.mime} not allowed`,
   detected: type.mime,
 }
 
-```
+```text
   }
 
   return {
 
-```
+```yaml
+
 isValid: true,
 mime: type.mime,
 ext: type.ext,
 
-```
+```javascript
   }
 }
 
@@ -419,17 +476,19 @@ export function validateFileSize(size: number) {
   if (size > MAX_FILE_SIZE) {
 
 ```
+
 return {
   isValid: false,
-  error: `File size ${(size / 1024 / 1024).toFixed(2)}MB exceeds limit of ${MAX_FILE_SIZE / 1024 / 1024}MB`,
+  error: `File size ${(size / 1024 / 1024).toFixed(2)}MB exceeds limit of
+  ${MAX_FILE_SIZE / 1024 / 1024}MB`,
 }
 
-```
+```yaml
   }
   return { isValid: true }
 }
 
-```
+```markdown
 
 ### Pattern 4: Secure File Serving with Authentication
 
@@ -456,7 +515,8 @@ export async function GET(
   const session = await auth()
   if (!session?.user?.id) {
 
-```
+```yaml
+
 return new NextResponse('Unauthorized', { status: 401 })
 
 ```
@@ -465,16 +525,18 @@ return new NextResponse('Unauthorized', { status: 401 })
   // Get file metadata
   const file = await prisma.fileAttachment.findUnique({
 
-```
+```yaml
+
 where: { id: params.id },
 include: { task: true },
 
-```
+```yaml
   })
 
   if (!file) {
 
-```
+```yaml
+
 return new NextResponse('File not found', { status: 404 })
 
 ```
@@ -483,16 +545,18 @@ return new NextResponse('File not found', { status: 404 })
   // Check ownership (user owns the task)
   if (file.task.userId !== session.user.id) {
 
-```
+```yaml
+
 return new NextResponse('Forbidden', { status: 403 })
 
-```
+```javascript
   }
 
   // Read file
   const filePath = path.join(
 
-```
+```text
+
 process.cwd(),
 'uploads',
 file.userId,
@@ -504,21 +568,28 @@ file.storedFilename
 
   try {
 
-```
+```javascript
+
 const buffer = await fs.readFile(filePath)
 
 return new NextResponse(buffer, {
   headers: {
-    'Content-Type': file.mimeType,
-    'Content-Disposition': `attachment; filename="${file.filename}"`,
-    'Content-Length': file.size.toString(),
+
+```yaml
+'Content-Type': file.mimeType,
+'Content-Disposition': `attachment; filename="${file.filename}"`,
+'Content-Length': file.size.toString(),
+
+```
+
   },
 })
 
-```
+```yaml
   } catch (error) {
 
-```
+```yaml
+
 return new NextResponse('File not found on disk', { status: 404 })
 
 ```
@@ -556,15 +627,17 @@ export async function generateThumbnail(
 
   if (!imageExts.includes(ext)) {
 
-```
+```text
+
 return null // Not an image
 
-```
+```javascript
   }
 
   try {
 
-```
+```javascript
+
 const thumbDir = path.join(
   process.cwd(),
   'uploads',
@@ -578,8 +651,13 @@ const thumbPath = path.join(thumbDir, `${fileId}.webp`)
 
 await sharp(sourcePath)
   .resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE, {
-    fit: 'cover',
-    position: 'center',
+
+```
+fit: 'cover',
+position: 'center',
+
+```yaml
+
   })
   .webp({ quality: THUMBNAIL_QUALITY })
   .toFile(thumbPath)
@@ -589,15 +667,17 @@ return thumbPath
 ```
   } catch (error) {
 
-```
+```yaml
+
 console.error('Thumbnail generation failed:', error)
 return null
 
-```
+```markdown
+
   }
 }
 
-```
+```markdown
 
 ### Pattern 6: Cascade Delete with Prisma
 
@@ -651,34 +731,46 @@ export async function cleanupTaskFiles(taskId: string) {
   const files = await prisma.fileAttachment.findMany({
 
 ```
+
 where: { taskId },
 
-```
+```text
   })
 
   for (const file of files) {
 
-```
+```javascript
+
 try {
   // Delete main file
   const filePath = path.join(
-    process.cwd(),
-    'uploads',
-    file.userId,
-    taskId,
-    file.storedFilename
+
+```
+process.cwd(),
+'uploads',
+file.userId,
+taskId,
+file.storedFilename
+
+```javascript
+
   )
   await fs.unlink(filePath).catch(() => {}) // Ignore if doesn't exist
 
   // Delete thumbnail if exists
   if (file.thumbnailPath) {
-    await fs.unlink(file.thumbnailPath).catch(() => {})
+
+```
+await fs.unlink(file.thumbnailPath).catch(() => {})
+
+```yaml
+
   }
 } catch (error) {
   console.error('File cleanup failed:', file.id, error)
 }
 
-```
+```text
   }
 
   // Prisma cascade will delete DB records automatically
@@ -689,16 +781,23 @@ try {
 ### Anti-Patterns to Avoid
 
 - **❌ Trusting client-provided MIME types:** Always validate with file-type
+
   (reads magic numbers)
+
 - **❌ Storing files in public/ directory:** Files become publicly accessible
+
   without auth
+
 - **❌ Using file extensions for validation:** Extensions can be spoofed
 - **❌ Direct filesystem paths in URLs:** Exposes server structure, bypasses auth
 - **❌ Not cleaning up temporary files:** Leads to disk space issues
 - **❌ Synchronous file operations in Server Actions:** Blocks Node.js event loop
 - **❌ Missing AbortController for upload cancellation:** Can't stop in-progress
+
   uploads
+
 - **❌ Server Actions for large files (> 5MB):** Hits body size limit, no progress
+
   tracking
 
 ## Don't Hand-Roll
@@ -735,7 +834,9 @@ to ~5MB, but not more.
 
 - Configure `experimental.serverActions.bodySizeLimit` in next.config.ts
 - For files > 5MB, use dedicated API routes with TUS protocol instead of Server
+
   Actions
+
 - Test with production-sized files in development
 
 **Warning signs:**
@@ -821,7 +922,7 @@ const uploadDir = path.join(process.cwd(), 'uploads', userId, taskId)
 await fs.mkdir(uploadDir, { recursive: true })
 await fs.writeFile(path.join(uploadDir, safeFilename), buffer)
 
-```
+```markdown
 
 ### Pitfall 4: Missing File Cleanup on Task Deletion
 
@@ -936,10 +1037,11 @@ export async function uploadFile(formData: FormData) {
   const session = await auth()
   if (!session?.user?.id) {
 
-```
+```yaml
+
 return { error: 'Unauthorized' }
 
-```
+```javascript
   }
 
   // 2. Extract form data
@@ -949,18 +1051,20 @@ return { error: 'Unauthorized' }
   if (!file || !taskId) {
 
 ```
+
 return { error: 'Missing file or taskId' }
 
-```
+```text
   }
 
   // 3. Validate size
   if (file.size > MAX_FILE_SIZE) {
 
-```
+```yaml
+
 return { error: `File too large. Max size: ${MAX_FILE_SIZE / 1024 / 1024}MB` }
 
-```
+```javascript
   }
 
   // 4. Read file content
@@ -972,41 +1076,45 @@ return { error: `File too large. Max size: ${MAX_FILE_SIZE / 1024 / 1024}MB` }
   if (!fileType || !ALLOWED_TYPES.includes(fileType.mime)) {
 
 ```
+
 return {
   error: `Invalid file type. Detected: ${fileType?.mime || 'unknown'}`,
 }
 
-```
+```javascript
   }
 
   // 6. Verify task ownership
   const task = await prisma.task.findUnique({
 
-```
+```yaml
+
 where: { id: taskId },
 select: { userId: true },
 
-```
+```bash
   })
 
   if (!task || task.userId !== session.user.id) {
 
 ```
+
 return { error: 'Task not found or access denied' }
 
-```
+```javascript
   }
 
   // 7. Create upload directory
   const uploadDir = path.join(
 
-```
+```yaml
+
 process.cwd(),
 'uploads',
 session.user.id,
 taskId
 
-```
+```yaml
   )
   await fs.mkdir(uploadDir, { recursive: true })
 
@@ -1022,6 +1130,7 @@ taskId
   if (fileType.mime.startsWith('image/')) {
 
 ```
+
 thumbnailPath = await generateThumbnail(
   filePath,
   session.user.id,
@@ -1029,13 +1138,14 @@ thumbnailPath = await generateThumbnail(
   storedFilename.replace(path.extname(storedFilename), '')
 )
 
-```
+```javascript
   }
 
   // 11. Save metadata to database
   const attachment = await prisma.fileAttachment.create({
 
-```
+```yaml
+
 data: {
   taskId,
   userId: session.user.id,
@@ -1046,7 +1156,7 @@ data: {
   thumbnailPath,
 },
 
-```
+```text
   })
 
   // 12. Revalidate cache
@@ -1055,12 +1165,14 @@ data: {
   return {
 
 ```
+
 success: true,
 id: attachment.id,
 filename: file.name,
 size: file.size,
 
-```
+```markdown
+
   }
 }
 
@@ -1093,80 +1205,112 @@ export function FileUploader({ taskId }: { taskId: string }) {
 
   const onDrop = async (acceptedFiles: File[]) => {
 
-```
+```text
+
 for (const file of acceptedFiles) {
   // Client-side size validation
   if (file.size > 25 * 1024 * 1024) {
-    setUploadStates((prev) => {
-      const next = new Map(prev)
-      next.set(file.name, {
-        filename: file.name,
-        progress: 0,
-        status: 'error',
-        error: 'File exceeds 25MB limit',
-      })
-      return next
-    })
-    continue
+
+```
+setUploadStates((prev) => {
+  const next = new Map(prev)
+  next.set(file.name, {
+
+```
+filename: file.name,
+progress: 0,
+status: 'error',
+error: 'File exceeds 25MB limit',
+
+```
+  })
+  return next
+})
+continue
+
+```javascript
+
   }
 
   // Initialize state
   setUploadStates((prev) => {
-    const next = new Map(prev)
-    next.set(file.name, {
-      filename: file.name,
-      progress: 0,
-      status: 'uploading',
-    })
-    return next
+
+```
+const next = new Map(prev)
+next.set(file.name, {
+  filename: file.name,
+  progress: 0,
+  status: 'uploading',
+})
+return next
+
+```javascript
+
   })
 
   // Create TUS upload
   const upload = new tus.Upload(file, {
-    endpoint: '/api/files/upload',
-    retryDelays: [0, 3000, 5000, 10000, 20000], // Retry strategy
-    chunkSize: 5 * 1024 * 1024, // 5MB chunks
-    metadata: {
-      filename: file.name,
-      filetype: file.type,
-      taskId,
-    },
-    onProgress: (bytesUploaded, bytesTotal) => {
-      const progress = (bytesUploaded / bytesTotal) * 100
-      setUploadStates((prev) => {
-        const next = new Map(prev)
-        const state = next.get(file.name)
-        if (state) {
-          next.set(file.name, { ...state, progress })
-        }
-        return next
-      })
-    },
-    onSuccess: () => {
-      setUploadStates((prev) => {
-        const next = new Map(prev)
-        const state = next.get(file.name)
-        if (state) {
-          next.set(file.name, { ...state, status: 'complete', progress: 100 })
-        }
-        return next
-      })
-      uploads.delete(file.name)
-    },
-    onError: (error) => {
-      setUploadStates((prev) => {
-        const next = new Map(prev)
-        const state = next.get(file.name)
-        if (state) {
-          next.set(file.name, {
-            ...state,
-            status: 'error',
-            error: error.message,
-          })
-        }
-        return next
-      })
-    },
+
+```
+endpoint: '/api/files/upload',
+retryDelays: [0, 3000, 5000, 10000, 20000], // Retry strategy
+chunkSize: 5 * 1024 * 1024, // 5MB chunks
+metadata: {
+  filename: file.name,
+  filetype: file.type,
+  taskId,
+},
+onProgress: (bytesUploaded, bytesTotal) => {
+  const progress = (bytesUploaded / bytesTotal) * 100
+  setUploadStates((prev) => {
+
+```
+const next = new Map(prev)
+const state = next.get(file.name)
+if (state) {
+  next.set(file.name, { ...state, progress })
+}
+return next
+
+```
+  })
+},
+onSuccess: () => {
+  setUploadStates((prev) => {
+
+```
+const next = new Map(prev)
+const state = next.get(file.name)
+if (state) {
+  next.set(file.name, { ...state, status: 'complete', progress: 100 })
+}
+return next
+
+```
+  })
+  uploads.delete(file.name)
+},
+onError: (error) => {
+  setUploadStates((prev) => {
+
+```
+const next = new Map(prev)
+const state = next.get(file.name)
+if (state) {
+  next.set(file.name, {
+    ...state,
+    status: 'error',
+    error: error.message,
+  })
+}
+return next
+
+```
+  })
+},
+
+```javascript
+
   })
 
   uploads.set(file.name, upload)
@@ -1176,105 +1320,152 @@ for (const file of acceptedFiles) {
   upload.start()
 }
 
-```
+```javascript
   }
 
   const cancelUpload = (filename: string) => {
 
 ```
+
 const upload = uploads.get(filename)
 if (upload) {
   upload.abort()
   uploads.delete(filename)
   setUploads(new Map(uploads))
   setUploadStates((prev) => {
-    const next = new Map(prev)
-    next.delete(filename)
-    return next
+
+```javascript
+const next = new Map(prev)
+next.delete(filename)
+return next
+
+```
+
   })
 }
 
-```
+```javascript
   }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
 
-```
+```yaml
+
 onDrop,
 maxSize: 25 * 1024 * 1024,
 multiple: true,
 
-```
+```text
   })
 
   return (
 
 ```
+
 <div className="space-y-4">
   <div
-    {...getRootProps()}
-    className={`
-      border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
-      transition-colors
-      ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}
-    `}
+
+```yaml
+{...getRootProps()}
+className={`
+  border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
+  transition-colors
+  ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300
+  hover:border-gray-400'}
+`}
+
+```
+
   >
-    <input {...getInputProps()} />
-    {isDragActive ? (
-      <p className="text-blue-600">Drop files here...</p>
-    ) : (
-      <div>
-        <p className="text-gray-600">Drag & drop files here, or click to select</p>
-        <p className="text-sm text-gray-400 mt-2">Max 25MB per file</p>
-      </div>
-    )}
+
+```html
+
+<input {...getInputProps()} />
+{isDragActive ? (
+  <p className="text-blue-600">Drop files here...</p>
+) : (
+  <div>
+
+```
+<p className="text-gray-600">Drag & drop files here, or click to
+select</p>
+<p className="text-sm text-gray-400 mt-2">Max 25MB per file</p>
+
+```
+  </div>
+)}
+
+```
+
   </div>
 
   {/* Upload progress list */}
   {Array.from(uploadStates.values()).map((state) => (
-    <div key={state.filename} className="border rounded-lg p-4">
-      <div className="flex justify-between items-center mb-2">
-        <span className="font-medium truncate">{state.filename}</span>
-        {state.status === 'uploading' && (
-          <button
-            onClick={() => cancelUpload(state.filename)}
-            className="text-red-600 hover:text-red-700 text-sm"
-          >
-            Cancel
-          </button>
-        )}
-      </div>
 
-      {state.status === 'uploading' && (
-        <div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div
-              className="bg-blue-600 h-2 rounded-full transition-all"
-              style={{ width: `${state.progress}%` }}
-            />
-          </div>
-          <p className="text-sm text-gray-500 mt-1">
-            {state.progress.toFixed(1)}%
-          </p>
-        </div>
-      )}
+```html
 
-      {state.status === 'complete' && (
-        <p className="text-green-600 text-sm">✓ Upload complete</p>
-      )}
+<div key={state.filename} className="border rounded-lg p-4">
+  <div className="flex justify-between items-center mb-2">
 
-      {state.status === 'error' && (
-        <p className="text-red-600 text-sm">✗ {state.error}</p>
-      )}
-    </div>
-  ))}
+```
+<span className="font-medium truncate">{state.filename}</span>
+{state.status === 'uploading' && (
+  <button
+    onClick={() => cancelUpload(state.filename)}
+    className="text-red-600 hover:text-red-700 text-sm"
+  >
+    Cancel
+  </button>
+)}
+
+```
+  </div>
+
+  {state.status === 'uploading' && (
+
+```
+<div>
+  <div className="w-full bg-gray-200 rounded-full h-2">
+    <div
+      className="bg-blue-600 h-2 rounded-full transition-all"
+      style={{ width: `${state.progress}%` }}
+    />
+  </div>
+  <p className="text-sm text-gray-500 mt-1">
+    {state.progress.toFixed(1)}%
+  </p>
 </div>
 
 ```
+  )}
+
+  {state.status === 'complete' && (
+
+```
+<p className="text-green-600 text-sm">✓ Upload complete</p>
+
+```
+  )}
+
+  {state.status === 'error' && (
+
+```
+<p className="text-red-600 text-sm">✗ {state.error}</p>
+
+```
+  )}
+</div>
+
+```
+
+  ))}
+</div>
+
+```text
   )
 }
 
-```
+```markdown
 
 ### File Deletion with Cleanup
 
@@ -1295,7 +1486,8 @@ export async function deleteFile(fileId: string) {
   const session = await auth()
   if (!session?.user?.id) {
 
-```
+```yaml
+
 return { error: 'Unauthorized' }
 
 ```
@@ -1304,16 +1496,18 @@ return { error: 'Unauthorized' }
   // Get file metadata
   const file = await prisma.fileAttachment.findUnique({
 
-```
+```yaml
+
 where: { id: fileId },
 include: { task: true },
 
-```
+```yaml
   })
 
   if (!file) {
 
-```
+```yaml
+
 return { error: 'File not found' }
 
 ```
@@ -1322,16 +1516,18 @@ return { error: 'File not found' }
   // Verify ownership
   if (file.task.userId !== session.user.id) {
 
-```
+```yaml
+
 return { error: 'Access denied' }
 
-```
+```python
   }
 
   // Delete from filesystem (both main file and thumbnail)
   try {
 
-```
+```javascript
+
 const filePath = path.join(
   process.cwd(),
   'uploads',
@@ -1348,17 +1544,19 @@ if (file.thumbnailPath) {
 ```
   } catch (error) {
 
-```
+```yaml
+
 console.error('Filesystem cleanup failed:', error)
 // Continue to delete DB record even if file cleanup fails
 
-```
+```python
   }
 
   // Delete from database
   await prisma.fileAttachment.delete({
 
-```
+```yaml
+
 where: { id: fileId },
 
 ```
@@ -1386,10 +1584,15 @@ where: { id: fileId },
 **Deprecated/outdated:**
 
 - **Multer for Server Actions**: Server Actions handle FormData natively, no
+
   middleware needed (still valid for API routes)
+
 - **Formidable**: Older parsing library, replaced by native FormData support in
+
   Next.js App Router
+
 - **react-beautiful-dnd**: No longer maintained (archived by Atlassian), fork is
+
   hello-pangea/dnd
 
 ## Open Questions
@@ -1399,110 +1602,141 @@ Things that couldn't be fully resolved:
 1. **Virus scanning approach**
    - What we know: ClamAV is standard, pompelmi offers in-process scanning, cloud
 
-```
+```text
  APIs exist (Verisys)
 
-```
+```yaml
+
    - What's unclear: Best practice for this scale (single user task tracker vs
 
-```
+```text
  multi-tenant SaaS)
 
 ```
+
    - Recommendation: Start without virus scanning (out of scope for v1), add
 
-```
+```text
  pompelmi if needed in v2. Context specifies "security scanning" but
  single-user task tracker has lower risk than public file hosting.
 
-```
+```yaml
+
 2. **Chunked upload strategy**
    - What we know: Context requires 25MB files + resume capability, Server
 
-```
+```text
  Actions max out ~5MB
 
 ```
+
    - What's unclear: Whether to implement TUS protocol (complex but standard) or
 
-```
+```text
  custom chunking (simpler but more code)
 
-```
+```yaml
+
    - Recommendation: Use TUS protocol via tus-js-client + @tus/server. It's
 
-```
+```text
  battle-tested and handles edge cases we'd miss in custom implementation.
 
 ```
+
 3. **Thumbnail generation timing**
    - What we know: Sharp is fast but synchronous operations block event loop
    - What's unclear: Generate thumbnails synchronously on upload or queue for
 
-```
+```text
  background processing
 
-```
+```yaml
+
    - Recommendation: Synchronous for phase 5 (simpler), move to background queue
 
-```
+```text
  if performance issues arise. Sharp is fast enough (<500ms for most images).
 
 ```
+
 4. **Storage scalability**
    - What we know: Local filesystem chosen in CONTEXT.md
    - What's unclear: File size limits over time, backup strategy, what happens at
 
-```
+```text
  10GB+ of files
 
-```
+```yaml
+
    - Recommendation: Local filesystem is fine for v1. If storage becomes issue,
 
-```
+```text
  migrate to S3-compatible storage in v2 (Prisma schema already tracks paths,
  easy to migrate).
 
 ```
+
 ## Sources
 
 ### Primary (HIGH confidence)
 
 - [Next.js 15 Tutorial Part 5: File Upload with Server
+
   Actions](https://strapi.io/blog/epic-next-js-15-tutorial-part-5-file-upload-using-server-actions)
+
   - Official tutorial on Server Actions file upload
 - [file-type npm package](https://www.npmjs.com/package/file-type) -
+
   Content-based MIME detection
+
 - [react-dropzone GitHub](https://github.com/react-dropzone/react-dropzone) -
+
   Official documentation
+
 - [Sharp documentation](https://sharp.pixelplumbing.com/) - Official Sharp docs
 - [TUS Protocol Specification](https://tus.io/protocols/resumable-upload) -
+
   Official resumable upload protocol
+
 - [Prisma Referential
+
   Actions](https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/referential-actions)
+
   - Cascade delete documentation
 
 ### Secondary (MEDIUM confidence)
 
 - [Top 5 Drag-and-Drop Libraries for React in
+
   2026](https://puckeditor.com/blog/top-5-drag-and-drop-libraries-for-react) -
   Library comparison
+
 - [pompelmi - Fast File Upload Security](https://pompelmi.github.io/pompelmi/) -
+
   In-process malware scanning
+
 - [How To Get the MIME Type of a File in
+
   Node.js](https://dev.to/victrexx2002/how-to-get-the-mime-type-of-a-file-in-nodejs-p6c)
+
   - MIME detection methods
 - [File Upload Protection Best Practices -
+
   OPSWAT](https://www.opswat.com/blog/file-upload-protection-best-practices) -
   Security guidelines
 
 ### Tertiary (LOW confidence)
 
 - [GitHub:
+
   nextjs-chunk-upload-action](https://github.com/a179346/nextjs-chunk-upload-action)
+
   - Community chunking implementation
 - [How to Upload Multiple File With Feature Cancellation &
+
   Retry](https://dev.to/devinekadeni/how-to-upload-multiple-file-with-feature-cancellation-retry-using-reactjs-18cd)
+
   - Cancellation patterns
 
 ## Metadata
@@ -1510,10 +1744,15 @@ Things that couldn't be fully resolved:
 **Confidence breakdown:**
 
 - Standard stack: HIGH - All libraries verified with Context7/official docs,
+
   widely used in production
+
 - Architecture: HIGH - Patterns from official Next.js tutorials, TUS protocol
+
   spec, Prisma docs
+
 - Pitfalls: HIGH - OWASP security guidelines, real CVEs, documented in official
+
   sources
 
 **Research date:** 2026-01-25

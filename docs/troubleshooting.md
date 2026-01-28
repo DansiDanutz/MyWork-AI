@@ -39,7 +39,7 @@ python tools/mw.py status  # Try direct invocation
 
 chmod +x install.sh && ./install.sh
 
-```
+```markdown
 
 ---
 
@@ -85,7 +85,7 @@ mw status --verbose
 
 mw status --json
 
-```
+```markdown
 
 ### **Project Status**
 
@@ -119,7 +119,7 @@ ls .planning/phases/*/
 $ mw status
 bash: mw: command not found
 
-```
+```yaml
 
 **Solutions:**
 
@@ -158,7 +158,7 @@ bash: mw: command not found
 ModuleNotFoundError: No module named 'click'
 ModuleNotFoundError: No module named 'rich'
 
-```
+```yaml
 
 **Solution:**
 
@@ -185,7 +185,7 @@ python -c "import click; print('Click installed')"
 ```bash
 Permission denied: '/Users/dansidanutz/Desktop/MyWork/tools/mw.py'
 
-```
+```yaml
 
 **Solution:**
 
@@ -213,7 +213,7 @@ $ mw gsd progress
 No planning structure found.
 Run /gsd:new-project to start a new project.
 
-```
+```yaml
 
 **Solutions:**
 
@@ -256,7 +256,7 @@ Run /gsd:new-project to start a new project.
    cat .planning/STATE.md
    ls .planning/phases/*/
 
-   ```
+```yaml
 
 2. **Look for error details:**
 
@@ -274,7 +274,7 @@ Run /gsd:new-project to start a new project.
    ```bash
    mw gsd resume-work
 
-   ```
+```yaml
 
 4. **Re-run specific phase:**
 
@@ -288,7 +288,7 @@ Run /gsd:new-project to start a new project.
    ```bash
    mw gsd plan-phase [phase] --gaps
 
-   ```
+```markdown
 
 #### **Problem: Planning generates unclear or wrong requirements**
 
@@ -350,7 +350,7 @@ Run /gsd:new-project to start a new project.
 $ mw ac status
 ❌ Autocoder Server: Not responding on port 8888
 
-```
+```yaml
 
 **Solutions:**
 
@@ -368,7 +368,7 @@ $ mw ac status
 
    # If something else is using it, kill it or use different port
 
-   ```
+```yaml
 
 3. **Reset server:**
 
@@ -393,7 +393,7 @@ $ mw ac status
    ```bash
    mw ac start my-project --concurrency 1  # Instead of 3-5
 
-   ```
+```yaml
 
 2. **Use smaller model:**
 
@@ -429,7 +429,7 @@ $ mw ac status
 n8n tools not available
 MCP server connection failed
 
-```
+```yaml
 
 **Solutions:**
 
@@ -445,7 +445,7 @@ MCP server connection failed
    ```bash
    cat .mcp.json  # Should have n8n-mcp entry
 
-   ```
+```yaml
 
 3. **Test n8n connection:**
 
@@ -475,7 +475,7 @@ MCP server connection failed
 
    # Use n8n-skills: search_templates, get_template
 
-   ```
+```yaml
 
 2. **Validate before deploying:**
 
@@ -518,7 +518,7 @@ Your branch is behind 'origin/main'
    git add .
    git commit -m "Initial commit"
 
-   ```
+```yaml
 
 2. **Sync with remote:**
 
@@ -536,7 +536,7 @@ Your branch is behind 'origin/main'
    git pull    # Get latest
    git stash pop  # Restore changes
 
-   ```
+```markdown
 
 #### **Problem: Disk space full**
 
@@ -556,7 +556,7 @@ OSError: [Errno 28] No space left on device
    rm -rf projects/*/node_modules/
    find . -name "__pycache__" -exec rm -rf {} +
 
-   ```
+```yaml
 
 2. **Clean system temporary files:**
 
@@ -621,7 +621,7 @@ cat .planning/debug.log
 
 git log --oneline -20
 
-```
+```markdown
 
 ### **Configuration Issues**
 
@@ -661,7 +661,7 @@ echo "MYWORK_ROOT: $MYWORK_ROOT"
 echo "OPENAI_API_KEY: ${OPENAI_API_KEY:0:10}..."
 echo "GITHUB_TOKEN: ${GITHUB_TOKEN:0:10}..."
 
-```
+```markdown
 
 ### **Performance Issues**
 
@@ -686,7 +686,7 @@ echo "GITHUB_TOKEN: ${GITHUB_TOKEN:0:10}..."
 
    mw gsd plan-phase 1 --skip-research
 
-   ```
+```yaml
 
 3. **Clear caches:**
 
@@ -740,7 +740,7 @@ git checkout .
 
 mw gsd new-project
 
-```
+```markdown
 
 ### **Partial Reset (Keep some progress)**
 
@@ -768,22 +768,24 @@ If you're still stuck:
    mw status --verbose >> debug_report.txt
    cat .planning/STATE.md >> debug_report.txt
 
-   ```
+```yaml
 
 2. **Ask for help:**
    - 💬 **[GitHub
 
-```
+```yaml
  Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)** -
  Attach debug report
 
 ```
+
    - 🐛 **[GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)** - If
 
-```
+```text
  it's a bug
 
-```
+```yaml
+
    - 📧 **[Email Support](mailto:support@mywork.ai)** - For urgent issues
 
 3. **Include this info:**
@@ -828,7 +830,7 @@ If you're still stuck:
 
    git add . && git commit -m "Checkpoint"
 
-   ```
+```yaml
 
 3. **Monitor health:**
 

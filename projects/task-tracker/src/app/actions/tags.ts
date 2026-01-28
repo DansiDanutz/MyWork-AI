@@ -1,71 +1,76 @@
-'use server'
+"use server";
 
-import { revalidatePath } from 'next/cache'
-import { z } from 'zod'
+import { revalidatePath } from "next/cache";
+import { z } from "zod";
 
-import { prisma } from '@/shared/lib/db'
-import { getUser } from '@/shared/lib/dal'
-import { trackEvent } from '@/shared/lib/analytics'
+import { prisma } from "@/shared/lib/db";
+import { getUser } from "@/shared/lib/dal";
+import { trackEvent } from "@/shared/lib/analytics";
 
 // Validation schemas
 const CreateTagSchema = z.object({
-  name: z.string().min(1, 'Tag name is required').max(50, 'Tag name too long'),
-  color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Invalid color format').optional(),
-})
+  name: z.string().min(1, "Tag name is required").max(50, "Tag name too long"),
+  color: z
+    .string()
+    .regex(/^#[0-9A-Fa-f]{6}$/, "Invalid color format")
+    .optional(),
+});
 
 type ActionResult<T = void> =
   | { success: true; data?: T }
-  | { success: false; error: string }
+  | { success: false; error: string };
 
 /**
  * Create a new tag for the authenticated user
  */
-export async function createTag(formData: FormData): Promise<ActionResult<{ tagId: string }>> {
+export async function createTag(
+  formData: FormData,
+): Promise<ActionResult<{ tagId: string }>> {
   try {
-    const user = await getUser()
+    const user = await getUser();
     if (!user) {
-      return { success: false, error: 'You must be logged in to create tags' }
+      return { success: false, error: "You must be logged in to create tags" };
     }
 
     const result = CreateTagSchema.safeParse({
-      name: formData.get('name'),
-      color: formData.get('color') || undefined,
-    })
+      name: formData.get("name"),
+      color: formData.get("color") || undefined,
+    });
 
     if (!result.success) {
-      return { success: false, error: result.error.issues[0].message }
+      return { success: false, error: result.error.issues[0].message };
     }
 
-    const { name, color } = result.data
+    const { name, color } = result.data;
 
     // Check for duplicate tag name for this user
     const existing = await prisma.tag.findFirst({
-      where: { userId: user.id, name: { equals: name, mode: 'insensitive' } }
-    })
+      where: { userId: user.id, name: { equals: name, mode: "insensitive" } },
+    });
 
     if (existing) {
-      return { success: false, error: 'A tag with this name already exists' }
+      return { success: false, error: "A tag with this name already exists" };
     }
 
     const tag = await prisma.tag.create({
       data: {
         name,
-        color: color || '#6b7280', // Default gray
+        color: color || "#6b7280", // Default gray
         userId: user.id,
       },
-    })
+    });
 
     trackEvent({
-      type: 'tag_created',
+      type: "tag_created",
       userId: user.id,
       properties: { tagId: tag.id, tagName: tag.name },
-    })
+    });
 
-    revalidatePath('/tasks')
-    return { success: true, data: { tagId: tag.id } }
+    revalidatePath("/tasks");
+    return { success: true, data: { tagId: tag.id } };
   } catch (error) {
-    console.error('Create tag error:', error)
-    return { success: false, error: 'Failed to create tag' }
+    console.error("Create tag error:", error);
+    return { success: false, error: "Failed to create tag" };
   }
 }
 
@@ -74,32 +79,32 @@ export async function createTag(formData: FormData): Promise<ActionResult<{ tagI
  */
 export async function deleteTag(tagId: string): Promise<ActionResult> {
   try {
-    const user = await getUser()
+    const user = await getUser();
     if (!user) {
-      return { success: false, error: 'You must be logged in to delete tags' }
+      return { success: false, error: "You must be logged in to delete tags" };
     }
 
     const tag = await prisma.tag.findFirst({
-      where: { id: tagId, userId: user.id }
-    })
+      where: { id: tagId, userId: user.id },
+    });
 
     if (!tag) {
-      return { success: false, error: 'Tag not found or access denied' }
+      return { success: false, error: "Tag not found or access denied" };
     }
 
-    await prisma.tag.delete({ where: { id: tagId } })
+    await prisma.tag.delete({ where: { id: tagId } });
 
     trackEvent({
-      type: 'tag_deleted',
+      type: "tag_deleted",
       userId: user.id,
       properties: { tagId, tagName: tag.name },
-    })
+    });
 
-    revalidatePath('/tasks')
-    return { success: true }
+    revalidatePath("/tasks");
+    return { success: true };
   } catch (error) {
-    console.error('Delete tag error:', error)
-    return { success: false, error: 'Failed to delete tag' }
+    console.error("Delete tag error:", error);
+    return { success: false, error: "Failed to delete tag" };
   }
 }
 
@@ -108,30 +113,33 @@ export async function deleteTag(tagId: string): Promise<ActionResult> {
  */
 export async function updateTaskTags(
   taskId: string,
-  tagIds: string[]
+  tagIds: string[],
 ): Promise<ActionResult> {
   try {
-    const user = await getUser()
+    const user = await getUser();
     if (!user) {
-      return { success: false, error: 'You must be logged in to update task tags' }
+      return {
+        success: false,
+        error: "You must be logged in to update task tags",
+      };
     }
 
     // Verify task ownership
     const task = await prisma.task.findFirst({
-      where: { id: taskId, userId: user.id }
-    })
+      where: { id: taskId, userId: user.id },
+    });
 
     if (!task) {
-      return { success: false, error: 'Task not found or access denied' }
+      return { success: false, error: "Task not found or access denied" };
     }
 
     // Verify all tags belong to user
     if (tagIds.length > 0) {
       const userTagCount = await prisma.tag.count({
-        where: { id: { in: tagIds }, userId: user.id }
-      })
+        where: { id: { in: tagIds }, userId: user.id },
+      });
       if (userTagCount !== tagIds.length) {
-        return { success: false, error: 'One or more tags not found' }
+        return { success: false, error: "One or more tags not found" };
       }
     }
 
@@ -140,23 +148,23 @@ export async function updateTaskTags(
       where: { id: taskId },
       data: {
         tags: {
-          set: tagIds.map(id => ({ id }))
-        }
-      }
-    })
+          set: tagIds.map((id) => ({ id })),
+        },
+      },
+    });
 
     trackEvent({
-      type: 'task_tags_updated',
+      type: "task_tags_updated",
       userId: user.id,
       properties: { taskId, tagCount: tagIds.length },
-    })
+    });
 
-    revalidatePath('/tasks')
-    revalidatePath(`/tasks/${taskId}/edit`)
-    return { success: true }
+    revalidatePath("/tasks");
+    revalidatePath(`/tasks/${taskId}/edit`);
+    return { success: true };
   } catch (error) {
-    console.error('Update task tags error:', error)
-    return { success: false, error: 'Failed to update task tags' }
+    console.error("Update task tags error:", error);
+    return { success: false, error: "Failed to update task tags" };
   }
 }
 
@@ -165,21 +173,21 @@ export async function updateTaskTags(
  */
 export async function addTagToTask(
   taskId: string,
-  tagName: string
+  tagName: string,
 ): Promise<ActionResult<{ tagId: string }>> {
   try {
-    const user = await getUser()
+    const user = await getUser();
     if (!user) {
-      return { success: false, error: 'You must be logged in' }
+      return { success: false, error: "You must be logged in" };
     }
 
     // Verify task ownership
     const task = await prisma.task.findFirst({
-      where: { id: taskId, userId: user.id }
-    })
+      where: { id: taskId, userId: user.id },
+    });
 
     if (!task) {
-      return { success: false, error: 'Task not found or access denied' }
+      return { success: false, error: "Task not found or access denied" };
     }
 
     // Connect or create tag
@@ -189,25 +197,25 @@ export async function addTagToTask(
         tags: {
           connectOrCreate: {
             where: { userId_name: { userId: user.id, name: tagName } },
-            create: { name: tagName, color: '#6b7280', userId: user.id }
-          }
-        }
+            create: { name: tagName, color: "#6b7280", userId: user.id },
+          },
+        },
       },
-      include: { tags: true }
-    })
+      include: { tags: true },
+    });
 
-    const addedTag = updatedTask.tags.find(t => t.name === tagName)
+    const addedTag = updatedTask.tags.find((t) => t.name === tagName);
 
     trackEvent({
-      type: 'tag_added_to_task',
+      type: "tag_added_to_task",
       userId: user.id,
       properties: { taskId, tagName },
-    })
+    });
 
-    revalidatePath('/tasks')
-    return { success: true, data: { tagId: addedTag?.id || '' } }
+    revalidatePath("/tasks");
+    return { success: true, data: { tagId: addedTag?.id || "" } };
   } catch (error) {
-    console.error('Add tag to task error:', error)
-    return { success: false, error: 'Failed to add tag to task' }
+    console.error("Add tag to task error:", error);
+    return { success: false, error: "Failed to add tag to task" };
   }
 }

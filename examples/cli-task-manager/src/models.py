@@ -14,6 +14,7 @@ import json
 
 class Priority(Enum):
     """Task priority levels."""
+
     LOW = "low"
     NORMAL = "normal"
     HIGH = "high"
@@ -22,7 +23,7 @@ class Priority(Enum):
         return self.value
 
     @classmethod
-    def from_string(cls, value: str) -> 'Priority':
+    def from_string(cls, value: str) -> "Priority":
         """Create Priority from string value."""
         try:
             return cls(value.lower())
@@ -32,6 +33,7 @@ class Priority(Enum):
 
 class Status(Enum):
     """Task completion status."""
+
     PENDING = "pending"
     COMPLETED = "completed"
 
@@ -47,6 +49,7 @@ class Task:
     This class follows the dataclass pattern for clean serialization
     and includes validation and helper methods.
     """
+
     id: int
     title: str
     priority: Priority = Priority.NORMAL
@@ -60,7 +63,9 @@ class Task:
         if not self.title or not self.title.strip():
             raise ValueError("Task title cannot be empty")
 
-        if self.due_date and self.due_date < datetime.now().replace(hour=0, minute=0, second=0, microsecond=0):
+        if self.due_date and self.due_date < datetime.now().replace(
+            hour=0, minute=0, second=0, microsecond=0
+        ):
             # Allow due dates to be today or in the future
             pass
 
@@ -124,24 +129,24 @@ class Task:
         data = asdict(self)
 
         # Convert enums to strings
-        data['priority'] = self.priority.value
+        data["priority"] = self.priority.value
 
         # Convert datetime objects to ISO strings
-        for field_name in ['created_at', 'due_date', 'completed_at']:
+        for field_name in ["created_at", "due_date", "completed_at"]:
             if data[field_name]:
                 data[field_name] = data[field_name].isoformat()
 
         return data
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> 'Task':
+    def from_dict(cls, data: Dict[str, Any]) -> "Task":
         """Create task from dictionary (deserialization)."""
         # Convert string priority back to enum
-        if 'priority' in data:
-            data['priority'] = Priority.from_string(data['priority'])
+        if "priority" in data:
+            data["priority"] = Priority.from_string(data["priority"])
 
         # Convert ISO strings back to datetime objects
-        for field_name in ['created_at', 'due_date', 'completed_at']:
+        for field_name in ["created_at", "due_date", "completed_at"]:
             if data.get(field_name):
                 data[field_name] = datetime.fromisoformat(data[field_name])
 
@@ -150,11 +155,9 @@ class Task:
     def __str__(self) -> str:
         """Human-readable string representation."""
         status_icon = "✅" if self.completed else "⏳"
-        priority_indicator = {
-            Priority.HIGH: "🔴",
-            Priority.NORMAL: "🔵",
-            Priority.LOW: "🟡"
-        }[self.priority]
+        priority_indicator = {Priority.HIGH: "🔴", Priority.NORMAL: "🔵", Priority.LOW: "🟡"}[
+            self.priority
+        ]
 
         result = f"{status_icon} {priority_indicator} {self.title}"
 
@@ -172,14 +175,17 @@ class Task:
 
     def __repr__(self) -> str:
         """Developer-friendly string representation."""
-        return (f"Task(id={self.id}, title='{self.title}', "
-                f"priority={self.priority.value}, completed={self.completed}, "
-                f"due_date={self.due_date})")
+        return (
+            f"Task(id={self.id}, title='{self.title}', "
+            f"priority={self.priority.value}, completed={self.completed}, "
+            f"due_date={self.due_date})"
+        )
 
 
 @dataclass
 class TaskStats:
     """Statistics about a collection of tasks."""
+
     total: int = 0
     completed: int = 0
     pending: int = 0
@@ -203,7 +209,7 @@ class TaskStats:
         return (self.overdue / self.pending) * 100
 
     @classmethod
-    def from_tasks(cls, tasks: list[Task]) -> 'TaskStats':
+    def from_tasks(cls, tasks: list[Task]) -> "TaskStats":
         """Calculate statistics from a list of tasks."""
         stats = cls()
         stats.total = len(tasks)
@@ -228,10 +234,12 @@ class TaskStats:
 
     def __str__(self) -> str:
         """Human-readable statistics summary."""
-        return (f"📊 {self.total} total | "
-                f"✅ {self.completed} completed ({self.completion_rate:.1f}%) | "
-                f"⏳ {self.pending} pending" +
-                (f" | ⚠️ {self.overdue} overdue" if self.overdue > 0 else ""))
+        return (
+            f"📊 {self.total} total | "
+            f"✅ {self.completed} completed ({self.completion_rate:.1f}%) | "
+            f"⏳ {self.pending} pending"
+            + (f" | ⚠️ {self.overdue} overdue" if self.overdue > 0 else "")
+        )
 
 
 def validate_task_data(data: Dict[str, Any]) -> Dict[str, str]:
@@ -244,26 +252,26 @@ def validate_task_data(data: Dict[str, Any]) -> Dict[str, str]:
     errors = {}
 
     # Required fields
-    if not data.get('title', '').strip():
-        errors['title'] = "Title is required and cannot be empty"
+    if not data.get("title", "").strip():
+        errors["title"] = "Title is required and cannot be empty"
 
-    if 'id' not in data or not isinstance(data['id'], int) or data['id'] <= 0:
-        errors['id'] = "ID must be a positive integer"
+    if "id" not in data or not isinstance(data["id"], int) or data["id"] <= 0:
+        errors["id"] = "ID must be a positive integer"
 
     # Priority validation
-    if 'priority' in data:
+    if "priority" in data:
         try:
-            Priority.from_string(data['priority'])
+            Priority.from_string(data["priority"])
         except (ValueError, AttributeError):
-            errors['priority'] = "Priority must be 'low', 'normal', or 'high'"
+            errors["priority"] = "Priority must be 'low', 'normal', or 'high'"
 
     # Due date validation
-    if 'due_date' in data and data['due_date'] is not None:
-        if not isinstance(data['due_date'], datetime):
+    if "due_date" in data and data["due_date"] is not None:
+        if not isinstance(data["due_date"], datetime):
             try:
                 # Try to parse if it's a string
-                datetime.fromisoformat(str(data['due_date']))
+                datetime.fromisoformat(str(data["due_date"]))
             except (ValueError, TypeError):
-                errors['due_date'] = "Due date must be a valid datetime"
+                errors["due_date"] = "Due date must be a valid datetime"
 
     return errors

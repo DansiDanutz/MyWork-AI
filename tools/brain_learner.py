@@ -41,14 +41,17 @@ from collections import defaultdict
 # Configuration - Import from shared config with fallback
 try:
     from config import MYWORK_ROOT, PROJECTS_DIR, BRAIN_DATA_JSON as BRAIN_JSON, BRAIN_MD, TMP_DIR
+
     LEARNING_LOG = TMP_DIR / "learning_log.json"
     ERROR_LOG = TMP_DIR / "error_patterns.json"
 except ImportError:
+
     def _get_mywork_root():
         if env_root := os.environ.get("MYWORK_ROOT"):
             return Path(env_root)
         script_dir = Path(__file__).resolve().parent
         return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+
     MYWORK_ROOT = _get_mywork_root()
     PROJECTS_DIR = MYWORK_ROOT / "projects"
     BRAIN_JSON = MYWORK_ROOT / ".planning" / "brain_data.json"
@@ -87,10 +90,9 @@ class LearningEngine:
     def save_learning_log(self):
         """Save learning session."""
         LEARNING_LOG.parent.mkdir(parents=True, exist_ok=True)
-        self.learning_history["sessions"].append({
-            "timestamp": datetime.now().isoformat(),
-            "discoveries": len(self.discoveries)
-        })
+        self.learning_history["sessions"].append(
+            {"timestamp": datetime.now().isoformat(), "discoveries": len(self.discoveries)}
+        )
         with open(LEARNING_LOG, "w") as f:
             json.dump(self.learning_history, f, indent=2)
 
@@ -106,20 +108,28 @@ class LearningEngine:
                 return True
         return False
 
-    def add_discovery(self, entry_type: str, content: str, context: str = "",
-                      confidence: str = "EXPERIMENTAL", source: str = "auto"):
+    def add_discovery(
+        self,
+        entry_type: str,
+        content: str,
+        context: str = "",
+        confidence: str = "EXPERIMENTAL",
+        source: str = "auto",
+    ):
         """Add a discovery if not already known."""
         if self.already_learned(content):
             return False
 
-        self.discoveries.append({
-            "type": entry_type,
-            "content": content,
-            "context": context,
-            "confidence": confidence,
-            "source": source,
-            "timestamp": datetime.now().isoformat()
-        })
+        self.discoveries.append(
+            {
+                "type": entry_type,
+                "content": content,
+                "context": context,
+                "confidence": confidence,
+                "source": source,
+                "timestamp": datetime.now().isoformat(),
+            }
+        )
 
         # Track in history
         self.learning_history.setdefault("discovered", []).append(content)
@@ -161,34 +171,32 @@ class LearningEngine:
 
         # Look for "Lessons Learned" or "What Worked" sections
         lessons_match = re.search(
-            r'(?:lessons?\s*learned|what\s*worked|key\s*insights?)[\s:]*\n((?:[-*]\s*.+\n?)+)',
+            r"(?:lessons?\s*learned|what\s*worked|key\s*insights?)[\s:]*\n((?:[-*]\s*.+\n?)+)",
             content,
-            re.IGNORECASE
+            re.IGNORECASE,
         )
 
         if lessons_match:
-            for line in lessons_match.group(1).split('\n'):
-                line = line.strip().lstrip('-*').strip()
+            for line in lessons_match.group(1).split("\n"):
+                line = line.strip().lstrip("-*").strip()
                 if line and len(line) > 20:
                     if self.add_discovery(
                         "lesson",
                         line,
                         f"From {project} phase summary",
                         "EXPERIMENTAL",
-                        f"gsd:{project}"
+                        f"gsd:{project}",
                     ):
                         count += 1
 
         # Look for "Issues" or "Blockers" sections
         issues_match = re.search(
-            r'(?:issues?|blockers?|problems?)[\s:]*\n((?:[-*]\s*.+\n?)+)',
-            content,
-            re.IGNORECASE
+            r"(?:issues?|blockers?|problems?)[\s:]*\n((?:[-*]\s*.+\n?)+)", content, re.IGNORECASE
         )
 
         if issues_match:
-            for line in issues_match.group(1).split('\n'):
-                line = line.strip().lstrip('-*').strip()
+            for line in issues_match.group(1).split("\n"):
+                line = line.strip().lstrip("-*").strip()
                 if line and len(line) > 20:
                     # Convert issue to anti-pattern
                     if self.add_discovery(
@@ -196,7 +204,7 @@ class LearningEngine:
                         f"Avoid: {line}",
                         f"Issue encountered in {project}",
                         "EXPERIMENTAL",
-                        f"gsd:{project}"
+                        f"gsd:{project}",
                     ):
                         count += 1
 
@@ -209,21 +217,19 @@ class LearningEngine:
 
         # Look for failed tests and their fixes
         failures_match = re.search(
-            r'(?:failed|issues?|bugs?)[\s:]*\n((?:[-*]\s*.+\n?)+)',
-            content,
-            re.IGNORECASE
+            r"(?:failed|issues?|bugs?)[\s:]*\n((?:[-*]\s*.+\n?)+)", content, re.IGNORECASE
         )
 
         if failures_match:
-            for line in failures_match.group(1).split('\n'):
-                line = line.strip().lstrip('-*').strip()
+            for line in failures_match.group(1).split("\n"):
+                line = line.strip().lstrip("-*").strip()
                 if line and len(line) > 20:
                     if self.add_discovery(
                         "antipattern",
                         f"Check for: {line}",
                         f"Verification issue in {project}",
                         "EXPERIMENTAL",
-                        f"gsd:{project}"
+                        f"gsd:{project}",
                     ):
                         count += 1
 
@@ -248,25 +254,25 @@ class LearningEngine:
                     cwd=project,
                     capture_output=True,
                     text=True,
-                    timeout=30
+                    timeout=30,
                 )
 
                 if result.returncode != 0:
                     continue
 
-                commits = result.stdout.strip().split('\n')
+                commits = result.stdout.strip().split("\n")
 
                 # Analyze commit patterns
-                fix_count = sum(1 for c in commits if 'fix' in c.lower())
-                refactor_count = sum(1 for c in commits if 'refactor' in c.lower())
-                feature_count = sum(1 for c in commits if any(
-                    w in c.lower() for w in ['feat', 'add', 'implement']
-                ))
+                fix_count = sum(1 for c in commits if "fix" in c.lower())
+                refactor_count = sum(1 for c in commits if "refactor" in c.lower())
+                feature_count = sum(
+                    1 for c in commits if any(w in c.lower() for w in ["feat", "add", "implement"])
+                )
 
                 # If lots of fixes, might indicate pattern to learn
                 if fix_count > 3:
                     # Look for common fix patterns
-                    fix_commits = [c for c in commits if 'fix' in c.lower()]
+                    fix_commits = [c for c in commits if "fix" in c.lower()]
                     for commit in fix_commits[:3]:
                         # Extract what was fixed
                         if self.add_discovery(
@@ -274,7 +280,7 @@ class LearningEngine:
                             f"Common fix pattern: {commit}",
                             f"Recurring fix in {project.name}",
                             "EXPERIMENTAL",
-                            f"git:{project.name}"
+                            f"git:{project.name}",
                         ):
                             count += 1
 
@@ -318,7 +324,7 @@ class LearningEngine:
                         f"Common naming: {pattern} (found {count_val} times)",
                         "From module registry analysis",
                         "TESTED",  # Based on evidence
-                        "registry"
+                        "registry",
                     ):
                         count += 1
 
@@ -335,7 +341,7 @@ class LearningEngine:
                         f"Project pattern: Heavy use of {mod_type} modules ({type_count} found)",
                         "From module registry analysis",
                         "TESTED",
-                        "registry"
+                        "registry",
                     ):
                         count += 1
 
@@ -365,12 +371,15 @@ class LearningEngine:
 
                 # Common error patterns
                 patterns = [
-                    (r'ModuleNotFoundError: No module named [\'"](\w+)[\'"]', "Missing Python module: {}"),
+                    (
+                        r'ModuleNotFoundError: No module named [\'"](\w+)[\'"]',
+                        "Missing Python module: {}",
+                    ),
                     (r'ImportError: cannot import name [\'"](\w+)[\'"]', "Import issue: {}"),
                     (r'FileNotFoundError:.*[\'"]([^"\']+)[\'"]', "Missing file: {}"),
                     (r'PermissionError:.*[\'"]([^"\']+)[\'"]', "Permission issue: {}"),
-                    (r'ConnectionRefusedError', "Connection refused - check if service is running"),
-                    (r'timeout', "Timeout - increase timeout or check network"),
+                    (r"ConnectionRefusedError", "Connection refused - check if service is running"),
+                    (r"timeout", "Timeout - increase timeout or check network"),
                 ]
 
                 for pattern, template in patterns:
@@ -392,7 +401,7 @@ class LearningEngine:
                     f"Watch for: {error}",
                     f"Occurred {len(occurrences)} times in logs",
                     "EXPERIMENTAL",
-                    "error_logs"
+                    "error_logs",
                 ):
                     count += 1
 
@@ -464,7 +473,7 @@ class LearningEngine:
                     content=discovery["content"],
                     context=discovery["context"],
                     status=discovery["confidence"],
-                    tags=[discovery["source"]]
+                    tags=[discovery["source"]],
                 )
                 count += 1
                 print(f"   🧠 Learned [{entry.type}]: {entry.content[:50]}...")
@@ -486,9 +495,9 @@ class LearningEngine:
 
         # Update the "Last updated" line
         content = re.sub(
-            r'> Last updated: \d{4}-\d{2}-\d{2}',
+            r"> Last updated: \d{4}-\d{2}-\d{2}",
             f'> Last updated: {datetime.now().strftime("%Y-%m-%d")}',
-            content
+            content,
         )
 
         # Update statistics in the changelog section if present
@@ -496,10 +505,10 @@ class LearningEngine:
         changelog_entry = f"| {datetime.now().strftime('%Y-%m-%d')} | Auto-learning: {stats['total_entries']} entries | Learning |"
 
         # Add to changelog if not already today
-        if datetime.now().strftime('%Y-%m-%d') not in content.split("## Changelog")[-1]:
+        if datetime.now().strftime("%Y-%m-%d") not in content.split("## Changelog")[-1]:
             content = content.replace(
                 "## Changelog\n\n| Date | Change | Category |",
-                f"## Changelog\n\n| Date | Change | Category |\n{changelog_entry}"
+                f"## Changelog\n\n| Date | Change | Category |\n{changelog_entry}",
             )
 
         BRAIN_MD.write_text(content)
@@ -531,7 +540,9 @@ def run_daily_learning():
     print(f"   Promoted {promoted} entries to TESTED")
 
     print("\n" + "=" * 50)
-    print(f"Daily learning complete: {total} discoveries, {committed} committed, {promoted} promoted")
+    print(
+        f"Daily learning complete: {total} discoveries, {committed} committed, {promoted} promoted"
+    )
 
 
 def run_weekly_learning():

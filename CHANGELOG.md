@@ -188,7 +188,7 @@ python ../../tools/mw.py gsd progress
 
 # See migration guide in docs/migration/1.0-to-1.1.md
 
-```
+```markdown
 
 ### Breaking Changes
 
@@ -230,18 +230,26 @@ python ../../tools/mw.py gsd progress
 #### How to Contribute
 
 1. **Report Issues**: [GitHub
+
 Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
+
 2. **Feature Requests**: [GitHub
+
 Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
+
 3. **Code Contributions**: Fork, develop, submit PR
 4. **Documentation**: Help improve guides and examples
 
 #### Support Channels
 
 - 💬 **Community**: [GitHub
+
   Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
+
 - 🐛 **Bug Reports**: [GitHub
+
   Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
+
 - 📧 **Direct Support**: [support@mywork.ai](mailto:support@mywork.ai)
 - 📺 **Video Guides**: [YouTube Channel](https://youtube.com/@MyWorkAI)
 

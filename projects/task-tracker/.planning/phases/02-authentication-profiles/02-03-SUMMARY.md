@@ -16,32 +16,38 @@ tech-stack:
   added: []
   patterns:
 
-```
+```markdown
+
 - server-actions-for-auth
 - conditional-ui-rendering
 - post-oauth-onboarding
 
-```
+```yaml
+
 key-files:
   created:
 
-```
+```markdown
+
 - src/app/(auth)/layout.tsx
 - src/app/(auth)/login/page.tsx
 - src/app/(auth)/welcome/page.tsx
 
 ```
+
   modified:
 
-```
+```markdown
+
 - src/app/page.tsx
 
-```
+```yaml
+
 decisions:
 
   - id: UI-001
 
-```
+```yaml
 title: Server Actions for OAuth
 choice: Use Next.js Server Actions for signIn instead of client-side button
 handlers
@@ -49,22 +55,25 @@ rationale: Simplifies auth flow, keeps credentials server-side, works
 without JavaScript
 
 ```
+
   - id: UI-002
 
-```
+```yaml
 title: Conditional Homepage CTAs
 choice: Show different CTAs for authenticated vs anonymous users
 rationale: Improves UX by showing relevant actions based on auth state
 
-```
+```yaml
+
   - id: UI-003
 
-```
+```yaml
 title: Post-OAuth Onboarding Flow
 choice: Redirect to /welcome after first login with guided tour
 rationale: Helps new users understand features immediately after sign-up
 
 ```
+
 metrics:
   duration: 50 minutes
   completed: 2026-01-24
@@ -104,7 +113,9 @@ Updated homepage (`/`) with landing page design:
 - Prominent "Login with GitHub" CTA for anonymous users (per CONTEXT.md)
 - "Go to Dashboard" button for authenticated users
 - Features preview section (3 cards: Task Management, GitHub Integration, File
+
   Attachments)
+
 - Fully responsive with gradient background
 - Footer
 
@@ -137,16 +148,25 @@ features immediately.
 
 - **Found during:** Task 1 verification
 - **Issue:** Next.js 15.0.3 has a webpack bundling bug that incorrectly includes
+
   Pages Router document components in App Router builds, causing build failures
   on error page generation
+
 - **Fix attempted:** Tried upgrading to Next.js 16.1.4 but encountered React 19
+
   compatibility issues (decision TECH-001)
+
 - **Workaround:** Disabled middleware temporarily (it was from plan 02-02 which
+
   runs in parallel), verified pages work in dev mode
+
 - **Decision:** Keep Next.js 15.0.3 per TECH-001, accept that production builds
+
   fail until Next.js fixes the bug. Dev mode works correctly.
+
 - **Files modified:** None (build issue, not code issue)
 - **Impact:** Production builds currently fail, but development server works
+
   perfectly. This will be resolved when Next.js releases a fix or when we can
   safely upgrade.
 
@@ -154,20 +174,30 @@ features immediately.
 
 - **Found during:** Task 3
 - **Issue:** Plan 02-03 depends on 02-01, but getUser function is created in plan
+
   02-02 which runs in parallel (wave 2)
+
 - **Fix:** Plan 02-02 was executed in parallel and created the DAL before this
+
   plan needed it
+
 - **Resolution:** No action needed, parallel execution handled the dependency
+
   correctly
 
 **3. [Rule 3 - Blocking] Middleware Conflicts**
 
 - **Found during:** Task 1 build
 - **Issue:** Middleware from plan 02-02 was trying to run in Edge Runtime but
+
   imports Prisma/pg which requires Node.js APIs
+
 - **Fix:** Temporarily renamed middleware.ts to middleware.ts.disabled to unblock
+
   this plan's verification
+
 - **Resolution:** Plan 02-02 will need to configure middleware for Node.js
+
   runtime, not Edge Runtime
 
 ## Technical Achievements
@@ -177,6 +207,7 @@ features immediately.
 - Login page integrates with Auth.js from plan 02-01
 - Proper error handling with URL params (per CONTEXT.md)
 - Redirect logic: errors → login with message, success → welcome, already authed
+
   → dashboard
 
 ### UI/UX Patterns
@@ -205,7 +236,9 @@ features immediately.
 ### Blockers
 
 - **Build issue:** Production builds fail due to Next.js 15.0.3 bug. This doesn't
+
   block development but will need resolution before deployment.
+
 - **Middleware:** Needs Edge Runtime compatibility fix in plan 02-02
 
 ### Open Questions
@@ -216,17 +249,21 @@ features immediately.
 ## Lessons Learned
 
 1. **Next.js 15.0.3 has known bugs:** The webpack bundling issue with error
+
 pages is a known problem. Future projects should consider waiting for 15.1.x or
 staying on 14.x until 15 is stable.
 
 2. **Server Actions simplify auth:** Using Server Actions for signIn eliminates
+
 client-side JavaScript requirements and keeps the auth flow simple and secure.
 
 3. **Parallel execution requires careful dependency management:** Plans 02-02
+
 and 02-03 both in wave 2 shared dependencies (DAL). Fortunately, 02-02's DAL was
 created before 02-03 needed it.
 
 4. **Middleware runtime matters:** Edge Runtime restrictions (no Node.js APIs)
+
 mean auth middleware can't use Prisma directly. Need to use Node.js runtime for
 middleware.
 

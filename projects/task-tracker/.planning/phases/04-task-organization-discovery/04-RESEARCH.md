@@ -71,7 +71,7 @@ PostgreSQL extensions (via migration):
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
-```
+```markdown
 
 ## Architecture Patterns
 
@@ -97,12 +97,17 @@ src/
 │           └── task-filters.ts       # Zod schemas for filters
 └── lib/
 
-```
+```text
+
 └── search/
-    ├── highlight-utils.ts        # Text highlighting helpers
-    └── search-utils.ts           # Query building utilities
 
 ```
+├── highlight-utils.ts        # Text highlighting helpers
+└── search-utils.ts           # Query building utilities
+
+```text
+
+```text
 
 ```
 
@@ -196,17 +201,19 @@ export default function TasksPage() {
 
   return (
 
-```
+```javascript
+
 <TaskSearchBar
   value={filters.search}
   onChange={(search) => setFilters({ search })}
 />
 
-```
+```markdown
+
   );
 }
 
-```
+```markdown
 
 ### Pattern 3: Debounced Search with Server Actions
 
@@ -229,6 +236,7 @@ export function TaskSearchBar({ value, onChange }: Props) {
   const debouncedSearch = useDebouncedCallback(async (query: string) => {
 
 ```
+
 if (!query.trim()) {
   setResults([]);
   return;
@@ -242,33 +250,41 @@ try {
   setIsSearching(false);
 }
 
-```
+```javascript
   }, 300); // 300ms recommended by Next.js docs
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
-```
+```javascript
+
 const newValue = e.target.value;
 onChange(newValue);
 debouncedSearch(newValue);
 
-```
+```text
   };
 
   return (
 
 ```
+
 <div className="relative">
   <input
-    type="search"
-    value={value}
-    onChange={handleChange}
-    placeholder="Search tasks..."
+
+```text
+type="search"
+value={value}
+onChange={handleChange}
+placeholder="Search tasks..."
+
+```
+
   />
   {isSearching && <Spinner />}
 </div>
 
-```
+```markdown
+
   );
 }
 
@@ -307,21 +323,27 @@ model Tag {
 export async function createTaskWithTags(userId: string, data: CreateTaskInput) {
   return await prisma.task.create({
 
-```
+```yaml
+
 data: {
   title: data.title,
   description: data.description,
   userId: userId,
   tags: {
-    connectOrCreate: data.tagNames.map(name => ({
-      where: { name },
-      create: { name },
-    })),
+
+```
+connectOrCreate: data.tagNames.map(name => ({
+  where: { name },
+  create: { name },
+})),
+
+```yaml
+
   },
 },
 include: { tags: true },
 
-```
+```javascript
   });
 }
 
@@ -329,21 +351,27 @@ export async function filterTasksByTags(userId: string, tagIds: string[]) {
   return await prisma.task.findMany({
 
 ```
+
 where: {
   userId,
   tags: {
-    some: {
-      id: { in: tagIds },
-    },
+
+```yaml
+some: {
+  id: { in: tagIds },
+},
+
+```
+
   },
 },
 include: { tags: true },
 
-```
+```text
   });
 }
 
-```
+```markdown
 
 ### Pattern 5: Bulk Operations with useOptimistic
 
@@ -362,11 +390,17 @@ import { bulkUpdateStatusAction } from '@/modules/task/task-actions';
 export function TaskBulkActions({ selectedIds, tasks }: Props) {
   const [optimisticTasks, updateOptimisticTasks] = useOptimistic(
 
-```
+```javascript
+
 tasks,
 (state, { ids, status }: { ids: string[], status: TaskStatus }) => {
   return state.map(task =>
-    ids.includes(task.id) ? { ...task, status } : task
+
+```
+ids.includes(task.id) ? { ...task, status } : task
+
+```text
+
   );
 }
 
@@ -375,7 +409,8 @@ tasks,
 
   async function handleBulkStatusChange(status: TaskStatus) {
 
-```
+```yaml
+
 // Optimistic update (instant UI)
 updateOptimisticTasks({ ids: selectedIds, status });
 
@@ -387,15 +422,22 @@ try {
   toast.error('Failed to update tasks');
 }
 
-```
+```html
+
   }
 
   return (
 
-```
+```html
+
 <DropdownMenu>
   <DropdownMenuItem onClick={() => handleBulkStatusChange('IN_PROGRESS')}>
-    Mark as In Progress
+
+```
+Mark as In Progress
+
+```html
+
   </DropdownMenuItem>
   {/* ... */}
 </DropdownMenu>
@@ -431,43 +473,66 @@ import Highlighter from 'react-highlight-words';
 export function TaskCard({ task, searchQuery }: Props) {
   return (
 
-```
+```html
+
 <div>
   <h3>
-    <Highlighter
-      searchWords={[searchQuery]}
-      autoEscape
-      textToHighlight={task.title}
-    />
+
+```text
+<Highlighter
+  searchWords={[searchQuery]}
+  autoEscape
+  textToHighlight={task.title}
+/>
+
+```
+
   </h3>
   <p>
-    <Highlighter
-      searchWords={[searchQuery]}
-      autoEscape
-      textToHighlight={task.description || ''}
-    />
+
+```bash
+<Highlighter
+  searchWords={[searchQuery]}
+  autoEscape
+  textToHighlight={task.description || ''}
+/>
+
+```
+
   </p>
 </div>
 
-```
+```markdown
+
   );
 }
 
-```
+```markdown
 
 ### Anti-Patterns to Avoid
 
 - **Don't use ILIKE for search at scale:** ILIKE '%term%' doesn't scale past
+
   10,000 rows and can't use indexes effectively. Use full-text search instead.
+
 - **Don't put filter state in React state only:** Users can't share/bookmark
+
   filtered views. Always use URL params as single source of truth.
+
 - **Don't skip debouncing on search input:** Hitting the database on every
+
   keystroke wastes resources and degrades performance. Use 300-500ms debounce.
+
 - **Don't concatenate user input in raw SQL:** Use parameterized queries via
+
   TypedSQL or $queryRaw with template tags to prevent SQL injection.
+
 - **Don't create explicit join tables unless needed:** Prisma's implicit m-n is
+
   simpler and sufficient when you don't need extra metadata on the relationship.
+
 - **Don't ignore empty states:** When filters return no results, show helpful
+
   guidance (broaden search, clear filters, suggest alternatives).
 
 ## Don't Hand-Roll
@@ -535,19 +600,20 @@ await prisma.task.findMany({
   where: {
 
 ```
+
 OR: [
   { title: { contains: query, mode: 'insensitive' } },
   { description: { contains: query, mode: 'insensitive' } },
 ],
 
-```
+```yaml
   },
 });
 
 // RIGHT: Full-text search with ranking
 await prisma.$queryRawTyped(searchTasks(query, userId));
 
-```
+```markdown
 
 ### Pitfall 3: Storing Filter State Only in React State
 
@@ -601,7 +667,7 @@ const debouncedSearch = useDebouncedCallback(async (query) => {
   setResults(results);
 }, 300);
 
-```
+```markdown
 
 ### Pitfall 5: Using Explicit Many-to-Many When Implicit Would Suffice
 
@@ -662,17 +728,18 @@ filters, broaden search, suggested alternatives).
   <EmptyState
 
 ```
+
 title="No tasks found"
 description="Try broadening your search or clearing some filters"
 action={<Button onClick={clearFilters}>Clear Filters</Button>}
 
-```
+```yaml
   />
 ) : (
   <TaskList tasks={tasks} />
 )}
 
-```
+```markdown
 
 ## Code Examples
 
@@ -740,7 +807,8 @@ export default function TasksPage() {
 
   return (
 
-```
+```javascript
+
 <input
   value={filters.q}
   onChange={(e) => setFilters({ q: e.target.value })}
@@ -750,7 +818,7 @@ export default function TasksPage() {
   );
 }
 
-```
+```markdown
 
 ### Debounced Search (Next.js Official Docs)
 
@@ -769,7 +837,8 @@ export default function Search() {
 
   const handleSearch = useDebouncedCallback((term: string) => {
 
-```
+```javascript
+
 const params = new URLSearchParams(searchParams);
 if (term) {
   params.set('query', term);
@@ -778,19 +847,21 @@ if (term) {
 }
 replace(`${pathname}?${params.toString()}`);
 
-```
+```text
   }, 300);
 
   return (
 
 ```
+
 <input
   placeholder="Search tasks..."
   onChange={(e) => handleSearch(e.target.value)}
   defaultValue={searchParams.get('query')?.toString()}
 />
 
-```
+```markdown
+
   );
 }
 
@@ -806,23 +877,29 @@ replace(`${pathname}?${params.toString()}`);
 const task = await prisma.task.create({
   data: {
 
-```
+```yaml
+
 title: 'Build search feature',
 userId: userId,
 tags: {
   connectOrCreate: [
-    {
-      where: { name: 'feature' },
-      create: { name: 'feature', color: '#3b82f6' },
-    },
-    {
-      where: { name: 'urgent' },
-      create: { name: 'urgent', color: '#ef4444' },
-    },
+
+```
+{
+  where: { name: 'feature' },
+  create: { name: 'feature', color: '#3b82f6' },
+},
+{
+  where: { name: 'urgent' },
+  create: { name: 'urgent', color: '#ef4444' },
+},
+
+```yaml
+
   ],
 },
 
-```
+```yaml
   },
   include: { tags: true },
 });
@@ -833,12 +910,13 @@ await prisma.task.update({
   data: {
 
 ```
+
 tags: {
   set: [], // Clear existing
   connect: newTagIds.map(id => ({ id })), // Connect new ones
 },
 
-```
+```javascript
   },
 });
 
@@ -846,14 +924,20 @@ tags: {
 const tasks = await prisma.task.findMany({
   where: {
 
-```
+```yaml
+
 tags: {
   some: {
-    id: { in: tagIds },
+
+```
+id: { in: tagIds },
+
+```yaml
+
   },
 },
 
-```
+```yaml
   },
   include: { tags: true },
 });
@@ -876,7 +960,8 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
   // Update header checkbox indeterminate state
   useEffect(() => {
 
-```
+```javascript
+
 if (!headerCheckboxRef.current) return;
 
 const allSelected = selectedIds.size === tasks.length;
@@ -885,12 +970,13 @@ const someSelected = selectedIds.size > 0 && selectedIds.size < tasks.length;
 headerCheckboxRef.current.checked = allSelected;
 headerCheckboxRef.current.indeterminate = someSelected;
 
-```
+```javascript
   }, [selectedIds, tasks.length]);
 
   const toggleAll = () => {
 
-```
+```javascript
+
 if (selectedIds.size === tasks.length) {
   setSelectedIds(new Set());
 } else {
@@ -902,7 +988,8 @@ if (selectedIds.size === tasks.length) {
 
   const toggleOne = (id: string) => {
 
-```
+```javascript
+
 const newSelected = new Set(selectedIds);
 if (newSelected.has(id)) {
   newSelected.delete(id);
@@ -911,38 +998,58 @@ if (newSelected.has(id)) {
 }
 setSelectedIds(newSelected);
 
-```
+```html
+
   };
 
   return (
 
-```
+```html
+
 <table>
   <thead>
-    <tr>
-      <th>
-        <input
-          ref={headerCheckboxRef}
-          type="checkbox"
-          onChange={toggleAll}
-        />
-      </th>
-      <th>Title</th>
-    </tr>
+
+```
+<tr>
+  <th>
+
+```
+<input
+  ref={headerCheckboxRef}
+  type="checkbox"
+  onChange={toggleAll}
+/>
+
+```
+  </th>
+  <th>Title</th>
+</tr>
+
+```html
+
   </thead>
   <tbody>
-    {tasks.map(task => (
-      <tr key={task.id}>
-        <td>
-          <input
-            type="checkbox"
-            checked={selectedIds.has(task.id)}
-            onChange={() => toggleOne(task.id)}
-          />
-        </td>
-        <td>{task.title}</td>
-      </tr>
-    ))}
+
+```
+{tasks.map(task => (
+  <tr key={task.id}>
+
+```
+<td>
+  <input
+    type="checkbox"
+    checked={selectedIds.has(task.id)}
+    onChange={() => toggleOne(task.id)}
+  />
+</td>
+<td>{task.title}</td>
+
+```
+  </tr>
+))}
+
+```html
+
   </tbody>
 </table>
 
@@ -966,32 +1073,57 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
 
-```
+```html
+
 <div className="flex flex-col items-center justify-center py-12 text-center">
   {illustration && (
-    <div className="mb-4 text-gray-400">
-      {illustration}
-    </div>
-  )}
 
-  <h3 className="mb-2 text-lg font-semibold text-gray-900">
-    {title}
-  </h3>
+```html
 
-  {description && (
-    <p className="mb-4 max-w-sm text-sm text-gray-600">
-      {description}
-    </p>
-  )}
-
-  {action && (
-    <div className="mt-4">
-      {action}
-    </div>
-  )}
+<div className="mb-4 text-gray-400">
+  {illustration}
 </div>
 
 ```
+
+  )}
+
+  <h3 className="mb-2 text-lg font-semibold text-gray-900">
+
+```text
+{title}
+
+```
+
+  </h3>
+
+  {description && (
+
+```html
+
+<p className="mb-4 max-w-sm text-sm text-gray-600">
+  {description}
+</p>
+
+```
+
+  )}
+
+  {action && (
+
+```html
+
+<div className="mt-4">
+  {action}
+</div>
+
+```
+
+  )}
+</div>
+
+```markdown
+
   );
 }
 
@@ -1008,7 +1140,7 @@ export function EmptyState({
   action={<Button onClick={openCreateDialog}>Create Task</Button>}
 />
 
-```
+```markdown
 
 ## State of the Art
 
@@ -1024,14 +1156,23 @@ export function EmptyState({
 **Deprecated/outdated:**
 
 - **Elasticsearch for basic search**: Overkill for most apps. PostgreSQL FTS
+
   handles 10M+ rows efficiently with proper indexing.
+
 - **LIKE/ILIKE for search at scale**: Doesn't use indexes, no ranking, no
+
   semantic understanding. Use FTS instead.
+
 - **useSearchParams with manual parsing**: Error-prone, no type safety. Use nuqs
+
   for URL state.
+
 - **$queryRawUnsafe**: SQL injection risk. Use TypedSQL or $queryRaw with
+
   template tags.
+
 - **Explicit join tables by default**: Over-engineering. Use implicit m-n unless
+
   you need metadata.
 
 ## Open Questions
@@ -1044,127 +1185,167 @@ Things that couldn't be fully resolved:
 ```
  12+. Triggers are alternative.
 
-```
+```yaml
+
    - What's unclear: Performance impact of generated columns on write-heavy
 
-```
+```yaml
  workloads vs trigger maintenance overhead.
 
-```
+```yaml
+
    - Recommendation: Start with generated columns (simpler), monitor write
 
 ```
  performance, switch to triggers only if bottleneck identified.
 
-```
+```yaml
+
 2. **When to add fuzzy search fallback**
    - What we know: pg_trgm handles typos well but is slower than FTS. Can run
 
-```
+```yaml
  both queries and combine results.
 
-```
+```yaml
+
    - What's unclear: At what point does fuzzy fallback overhead outweigh UX
 
 ```
  benefit? Depends on user typing accuracy.
 
-```
+```yaml
+
    - Recommendation: Implement FTS first, add fuzzy fallback only if users report
 
-```
+```yaml
  "why didn't this match?" issues.
 
-```
+```yaml
+
 3. **Filter combination logic (AND vs OR)**
    - What we know: Most apps use AND for different filter types (status AND
 
 ```
  tags), OR within same type (tag1 OR tag2).
 
-```
+```yaml
+
    - What's unclear: User preference - some domains prefer OR everywhere for
 
-```
+```yaml
  broader results.
 
-```
+```yaml
+
    - Recommendation: Implement AND between types, OR within types initially. Add
 
 ```
  toggle if users request different behavior.
 
-```
+```yaml
+
 4. **Bulk operation size limits**
    - What we know: PostgreSQL handles large IN clauses well, but network payload
 
-```
+```yaml
  and transaction time can be issues.
 
-```
+```yaml
+
    - What's unclear: Optimal limit before breaking into batches (100? 1000?
 
 ```
  5000?).
 
-```
+```yaml
+
    - Recommendation: Start with 1000 item limit, show warning above 100 selected
 
-```
+```markdown
+
  items, measure actual performance.
 
-```
+```markdown
+
 ## Sources
 
 ### Primary (HIGH confidence)
 
 - [Prisma TypedSQL
+
   Documentation](https://www.prisma.io/docs/orm/prisma-client/using-raw-sql/typedsql)
+
   - Official TypedSQL guide
 - [Prisma Many-to-Many
+
   Relations](https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations)
+
   - Official m-n docs
 - [Next.js Official Tutorial: Search and
+
   Pagination](https://nextjs.org/learn/dashboard-app/adding-search-and-pagination)
+
   - Debouncing patterns
 - [PostgreSQL Full-Text Search
+
   Documentation](https://www.postgresql.org/docs/current/textsearch-tables.html)
+
   - tsvector and GIN indexes
 - [PostgreSQL pg_trgm
+
   Documentation](https://www.postgresql.org/docs/current/pgtrgm.html) - Trigram
   extension
+
 - [nuqs Documentation](https://nuqs.dev/) - Type-safe URL state
 - [React 19 useOptimistic
-  Documentation](https://react.dev/reference/react/useOptimistic) - Official hook
+
+  Documentation](https://react.dev/reference/react/useOptimistic) - Official
+  hook
   docs
 
 ### Secondary (MEDIUM confidence)
 
 - [PostgreSQL Full-Text Search Best
+
   Practices](https://www.pedroalonso.net/blog/postgres-full-text-search/) -
   Production patterns
+
 - [Bulletproof Full-Text Search with
+
   Prisma](https://medium.com/@chauhananubhav16/bulletproof-full-text-search-fts-in-prisma-with-postgresql-tsvector-without-migration-drift-c421f63aaab3)
+
   - Migration drift solutions
 - [Managing Advanced Search Param
+
   Filtering](https://aurorascharff.no/posts/managing-advanced-search-param-filtering-next-app-router/)
+
   - Next.js 15 patterns
 - [PatternFly Bulk
+
   Selection](https://www.patternfly.org/patterns/bulk-selection/) - Checkbox
   patterns
+
 - [LogRocket Empty States Best
+
   Practices](https://blog.logrocket.com/ui-design-best-practices-loading-error-empty-state-react/)
+
   - UI patterns
 - [Understanding Postgres GIN Indexes](https://pganalyze.com/blog/gin-index) -
+
   Performance characteristics
 
 ### Tertiary (LOW confidence)
 
 - [PostgreSQL FTS Performance
+
   Tuning](https://medium.com/@jramcloud1/20-postgresql-17-performance-tuning-full-text-search-index-tsvector-ece3b576a37b)
+
   - PostgreSQL 17 specific
 - [Next.js in 2026 Industry
+
   Overview](https://www.nucamp.co/blog/next.js-in-2026-the-full-stack-react-framework-that-dominates-the-industry)
+
   - Ecosystem trends
 - [Task Management Categories vs Tags](https://clickup.com/blog/task-categories/)
   - Product design patterns
@@ -1174,10 +1355,15 @@ Things that couldn't be fully resolved:
 **Confidence breakdown:**
 
 - Standard stack: HIGH - All recommendations from official docs or widely-adopted
+
   libraries with strong community support
+
 - Architecture: HIGH - Patterns verified in Next.js/Prisma official documentation
+
   and production apps
+
 - Pitfalls: HIGH - Common mistakes documented across multiple sources and design
+
   system guides
 
 **Research date:** 2026-01-25

@@ -1,6 +1,6 @@
-import 'server-only'
-import { prisma } from '@/shared/lib/db'
-import type { EventType } from './types'
+import "server-only";
+import { prisma } from "@/shared/lib/db";
+import type { EventType } from "./types";
 
 /**
  * Get event timeline for a specific user.
@@ -10,11 +10,8 @@ import type { EventType } from './types'
  * @param days - Number of days to look back (default 30)
  * @returns Array of events sorted by date descending
  */
-export async function getUserEventTimeline(
-  userId: string,
-  days: number = 30
-) {
-  const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+export async function getUserEventTimeline(userId: string, days: number = 30) {
+  const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
   return prisma.analyticsEvent.findMany({
     where: {
@@ -23,14 +20,14 @@ export async function getUserEventTimeline(
         gte: cutoffDate,
       },
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     select: {
       id: true,
       eventType: true,
       properties: true,
       createdAt: true,
     },
-  })
+  });
 }
 
 /**
@@ -46,7 +43,7 @@ export async function getEventsByType(
   eventType: EventType,
   startDate?: Date,
   endDate?: Date,
-  limit: number = 1000
+  limit: number = 1000,
 ) {
   return prisma.analyticsEvent.findMany({
     where: {
@@ -56,7 +53,7 @@ export async function getEventsByType(
         ...(endDate ? { lte: endDate } : {}),
       },
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy: { createdAt: "desc" },
     take: limit,
     select: {
       id: true,
@@ -64,7 +61,7 @@ export async function getEventsByType(
       properties: true,
       createdAt: true,
     },
-  })
+  });
 }
 
 /**
@@ -74,18 +71,21 @@ export async function getEventsByType(
  * @param eventType - Type of event to aggregate
  * @param days - Number of days to look back (default 30)
  */
-export async function getFeatureUsageStats(eventType: EventType, days: number = 30) {
-  const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+export async function getFeatureUsageStats(
+  eventType: EventType,
+  days: number = 30,
+) {
+  const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
   // Use Prisma's groupBy for aggregation
   const stats = await prisma.analyticsEvent.groupBy({
-    by: ['eventType'],
+    by: ["eventType"],
     where: {
       eventType,
       createdAt: { gte: cutoffDate },
     },
     _count: { id: true },
-  })
+  });
 
   // Also get unique users
   const uniqueUsers = await prisma.analyticsEvent.findMany({
@@ -93,16 +93,16 @@ export async function getFeatureUsageStats(eventType: EventType, days: number = 
       eventType,
       createdAt: { gte: cutoffDate },
     },
-    distinct: ['userId'],
+    distinct: ["userId"],
     select: { userId: true },
-  })
+  });
 
   return {
     eventType,
     totalEvents: stats[0]?._count.id || 0,
     uniqueUsers: uniqueUsers.length,
     period: { start: cutoffDate, end: new Date() },
-  }
+  };
 }
 
 /**
@@ -117,7 +117,7 @@ export async function getFeatureUsageStats(eventType: EventType, days: number = 
 export async function exportEventsForBrain(
   startDate: Date,
   endDate: Date,
-  eventTypes?: EventType[]
+  eventTypes?: EventType[],
 ) {
   return prisma.analyticsEvent.findMany({
     where: {
@@ -131,10 +131,10 @@ export async function exportEventsForBrain(
       eventType: true,
       properties: true,
       createdAt: true,
-      userId: true,  // Only ID, no PII
+      userId: true, // Only ID, no PII
     },
-    orderBy: { createdAt: 'asc' },
-  })
+    orderBy: { createdAt: "asc" },
+  });
 }
 
 /**
@@ -143,7 +143,7 @@ export async function exportEventsForBrain(
  * @param days - Number of days to summarize (default 7)
  */
 export async function getAnalyticsSummary(days: number = 7) {
-  const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
+  const cutoffDate = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
 
   const [totalEvents, uniqueUsers, eventsByType] = await Promise.all([
     // Total events
@@ -154,18 +154,18 @@ export async function getAnalyticsSummary(days: number = 7) {
     // Unique users
     prisma.analyticsEvent.findMany({
       where: { createdAt: { gte: cutoffDate } },
-      distinct: ['userId'],
+      distinct: ["userId"],
       select: { userId: true },
     }),
 
     // Events by type
     prisma.analyticsEvent.groupBy({
-      by: ['eventType'],
+      by: ["eventType"],
       where: { createdAt: { gte: cutoffDate } },
       _count: { id: true },
-      orderBy: { _count: { id: 'desc' } },
+      orderBy: { _count: { id: "desc" } },
     }),
-  ])
+  ]);
 
   return {
     period: { start: cutoffDate, end: new Date(), days },
@@ -175,5 +175,5 @@ export async function getAnalyticsSummary(days: number = 7) {
       type: e.eventType,
       count: e._count.id,
     })),
-  }
+  };
 }

@@ -48,7 +48,7 @@ Follow `workflows/create_n8n_workflow.md`:
 
 1. **Template First**
 
-   ```
+```yaml
    search_templates({searchMode: 'by_task', task: 'slack notification webhook'})
 
 ```markdown
@@ -59,14 +59,16 @@ Follow `workflows/create_n8n_workflow.md`:
 
 3. **Validate**
 
-   ```
+```markdown
+
    validate_workflow(workflow)
 
 ```text
 
 4. **Deploy**
 
-   ```
+```markdown
+
    n8n_create_workflow(workflow)
 
 ```markdown
@@ -116,7 +118,7 @@ In `.planning/STATE.md`:
 | 3 | Slack notifications | wf-abc123 | Active |
 | 3 | Daily report | wf-def456 | Active |
 
-```
+```markdown
 
 ### Step 6: Complete Phase
 
@@ -125,7 +127,7 @@ When phase complete:
 ```yaml
 /gsd:verify-work N
 
-```
+```markdown
 
 Include n8n workflow verification in UAT checklist.
 
@@ -138,7 +140,7 @@ Send GSD phase progress to external channels:
 ```text
 GSD Execute → Webhook → n8n → Slack/Email/Telegram
 
-```
+```markdown
 
 ### Pattern 2: Triggered Automation
 
@@ -158,7 +160,7 @@ Cron-triggered data aggregation:
 Schedule Trigger → Fetch Data → Transform → Report
 (Tracked as GSD recurring task)
 
-```
+```markdown
 
 ## Expected Outputs
 

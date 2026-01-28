@@ -1,4 +1,4 @@
-import { TaskCardSkeleton } from './TaskCardSkeleton'
+import { TaskCardSkeleton } from "./TaskCardSkeleton";
 
 /**
  * TaskListSkeleton: Loading placeholder for TaskList component
@@ -7,7 +7,7 @@ import { TaskCardSkeleton } from './TaskCardSkeleton'
  * Matches TaskList's grid layout structure
  */
 export function TaskListSkeleton() {
-  const sections = ['To Do', 'In Progress', 'Done']
+  const sections = ["To Do", "In Progress", "Done"];
 
   return (
     <div className="space-y-8">
@@ -25,5 +25,5 @@ export function TaskListSkeleton() {
         </div>
       ))}
     </div>
-  )
+  );
 }

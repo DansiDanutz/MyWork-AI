@@ -25,15 +25,21 @@ from pathlib import Path
 # Configuration - Import from shared config with fallback
 try:
     from config import MYWORK_ROOT, AUTOCODER_ROOT
+
     AUTOCODER_ENV = AUTOCODER_ROOT / ".env"
 except ImportError:
+
     def _get_mywork_root():
         if env_root := os.environ.get("MYWORK_ROOT"):
             return Path(env_root)
         script_dir = Path(__file__).resolve().parent
         return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+
     MYWORK_ROOT = _get_mywork_root()
-    AUTOCODER_ENV = Path(os.environ.get("AUTOCODER_ROOT", Path.home() / "GamesAI" / "autocoder")) / ".env"
+    AUTOCODER_ENV = (
+        Path(os.environ.get("AUTOCODER_ROOT", Path.home() / "GamesAI" / "autocoder")) / ".env"
+    )
+
 
 def load_env_file(env_path: Path):
     """Load environment variables from a .env file."""
@@ -42,19 +48,22 @@ def load_env_file(env_path: Path):
     with open(env_path) as f:
         for line in f:
             line = line.strip()
-            if line and not line.startswith('#') and '=' in line:
-                key, _, value = line.partition('=')
+            if line and not line.startswith("#") and "=" in line:
+                key, _, value = line.partition("=")
                 key = key.strip()
                 value = value.strip().strip('"').strip("'")
                 if key and value:
                     os.environ.setdefault(key, value)
 
+
 load_env_file(MYWORK_ROOT / ".env")
+
 
 # Get API keys from environment (SECURE - no hardcoded secrets)
 def get_env_key(key: str, default: str = "") -> str:
     """Get API key from environment."""
     return os.getenv(key, default)
+
 
 # Provider configurations - API keys read from environment
 PROVIDERS = {
@@ -124,7 +133,7 @@ def write_env(content: str):
 
 def get_current_provider(content: str) -> str:
     """Detect current active provider."""
-    base_url_match = re.search(r'^ANTHROPIC_BASE_URL=(.+)$', content, re.MULTILINE)
+    base_url_match = re.search(r"^ANTHROPIC_BASE_URL=(.+)$", content, re.MULTILINE)
     if not base_url_match:
         return "claude"
 
@@ -181,22 +190,19 @@ def switch_provider(target: str):
     else:
         resolved_vars = {}
 
-    print(f"Switching from {PROVIDERS.get(current, {}).get('name', current)} to {PROVIDERS[target]['name']}...")
+    print(
+        f"Switching from {PROVIDERS.get(current, {}).get('name', current)} to {PROVIDERS[target]['name']}..."
+    )
 
     # Comment out all managed variables first
     for var in MANAGED_VARS:
         # Comment out active lines
-        content = re.sub(
-            rf'^({var}=.*)$',
-            r'# \1',
-            content,
-            flags=re.MULTILINE
-        )
+        content = re.sub(rf"^({var}=.*)$", r"# \1", content, flags=re.MULTILINE)
 
     # If target has vars, add/uncomment them
     if resolved_vars:
         # Find the Z.ai section and add new active vars after the header
-        lines = content.split('\n')
+        lines = content.split("\n")
         new_lines = []
         in_zai_section = False
         vars_added = False
@@ -217,7 +223,7 @@ def switch_provider(target: str):
                 vars_added = True
                 in_zai_section = False
 
-        content = '\n'.join(new_lines)
+        content = "\n".join(new_lines)
 
     write_env(content)
     print(f"✅ Switched to {PROVIDERS[target]['name']}")

@@ -25,11 +25,13 @@
 
 - **Backend Deploy**: GitHub Actions → Railway deployment pending
 - **API Verification**: Waiting for `featured` field to appear in live API
+
   responses
 
 ### Required Assets
 
 - **Screenshots (3-5)**: Hero, opportunities feed, detail view, alerts, admin
+
   panel
 
 ## 🎯 Immediate Next Steps
@@ -37,7 +39,9 @@
 ### For You (User)
 
 1. **📸 Capture Screenshots** following the guide at
+
 `SPORTSAI_SCREENSHOT_GUIDE.md`:
+
    - Hero/overview page
    - Arbitrage opportunities list
    - Opportunity detail breakdown
@@ -85,7 +89,7 @@ R2_SECRET_ACCESS_KEY="..."
 R2_BUCKET="mywork"
 R2_ENDPOINT="https://..."
 
-```
+```markdown
 
 ## 🎉 Ready for Launch
 

@@ -23,26 +23,31 @@ affects:
 tech-stack:
   added:
 
-```
+```yaml
+
 - next: 15.0.3
 - react: 18.3.1
 - typescript: 5.x
 - tailwindcss: 4.x
 - eslint: 9.x
 
-```
+```yaml
+
   patterns:
 
-```
+```markdown
+
 - App Router (Next.js)
 - Modular monolith architecture
 - Feature-based organization
 
 ```
+
 key-files:
   created:
 
-```
+```yaml
+
 - package.json: Project dependencies and scripts
 - tsconfig.json: TypeScript configuration with strict mode
 - next.config.ts: Next.js configuration
@@ -52,14 +57,15 @@ key-files:
 - src/modules/README.md: Module conventions documentation
 - src/shared/types/index.ts: Shared TypeScript types
 
-```
+```yaml
+
   modified: []
 
 decisions:
 
   - id: TECH-001
 
-```
+```yaml
 title: Use Next.js 15.0.3 instead of 16.x
 rationale: Next.js 16.x has React 19 compatibility issues causing build
 failures; 15.0.3 is stable with React 18
@@ -67,19 +73,21 @@ impact: Delayed upgrade to React 19 until ecosystem stabilizes
 date: 2026-01-24
 
 ```
+
   - id: ARCH-001
 
-```
+```yaml
 title: Modular monolith architecture
 rationale: Enables clean extraction of reusable modules for MyWork framework
 brain (SYS-06)
 impact: All features organized as self-contained modules with public APIs
 date: 2026-01-24
 
-```
+```yaml
+
   - id: TECH-002
 
-```
+```yaml
 title: TypeScript strict mode enabled
 rationale: Catch type errors early and enforce type safety across the
 application
@@ -87,6 +95,7 @@ impact: All code must satisfy strict TypeScript checks
 date: 2026-01-24
 
 ```
+
 metrics:
   duration: 8 minutes
   completed: 2026-01-24
@@ -102,10 +111,15 @@ modular architecture for feature-based development
 Established the foundation for the Task Tracker application with:
 
 1. **Next.js Application**: Initialized with App Router, TypeScript strict mode,
+
 and modern tooling
+
 2. **Modular Architecture**: Created `src/modules/` for business domains and
+
 `src/shared/` for cross-cutting concerns
+
 3. **Development Environment**: Configured build toolchain, ESLint, Tailwind
+
 CSS, and path aliases
 
 ## Task Breakdown
@@ -170,14 +184,15 @@ src/
 │   └── README.md
 └── shared/       # Cross-cutting concerns
 
-```
+```text
+
 ├── components/  # Reusable UI components
 ├── lib/         # Shared utilities
 └── types/       # Shared types (ApiResponse, etc.)
 
-```
+```yaml
 
-```
+```yaml
 
 **Benefits**:
 
@@ -194,7 +209,9 @@ src/
 
 - **Found during**: Task 1 - Initialize Next.js Application
 - **Issue**: Default `create-next-app@latest` installed Next.js 16.1.4 + React
+
   19.2.3 which caused build failures with Geist fonts and error pages
+
 - **Fix**: Downgraded to Next.js 15.0.3 + React 18.3.1 for stability
 - **Files modified**: package.json
 - **Commits**: 389baba
@@ -203,7 +220,9 @@ src/
 
 - **Found during**: Task 1 verification
 - **Issue**: Shell environment had NODE_ENV=development which conflicts with
+
   production build
+
 - **Fix**: Documented workaround to unset NODE_ENV before building
 - **Impact**: Builds now succeed when run with clean environment
 - **Future**: Should add script wrapper or document in developer guide
@@ -212,9 +231,13 @@ src/
 
 - **Found during**: Task 1 after Next.js version changes
 - **Issue**: Default ESLint config from Next.js 16 was incompatible with Next.js
+
   15
+
 - **Fix**: Updated eslint.config.mjs to use FlatCompat pattern compatible with
+
   Next.js 15
+
 - **Files modified**: eslint.config.mjs
 - **Commits**: 389baba
 
@@ -281,18 +304,22 @@ The foundation is complete and ready for:
 ## Lessons Learned
 
 1. **Framework version stability matters**: Next.js 16 + React 19 is too
+
 bleeding-edge for production work. Staying on LTS versions (Next.js 15 + React
 18) provides better stability.
 
 2. **Environment variables affect builds**: NODE_ENV conflicts are a common
+
 issue. Future plans should document environment setup or provide wrapper
 scripts.
 
 3. **Modular architecture upfront**: Establishing the module pattern from day
+
 one prevents future refactoring and aligns with the MyWork framework's
 reusability goals.
 
 4. **TypeScript strict mode is non-negotiable**: Catching type errors during
+
 development saves debugging time later.
 
 ## Related Documentation

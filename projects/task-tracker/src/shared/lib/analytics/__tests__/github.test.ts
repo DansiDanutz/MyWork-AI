@@ -15,17 +15,21 @@
  * - Types are correctly inferred
  */
 
-import type { checkRateLimitStatus, enrichUser } from '../github'
+import type { checkRateLimitStatus, enrichUser } from "../github";
 
 // Type tests (compile-time only)
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type CheckRateLimitType = typeof checkRateLimitStatus
+type CheckRateLimitType = typeof checkRateLimitStatus;
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type EnrichUserType = typeof enrichUser
+type EnrichUserType = typeof enrichUser;
 
 // If this compiles, the exports are working correctly
-console.log('✓ GitHub API client exports are properly typed')
-console.log('✓ TypeScript compilation successful')
-console.log('')
-console.log('To test at runtime, use the functions in a Server Action or API route.')
-console.log('Example: await enrichUser(userId) in an authenticated server context.')
+console.log("✓ GitHub API client exports are properly typed");
+console.log("✓ TypeScript compilation successful");
+console.log("");
+console.log(
+  "To test at runtime, use the functions in a Server Action or API route.",
+);
+console.log(
+  "Example: await enrichUser(userId) in an authenticated server context.",
+);

@@ -11,17 +11,19 @@ requires:
 
   - phase: 06-01
 
-```
+```yaml
 provides: Analytics event schema, event tracker with after() API, Prisma
 model
 
-```
+```yaml
+
   - phase: 06-02
 
-```
+```yaml
 provides: GitHub API integration with rate limiting and ETag caching
 
 ```
+
 provides:
 
   - Analytics query functions for timeline, event type filtering, usage stats
@@ -37,30 +39,36 @@ tech-stack:
   added: []
   patterns:
 
-```
+```markdown
+
 - Analytics query layer separation (queries.ts for data access)
 - GDPR-compliant retention with configurable periods
 - Authenticated export API with date range and event type filtering
 - Summary mode for quick analytics overview
 - Field-level barrel exports with categorized comments
 
-```
+```yaml
+
 key-files:
   created:
 
-```
+```markdown
+
 - src/shared/lib/analytics/queries.ts
 - src/shared/lib/analytics/retention.ts
 - src/app/api/analytics/export/route.ts
 
 ```
+
   modified:
 
-```
+```markdown
+
 - src/shared/lib/analytics/index.ts
 - src/shared/lib/analytics/tracker.ts
 
-```
+```yaml
+
 key-decisions:
 
   - "90-day retention balances brain learning needs with GDPR compliance"
@@ -100,6 +108,7 @@ comprehensive query functions for pattern analysis**
 - GDPR-compliant retention utilities with 90-day default purge period
 - Authenticated export API endpoint with date range and event type filtering
 - Complete barrel export making all analytics functionality available via single
+
   import
 
 ## Task Commits
@@ -121,18 +130,27 @@ Each task was committed atomically:
 ### Created
 
 - `src/shared/lib/analytics/queries.ts` - Query functions for timeline, event
+
   filtering, stats, and brain export
+
 - `src/shared/lib/analytics/retention.ts` - GDPR retention utilities (purge,
+
   stats, user data deletion)
+
 - `src/app/api/analytics/export/route.ts` - Authenticated export API with
+
   filtering and summary mode
 
 ### Modified
 
 - `src/shared/lib/analytics/index.ts` - Complete barrel export with categorized
+
   sections
+
 - `src/shared/lib/analytics/tracker.ts` - Type cast fix for Prisma JSON
+
   compatibility
+
 - `.gitignore` (root) - Negation pattern for task-tracker lib/ directory
 
 ## Decisions Made
@@ -140,7 +158,9 @@ Each task was committed atomically:
 **DATA-001: 90-day retention period**
 
 - Balances brain learning needs (sufficient data for pattern detection) with GDPR
+
   compliance (no consent needed for <90 days analytics in many jurisdictions)
+
 - Configurable via function parameter if needs change
 
 **EXPORT-001: Authentication required for export API**
@@ -162,7 +182,9 @@ Each task was committed atomically:
 
 - **Found during:** Task 1 (TypeScript compilation)
 - **Issue:** Analytics event properties type incompatible with Prisma's
+
   InputJsonValue type
+
 - **Fix:** Added `as any` type cast when storing properties in database
 - **Files modified:** src/shared/lib/analytics/tracker.ts
 - **Verification:** TypeScript compilation passes without errors
@@ -172,7 +194,9 @@ Each task was committed atomically:
 
 - **Found during:** Attempting to stage tracker.ts fix
 - **Issue:** Root .gitignore had `lib/` pattern blocking all lib directories
+
   including task-tracker
+
 - **Fix:** Added negation patterns for task-tracker lib directories
 - **Files modified:** .gitignore (root)
 - **Verification:** git add successful after negation pattern added
@@ -189,7 +213,9 @@ operations. No scope changes.
 **Development server validation skipped:**
 
 - Known issue from STATE.md: Next.js 15 edge runtime middleware incompatible with
+
   Node.js crypto (required by PostgreSQL/Prisma)
+
 - TypeScript compilation successful
 - Export API logic verified through code review
 - Full verification deferred to Phase 7 when middleware issue is resolved
@@ -230,7 +256,7 @@ curl -H "Cookie: authjs.session-token=..." \
 import { purgeExpiredEvents } from '@/shared/lib/analytics/retention'
 purgeExpiredEvents() // Deletes events older than 90 days
 
-```
+```yaml
 
 **Known middleware issue:**
 

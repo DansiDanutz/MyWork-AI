@@ -128,13 +128,17 @@ Each tutorial follows a consistent structure:
 2. **Run diagnostics:** `mw doctor`
 3. **View your progress:** `mw status`
 4. **Ask the community:** [GitHub
+
 Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
 
 **Found an issue?**
 
 - **Report bugs:** [GitHub
+
   Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
+
 - **Suggest improvements:** [GitHub
+
   Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
 
 ---

@@ -11,8 +11,7 @@ from .models import Base
 # Database path - configurable via DATABASE_PATH env var for Docker persistence
 # In production/Docker: Set DATABASE_PATH=/data/dashboard.db and mount /data as a volume
 DB_PATH = os.getenv(
-    "DATABASE_PATH",
-    os.path.join(os.path.dirname(os.path.dirname(__file__)), "dashboard.db")
+    "DATABASE_PATH", os.path.join(os.path.dirname(os.path.dirname(__file__)), "dashboard.db")
 )
 
 # Ensure parent directory exists (for Docker volumes)
@@ -31,11 +30,7 @@ async_engine = create_async_engine(ASYNC_DATABASE_URL, echo=False)
 
 # Session factories
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-AsyncSessionLocal = sessionmaker(
-    bind=async_engine,
-    class_=AsyncSession,
-    expire_on_commit=False
-)
+AsyncSessionLocal = sessionmaker(bind=async_engine, class_=AsyncSession, expire_on_commit=False)
 
 
 def init_db():

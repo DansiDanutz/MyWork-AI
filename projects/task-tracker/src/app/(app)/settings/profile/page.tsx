@@ -1,8 +1,8 @@
-import { getUser } from '@/shared/lib/dal'
-import { ProfileForm } from '@/shared/components/ProfileForm'
+import { getUser } from "@/shared/lib/dal";
+import { ProfileForm } from "@/shared/components/ProfileForm";
 
 export default async function ProfilePage() {
-  const user = await getUser()
+  const user = await getUser();
 
   if (!user) {
     // This shouldn't happen due to layout protection, but handle gracefully
@@ -12,7 +12,7 @@ export default async function ProfilePage() {
           Unable to load profile. Please try again.
         </p>
       </div>
-    )
+    );
   }
 
   return (
@@ -22,5 +22,5 @@ export default async function ProfilePage() {
       </h2>
       <ProfileForm user={user} />
     </div>
-  )
+  );
 }

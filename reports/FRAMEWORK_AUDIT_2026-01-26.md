@@ -13,8 +13,11 @@ prioritized roadmap for stability and growth.
 ### Core framework
 
 - **GSD / Autocoder / n8n / MCP** foundations are in place and documented at repo
+
   level.
+
 - Project structure standardizes planning, phased delivery, and audit artifacts
+
   across projects.
 
 ### Marketplace
@@ -22,12 +25,19 @@ prioritized roadmap for stability and growth.
 - **Frontend**: Vercel deployment healthy.
 - **Backend**: Railway deployment healthy (200 on `/health` and `/api/products`).
 - **Audits**: Submission audits support repo cloning, secret scanning, required
+
   files, and scoring.
+
 - **Delivery**: Approved repo snapshots generate delivery artifacts used by
+
   orders.
+
 - **Credits**: Credit ledger and top-ups are live; credits can be used at
+
   checkout.
+
 - **Brain**: Access gated by subscription; ingestion now parses repo snapshots
+
   into structured entries.
 
 ### UX improvements completed
@@ -36,6 +46,7 @@ prioritized roadmap for stability and growth.
 - Credits top-up success notices (dashboard + credits page).
 - Submissions flow now requires repository URL + IP consent.
 - Submissions dashboard shows audit errors/warnings, repo commit, and Brain
+
   ingest status.
 
 ### Deployment health (as of 2026-01-26)
@@ -56,30 +67,34 @@ Severity: **High → Medium → Low**
 
    - **Risk**: credit purchases and Stripe purchases are handled via different
 
-```
+```text
  flows. Refunds/chargebacks do not yet reconcile into the credit ledger.
 
-```
+```yaml
+
    - **Fix**: unify order lifecycle and ledger entries for all payment methods.
 
-```
+```text
  Add refund and chargeback handling in both ledger and order state.
 
 ```
+
 2) **Brain ingestion quality**
 
    - **Risk**: ingestion currently extracts and stores file contents without
 
-```
+```text
  semantic ranking or dedupe. This can create noisy or redundant entries.
 
-```
+```yaml
+
    - **Fix**: introduce embedding generation + dedupe + quality scoring, with a
 
-```
+```text
  background queue.
 
 ```
+
 ### Medium
 
 1) **Escrow automation**
@@ -87,38 +102,43 @@ Severity: **High → Medium → Low**
    - **Risk**: escrow logic is defined, but no automated release job exists.
    - **Fix**: add a scheduled worker to release escrow, update ledger entries,
 
-```
+```text
  and trigger payouts.
 
-```
+```yaml
+
 2) **Audit results UX**
 
    - **Risk**: audit reports are stored but only surfaced minimally in
 
-```
+```text
  submissions list.
 
 ```
+
    - **Fix**: add detailed audit report view with pass/fail check list and
 
-```
+```text
  remediation guidance.
 
-```
+```yaml
+
 3) **Production config validation**
 
    - **Risk**: missing env vars can crash runtime (example: reserved `metadata`
 
-```
+```text
  field was fixed; next issues could be env-related).
 
 ```
+
    - **Fix**: add startup checks for critical env vars; fail fast with clear
 
-```
+```text
  message.
 
-```
+```markdown
+
 ### Low
 
 1) **Dashboard stats are mocked**

@@ -1,10 +1,10 @@
-import 'server-only'
+import "server-only";
 // TODO: Enable after() when Next.js version supports it
 // import { after } from 'next/server'
-import { prisma } from '@/shared/lib/db'
-import { auth } from '@/shared/lib/auth'
-import { AnalyticsEventSchema, type AnalyticsEvent } from './types'
-import type { Prisma } from '@prisma/client'
+import { prisma } from "@/shared/lib/db";
+import { auth } from "@/shared/lib/auth";
+import { AnalyticsEventSchema, type AnalyticsEvent } from "./types";
+import type { Prisma } from "@prisma/client";
 
 /**
  * Track an analytics event asynchronously.
@@ -14,12 +14,15 @@ import type { Prisma } from '@prisma/client'
 export async function trackEventAsync(event: AnalyticsEvent): Promise<void> {
   try {
     // Validate event structure (will throw if invalid)
-    const validatedEvent = AnalyticsEventSchema.parse(event)
+    const validatedEvent = AnalyticsEventSchema.parse(event);
 
     if (!validatedEvent.userId) {
       // AnalyticsEvent requires a real user relation; skip anonymous events.
-      console.warn('[Analytics] Skipping event without userId:', validatedEvent.type)
-      return
+      console.warn(
+        "[Analytics] Skipping event without userId:",
+        validatedEvent.type,
+      );
+      return;
     }
 
     await prisma.analyticsEvent.create({
@@ -27,11 +30,11 @@ export async function trackEventAsync(event: AnalyticsEvent): Promise<void> {
         userId: validatedEvent.userId,
         eventType: validatedEvent.type,
         properties: validatedEvent.properties as Prisma.JsonObject,
-      }
-    })
+      },
+    });
   } catch (error) {
     // Log but don't throw - analytics should never break the app
-    console.error('[Analytics] Failed to track event:', error)
+    console.error("[Analytics] Failed to track event:", error);
   }
 }
 
@@ -61,8 +64,8 @@ export async function trackEventAsync(event: AnalyticsEvent): Promise<void> {
 export function trackEvent(event: AnalyticsEvent): void {
   // Fire-and-forget pattern - don't await to avoid blocking response
   trackEventAsync(event).catch((error) => {
-    console.error('[Analytics] Background tracking failed:', error)
-  })
+    console.error("[Analytics] Background tracking failed:", error);
+  });
 }
 
 /**
@@ -72,19 +75,19 @@ export function trackEvent(event: AnalyticsEvent): void {
  * @param type - Event type
  * @param properties - Event-specific properties
  */
-export async function trackSessionEvent<T extends AnalyticsEvent['type']>(
+export async function trackSessionEvent<T extends AnalyticsEvent["type"]>(
   type: T,
-  properties: Extract<AnalyticsEvent, { type: T }>['properties']
+  properties: Extract<AnalyticsEvent, { type: T }>["properties"],
 ): Promise<void> {
-  const session = await auth()
+  const session = await auth();
   if (!session?.user?.id) {
-    console.warn('[Analytics] Cannot track event: no session')
-    return
+    console.warn("[Analytics] Cannot track event: no session");
+    return;
   }
 
   trackEvent({
     type,
     userId: session.user.id,
     properties,
-  } as AnalyticsEvent)
+  } as AnalyticsEvent);
 }

@@ -1,23 +1,29 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { LuSave, LuRefreshCw, LuKey, LuClock, LuDatabase } from 'react-icons/lu';
+import { useState } from "react";
+import {
+  LuSave,
+  LuRefreshCw,
+  LuKey,
+  LuClock,
+  LuDatabase,
+} from "react-icons/lu";
 
 export default function SettingsClient() {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState(false);
 
   // Settings state
-  const [youtubeInterval, setYoutubeInterval] = useState('8');
-  const [newsInterval, setNewsInterval] = useState('4');
-  const [githubInterval, setGithubInterval] = useState('12');
-  const [minViews, setMinViews] = useState('10000');
-  const [minStars, setMinStars] = useState('100');
+  const [youtubeInterval, setYoutubeInterval] = useState("8");
+  const [newsInterval, setNewsInterval] = useState("4");
+  const [githubInterval, setGithubInterval] = useState("12");
+  const [minViews, setMinViews] = useState("10000");
+  const [minStars, setMinStars] = useState("100");
 
   const handleSave = async () => {
     setSaving(true);
     // Simulate save
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setSaving(false);
     setSuccess(true);
     setTimeout(() => setSuccess(false), 3000);
@@ -28,7 +34,9 @@ export default function SettingsClient() {
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-500 mt-1">Configure your AI Dashboard preferences</p>
+        <p className="text-gray-500 mt-1">
+          Configure your AI Dashboard preferences
+        </p>
       </div>
 
       {success && (
@@ -46,7 +54,9 @@ export default function SettingsClient() {
           </div>
           <div>
             <h2 className="text-lg font-semibold">Scheduler</h2>
-            <p className="text-sm text-gray-500">Configure scraping intervals</p>
+            <p className="text-sm text-gray-500">
+              Configure scraping intervals
+            </p>
           </div>
         </div>
 
@@ -108,7 +118,9 @@ export default function SettingsClient() {
           </div>
           <div>
             <h2 className="text-lg font-semibold">Filters</h2>
-            <p className="text-sm text-gray-500">Set minimum thresholds for content</p>
+            <p className="text-sm text-gray-500">
+              Set minimum thresholds for content
+            </p>
           </div>
         </div>
 
@@ -149,7 +161,9 @@ export default function SettingsClient() {
           </div>
           <div>
             <h2 className="text-lg font-semibold">API Keys</h2>
-            <p className="text-sm text-gray-500">Configured in backend .env file</p>
+            <p className="text-sm text-gray-500">
+              Configured in backend .env file
+            </p>
           </div>
         </div>
 
@@ -184,7 +198,7 @@ export default function SettingsClient() {
         ) : (
           <LuSave className="w-4 h-4" />
         )}
-        {saving ? 'Saving...' : 'Save Settings'}
+        {saving ? "Saving..." : "Save Settings"}
       </button>
     </div>
   );

@@ -24,7 +24,9 @@ progress tracking, and dual upload strategies.
 
 - ✅ Visual progress bars with percentage display
 - ✅ File type icons with color coding (images=purple, PDF=red, docs=blue,
+
   sheets=green)
+
 - ✅ File size display using formatFileSize utility
 - ✅ Action buttons: Cancel, Retry, Dismiss
 - ✅ Status indicators: pending, uploading, complete, error
@@ -76,7 +78,7 @@ interface FileDropzoneProps {
   compact?: boolean        // Default: false
 }
 
-```
+```markdown
 
 ### 3. Component Integration
 
@@ -98,12 +100,13 @@ File Size Decision:
 │   └── Instant DB record creation
 └── > 5MB → TUS Protocol
 
-```
+```text
+
 ├── Chunked uploads (5MB chunks)
 ├── Resume capability
 └── Server-side completion handling
 
-```
+```text
 
 ```
 

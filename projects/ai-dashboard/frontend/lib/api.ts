@@ -1,11 +1,11 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export const api = axios.create({
   baseURL: API_BASE,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
@@ -106,7 +106,7 @@ export async function getTrendingProjects(limit = 20): Promise<Project[]> {
 }
 
 export async function getAutomations(): Promise<Automation[]> {
-  const { data } = await api.get('/api/automation');
+  const { data } = await api.get("/api/automation");
   return data;
 }
 
@@ -115,8 +115,12 @@ export async function getAutomation(id: number): Promise<Automation> {
   return data;
 }
 
-export async function createAutomation(prompt: string, targetAudience = 'tech enthusiasts', videoLength = '5-10'): Promise<Automation> {
-  const { data } = await api.post('/api/automation', {
+export async function createAutomation(
+  prompt: string,
+  targetAudience = "tech enthusiasts",
+  videoLength = "5-10",
+): Promise<Automation> {
+  const { data } = await api.post("/api/automation", {
     prompt,
     target_audience: targetAudience,
     video_length: videoLength,
@@ -124,37 +128,48 @@ export async function createAutomation(prompt: string, targetAudience = 'tech en
   return data;
 }
 
-export async function updateAutomation(id: number, updates: Partial<Automation>): Promise<Automation> {
+export async function updateAutomation(
+  id: number,
+  updates: Partial<Automation>,
+): Promise<Automation> {
   const { data } = await api.patch(`/api/automation/${id}`, updates);
   return data;
 }
 
-export async function approveAutomation(id: number): Promise<{ status: string; youtube_url: string }> {
+export async function approveAutomation(
+  id: number,
+): Promise<{ status: string; youtube_url: string }> {
   const { data } = await api.post(`/api/automation/${id}/approve`);
   return data;
 }
 
-export async function generateVideo(id: number): Promise<{ status: string; automation_id: number; heygen_status: string }> {
+export async function generateVideo(
+  id: number,
+): Promise<{ status: string; automation_id: number; heygen_status: string }> {
   const { data } = await api.post(`/api/automation/${id}/generate-video`);
   return data;
 }
 
-export async function checkVideoStatus(id: number): Promise<{ status: string; video_url?: string; error?: string }> {
+export async function checkVideoStatus(
+  id: number,
+): Promise<{ status: string; video_url?: string; error?: string }> {
   const { data } = await api.get(`/api/automation/${id}/video-status`);
   return data;
 }
 
 export async function getStats(): Promise<Stats> {
-  const { data } = await api.get('/api/stats');
+  const { data } = await api.get("/api/stats");
   return data;
 }
 
-export async function triggerScraper(scraper: 'videos' | 'news' | 'projects'): Promise<{ status: string; message: string }> {
+export async function triggerScraper(
+  scraper: "videos" | "news" | "projects",
+): Promise<{ status: string; message: string }> {
   const { data } = await api.post(`/api/${scraper}/scrape`);
   return data;
 }
 
 export async function getSchedulerStatus(): Promise<Record<string, any>> {
-  const { data } = await api.get('/api/scheduler/status');
+  const { data } = await api.get("/api/scheduler/status");
   return data;
 }

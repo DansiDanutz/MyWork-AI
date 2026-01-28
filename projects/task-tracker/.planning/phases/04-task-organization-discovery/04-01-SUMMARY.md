@@ -17,34 +17,40 @@ tech-stack:
   added: [pg_trgm]
   patterns:
 
-```
+```markdown
+
 - Generated tsvector columns for automatic search index maintenance
 - Weighted full-text search (title=A, description=B)
 - Two-tier search (FTS primary, fuzzy fallback)
 - Implicit many-to-many relations in Prisma
 
-```
+```yaml
+
 key-files:
   created:
 
-```
+```markdown
+
 - prisma/migrations/20260125200020_add_tags_and_search/migration.sql
 - src/app/actions/tags.ts
 
 ```
+
   modified:
 
-```
+```markdown
+
 - prisma/schema.prisma
 - src/shared/lib/dal.ts
 - src/shared/lib/analytics/types.ts
 
-```
+```yaml
+
 decisions:
 
   - id: SEARCH-001
 
-```
+```yaml
 title: Use PostgreSQL tsvector over external search service
 rationale: Validation project scale doesn't justify Elasticsearch/Algolia
 complexity
@@ -52,32 +58,36 @@ impact: Search integrated into primary database, no additional
 infrastructure
 
 ```
+
   - id: SEARCH-002
 
-```
+```yaml
 title: Two-tier search strategy (FTS + fuzzy fallback)
 rationale: Full-text search for exact matches, trigrams catch typos and
 partial terms
 impact: Better search UX without requiring exact spelling
 
-```
+```yaml
+
   - id: SEARCH-003
 
-```
+```yaml
 title: Generated tsvector column instead of triggers
 rationale: PostgreSQL 12+ native feature, automatic maintenance without
 custom code
 impact: Cleaner schema, no trigger maintenance burden
 
 ```
+
   - id: TAG-001
 
-```
+```yaml
 title: Implicit many-to-many over explicit join table
 rationale: Prisma auto-generates _TagToTask, simpler API for basic tagging
 impact: Less boilerplate, Prisma handles join operations
 
-```
+```yaml
+
 metrics:
   duration: 5 minutes
   tasks_completed: 4/4
@@ -214,7 +224,7 @@ SELECT * FROM "_TagToTask" LIMIT 5;
 DELETE FROM tags WHERE id = 'test-tag-id';
 -- Should remove all entries from _TagToTask
 
-```
+```markdown
 
 ## Next Phase Readiness
 
@@ -293,15 +303,22 @@ await prisma.task.update({
   where: { id: taskId },
   data: {
 
-```
+```yaml
+
 tags: {
   connectOrCreate: {
-    where: { userId_name: { userId, name: tagName } },
-    create: { name: tagName, color: '#6b7280', userId }
+
+```yaml
+where: { userId_name: { userId, name: tagName } },
+create: { name: tagName, color: '#6b7280', userId }
+
+```
+
   }
 }
 
-```
+```markdown
+
   }
 })
 
@@ -330,7 +347,9 @@ tags: {
 
 - GIN indexes provide O(log n) search performance
 - Generated columns add ~10% overhead on INSERT/UPDATE (negligible for validation
+
   scale)
+
 - tsvector column storage: ~30% overhead vs raw text (acceptable tradeoff)
 - Trigram indexes larger than tsvector indexes but necessary for fuzzy search
 

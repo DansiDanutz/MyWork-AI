@@ -83,7 +83,7 @@ mw lint config --edit
 
 mw lint config --show
 
-```
+```markdown
 
 ### Default Configuration
 
@@ -98,14 +98,16 @@ mw lint config --show
   "auto_fix": true,
   "ignore_patterns": [
 
-```
+```markdown
+
 "node_modules/**",
 ".git/**",
 "venv/**",
 "__pycache__/**",
 ".tmp/**"
 
-```
+```markdown
+
   ]
 }
 
@@ -181,7 +183,7 @@ mw lint fix
 
 mw lint fix --dir projects/my-app
 
-```
+```markdown
 
 ### `mw lint config`
 
@@ -206,7 +208,7 @@ Display linting statistics and history.
 ```bash
 mw lint stats
 
-```
+```yaml
 
 Example output:
 
@@ -218,7 +220,7 @@ Example output:
    Success rate: 100.0%
    Last run: 2026-01-28T10:30:00
 
-```
+```markdown
 
 ## Integration with Framework
 
@@ -253,12 +255,18 @@ You can customize individual tools in the configuration:
   "tools": {
 
 ```
+
 "markdownlint": {
   "enabled": true,
   "auto_fix": true,
   "rules": {
-    "MD013": false,  // Disable line length rule
-    "MD033": false   // Allow HTML in markdown
+
+```yaml
+"MD013": false,  // Disable line length rule
+"MD033": false   // Allow HTML in markdown
+
+```
+
   }
 },
 "black": {
@@ -273,7 +281,8 @@ You can customize individual tools in the configuration:
   "use_tabs": false
 }
 
-```
+```markdown
+
   }
 }
 
@@ -290,12 +299,14 @@ from tools.auto_linting_agent import AutoLintingAgent, LintConfig
 
 config = LintConfig(
 
-```
+```markdown
+
 markdownlint=True,
 auto_fix=True,
 ignore_patterns=["custom_ignore/**"]
 
-```
+```markdown
+
 )
 
 # Create agent
@@ -364,7 +375,7 @@ pip install watchdog
 
 ls -la /path/to/watched/directory
 
-```
+```yaml
 
 **Tools not auto-fixing:**
 
@@ -392,24 +403,26 @@ For large projects, you can optimize performance:
 {
   "ignore_patterns": [
 
-```
+```yaml
+
 "large-directory/**",
 "generated/**",
 "*.generated.*"
 
-```
+```yaml
   ],
   "watch_mode": {
 
 ```
+
 "debounce_seconds": 5.0,
 "batch_processing": true
 
-```
+```text
   }
 }
 
-```
+```markdown
 
 ## Results and Reporting
 
@@ -419,7 +432,8 @@ The agent saves detailed results to `.planning/linting_results.json`:
 [
   {
 
-```
+```yaml
+
 "file_path": "/path/to/file.md",
 "tool": "markdownlint",
 "issues_found": 3,
@@ -445,7 +459,7 @@ This data powers the statistics and helps track improvement over time.
    ```bash
    mw lint watch
 
-   ```
+```yaml
 
 2. **Scan before commits**:
 
@@ -468,7 +482,7 @@ This data powers the statistics and helps track improvement over time.
 
    mw lint stats
 
-   ```
+```markdown
 
 ### Configuration Management
 
@@ -509,7 +523,8 @@ Add to `.vscode/tasks.json`:
   "version": "2.0.0",
   "tasks": [
 
-```
+```yaml
+
 {
   "label": "MyWork: Auto Lint",
   "type": "shell",
@@ -522,7 +537,7 @@ Add to `.vscode/tasks.json`:
   ]
 }
 
-```
+```markdown
 
 ### CI/CD Pipeline
 
@@ -534,12 +549,13 @@ GitHub Actions example:
 
   run: |
 
-```
+```bash
+
 pip install -r requirements.txt
 mw lint scan
 git diff --exit-code  # Fail if linting changed files
 
-```
+```text
 
 ```text
 

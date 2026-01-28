@@ -30,4 +30,4 @@ python src/task_manager.py --help
 ```bash
 mw gsd start my-new-example
 
-```
+```text

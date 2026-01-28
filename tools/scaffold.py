@@ -29,13 +29,16 @@ from typing import Dict, Any, Optional
 # Configuration - Import from shared config with fallback
 try:
     from config import MYWORK_ROOT, PROJECTS_DIR
+
     TEMPLATES_DIR = PROJECTS_DIR / "_template"
 except ImportError:
+
     def _get_mywork_root():
         if env_root := os.environ.get("MYWORK_ROOT"):
             return Path(env_root)
         script_dir = Path(__file__).resolve().parent
         return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+
     MYWORK_ROOT = _get_mywork_root()
     PROJECTS_DIR = MYWORK_ROOT / "projects"
     TEMPLATES_DIR = PROJECTS_DIR / "_template"
@@ -437,7 +440,11 @@ def create_project(name: str, template: str = "basic") -> bool:
                 if isinstance(t_structure, dict):
                     # Merge structures
                     for key, value in t_structure.items():
-                        if key in structure and isinstance(structure[key], dict) and isinstance(value, dict):
+                        if (
+                            key in structure
+                            and isinstance(structure[key], dict)
+                            and isinstance(value, dict)
+                        ):
                             structure[key].update(value)
                         else:
                             structure[key] = value

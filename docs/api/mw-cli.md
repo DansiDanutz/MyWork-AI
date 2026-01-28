@@ -10,7 +10,7 @@ Complete reference for all MyWork command-line interface commands.
 | [`mw new`](#mw-new) | Create new project | `mw new my-app fastapi` |
 | [`mw search`](#mw-search) | Search module registry | `mw search "auth"` |
 | [`mw brain`](#mw-brain) | Knowledge management | `mw brain learn` |
-| [`mw ac`](#mw-ac-autocoder-control) | Autocoder control | `mw ac start my-project` |
+| [`mw ac`](#mw-ac-a... | Autocoder control | `mw ac start my-pr... |
 | [`mw doctor`](#mw-doctor) | System diagnostics | `mw doctor --fix` |
 | [`mw update`](#mw-update) | Update framework | `mw update --check` |
 
@@ -39,7 +39,7 @@ mw status [options]
 ```bash
 mw status
 
-```
+```yaml
 
 ```yaml
 ✅ MyWork Framework Status
@@ -49,7 +49,7 @@ mw status
 ├── 🤖 Autocoder: Available (not running)
 └── 🔗 n8n: MCP server ready
 
-```
+```yaml
 
 **Verbose output:**
 
@@ -58,7 +58,7 @@ mw status --verbose
 
 ```text
 
-```
+```yaml
 🔍 Detailed Framework Status
 
 📊 Module Registry:
@@ -134,7 +134,7 @@ mw new task-cli cli
 
 # Creates: projects/task-cli/ with Python CLI template
 
-```
+```yaml
 
 **FastAPI backend ready for Autocoder:**
 
@@ -152,7 +152,7 @@ mw new existing-project nextjs --force
 
 # Overwrites: projects/existing-project/ with new template
 
-```
+```markdown
 
 ### Output Structure
 
@@ -167,12 +167,13 @@ projects/my-project/
 ├── .gitignore              # Template-appropriate ignores
 └── src/                    # Template-specific structure
 
-```
+```text
+
 └── [template files]
 
 ```
 
-```
+```markdown
 
 ## 🔍 `mw search`
 
@@ -219,7 +220,7 @@ mw search <query> [options]
 ```bash
 mw search "authentication"
 
-```
+```yaml
 
 ```yaml
 🔍 Found 12 modules matching "authentication":
@@ -239,7 +240,7 @@ mw search "authentication"
    └── projects/ai-dashboard/src/lib/dal/sessions.ts
    └── Used in: 2 projects | Rating: ⭐⭐⭐⭐
 
-```
+```yaml
 
 **Filtered search:**
 
@@ -281,7 +282,7 @@ Used in projects:
 
 Pattern confidence: ⭐⭐⭐⭐⭐ (5 successful integrations)
 
-```
+```markdown
 
 ## 🧠 `mw brain`
 
@@ -303,7 +304,7 @@ Search accumulated knowledge and patterns.
 ```bash
 mw brain search <query> [--type pattern|decision|lesson]
 
-```
+```yaml
 
 **Examples:**
 
@@ -320,7 +321,7 @@ Trigger automatic learning from recent work.
 ```bash
 mw brain learn [--deep] [--project <name>]
 
-```
+```yaml
 
 **Options:**
 
@@ -368,7 +369,7 @@ Growth Metrics:
 ├── ♻️ Reuse rate: 67% (patterns used in new projects)
 └── 🚀 Time savings: ~3.2 hours/week average
 
-```
+```markdown
 
 #### `mw brain remember`
 
@@ -385,7 +386,7 @@ mw brain remember "<knowledge>" [--type <type>] [--project <name>]
 mw brain remember "Always validate file uploads with content-based MIME detection"
 mw brain remember "React Context causes re-renders - use zustand for performance" --type pattern
 
-```
+```markdown
 
 ## 🤖 `mw ac` (Autocoder Control)
 
@@ -407,7 +408,7 @@ Start autonomous coding on a project.
 ```bash
 mw ac start <project> [--concurrency <n>] [--model <model>] [--yolo]
 
-```
+```yaml
 
 **Parameters:**
 
@@ -453,7 +454,7 @@ Monitor project development progress.
 ```bash
 mw ac progress <project> [--follow]
 
-```
+```yaml
 
 **Options:**
 
@@ -481,7 +482,7 @@ mw ac progress <project> [--follow]
 
 🎯 Estimated completion: 34 minutes
 
-```
+```markdown
 
 #### `mw ac pause/resume`
 
@@ -501,7 +502,7 @@ Launch the Autocoder web interface.
 ```bash
 mw ac ui [--port <port>]
 
-```
+```yaml
 
 Opens browser to `http://localhost:8888` for visual monitoring.
 
@@ -554,7 +555,7 @@ mw doctor
 Issues found: 1 error, 1 warning
 Run 'mw doctor --fix' to attempt automatic repairs.
 
-```
+```yaml
 
 **Auto-fix issues:**
 
@@ -563,7 +564,8 @@ mw doctor --fix
 
 ```text
 
-```
+```markdown
+
 🔧 Fixing detected issues...
 
 🤖 Starting Autocoder server...
@@ -586,7 +588,7 @@ Update framework components and dependencies.
 ```bash
 mw update [component] [options]
 
-```
+```markdown
 
 ### Components
 
@@ -630,7 +632,7 @@ Run 'mw update' to install available updates.
 ```bash
 mw update autocoder
 
-```
+```yaml
 
 **Rollback if issues:**
 

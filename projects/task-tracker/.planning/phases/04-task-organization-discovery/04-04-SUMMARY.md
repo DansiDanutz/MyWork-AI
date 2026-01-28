@@ -10,22 +10,25 @@ requires:
 
   - phase: 04-02
 
-```
+```yaml
 provides: TaskSearchBar component with debounced search
 
-```
+```yaml
+
   - phase: 04-03
 
-```
+```yaml
 provides: TaskFilters component with status and tag filtering
 
 ```
+
   - phase: 03-01
 
-```
+```yaml
 provides: TaskList component and DAL search/filter functions
 
-```
+```yaml
+
 provides:
 
   - EmptyState reusable component for zero-state UIs
@@ -41,42 +44,50 @@ tech-stack:
   added: []
   patterns:
 
-```
+```markdown
+
 - "Reusable EmptyState component pattern with customizable content"
 - "Client-side wrapper combining Server Component data"
 - "Context-aware empty states based on filter state"
 
 ```
+
 key-files:
   created:
 
-```
+```markdown
+
 - src/shared/components/EmptyState.tsx
 - src/shared/components/TaskListWithFilters.tsx
 
-```
+```yaml
+
   modified:
 
-```
+```markdown
+
 - src/shared/components/TaskList.tsx
 - src/shared/components/index.ts
 - src/app/(app)/tasks/page.tsx
 
 ```
+
 key-decisions:
 
   - "EmptyState component provides reusable zero-state UI with customizable icon
 
-```
+```text
 and CTA"
 
-```
+```markdown
+
   - "TaskListWithFilters combines search, filters, and list in client-side
 
-```
+```text
 wrapper"
 
 ```
+
   - "Context-aware empty states: different messages for no tasks vs no results"
   - "Server Component fetches data, Client Component handles URL state"
 
@@ -84,22 +95,25 @@ patterns-established:
 
   - "EmptyState pattern: Reusable component for consistent zero-state UIs across
 
-```
+```text
 app"
 
-```
+```yaml
+
   - "Integrated wrapper pattern: Client component combining multiple interactive
 
-```
+```text
 pieces"
 
 ```
+
   - "Context-aware UX: Different empty states based on whether filters are
 
-```
+```text
 active"
 
-```
+```markdown
+
 # Metrics
 
 duration: 3min
@@ -141,12 +155,17 @@ Each task was committed atomically:
 ## Files Created/Modified
 
 - `src/shared/components/EmptyState.tsx` - Reusable empty state with customizable
+
   icon, title, description, and CTA
+
 - `src/shared/components/TaskListWithFilters.tsx` - Integrated wrapper combining
+
   search bar, filter sidebar, and task list
+
 - `src/shared/components/TaskList.tsx` - Updated to use EmptyState component
 - `src/shared/components/index.ts` - Exported EmptyState and TaskListWithFilters
 - `src/app/(app)/tasks/page.tsx` - Simplified to use TaskListWithFilters with
+
   Server Component data fetching
 
 ## Decisions Made

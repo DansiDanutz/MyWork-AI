@@ -17,6 +17,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **AUTH-04**: User can reset/recover access through GitHub if needed
 - [ ] **AUTH-05**: User can view and edit their profile information
 - [ ] **AUTH-06**: User profile displays GitHub profile integration (avatar,
+
   name, bio)
 
 ### Task Management
@@ -45,9 +46,13 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **INTG-01**: System tracks user feature usage and interactions
 - [ ] **INTG-02**: System monitors user behavior patterns for brain learning
 - [ ] **INTG-03**: System captures usage analytics without blocking user
+
   operations
+
 - [ ] **INTG-04**: User can view their GitHub profile information in their user
+
   profile
+
 - [ ] **INTG-05**: System logs feature usage with timestamps for pattern analysis
 - [ ] **INTG-06**: System handles GitHub API rate limits gracefully
 

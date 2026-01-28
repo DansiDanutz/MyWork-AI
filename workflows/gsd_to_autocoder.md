@@ -57,7 +57,7 @@ If feature count > 20, proceed with handoff.
 
 ### Step 2: Run Conversion Skill
 
-```
+```yaml
 /gsd-to-autocoder-spec
 
 ```yaml
@@ -88,7 +88,7 @@ python tools/autocoder_api.py status
 
 python tools/autocoder_api.py server
 
-```
+```markdown
 
 ### A2. Start Agent Automatically
 
@@ -134,7 +134,7 @@ python tools/autocoder_api.py progress {project-name}
 
 # Progress: 12/45 features (26.7%)
 
-```
+```markdown
 
 ### A4. Control Agent
 
@@ -208,7 +208,7 @@ Update `.planning/STATE.md`:
 - Features: {total} (from app_spec.txt)
 - Started: {timestamp}
 
-```
+```markdown
 
 ### Step 5: Monitor Progress
 
@@ -242,7 +242,7 @@ When Autocoder finishes:
 2. Run the application to verify
 3. Update GSD:
 
-   ```
+```yaml
    /gsd:verify-work N
 
 ```markdown
@@ -296,7 +296,7 @@ python tools/autocoder_api.py start my-app --concurrency 3 --yolo
 
 python tools/autocoder_api.py start my-app --concurrency 5 --yolo
 
-```
+```markdown
 
 ---
 

@@ -25,27 +25,33 @@ tech-stack:
   added: []
   patterns:
 
-```
+```markdown
+
 - Server Components with Suspense streaming
 - Skeleton loaders matching component layout
 - Conditional CTAs based on data state
 - React cache() for request deduplication
 
-```
+```yaml
+
 key-files:
   created:
 
-```
+```markdown
+
 - src/app/(app)/tasks/page.tsx
 - src/app/(app)/tasks/new/page.tsx
 
 ```
+
   modified:
 
-```
+```markdown
+
 - src/app/(app)/dashboard/page.tsx
 
-```
+```yaml
+
 decisions: []
 ---
 
@@ -76,11 +82,13 @@ Created three interconnected pages completing the task management UI:
    - Quick-add button in header
    - Conditional CTAs:
 
-```
+```yaml
+
  - No tasks: "Create your first task"
  - Has tasks: "View all tasks" (count displayed)
 
 ```
+
    - All three stat cards show real data
 
 ## Technical Implementation
@@ -126,7 +134,7 @@ const user = await getUser()
 // Then get task counts for that user
 const taskCounts = await getTaskCounts(user?.id || '')
 
-```
+```yaml
 
 **Pattern:** Sequential data fetching leveraging React cache() for
 deduplication.
@@ -147,7 +155,8 @@ deduplication.
 
 ## Navigation Flow
 
-```
+```markdown
+
 Dashboard
   ├─> Quick-add button ──> /tasks/new
   └─> View all tasks ───> /tasks
@@ -276,7 +285,8 @@ None.
 export default function Page() {
   return (
 
-```
+```html
+
 <Suspense fallback={<Skeleton />}>
   <AsyncContent />
 </Suspense>
@@ -290,7 +300,7 @@ async function AsyncContent() {
   return <Component data={data} />
 }
 
-```
+```yaml
 
 **When to use:** Server-side data fetching with loading states
 
@@ -301,14 +311,15 @@ async function AsyncContent() {
 function Skeleton() {
   return (
 
-```
+```html
+
 <div className="animate-pulse">
   {/* Match exact layout of actual content */}
   <div className="h-6 bg-gray-200 rounded w-3/4 mb-3" />
   <div className="h-4 bg-gray-200 rounded w-full" />
 </div>
 
-```
+```yaml
   )
 }
 

@@ -1,21 +1,19 @@
-import type { Metadata } from 'next'
-import './globals.css'
+import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: 'AI Dashboard',
-  description: 'Personal AI Dashboard for videos, news, and projects',
-}
+  title: "AI Dashboard",
+  description: "Personal AI Dashboard for videos, news, and projects",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
     <html lang="en">
-      <body className="bg-gray-50 min-h-screen font-sans">
-        {children}
-      </body>
+      <body className="bg-gray-50 min-h-screen font-sans">{children}</body>
     </html>
-  )
+  );
 }

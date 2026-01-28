@@ -7,12 +7,17 @@
 **A:** Follow this exact path:
 
 1. **5-minute start:** [Quick Start Guide](quickstart.md) - Install and create
+
 your first project
+
 2. **Learn the basics:** [Tutorial 1: Your First
+
 Project](tutorials/01-first-project.md) - Build a CLI task manager
+
 3. **Understand the system:** [Architecture Overview](architecture/overview.md)
 - Learn the 3 layers
 4. **Try a web app:** [Tutorial 2: GSD Basics](tutorials/02-gsd-basics.md) -
+
 Build a todo web app
 
 You'll be productive within 30 minutes.
@@ -127,7 +132,7 @@ mw gsd insert-phase 2.5
 
 mw gsd resume-work
 
-```
+```markdown
 
 ## 🤖 **Autocoder Integration**
 
@@ -151,7 +156,7 @@ How familiar is the domain?
 ├── Some unknowns → GSD with research
 └── Lots of unknowns → Autocoder exploration
 
-```
+```markdown
 
 ### **Q: Autocoder is too slow. How can I speed it up?**
 
@@ -199,7 +204,7 @@ mw ac ui
 
 ls projects/my-project/src/
 
-```
+```markdown
 
 ## 🔗 **n8n Workflow Automation**
 
@@ -322,7 +327,7 @@ mw gsd discuss-phase [next-phase]
 
 mw gsd plan-phase [phase]
 
-```
+```markdown
 
 ### **Q: MyWork is using too much disk space. How do I clean up?**
 
@@ -357,7 +362,8 @@ find . -name "*.pyc" -delete
 
 **A:** Recommended structure:
 
-```
+```markdown
+
 MyWork/
 ├── projects/
 │   ├── personal/           # Personal projects
@@ -388,7 +394,7 @@ MyWork/
    cd project-name
    mw gsd progress  # See current state
 
-   ```
+```yaml
 
 2. **Share just the planning:**
 
@@ -446,10 +452,13 @@ MyWork/
 **A:** Technical deep dive path:
 
 1. **[Architecture Overview](architecture/overview.md)** - Understand the 3
+
 layers
+
 2. **[Python API Reference](api/tools/)** - See the actual tools
 3. **[Example Projects](../examples/)** - Learn the automation patterns
 4. **[Framework Source Code](https://github.com/DansiDanutz/MyWork-AI)** - Study
+
 the implementation
 
 ### **Q: How can I contribute to MyWork?**
@@ -457,7 +466,9 @@ the implementation
 **A:** Many ways to help:
 
 1. **Report issues:** [GitHub
+
 Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
+
 2. **Share examples:** Add to `examples/` directory
 3. **Improve docs:** Fix typos, add clarifications
 4. **Create templates:** Add new project templates
@@ -468,10 +479,14 @@ Issues](https://github.com/DansiDanutz/MyWork-AI/issues)
 **A:** Support channels:
 
 - 💬 **[GitHub
+
   Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)** -
   Community Q&A
+
 - 🐛 **[GitHub Issues](https://github.com/DansiDanutz/MyWork-AI/issues)** - Bug
+
   reports
+
 - 📧 **[Email Support](mailto:support@mywork.ai)** - Direct help
 - 📺 **[YouTube Channel](https://youtube.com/@MyWorkAI)** - Video tutorials
 - 🐦 **[Twitter](https://twitter.com/MyWorkAI)** - Updates and tips

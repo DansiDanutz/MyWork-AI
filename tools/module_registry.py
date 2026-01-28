@@ -41,6 +41,7 @@ from collections import defaultdict
 try:
     from config import get_mywork_root
 except ImportError:  # pragma: no cover - fallback for standalone usage
+
     def get_mywork_root() -> Path:
         if env_root := os.environ.get("MYWORK_ROOT"):
             return Path(env_root)
@@ -70,8 +71,17 @@ SCAN_PATTERNS = {
 
 # Directories to skip
 SKIP_DIRS = {
-    "node_modules", "venv", ".venv", "__pycache__", ".git",
-    "dist", "build", ".next", ".nuxt", "coverage", ".pytest_cache"
+    "node_modules",
+    "venv",
+    ".venv",
+    "__pycache__",
+    ".git",
+    "dist",
+    "build",
+    ".next",
+    ".nuxt",
+    "coverage",
+    ".pytest_cache",
 }
 
 # Module detection patterns
@@ -88,62 +98,62 @@ MODULE_PATTERNS = {
     },
     "component": {
         "typescript": [
-            r'(?:export\s+(?:default\s+)?)?function\s+([A-Z][a-zA-Z0-9]+)\s*\(',
-            r'const\s+([A-Z][a-zA-Z0-9]+)\s*[=:]\s*(?:\([^)]*\)\s*=>|React\.FC)',
+            r"(?:export\s+(?:default\s+)?)?function\s+([A-Z][a-zA-Z0-9]+)\s*\(",
+            r"const\s+([A-Z][a-zA-Z0-9]+)\s*[=:]\s*(?:\([^)]*\)\s*=>|React\.FC)",
         ],
         "javascript": [
-            r'(?:export\s+(?:default\s+)?)?function\s+([A-Z][a-zA-Z0-9]+)\s*\(',
+            r"(?:export\s+(?:default\s+)?)?function\s+([A-Z][a-zA-Z0-9]+)\s*\(",
         ],
     },
     "service": {
         "python": [
-            r'class\s+(\w+Service)\s*[:\(]',
-            r'class\s+(\w+Manager)\s*[:\(]',
-            r'class\s+(\w+Handler)\s*[:\(]',
+            r"class\s+(\w+Service)\s*[:\(]",
+            r"class\s+(\w+Manager)\s*[:\(]",
+            r"class\s+(\w+Handler)\s*[:\(]",
         ],
         "typescript": [
-            r'class\s+(\w+Service)\s*[{\(]',
-            r'class\s+(\w+Manager)\s*[{\(]',
+            r"class\s+(\w+Service)\s*[{\(]",
+            r"class\s+(\w+Manager)\s*[{\(]",
         ],
     },
     "utility": {
         "python": [
-            r'def\s+((?:get|set|create|update|delete|parse|format|validate|convert|calculate|generate|transform|extract|normalize|sanitize)[_a-zA-Z0-9]*)\s*\(',
+            r"def\s+((?:get|set|create|update|delete|parse|format|validate|convert|calculate|generate|transform|extract|normalize|sanitize)[_a-zA-Z0-9]*)\s*\(",
         ],
         "typescript": [
-            r'(?:export\s+)?(?:const|function)\s+((?:get|set|create|update|delete|parse|format|validate|convert|calculate|generate|transform|extract|normalize|sanitize)[A-Za-z0-9]*)\s*[=\(]',
+            r"(?:export\s+)?(?:const|function)\s+((?:get|set|create|update|delete|parse|format|validate|convert|calculate|generate|transform|extract|normalize|sanitize)[A-Za-z0-9]*)\s*[=\(]",
         ],
     },
     "schema": {
         "python": [
-            r'class\s+(\w+)\s*\(.*(?:Base|Model|Schema|Table)',
-            r'class\s+(\w+)\s*\(.*SQLModel',
+            r"class\s+(\w+)\s*\(.*(?:Base|Model|Schema|Table)",
+            r"class\s+(\w+)\s*\(.*SQLModel",
         ],
         "typescript": [
-            r'(?:interface|type)\s+(\w+(?:Schema|Model|Type|Interface))\s*[{=]',
-            r'const\s+(\w+Schema)\s*=\s*z\.',
+            r"(?:interface|type)\s+(\w+(?:Schema|Model|Type|Interface))\s*[{=]",
+            r"const\s+(\w+Schema)\s*=\s*z\.",
         ],
     },
     "hook": {
         "typescript": [
-            r'(?:export\s+)?(?:const|function)\s+(use[A-Z][a-zA-Z0-9]*)\s*[=\(]',
+            r"(?:export\s+)?(?:const|function)\s+(use[A-Z][a-zA-Z0-9]*)\s*[=\(]",
         ],
     },
     "middleware": {
         "python": [
             r'@app\.middleware\s*\(["\']([^"\']+)',
-            r'class\s+(\w+Middleware)',
+            r"class\s+(\w+Middleware)",
         ],
         "typescript": [
-            r'(?:export\s+)?(?:const|function)\s+(\w+Middleware)\s*[=\(]',
+            r"(?:export\s+)?(?:const|function)\s+(\w+Middleware)\s*[=\(]",
         ],
     },
     "integration": {
         "python": [
-            r'class\s+(\w+(?:Client|API|Integration|Connector))\s*[:\(]',
+            r"class\s+(\w+(?:Client|API|Integration|Connector))\s*[:\(]",
         ],
         "typescript": [
-            r'class\s+(\w+(?:Client|API|Integration|Connector))\s*[{\(]',
+            r"class\s+(\w+(?:Client|API|Integration|Connector))\s*[{\(]",
         ],
     },
 }
@@ -152,6 +162,7 @@ MODULE_PATTERNS = {
 @dataclass
 class Module:
     """Represents a discovered module."""
+
     id: str
     name: str
     type: str
@@ -174,7 +185,9 @@ class ModuleRegistry:
     """Registry for all discovered modules across projects."""
 
     def __init__(self, root: Optional[Path] = None):
-        self.root, self.projects_dir, self.registry_file, self.registry_md = _resolve_registry_paths(root)
+        self.root, self.projects_dir, self.registry_file, self.registry_md = (
+            _resolve_registry_paths(root)
+        )
         self.modules: Dict[str, Module] = {}
         self.index: Dict[str, Set[str]] = defaultdict(set)  # tag -> module_ids
         self.type_index: Dict[str, Set[str]] = defaultdict(set)  # type -> module_ids
@@ -201,7 +214,7 @@ class ModuleRegistry:
             "version": "1.0",
             "last_updated": datetime.now().isoformat(),
             "module_count": len(self.modules),
-            "modules": [m.to_dict() for m in self.modules.values()]
+            "modules": [m.to_dict() for m in self.modules.values()],
         }
         with open(self.registry_file, "w") as f:
             json.dump(data, f, indent=2)
@@ -286,11 +299,9 @@ class ModuleRegistry:
                 stats["top_tags"][tag] += 1
 
         # Sort tags by frequency
-        stats["top_tags"] = dict(sorted(
-            stats["top_tags"].items(),
-            key=lambda x: x[1],
-            reverse=True
-        )[:20])
+        stats["top_tags"] = dict(
+            sorted(stats["top_tags"].items(), key=lambda x: x[1], reverse=True)[:20]
+        )
 
         return stats
 
@@ -409,7 +420,7 @@ class ProjectScanner:
                         dependencies=deps[:10],  # Limit to first 10
                         exports=exports[:10],
                         last_modified=mtime,
-                        hash=hashlib.md5(context.encode()).hexdigest()[:8]
+                        hash=hashlib.md5(context.encode()).hexdigest()[:8],
                     )
 
                     self.registry.add_module(module)
@@ -420,7 +431,7 @@ class ProjectScanner:
     def _extract_description(self, content: str, pos: int, language: str) -> str:
         """Extract description from docstring or comment."""
         # Look for docstring or comment before the match
-        before = content[max(0, pos - 500):pos]
+        before = content[max(0, pos - 500) : pos]
 
         if language == "python":
             # Look for docstring
@@ -431,17 +442,17 @@ class ProjectScanner:
             if match:
                 return match.group(1).strip()
             # Look for comment
-            match = re.search(r'#\s*(.+)$', before, re.MULTILINE)
+            match = re.search(r"#\s*(.+)$", before, re.MULTILINE)
             if match:
                 return match.group(1).strip()
 
         elif language in ("typescript", "javascript"):
             # Look for JSDoc
-            match = re.search(r'/\*\*\s*\n?\s*\*?\s*([^\n*]+)', before)
+            match = re.search(r"/\*\*\s*\n?\s*\*?\s*([^\n*]+)", before)
             if match:
                 return match.group(1).strip()
             # Look for single line comment
-            match = re.search(r'//\s*(.+)$', before, re.MULTILINE)
+            match = re.search(r"//\s*(.+)$", before, re.MULTILINE)
             if match:
                 return match.group(1).strip()
 
@@ -452,7 +463,7 @@ class ProjectScanner:
         tags = [module_type]
 
         # Split camelCase/PascalCase
-        words = re.findall(r'[A-Z][a-z]+|[a-z]+', name)
+        words = re.findall(r"[A-Z][a-z]+|[a-z]+", name)
         tags.extend([w.lower() for w in words if len(w) > 2])
 
         # Add path-based tags
@@ -468,7 +479,7 @@ class ProjectScanner:
         deps = []
 
         if language == "python":
-            for match in re.finditer(r'(?:from|import)\s+([\w.]+)', content):
+            for match in re.finditer(r"(?:from|import)\s+([\w.]+)", content):
                 deps.append(match.group(1))
 
         elif language in ("typescript", "javascript"):
@@ -482,11 +493,13 @@ class ProjectScanner:
         exports = [name]
 
         if language == "python":
-            for match in re.finditer(rf'{name}\.\w+', content):
+            for match in re.finditer(rf"{name}\.\w+", content):
                 exports.append(match.group(0))
 
         elif language in ("typescript", "javascript"):
-            for match in re.finditer(r'export\s+(?:const|function|class|type|interface)\s+(\w+)', content):
+            for match in re.finditer(
+                r"export\s+(?:const|function|class|type|interface)\s+(\w+)", content
+            ):
                 exports.append(match.group(1))
 
         return list(set(exports))

@@ -43,7 +43,7 @@ def _now_iso() -> str:
 
 
 def _parse_scalar(value: str) -> Any:
-    if value.startswith(("\"", "'")) and value.endswith(("\"", "'")):
+    if value.startswith(('"', "'")) and value.endswith(('"', "'")):
         return value[1:-1]
     lowered = value.lower()
     if lowered in {"true", "yes"}:
@@ -172,8 +172,7 @@ def scan_projects() -> Dict[str, Any]:
         return {"scanned_at": _now_iso(), "projects": {}}
 
     projects = [
-        p for p in PROJECTS_DIR.iterdir()
-        if p.is_dir() and not p.name.startswith((".", "_"))
+        p for p in PROJECTS_DIR.iterdir() if p.is_dir() and not p.name.startswith((".", "_"))
     ]
 
     registry: Dict[str, Any] = {"scanned_at": _now_iso(), "projects": {}}
@@ -256,7 +255,9 @@ def cmd_stats() -> int:
     for entry in projects:
         total += 1
         by_type[entry.get("type", "unknown")] = by_type.get(entry.get("type", "unknown"), 0) + 1
-        by_status[entry.get("status", "unknown")] = by_status.get(entry.get("status", "unknown"), 0) + 1
+        by_status[entry.get("status", "unknown")] = (
+            by_status.get(entry.get("status", "unknown"), 0) + 1
+        )
         if entry.get("marketplace"):
             marketplace += 1
 
@@ -288,7 +289,12 @@ def cmd_export() -> int:
         deployment = entry.get("deployment") or {}
         deploy_url = ""
         if isinstance(deployment, dict):
-            deploy_url = deployment.get("url") or deployment.get("frontend_url") or deployment.get("backend_url") or ""
+            deploy_url = (
+                deployment.get("url")
+                or deployment.get("frontend_url")
+                or deployment.get("backend_url")
+                or ""
+            )
         lines.append(
             f"| {name} | {entry.get('type', '')} | {entry.get('status', '')} | {marketplace} | {brain} | {description} | {deploy_url} |"
         )

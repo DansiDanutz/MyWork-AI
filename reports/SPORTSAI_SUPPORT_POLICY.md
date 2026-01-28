@@ -112,7 +112,7 @@ Steps to reproduce:
 
 Attached: error-screenshot.png, server-logs.txt
 
-```
+```markdown
 
 ---
 

@@ -47,11 +47,13 @@ load_dotenv(Path(__file__).parent.parent / ".env")
 try:
     from config import AUTOCODER_ROOT as AUTOCODER_PATH, PROJECTS_DIR as MYWORK_PROJECTS
 except ImportError:
+
     def _get_mywork_root():
         if env_root := os.environ.get("MYWORK_ROOT"):
             return Path(env_root)
         script_dir = Path(__file__).resolve().parent
         return script_dir.parent if script_dir.name == "tools" else Path.home() / "MyWork"
+
     AUTOCODER_PATH = Path(os.getenv("AUTOCODER_ROOT", Path.home() / "GamesAI" / "autocoder"))
     MYWORK_PROJECTS = _get_mywork_root() / "projects"
 AUTOCODER_API = "http://127.0.0.1:8888"
@@ -63,6 +65,7 @@ AVAILABLE_MODELS = [
     "claude-opus-4-5-20251101",
     "claude-sonnet-4-5-20250929",
 ]
+
 
 def get_autocoder_python() -> str:
     """Prefer Autocoder venv python when available."""
@@ -109,7 +112,7 @@ class AutocoderAPI:
         model: str = DEFAULT_MODEL,
         concurrency: int = 1,
         yolo_mode: bool = False,
-        testing_ratio: int = 1
+        testing_ratio: int = 1,
     ) -> Dict[str, Any]:
         """Start the Autocoder agent for a project."""
         try:
@@ -119,8 +122,8 @@ class AutocoderAPI:
                     "model": model,
                     "max_concurrency": concurrency,
                     "yolo_mode": yolo_mode,
-                    "testing_agent_ratio": testing_ratio
-                }
+                    "testing_agent_ratio": testing_ratio,
+                },
             )
             return response.json()
         except httpx.ConnectError:
@@ -189,7 +192,7 @@ def start_server():
         [python_bin, str(start_script)],
         cwd=str(AUTOCODER_PATH),
         stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL
+        stderr=subprocess.DEVNULL,
     )
 
     # Wait for server to start
@@ -229,6 +232,7 @@ def get_progress(project_name: str) -> Dict[str, Any]:
 
         if db_path.exists():
             import sqlite3
+
             conn = sqlite3.connect(str(db_path))
             cursor = conn.cursor()
 
@@ -247,7 +251,7 @@ def get_progress(project_name: str) -> Dict[str, Any]:
                 "passing": row[1] or 0,
                 "in_progress": row[2] or 0,
                 "pending": row[0] - (row[1] or 0) - (row[2] or 0),
-                "source": "database"
+                "source": "database",
             }
         return {"error": "Server not running and no database found"}
 
@@ -261,7 +265,9 @@ def get_progress(project_name: str) -> Dict[str, Any]:
     # Calculate progress
     total = len(features) if isinstance(features, list) else 0
     passing = sum(1 for f in features if f.get("passes")) if isinstance(features, list) else 0
-    in_progress = sum(1 for f in features if f.get("in_progress")) if isinstance(features, list) else 0
+    in_progress = (
+        sum(1 for f in features if f.get("in_progress")) if isinstance(features, list) else 0
+    )
 
     return {
         "total": total,
@@ -269,7 +275,7 @@ def get_progress(project_name: str) -> Dict[str, Any]:
         "in_progress": in_progress,
         "pending": total - passing - in_progress,
         "agent_status": status.get("status", "unknown"),
-        "source": "api"
+        "source": "api",
     }
 
 
@@ -279,11 +285,14 @@ def notify_webhook(event: str, data: Dict[str, Any]):
         return
 
     try:
-        httpx.post(WEBHOOK_URL, json={
-            "event": event,
-            "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-            **data
-        })
+        httpx.post(
+            WEBHOOK_URL,
+            json={
+                "event": event,
+                "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                **data,
+            },
+        )
     except Exception as e:
         print(f"Webhook notification failed: {e}")
 
@@ -305,7 +314,7 @@ Examples:
 
   # Get project progress
   python tools/autocoder_api.py progress my-project
-"""
+""",
     )
 
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -322,10 +331,16 @@ Examples:
     # Start command
     start_parser = subparsers.add_parser("start", help="Start agent for a project (automatic mode)")
     start_parser.add_argument("project", help="Project name")
-    start_parser.add_argument("--model", default=DEFAULT_MODEL, choices=AVAILABLE_MODELS, help="Model to use")
-    start_parser.add_argument("--concurrency", type=int, default=1, help="Number of parallel agents")
+    start_parser.add_argument(
+        "--model", default=DEFAULT_MODEL, choices=AVAILABLE_MODELS, help="Model to use"
+    )
+    start_parser.add_argument(
+        "--concurrency", type=int, default=1, help="Number of parallel agents"
+    )
     start_parser.add_argument("--yolo", action="store_true", help="Skip testing for speed")
-    start_parser.add_argument("--testing-ratio", type=int, default=1, help="Testing agents per coding agent")
+    start_parser.add_argument(
+        "--testing-ratio", type=int, default=1, help="Testing agents per coding agent"
+    )
 
     # Stop command
     stop_parser = subparsers.add_parser("stop", help="Stop agent for a project")
@@ -378,15 +393,14 @@ Examples:
             model=args.model,
             concurrency=args.concurrency,
             yolo_mode=args.yolo,
-            testing_ratio=args.testing_ratio
+            testing_ratio=args.testing_ratio,
         )
         print(json.dumps(result, indent=2))
 
-        notify_webhook("agent_started", {
-            "project": args.project,
-            "model": args.model,
-            "concurrency": args.concurrency
-        })
+        notify_webhook(
+            "agent_started",
+            {"project": args.project, "model": args.model, "concurrency": args.concurrency},
+        )
 
     elif args.command == "stop":
         result = api.stop_agent(args.project)

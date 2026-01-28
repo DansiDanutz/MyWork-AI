@@ -10,7 +10,9 @@ A complete auto-linting system that:
 
 - ✅ **Maintains 0 markdownlint violations** across 12+ rules (including MD060)
 - ✅ **Never stops on problems** - robust error handling with comprehensive
+
   try-catch
+
 - ✅ **Works for all users** - not tied to specific individuals or setups
 - ✅ **Runs automatically** - file watching + git hooks + easy CLI management
 
@@ -53,7 +55,7 @@ git commit -m "feat: add perfect auto-linting for all users
 ✅ Works for all team members automatically"
 git push
 
-```
+```yaml
 
 **For Team Members** (one-time setup):
 
@@ -101,7 +103,7 @@ code here
 
 cat test.md
 
-```
+```yaml
 
 **Expected result**: The file is automatically fixed to perfect markdown.
 
@@ -205,7 +207,7 @@ The perfect auto-linting is working when:
 
 mw lint start
 
-```
+```python
 
 ✅ Perfect markdown quality from day one
 
@@ -237,7 +239,7 @@ mw lint install-hooks
 python3 tools/auto_lint_fixer.py .
 markdownlint . || exit 1
 
-```
+```markdown
 
 ✅ Guaranteed perfect markdown in deployments
 
@@ -253,10 +255,11 @@ markdownlint . || exit 1
 
 if [[ -f ~/Desktop/MyWork/tools/mw.py && ! $(pgrep -f auto_linting_agent) ]]; then
 
-```
+```bash
+
 cd ~/Desktop/MyWork && python3 tools/mw.py lint start > /dev/null 2>&1 &
 
-```
+```yaml
 fi
 
 ```yaml
@@ -269,7 +272,7 @@ fi
 cd "C:\Users\%USERNAME%\Desktop\MyWork"
 python tools\mw.py lint start
 
-```
+```markdown
 
 ### Integration with Development Tools
 
@@ -279,16 +282,28 @@ python tools\mw.py lint start
 {
 
 ```
+
 "files.watcherExclude": {
-    "**/.git/objects/**": true,
-    "**/.git/subtree-cache/**": true,
-    "**/node_modules/*/**": true
+
+```yaml
+"**/.git/objects/**": true,
+"**/.git/subtree-cache/**": true,
+"**/node_modules/*/**": true
+
+```yaml
+
 },
 "markdownlint.config": {
-    "MD013": false
-}
+
+```yaml
+"MD013": false
 
 ```
+
+}
+
+```markdown
+
 }
 
 ```markdown
@@ -303,7 +318,7 @@ For teams working on network drives or shared folders:
 
 mw lint start --polling
 
-```
+```markdown
 
 ## 📈 Monitoring and Maintenance
 
@@ -325,7 +340,7 @@ cd /path/to/project && python3 tools/mw.py lint status
 
 mw lint stats
 
-```
+```markdown
 
 ### Updates
 

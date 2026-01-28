@@ -17,7 +17,7 @@ start.bat   # Windows
 
 ## Project Structure
 
-```
+```yaml
 [project-name]/
 ├── .planning/          # GSD: Project-specific planning
 │   ├── PROJECT.md      # Vision and scope
@@ -50,7 +50,7 @@ start.bat   # Windows
 
 /gsd:quick
 
-```
+```markdown
 
 ## Tech Stack
 

@@ -96,7 +96,7 @@ magick convert sportsai-hero-overview.png -resize 1920x1080 -quality 95 sportsai
 
 **Create a folder structure:**
 
-```
+```yaml
 sportsai-marketplace-screenshots/
 ├── sportsai-hero-overview.png
 ├── sportsai-opportunities-list.png

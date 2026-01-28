@@ -74,7 +74,7 @@ const handleFileDeleted = useCallback((fileId: string) => {
   setAttachments(prev => prev.filter(file => file.id !== fileId))
 }, [])
 
-```
+```yaml
 
 **UI Structure:**
 
@@ -126,31 +126,35 @@ const handleFileDeleted = useCallback((fileId: string) => {
 ```text
 TaskCard → Shows FileCountBadge if attachments exist
 
-```
+```text
+
 ↓
 
-```
+```text
 Edit Task → TaskEditFormWithTags with full file management
 
 ```
+
 ↓
 
-```
+```text
 FileDropzone → Upload files → handleFileUploadComplete
 
-```
+```text
+
 ↓
 
-```
+```text
 FileList → View/Delete files → handleFileDeleted
 
 ```
+
 ↓
 
-```
+```text
 DAL Updates → All task queries include attachment data
 
-```
+```markdown
 
 ### Component Integration
 
@@ -208,7 +212,9 @@ DAL Updates → All task queries include attachment data
 
 - `src/shared/components/TaskCard.tsx` - Added FileCountBadge integration
 - `src/shared/components/TaskEditFormWithTags.tsx` - Added file management UI and
+
   logic
+
 - `src/shared/lib/dal.ts` - Updated all task queries to include attachments
 
 ## Success Criteria Met

@@ -83,31 +83,36 @@ npm install posthog-js
 
 ### Recommended Deployment Architecture
 
-```
+```text
 GitHub Repository
 
-```
+```text
+
 ↓
 
-```
+```text
 GitHub Actions (CI/CD)
 
 ```
+
 ↓
 
-```
+```text
 Vercel (Frontend + API Routes)
 
-```
+```text
+
 ↓
 
-```
+```text
 Neon (PostgreSQL Database)
 
 ```
+
 ↓
 
-```
+```markdown
+
 Upstash Redis (Rate Limiting + Feedback)
 
 ```markdown
@@ -128,7 +133,8 @@ import { prisma } from '@/lib/prisma';
 export async function GET() {
   try {
 
-```
+```yaml
+
 // Check database connectivity
 await prisma.$queryRaw`SELECT 1`;
 
@@ -138,20 +144,21 @@ return NextResponse.json({
   uptime: process.uptime(),
 });
 
-```
+```text
   } catch (error) {
 
 ```
+
 return NextResponse.json(
   { status: 'unhealthy', error: 'Database connection failed' },
   { status: 503 }
 );
 
-```
+```text
   }
 }
 
-```
+```markdown
 
 ### Pattern 2: Environment Variable Management
 
@@ -197,14 +204,16 @@ name: Deploy
 on:
   push:
 
-```
+```yaml
+
 branches: [main]
 
 ```
 jobs:
   deploy:
 
-```
+```yaml
+
 runs-on: ubuntu-latest
 steps:
 
@@ -212,27 +221,39 @@ steps:
 
   - name: Setup Node.js
 
-    uses: actions/setup-node@v3
-    with:
-      node-version: '20'
+```yaml
+uses: actions/setup-node@v3
+with:
+  node-version: '20'
+
+```
 
   - name: Install dependencies
 
-    run: npm ci
+```yaml
+run: npm ci
+
+```
 
   - name: Run migrations
 
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-    run: npx prisma migrate deploy
+```yaml
+env:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+run: npx prisma migrate deploy
+
+```
 
   - name: Deploy to Vercel
 
-    run: vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
+```yaml
+run: vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
 
 ```
 
-```
+```markdown
+
+```markdown
 
 ### Pattern 4: Core Web Vitals Monitoring
 
@@ -254,9 +275,11 @@ export function reportWebVitals(metric: any) {
   if (process.env.NODE_ENV === 'development') {
 
 ```
+
 console.log(metric);
 
-```
+```markdown
+
   }
 }
 
@@ -277,16 +300,22 @@ import { Feedback } from '@upstash/feedback';
 export function FeedbackWidget() {
   return (
 
-```
+```text
+
 <Feedback
   email="user@example.com" // From session
   metadata={{
-    page: window.location.pathname,
-    timestamp: new Date().toISOString(),
+
+```
+page: window.location.pathname,
+timestamp: new Date().toISOString(),
+
+```text
+
   }}
 />
 
-```
+```text
   );
 }
 
@@ -322,10 +351,12 @@ export async function POST(req: Request) {
 
   if (!success) {
 
-```
+```yaml
+
 return new Response('Too many requests', { status: 429 });
 
-```
+```markdown
+
   }
 
   // Process request
@@ -347,7 +378,8 @@ import { posthog } from 'posthog-js';
 export function trackPatternUsage(pattern: string, metadata?: Record<string, any>) {
   posthog.capture('pattern_used', {
 
-```
+```yaml
+
 pattern,
 ...metadata,
 timestamp: new Date().toISOString(),
@@ -361,20 +393,29 @@ trackPatternUsage('task_create', { hasAttachments: true });
 trackPatternUsage('search_filter', { filterType: 'status' });
 trackPatternUsage('file_upload', { uploadMethod: 'tus' });
 
-```
+```markdown
 
 ### Anti-Patterns to Avoid
 
 - **Building at runtime**: Next.js requires `next build` before `next start`,
+
   never run dev in production
+
 - **Hardcoded secrets**: Never commit `.env` files or secrets to git
 - **Direct database access**: Always use Prisma client, never raw connection
+
   strings in client code
+
 - **Missing error boundaries**: Production needs error boundaries to prevent
+
   white screens
+
 - **No health checks**: Without health checks, bad deployments can take down the
+
   site
+
 - **Trusting client data**: Always validate and authorize on server side
+
   (CVE-2025-29927)
 
 ## Don't Hand-Roll
@@ -458,10 +499,11 @@ const securityHeaders = [
 module.exports = {
   async headers() {
 
-```
+```yaml
+
 return [{ source: '/:path*', headers: securityHeaders }];
 
-```
+```yaml
   },
 };
 
@@ -527,16 +569,18 @@ export async function GET() {
   const checks = {
 
 ```
+
 uptime: process.uptime(),
 timestamp: new Date().toISOString(),
 database: 'unknown' as 'healthy' | 'unhealthy' | 'unknown',
 
-```
+```text
   };
 
   try {
 
-```
+```yaml
+
 // Check database connectivity
 await prisma.$queryRaw`SELECT 1`;
 checks.database = 'healthy';
@@ -546,26 +590,32 @@ return NextResponse.json({
   checks,
 });
 
-```
+```text
   } catch (error) {
 
 ```
+
 checks.database = 'unhealthy';
 
 return NextResponse.json(
   {
-    status: 'unhealthy',
-    checks,
-    error: error instanceof Error ? error.message : 'Unknown error',
+
+```yaml
+status: 'unhealthy',
+checks,
+error: error instanceof Error ? error.message : 'Unknown error',
+
+```
+
   },
   { status: 503 }
 );
 
-```
+```text
   }
 }
 
-```
+```markdown
 
 ### Safe Database Migration Deployment
 
@@ -609,7 +659,7 @@ const envSchema = z.object({
 
 export const env = envSchema.parse(process.env);
 
-```
+```markdown
 
 ### Feedback Widget Integration
 
@@ -628,17 +678,24 @@ export function FeedbackButton() {
   return (
 
 ```
+
 <Feedback
   email={session?.user?.email || 'anonymous'}
   metadata={{
-    userId: session?.user?.id,
-    page: window.location.pathname,
-    userAgent: navigator.userAgent,
+
+```yaml
+userId: session?.user?.id,
+page: window.location.pathname,
+userAgent: navigator.userAgent,
+
+```
+
   }}
   user={session?.user?.name || 'Anonymous User'}
 />
 
-```
+```markdown
+
   );
 }
 
@@ -669,25 +726,35 @@ export async function middleware(request: NextRequest) {
   // Apply rate limiting to API routes only
   if (request.nextUrl.pathname.startsWith('/api/')) {
 
-```
+```javascript
+
 const ip = request.headers.get('x-forwarded-for') ?? '127.0.0.1';
 const { success, pending, limit, reset, remaining } = await ratelimit.limit(ip);
 
 if (!success) {
   return NextResponse.json(
-    { error: 'Too many requests' },
-    {
-      status: 429,
-      headers: {
-        'X-RateLimit-Limit': limit.toString(),
-        'X-RateLimit-Remaining': remaining.toString(),
-        'X-RateLimit-Reset': reset.toString(),
-      },
-    }
+
+```
+{ error: 'Too many requests' },
+{
+  status: 429,
+  headers: {
+
+```
+'X-RateLimit-Limit': limit.toString(),
+'X-RateLimit-Remaining': remaining.toString(),
+'X-RateLimit-Reset': reset.toString(),
+
+```
+  },
+}
+
+```javascript
+
   );
 }
 
-```
+```javascript
   }
 
   return NextResponse.next();
@@ -714,13 +781,14 @@ import { useEffect } from 'react';
 export function PHProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
 
-```
+```yaml
+
 posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY!, {
   api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST,
   capture_pageview: false, // We'll manually capture
 });
 
-```
+```python
   }, []);
 
   return <PostHogProvider client={posthog}>{children}</PostHogProvider>;
@@ -734,7 +802,8 @@ export function TaskList() {
 
   const handleCreateTask = async () => {
 
-```
+```yaml
+
 // ... create task logic
 
 // Track pattern usage
@@ -767,13 +836,20 @@ posthog.capture('pattern_used', {
 **Deprecated/outdated:**
 
 - **next export for static hosting**: Use `output: 'export'` in next.config.js
+
   instead
+
 - **API routes in pages/api**: App Router recommends route handlers
+
   (app/api/route.ts)
+
 - **getServerSideProps**: Use Server Components in App Router instead
 - **Custom server (server.js)**: Use Next.js standalone mode or middleware
+
   instead
+
 - **Middleware-only auth**: Must re-verify in Server Actions due to
+
   CVE-2025-29927
 
 ## Open Questions
@@ -783,130 +859,172 @@ Things that couldn't be fully resolved:
 1. **Optimal validation period duration**
    - What we know: Need enough data to validate framework patterns, but not so
 
-```
+```text
  long that feedback becomes stale
 
-```
+```yaml
+
    - What's unclear: Specific timeframe depends on user acquisition rate
    - Recommendation: Start with 2-week validation window, extend if user count <
 
-```
+```text
  20 active users
 
 ```
+
 2. **Usage quotas for free tier validation**
    - What we know: Vercel free tier allows 100GB bandwidth/month, Neon free tier
 
-```
+```text
  allows 0.5GB storage
 
-```
+```yaml
+
    - What's unclear: Whether free tier is sufficient or need to upgrade during
 
-```
+```text
  validation
 
 ```
+
    - Recommendation: Start free, monitor metrics, upgrade if hitting limits
 
-```
+```text
  (unlikely for validation phase)
 
-```
+```yaml
+
 3. **Domain strategy for validation vs production**
    - What we know: Can use free .vercel.app subdomain or custom domain
    - What's unclear: Whether validation should use temporary domain or final
 
-```
+```text
  production domain
 
 ```
+
    - Recommendation: Use .vercel.app for validation (e.g.,
 
-```
+```text
  task-tracker-validation.vercel.app), move to custom domain after validation
  success
 
-```
+```yaml
+
 4. **Framework pattern prioritization**
    - What we know: Should track authentication, CRUD operations, file uploads,
 
-```
+```text
  search/filter patterns
 
 ```
+
    - What's unclear: Which patterns are most valuable for MyWork framework
 
-```
+```text
  learning
 
-```
+```yaml
+
    - Recommendation: Track all major interactions, analyze after validation to
 
-```
+```text
  identify highest-value patterns
 
 ```
+
 5. **Data persistence strategy post-validation**
    - What we know: Validation data is valuable for framework learning
    - What's unclear: Whether to reset database after validation or keep
 
-```
+```text
  production data
 
-```
+```yaml
+
    - Recommendation: Keep validation data, clearly mark as "validation period" in
 
-```
+```text
  analytics for future filtering
 
 ```
+
 ## Sources
 
 ### Primary (HIGH confidence)
 
 - [Next.js Official Documentation -
+
   Analytics](https://nextjs.org/docs/pages/guides/analytics)
+
 - [Next.js Official Documentation - Environment
+
   Variables](https://nextjs.org/docs/pages/guides/environment-variables)
+
 - [Next.js Official Documentation - Production
+
   Checklist](https://nextjs.org/docs/app/guides/production-checklist)
+
 - [Prisma Documentation - Deploying Database
+
   Changes](https://www.prisma.io/docs/orm/prisma-client/deployment/deploy-database-changes-with-prisma-migrate)
+
 - [Prisma Documentation - Development and
+
   Production](https://www.prisma.io/docs/orm/prisma-migrate/workflows/development-and-production)
+
 - [Vercel Documentation - Custom
+
   Domains](https://vercel.com/docs/domains/working-with-domains/add-a-domain)
+
 - [Railway Documentation - Public
+
   Domains](https://docs.railway.com/reference/public-domains)
+
 - [TUS Protocol Official Site](https://tus.io/)
 
 ### Secondary (MEDIUM confidence)
 
 - [Vercel vs Railway vs Kuberns Comparison
+
   2026](https://kuberns.com/blogs/post/railway-vs-vercel-vs-kuberns/)
+
 - [Deploying Full Stack Apps in
+
   2026](https://www.nucamp.co/blog/deploying-full-stack-apps-in-2026-vercel-netlify-railway-and-cloud-options)
+
 - [Best PostgreSQL Hosting Providers
+
   2026](https://northflank.com/blog/best-postgresql-hosting-providers)
+
 - [Complete Next.js Security Guide
+
   2025](https://www.turbostarter.dev/blog/complete-nextjs-security-guide-2025-authentication-api-protection-and-best-practices)
+
 - [Next.js Security
+
   Checklist](https://blog.arcjet.com/next-js-security-checklist/)
+
 - [CVE-2025-29927 Next.js Header Injection
+
   Vulnerability](https://www.averlon.ai/blog/nextjs-cve-2025-29927-header-injection)
+
 - [Upstash Feedback Widget Blog](https://upstash.com/blog/feedback-widget)
 - [PostHog Next.js Tutorial](https://posthog.com/tutorials/nextjs-analytics)
 - [Upstash Rate Limiting Blog](https://upstash.com/blog/nextjs-ratelimiting)
 - [LogRocket Health Check
+
   Implementation](https://blog.logrocket.com/how-to-implement-a-health-check-in-node-js/)
 
 ### Tertiary (LOW confidence)
 
 - [GitHub Actions Next.js Deployment Guide
+
   2025](https://ayyaztech.com/blog/auto-deploy-nextjs-with-github-actions-complete-cicd-guide-2025)
+
   - Community guide, not official
 - [TUS Node.js Server 2.0.0
+
   Blog](https://tus.io/blog/2025/03/25/tus-node-server-v200) - Future-dated
   article (March 2025), may not be released yet
 
@@ -915,14 +1033,23 @@ Things that couldn't be fully resolved:
 **Confidence breakdown:**
 
 - Standard stack: HIGH - Vercel and Neon are well-documented, widely adopted for
+
   Next.js in 2026
+
 - Architecture: HIGH - Patterns verified with official Next.js, Prisma, and
+
   Vercel documentation
+
 - Monitoring: HIGH - Vercel Speed Insights is built-in, PostHog has
+
   Next.js-specific guides
+
 - Security: HIGH - CVE-2025-29927 is documented, security headers are standard
+
   practice
+
 - Pitfalls: MEDIUM - Based on official docs and community experiences, some edge
+
   cases may exist
 
 **Research date:** 2026-01-26

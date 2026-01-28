@@ -22,5 +22,5 @@ export default function VideosLoading() {
         ))}
       </div>
     </div>
-  )
+  );
 }

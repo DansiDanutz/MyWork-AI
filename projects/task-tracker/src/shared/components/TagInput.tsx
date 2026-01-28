@@ -1,17 +1,17 @@
-'use client'
+"use client";
 
-import { useState, useRef, useEffect, useCallback } from 'react'
-import { Tag } from '@prisma/client'
-import { TagBadge } from './TagBadge'
-import { PlusIcon } from '@heroicons/react/24/outline'
+import { useState, useRef, useEffect, useCallback } from "react";
+import { Tag } from "@prisma/client";
+import { TagBadge } from "./TagBadge";
+import { PlusIcon } from "@heroicons/react/24/outline";
 
 type TagInputProps = {
-  selectedTags: Tag[]
-  availableTags: Tag[]
-  onAddTag: (tagName: string) => Promise<void>
-  onRemoveTag: (tagId: string) => void
-  disabled?: boolean
-}
+  selectedTags: Tag[];
+  availableTags: Tag[];
+  onAddTag: (tagName: string) => Promise<void>;
+  onRemoveTag: (tagId: string) => void;
+  disabled?: boolean;
+};
 
 export function TagInput({
   selectedTags,
@@ -20,26 +20,26 @@ export function TagInput({
   onRemoveTag,
   disabled = false,
 }: TagInputProps) {
-  const [inputValue, setInputValue] = useState('')
-  const [isOpen, setIsOpen] = useState(false)
-  const [isAdding, setIsAdding] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
-  const dropdownRef = useRef<HTMLDivElement>(null)
+  const [inputValue, setInputValue] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Filter available tags based on input and exclude already selected
   const filteredTags = availableTags.filter(
     (tag) =>
       !selectedTags.some((t) => t.id === tag.id) &&
-      tag.name.toLowerCase().includes(inputValue.toLowerCase())
-  )
+      tag.name.toLowerCase().includes(inputValue.toLowerCase()),
+  );
 
   // Check if input matches an existing tag exactly
   const exactMatch = availableTags.find(
-    (tag) => tag.name.toLowerCase() === inputValue.toLowerCase()
-  )
+    (tag) => tag.name.toLowerCase() === inputValue.toLowerCase(),
+  );
 
   // Show "create new" option if input doesn't match existing tag
-  const showCreateOption = inputValue.trim() && !exactMatch
+  const showCreateOption = inputValue.trim() && !exactMatch;
 
   // Handle clicking outside to close dropdown
   useEffect(() => {
@@ -49,36 +49,42 @@ export function TagInput({
         !dropdownRef.current.contains(event.target as Node) &&
         !inputRef.current?.contains(event.target as Node)
       ) {
-        setIsOpen(false)
+        setIsOpen(false);
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
-  const handleAddTag = useCallback(async (tagName: string) => {
-    if (!tagName.trim() || isAdding || disabled) return
+  const handleAddTag = useCallback(
+    async (tagName: string) => {
+      if (!tagName.trim() || isAdding || disabled) return;
 
-    setIsAdding(true)
-    try {
-      await onAddTag(tagName.trim())
-      setInputValue('')
-      setIsOpen(false)
-    } finally {
-      setIsAdding(false)
-    }
-  }, [onAddTag, isAdding, disabled])
+      setIsAdding(true);
+      try {
+        await onAddTag(tagName.trim());
+        setInputValue("");
+        setIsOpen(false);
+      } finally {
+        setIsAdding(false);
+      }
+    },
+    [onAddTag, isAdding, disabled],
+  );
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && inputValue.trim()) {
-      e.preventDefault()
-      handleAddTag(inputValue)
-    } else if (e.key === 'Escape') {
-      setIsOpen(false)
-      inputRef.current?.blur()
-    }
-  }, [inputValue, handleAddTag])
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" && inputValue.trim()) {
+        e.preventDefault();
+        handleAddTag(inputValue);
+      } else if (e.key === "Escape") {
+        setIsOpen(false);
+        inputRef.current?.blur();
+      }
+    },
+    [inputValue, handleAddTag],
+  );
 
   return (
     <div className="space-y-2">
@@ -103,12 +109,14 @@ export function TagInput({
           type="text"
           value={inputValue}
           onChange={(e) => {
-            setInputValue(e.target.value)
-            setIsOpen(true)
+            setInputValue(e.target.value);
+            setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
           onKeyDown={handleKeyDown}
-          placeholder={selectedTags.length > 0 ? 'Add another tag...' : 'Add tags...'}
+          placeholder={
+            selectedTags.length > 0 ? "Add another tag..." : "Add tags..."
+          }
           disabled={disabled || isAdding}
           className="
             block w-full
@@ -174,7 +182,7 @@ export function TagInput({
               >
                 <span
                   className="w-3 h-3 rounded-full flex-shrink-0"
-                  style={{ backgroundColor: tag.color || '#6b7280' }}
+                  style={{ backgroundColor: tag.color || "#6b7280" }}
                 />
                 {tag.name}
               </button>
@@ -184,8 +192,10 @@ export function TagInput({
       </div>
 
       {isAdding && (
-        <p className="text-xs text-gray-500 dark:text-gray-400">Adding tag...</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          Adding tag...
+        </p>
       )}
     </div>
-  )
+  );
 }

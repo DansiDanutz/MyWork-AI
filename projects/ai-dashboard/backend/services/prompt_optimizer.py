@@ -12,14 +12,18 @@ class VideoScriptSignature(dspy.Signature):
     """Generate an engaging YouTube video script about an AI topic"""
 
     topic = dspy.InputField(desc="The AI topic or idea for the video")
-    target_audience = dspy.InputField(desc="Target audience for the video", default="tech enthusiasts and developers")
+    target_audience = dspy.InputField(
+        desc="Target audience for the video", default="tech enthusiasts and developers"
+    )
     video_length = dspy.InputField(desc="Target video length in minutes", default="5-10")
 
     title = dspy.OutputField(desc="Catchy YouTube video title (max 100 chars)")
     description = dspy.OutputField(desc="YouTube video description with keywords (max 500 chars)")
     script = dspy.OutputField(desc="Full video script with intro, main content, and outro")
     tags = dspy.OutputField(desc="Comma-separated list of 10-15 relevant YouTube tags")
-    thumbnail_prompt = dspy.OutputField(desc="DALL-E prompt for generating an eye-catching thumbnail")
+    thumbnail_prompt = dspy.OutputField(
+        desc="DALL-E prompt for generating an eye-catching thumbnail"
+    )
 
 
 class ContentEnhancer(dspy.Signature):
@@ -42,9 +46,7 @@ class PromptOptimizer:
         if self.api_key:
             # Configure DSPy with Claude (DSPy 3.x uses LM class)
             self.lm = dspy.LM(
-                model="anthropic/claude-3-5-sonnet-20241022",
-                api_key=self.api_key,
-                max_tokens=4000
+                model="anthropic/claude-3-5-sonnet-20241022", api_key=self.api_key, max_tokens=4000
             )
             dspy.configure(lm=self.lm)
 
@@ -59,7 +61,7 @@ class PromptOptimizer:
         self,
         topic: str,
         target_audience: str = "tech enthusiasts and developers",
-        video_length: str = "5-10"
+        video_length: str = "5-10",
     ) -> dict:
         """
         Generate complete video content from a topic
@@ -77,9 +79,7 @@ class PromptOptimizer:
 
         try:
             result = self.script_generator(
-                topic=topic,
-                target_audience=target_audience,
-                video_length=video_length
+                topic=topic, target_audience=target_audience, video_length=video_length
             )
 
             return {
@@ -88,7 +88,7 @@ class PromptOptimizer:
                 "script": result.script,
                 "tags": [tag.strip() for tag in result.tags.split(",")],
                 "thumbnail_prompt": result.thumbnail_prompt,
-                "optimized": True
+                "optimized": True,
             }
 
         except Exception as e:
@@ -96,10 +96,7 @@ class PromptOptimizer:
             return self._fallback_generation(topic)
 
     def enhance_content(
-        self,
-        content: str,
-        content_type: str = "script",
-        style: str = "educational"
+        self, content: str, content_type: str = "script", style: str = "educational"
     ) -> dict:
         """
         Enhance existing content for better engagement
@@ -117,14 +114,14 @@ class PromptOptimizer:
 
         try:
             result = self.content_enhancer(
-                original_content=content,
-                content_type=content_type,
-                style=style
+                original_content=content, content_type=content_type, style=style
             )
 
             return {
                 "enhanced_content": result.enhanced_content,
-                "improvements_made": result.improvements_made.split("\n") if result.improvements_made else []
+                "improvements_made": (
+                    result.improvements_made.split("\n") if result.improvements_made else []
+                ),
             }
 
         except Exception as e:
@@ -165,5 +162,5 @@ Please provide comprehensive, well-researched content that would work well for a
             "script": f"Welcome to this video about {topic}. [Script needs to be generated with AI]",
             "tags": ["AI", "machine learning", "technology", "tutorial", topic.lower()],
             "thumbnail_prompt": f"Modern tech-style thumbnail about {topic}, blue and purple gradient, futuristic",
-            "optimized": False
+            "optimized": False,
         }

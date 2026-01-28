@@ -12,41 +12,48 @@ tech-stack:
 key-files:
   created:
 
-```
+```markdown
+
 - src/app/actions/tasks.ts
 
-```
+```yaml
+
   modified:
 
-```
+```markdown
+
 - prisma/schema.prisma
 - src/shared/lib/dal.ts
 
 ```
+
 decisions:
 
   - id: TASK-001
 
-```
+```yaml
 decision: Use TaskStatus enum instead of string for type safety
 rationale: Prevents invalid status values at database and application level
 
-```
+```yaml
+
   - id: TASK-002
 
-```
+```python
 decision: Separate updateTaskStatus from updateTask for optimistic UI
 rationale: Status changes are frequent and benefit from separate action with
 minimal payload
 
 ```
+
   - id: TASK-003
 
-```
+```yaml
 decision: Cascade delete tasks when user is deleted
 rationale: Tasks are meaningless without owner, prevents orphaned records
 
-```
+```yaml
+
 metrics:
   lines-added: 334
   lines-modified: 30
@@ -75,10 +82,11 @@ authentication, validation, and performance optimization:
    - `updateTask`: Update title/description with ownership check
    - `updateTaskStatus`: Separate action for status changes (optimistic UI
 
-```
+```text
  support)
 
 ```
+
    - `deleteTask`: Delete with ownership verification
    - All actions include authentication, analytics tracking, path revalidation
 
@@ -113,7 +121,7 @@ const task = await prisma.task.findFirst({
   where: { id: taskId, userId: user.id }
 })
 
-```
+```markdown
 
 ### Analytics Integration
 
@@ -204,7 +212,7 @@ export async function createTask(formData: FormData) {
   return { success: true, data: { id: resource.id } }
 }
 
-```
+```yaml
 
 **Pattern: DAL with Caching and Ownership**
 
@@ -213,7 +221,8 @@ export async function createTask(formData: FormData) {
 export const getResourcesByUser = cache(async (userId: string) => {
   try {
 
-```
+```yaml
+
 return await prisma.resource.findMany({
   where: { userId },
   orderBy: { createdAt: 'desc' }
@@ -222,11 +231,12 @@ return await prisma.resource.findMany({
 ```
   } catch (error) {
 
-```
+```yaml
+
 console.error('Error fetching resources:', error)
 return []
 
-```
+```yaml
   }
 })
 
@@ -248,7 +258,7 @@ model Resource {
   @@index([userId, status]) // Composite index for filtered queries
 }
 
-```
+```markdown
 
 ## Files Created/Modified
 

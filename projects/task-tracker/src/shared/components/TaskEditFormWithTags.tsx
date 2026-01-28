@@ -1,137 +1,161 @@
-'use client'
+"use client";
 
-import { useActionState, useState, useCallback, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
-import { updateTask, deleteTask } from '@/app/actions/tasks'
-import { updateTaskTags, addTagToTask } from '@/app/actions/tags'
-import { TagInput } from './TagInput'
-import { LazyFileDropzone } from './LazyFileDropzone'
-import { LazyFileList } from './LazyFileList'
-import { Tag, Task, FileAttachment } from '@prisma/client'
-import Link from 'next/link'
+import { useActionState, useState, useCallback, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { updateTask, deleteTask } from "@/app/actions/tasks";
+import { updateTaskTags, addTagToTask } from "@/app/actions/tags";
+import { TagInput } from "./TagInput";
+import { LazyFileDropzone } from "./LazyFileDropzone";
+import { LazyFileList } from "./LazyFileList";
+import { Tag, Task, FileAttachment } from "@prisma/client";
+import Link from "next/link";
 
 type TaskWithTags = Task & {
-  tags: Tag[]
-  attachments: FileAttachment[]
-}
+  tags: Tag[];
+  attachments: FileAttachment[];
+};
 
 type TaskEditFormWithTagsProps = {
-  task: TaskWithTags
-  availableTags: Tag[]
-}
+  task: TaskWithTags;
+  availableTags: Tag[];
+};
 
 type FormState = {
-  success: boolean
-  error?: string
-} | null
+  success: boolean;
+  error?: string;
+} | null;
 
-export function TaskEditFormWithTags({ task, availableTags }: TaskEditFormWithTagsProps) {
-  const router = useRouter()
-  const [isPending, startTransition] = useTransition()
-  const [selectedTags, setSelectedTags] = useState<Tag[]>(task.tags)
-  const [localTags, setLocalTags] = useState<Tag[]>(availableTags)
-  const [formError, setFormError] = useState<string>()
-  const [attachments, setAttachments] = useState<FileAttachment[]>(task.attachments)
+export function TaskEditFormWithTags({
+  task,
+  availableTags,
+}: TaskEditFormWithTagsProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [selectedTags, setSelectedTags] = useState<Tag[]>(task.tags);
+  const [localTags, setLocalTags] = useState<Tag[]>(availableTags);
+  const [formError, setFormError] = useState<string>();
+  const [attachments, setAttachments] = useState<FileAttachment[]>(
+    task.attachments,
+  );
 
-  const updateTaskWithId = async (prevState: FormState, formData: FormData): Promise<FormState> => {
-    return updateTask(task.id, formData)
-  }
+  const updateTaskWithId = async (
+    prevState: FormState,
+    formData: FormData,
+  ): Promise<FormState> => {
+    return updateTask(task.id, formData);
+  };
 
   const [state, formAction, pending] = useActionState<FormState, FormData>(
     updateTaskWithId,
-    null
-  )
+    null,
+  );
 
   // Handle successful update - redirect to tasks list
   if (state?.success) {
-    router.push('/tasks')
+    router.push("/tasks");
   }
 
-  const handleAddTag = useCallback(async (tagName: string) => {
-    // Check if tag already exists
-    const existingTag = localTags.find(
-      t => t.name.toLowerCase() === tagName.toLowerCase()
-    )
+  const handleAddTag = useCallback(
+    async (tagName: string) => {
+      // Check if tag already exists
+      const existingTag = localTags.find(
+        (t) => t.name.toLowerCase() === tagName.toLowerCase(),
+      );
 
-    if (existingTag && !selectedTags.some(t => t.id === existingTag.id)) {
-      // Add existing tag
-      const newTags = [...selectedTags, existingTag]
-      setSelectedTags(newTags)
+      if (existingTag && !selectedTags.some((t) => t.id === existingTag.id)) {
+        // Add existing tag
+        const newTags = [...selectedTags, existingTag];
+        setSelectedTags(newTags);
+
+        // Update on server
+        const result = await addTagToTask(task.id, existingTag.name);
+        if (!result.success) {
+          // Rollback on error
+          setSelectedTags(selectedTags);
+          setFormError(result.error);
+        }
+      } else if (!existingTag) {
+        // Create new tag via server action
+        const result = await addTagToTask(task.id, tagName);
+        if (result.success && result.data) {
+          const newTag: Tag = {
+            id: result.data.tagId,
+            name: tagName,
+            color: TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)],
+            userId: task.userId,
+            createdAt: new Date(),
+          };
+          setSelectedTags((prev) => [...prev, newTag]);
+          setLocalTags((prev) => [...prev, newTag]);
+        } else if (!result.success) {
+          setFormError(result.error);
+        }
+      }
+    },
+    [localTags, selectedTags, task.id, task.userId],
+  );
+
+  const handleRemoveTag = useCallback(
+    async (tagId: string) => {
+      const newTags = selectedTags.filter((t) => t.id !== tagId);
+      setSelectedTags(newTags);
 
       // Update on server
-      const result = await addTagToTask(task.id, existingTag.name)
+      const result = await updateTaskTags(
+        task.id,
+        newTags.map((t) => t.id),
+      );
       if (!result.success) {
         // Rollback on error
-        setSelectedTags(selectedTags)
-        setFormError(result.error)
+        setSelectedTags(selectedTags);
+        setFormError(result.error);
       }
-    } else if (!existingTag) {
-      // Create new tag via server action
-      const result = await addTagToTask(task.id, tagName)
-      if (result.success && result.data) {
-        const newTag: Tag = {
-          id: result.data.tagId,
-          name: tagName,
-          color: TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)],
-          userId: task.userId,
-          createdAt: new Date(),
-        }
-        setSelectedTags(prev => [...prev, newTag])
-        setLocalTags(prev => [...prev, newTag])
-      } else if (!result.success) {
-        setFormError(result.error)
-      }
-    }
-  }, [localTags, selectedTags, task.id, task.userId])
+    },
+    [selectedTags, task.id],
+  );
 
-  const handleRemoveTag = useCallback(async (tagId: string) => {
-    const newTags = selectedTags.filter(t => t.id !== tagId)
-    setSelectedTags(newTags)
-
-    // Update on server
-    const result = await updateTaskTags(task.id, newTags.map(t => t.id))
-    if (!result.success) {
-      // Rollback on error
-      setSelectedTags(selectedTags)
-      setFormError(result.error)
-    }
-  }, [selectedTags, task.id])
-
-  const handleFileUploadComplete = useCallback((fileId: string, filename: string) => {
-    // Add the new file to the attachments list
-    const newAttachment: FileAttachment = {
-      id: fileId,
-      filename,
-      storedFilename: '', // Will be filled by server
-      taskId: task.id,
-      userId: task.userId,
-      mimeType: '', // Will be filled by server
-      size: 0, // Will be filled by server
-      thumbnailPath: null,
-      createdAt: new Date(),
-    }
-    setAttachments(prev => [...prev, newAttachment])
-  }, [task.id, task.userId])
+  const handleFileUploadComplete = useCallback(
+    (fileId: string, filename: string) => {
+      // Add the new file to the attachments list
+      const newAttachment: FileAttachment = {
+        id: fileId,
+        filename,
+        storedFilename: "", // Will be filled by server
+        taskId: task.id,
+        userId: task.userId,
+        mimeType: "", // Will be filled by server
+        size: 0, // Will be filled by server
+        thumbnailPath: null,
+        createdAt: new Date(),
+      };
+      setAttachments((prev) => [...prev, newAttachment]);
+    },
+    [task.id, task.userId],
+  );
 
   const handleFileDeleted = useCallback((fileId: string) => {
     // Remove the file from the attachments list
-    setAttachments(prev => prev.filter(file => file.id !== fileId))
-  }, [])
+    setAttachments((prev) => prev.filter((file) => file.id !== fileId));
+  }, []);
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this task? This action cannot be undone.')) {
-      return
+    if (
+      !confirm(
+        "Are you sure you want to delete this task? This action cannot be undone.",
+      )
+    ) {
+      return;
     }
 
     startTransition(async () => {
-      const result = await deleteTask(task.id)
+      const result = await deleteTask(task.id);
       if (result.success) {
-        router.push('/tasks')
+        router.push("/tasks");
       } else {
-        alert(`Failed to delete task: ${result.error}`)
+        alert(`Failed to delete task: ${result.error}`);
       }
-    })
-  }
+    });
+  };
 
   return (
     <form action={formAction} className="space-y-6 max-w-2xl">
@@ -158,7 +182,7 @@ export function TaskEditFormWithTags({ task, availableTags }: TaskEditFormWithTa
             bg-white dark:bg-gray-800
             focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent
             disabled:opacity-50 disabled:cursor-not-allowed
-            ${state && !state.success ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}
+            ${state && !state.success ? "border-red-500" : "border-gray-300 dark:border-gray-600"}
           `}
           placeholder="e.g., Complete project proposal"
         />
@@ -182,7 +206,7 @@ export function TaskEditFormWithTags({ task, availableTags }: TaskEditFormWithTa
           name="description"
           rows={4}
           maxLength={2000}
-          defaultValue={task.description || ''}
+          defaultValue={task.description || ""}
           disabled={pending || isPending}
           className="
             w-full px-3 py-2
@@ -242,7 +266,8 @@ export function TaskEditFormWithTags({ task, availableTags }: TaskEditFormWithTa
       {/* File attachments */}
       <div>
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-          File Attachments <span className="text-gray-500 text-xs">(optional)</span>
+          File Attachments{" "}
+          <span className="text-gray-500 text-xs">(optional)</span>
         </label>
 
         {/* File upload dropzone */}
@@ -294,7 +319,7 @@ export function TaskEditFormWithTags({ task, availableTags }: TaskEditFormWithTa
             transition-colors
           "
         >
-          {pending ? 'Saving...' : 'Save Changes'}
+          {pending ? "Saving..." : "Save Changes"}
         </button>
 
         {/* Cancel button */}
@@ -332,21 +357,21 @@ export function TaskEditFormWithTags({ task, availableTags }: TaskEditFormWithTa
             transition-colors
           "
         >
-          {isPending ? 'Deleting...' : 'Delete Task'}
+          {isPending ? "Deleting..." : "Delete Task"}
         </button>
       </div>
     </form>
-  )
+  );
 }
 
 // Preset colors for new tags
 const TAG_COLORS = [
-  '#3b82f6', // blue
-  '#10b981', // green
-  '#f59e0b', // amber
-  '#ef4444', // red
-  '#8b5cf6', // purple
-  '#ec4899', // pink
-  '#06b6d4', // cyan
-  '#f97316', // orange
-]
+  "#3b82f6", // blue
+  "#10b981", // green
+  "#f59e0b", // amber
+  "#ef4444", // red
+  "#8b5cf6", // purple
+  "#ec4899", // pink
+  "#06b6d4", // cyan
+  "#f97316", // orange
+];

@@ -1,8 +1,15 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { LuRefreshCw, LuExternalLink, LuMessageSquare, LuTrendingUp, LuClock, LuPlay } from 'react-icons/lu';
-import { getNews, getTrendingNews, triggerScraper, News } from '@/lib/api';
+import { useEffect, useState } from "react";
+import {
+  LuRefreshCw,
+  LuExternalLink,
+  LuMessageSquare,
+  LuTrendingUp,
+  LuClock,
+  LuPlay,
+} from "react-icons/lu";
+import { getNews, getTrendingNews, triggerScraper, News } from "@/lib/api";
 
 export default function NewsClient() {
   const [news, setNews] = useState<News[]>([]);
@@ -22,7 +29,7 @@ export default function NewsClient() {
       setNews(data);
       setError(null);
     } catch (err) {
-      setError('Failed to load news');
+      setError("Failed to load news");
       console.error(err);
     } finally {
       setLoading(false);
@@ -32,10 +39,10 @@ export default function NewsClient() {
   const handleScrape = async () => {
     try {
       setScraping(true);
-      await triggerScraper('news');
+      await triggerScraper("news");
       await fetchNews();
     } catch (err) {
-      setError('Scraping failed');
+      setError("Scraping failed");
       console.error(err);
     } finally {
       setScraping(false);
@@ -43,24 +50,24 @@ export default function NewsClient() {
   };
 
   const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return 'Unknown';
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+    if (!dateStr) return "Unknown";
+    return new Date(dateStr).toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
 
   const getSourceColor = (source: string) => {
     const colors: Record<string, string> = {
-      'Hacker News': 'bg-orange-100 text-orange-700',
-      'TechCrunch': 'bg-green-100 text-green-700',
-      'The Verge': 'bg-purple-100 text-purple-700',
-      'MIT Technology Review': 'bg-red-100 text-red-700',
-      'Ars Technica': 'bg-blue-100 text-blue-700',
-      'VentureBeat': 'bg-indigo-100 text-indigo-700',
+      "Hacker News": "bg-orange-100 text-orange-700",
+      TechCrunch: "bg-green-100 text-green-700",
+      "The Verge": "bg-purple-100 text-purple-700",
+      "MIT Technology Review": "bg-red-100 text-red-700",
+      "Ars Technica": "bg-blue-100 text-blue-700",
+      VentureBeat: "bg-indigo-100 text-indigo-700",
     };
-    return colors[source] || 'bg-gray-100 text-gray-700';
+    return colors[source] || "bg-gray-100 text-gray-700";
   };
 
   if (loading) {
@@ -77,15 +84,17 @@ export default function NewsClient() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">AI News</h1>
-          <p className="text-gray-500 mt-1">Latest AI and ML news from top sources</p>
+          <p className="text-gray-500 mt-1">
+            Latest AI and ML news from top sources
+          </p>
         </div>
         <div className="flex gap-3">
           <button
             onClick={() => setShowTrending(!showTrending)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
               showTrending
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 hover:bg-gray-200'
+                ? "bg-blue-600 text-white"
+                : "bg-gray-100 hover:bg-gray-200"
             }`}
           >
             <LuTrendingUp className="w-4 h-4" />
@@ -108,15 +117,13 @@ export default function NewsClient() {
             ) : (
               <LuPlay className="w-4 h-4" />
             )}
-            {scraping ? 'Scraping...' : 'Scrape Now'}
+            {scraping ? "Scraping..." : "Scrape Now"}
           </button>
         </div>
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 p-4 rounded-lg">
-          {error}
-        </div>
+        <div className="bg-red-50 text-red-600 p-4 rounded-lg">{error}</div>
       )}
 
       {/* News List */}
@@ -141,7 +148,9 @@ export default function NewsClient() {
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={`text-xs px-2 py-1 rounded-full ${getSourceColor(item.source)}`}>
+                  <span
+                    className={`text-xs px-2 py-1 rounded-full ${getSourceColor(item.source)}`}
+                  >
                     {item.source}
                   </span>
                   {item.score > 100 && (
@@ -164,9 +173,7 @@ export default function NewsClient() {
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4 text-sm text-gray-500">
-                    {item.author && (
-                      <span>by {item.author}</span>
-                    )}
+                    {item.author && <span>by {item.author}</span>}
                     <div className="flex items-center gap-1">
                       <LuClock className="w-4 h-4" />
                       {formatDate(item.published_at)}

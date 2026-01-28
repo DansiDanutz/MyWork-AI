@@ -10,9 +10,13 @@ video creation
 A comprehensive dashboard that:
 
 1. Automatically aggregates the best AI content from YouTube, news sources, and
+
 GitHub
+
 2. Provides a YouTube automation pipeline for creating and publishing AI-focused
+
 videos
+
 3. Runs on scheduled intervals with minimal maintenance
 
 ---

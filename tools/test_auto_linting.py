@@ -12,7 +12,8 @@ import json
 from pathlib import Path
 
 # Add current directory to path for imports
-sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath("."))
+
 
 def create_test_files(test_dir: Path):
     """Create test files with linting issues"""
@@ -101,17 +102,20 @@ const result = obj.name + obj.value""")
 
     return [bad_md, bad_py, bad_js, bad_json]
 
+
 def test_agent_import():
     """Test that the agent can be imported successfully"""
     print("🧪 Testing agent import...")
 
     try:
         from auto_linting_agent import AutoLintingAgent, LintConfig, LintResult
+
         print("✅ Auto-linting agent imported successfully")
         return True
     except Exception as e:
         print(f"❌ Failed to import auto-linting agent: {e}")
         return False
+
 
 def test_config_creation():
     """Test configuration creation and validation"""
@@ -129,9 +133,7 @@ def test_config_creation():
 
         # Test custom config
         custom_config = LintConfig(
-            markdownlint=False,
-            auto_fix=False,
-            ignore_patterns=["custom/**"]
+            markdownlint=False, auto_fix=False, ignore_patterns=["custom/**"]
         )
         assert custom_config.markdownlint == False
         assert custom_config.auto_fix == False
@@ -141,6 +143,7 @@ def test_config_creation():
     except Exception as e:
         print(f"❌ Configuration test failed: {e}")
         return False
+
 
 def test_file_type_detection():
     """Test file type detection and tool selection"""
@@ -182,6 +185,7 @@ def test_file_type_detection():
         print(f"❌ File type detection test failed: {e}")
         return False
 
+
 def test_ignore_patterns():
     """Test file ignoring functionality"""
     print("\n🧪 Testing ignore patterns...")
@@ -221,6 +225,7 @@ def test_ignore_patterns():
     except Exception as e:
         print(f"❌ Ignore patterns test failed: {e}")
         return False
+
 
 def test_markdown_linting():
     """Test markdown linting functionality"""
@@ -264,6 +269,7 @@ http://example.com
             print(f"❌ Markdown linting test failed: {e}")
             return False
 
+
 def test_directory_scanning():
     """Test directory scanning functionality"""
     print("\n🧪 Testing directory scanning...")
@@ -299,6 +305,7 @@ def test_directory_scanning():
             print(f"❌ Directory scanning test failed: {e}")
             return False
 
+
 def test_results_saving():
     """Test results saving functionality"""
     print("\n🧪 Testing results saving...")
@@ -328,7 +335,7 @@ def test_results_saving():
                     issues_fixed=2,
                     success=True,
                     messages=["Fixed 2 issues"],
-                    timestamp="2026-01-28T10:00:00Z"
+                    timestamp="2026-01-28T10:00:00Z",
                 )
             ]
 
@@ -353,6 +360,7 @@ def test_results_saving():
             print(f"❌ Results saving test failed: {e}")
             return False
 
+
 def test_cli_integration():
     """Test CLI integration"""
     print("\n🧪 Testing CLI integration...")
@@ -362,11 +370,9 @@ def test_cli_integration():
 
         # Test that the script can be run
         script_path = os.path.join(os.path.dirname(__file__), "auto_linting_agent.py")
-        result = subprocess.run([
-            sys.executable,
-            script_path,
-            "--help"
-        ], capture_output=True, text=True, timeout=10)
+        result = subprocess.run(
+            [sys.executable, script_path, "--help"], capture_output=True, text=True, timeout=10
+        )
 
         if result.returncode == 0:
             print("✅ CLI help command works")
@@ -374,11 +380,9 @@ def test_cli_integration():
             print(f"⚠️ CLI help command failed: {result.stderr}")
 
         # Test stats command (should work even with no data)
-        result = subprocess.run([
-            sys.executable,
-            script_path,
-            "--stats"
-        ], capture_output=True, text=True, timeout=10)
+        result = subprocess.run(
+            [sys.executable, script_path, "--stats"], capture_output=True, text=True, timeout=10
+        )
 
         if result.returncode == 0:
             print("✅ CLI stats command works")
@@ -389,6 +393,7 @@ def test_cli_integration():
     except Exception as e:
         print(f"❌ CLI integration test failed: {e}")
         return False
+
 
 def main():
     """Run all tests"""
@@ -430,6 +435,7 @@ def main():
         print(f"\n⚠️ {failed} tests failed. Check the output above for details.")
 
     return 0 if failed == 0 else 1
+
 
 if __name__ == "__main__":
     sys.exit(main())

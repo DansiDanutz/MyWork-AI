@@ -81,6 +81,7 @@ except ImportError:  # pragma: no cover - optional dependency
 try:
     from config import MYWORK_ROOT, TOOLS_DIR, PROJECTS_DIR, PROJECT_REGISTRY_JSON
 except ImportError:
+
     def _get_mywork_root() -> Path:
         if env_root := os.environ.get("MYWORK_ROOT"):
             return Path(env_root)
@@ -96,15 +97,16 @@ except ImportError:
     PROJECTS_DIR = MYWORK_ROOT / "projects"
     PROJECT_REGISTRY_JSON = MYWORK_ROOT / ".planning" / "project_registry.json"
 
+
 # Color codes for terminal
 class Colors:
-    HEADER = '\033[95m'
-    BLUE = '\033[94m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
+    HEADER = "\033[95m"
+    BLUE = "\033[94m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
 
 
 def color(text: str, color_code: str) -> str:
@@ -192,8 +194,7 @@ def cmd_projects():
         return 1
 
     projects = [
-        p for p in PROJECTS_DIR.iterdir()
-        if p.is_dir() and not p.name.startswith((".", "_"))
+        p for p in PROJECTS_DIR.iterdir() if p.is_dir() and not p.name.startswith((".", "_"))
     ]
 
     if not projects:
@@ -208,7 +209,7 @@ def cmd_projects():
             registry = None
 
     def _parse_scalar(value: str):
-        if value.startswith(("\"", "'")) and value.endswith(("\"", "'")):
+        if value.startswith(('"', "'")) and value.endswith(('"', "'")):
             return value[1:-1]
         lowered = value.lower()
         if lowered in {"true", "yes"}:
@@ -303,7 +304,9 @@ def cmd_projects():
             flags.append("⚠️")
         flag_text = "".join(flags)
 
-        print(f"   {gsd_status} {project.name} {start_status} ({type_label}, {status_label}) {flag_text}")
+        print(
+            f"   {gsd_status} {project.name} {start_status} ({type_label}, {status_label}) {flag_text}"
+        )
 
     print(f"\n   Total: {len(projects)} projects")
     return 0
@@ -393,7 +396,9 @@ def cmd_autocoder(args: List[str]):
 
     elif subcmd == "service":
         if len(args) < 2:
-            print("Usage: mw ac service <setup|install|start|stop|restart|status|logs|uninstall> [options]")
+            print(
+                "Usage: mw ac service <setup|install|start|stop|restart|status|logs|uninstall> [options]"
+            )
             return 1
         return run_tool("autocoder_service", args[1:])
 
@@ -476,14 +481,14 @@ def is_auto_linter_running() -> bool:
 
     try:
         if platform.system() == "Windows":
-            result = subprocess.run([
-                "tasklist", "/FI", "IMAGENAME eq python.exe"
-            ], capture_output=True, text=True)
+            result = subprocess.run(
+                ["tasklist", "/FI", "IMAGENAME eq python.exe"], capture_output=True, text=True
+            )
             return "auto_linting_agent" in result.stdout
         else:
-            result = subprocess.run([
-                "pgrep", "-f", "auto_linting_agent.py.*--watch"
-            ], capture_output=True)
+            result = subprocess.run(
+                ["pgrep", "-f", "auto_linting_agent.py.*--watch"], capture_output=True
+            )
             return result.returncode == 0
     except:
         return False
@@ -494,7 +499,9 @@ def cmd_lint(args: List[str]):
     if not args:
         print("Usage: mw lint <command>")
         print("\n🎯 Perfect Auto-Linting Commands:")
-        print("   start                           Start auto-linter (with perfect markdown support)")
+        print(
+            "   start                           Start auto-linter (with perfect markdown support)"
+        )
         print("   stop                            Stop auto-linter")
         print("   status                          Check auto-linter status")
         print("   install-hooks                   Install git hooks for automatic linting")
@@ -529,7 +536,15 @@ def cmd_lint(args: List[str]):
                 print("✅ Auto-linter started in new window")
             else:
                 # Fallback to Python script
-                subprocess.Popen([sys.executable, str(TOOLS_DIR / "auto_linting_agent.py"), "--watch", "--root", str(MYWORK_ROOT)])
+                subprocess.Popen(
+                    [
+                        sys.executable,
+                        str(TOOLS_DIR / "auto_linting_agent.py"),
+                        "--watch",
+                        "--root",
+                        str(MYWORK_ROOT),
+                    ]
+                )
                 print("✅ Auto-linter started in background")
         else:
             script_path = TOOLS_DIR / "start_auto_linter.sh"
@@ -538,7 +553,15 @@ def cmd_lint(args: List[str]):
                 print("✅ Auto-linter started in background")
             else:
                 # Fallback to Python script
-                subprocess.Popen([sys.executable, str(TOOLS_DIR / "auto_linting_agent.py"), "--watch", "--root", str(MYWORK_ROOT)])
+                subprocess.Popen(
+                    [
+                        sys.executable,
+                        str(TOOLS_DIR / "auto_linting_agent.py"),
+                        "--watch",
+                        "--root",
+                        str(MYWORK_ROOT),
+                    ]
+                )
                 print("✅ Auto-linter started in background")
 
         print("\n💡 The auto-linter will now:")
@@ -559,7 +582,8 @@ def cmd_lint(args: List[str]):
             try:
                 result = subprocess.run(
                     ["taskkill", "/F", "/FI", "WINDOWTITLE eq *auto_linting_agent*"],
-                    capture_output=True, text=True
+                    capture_output=True,
+                    text=True,
                 )
                 if result.returncode == 0:
                     stopped = True
@@ -568,8 +592,7 @@ def cmd_lint(args: List[str]):
         else:
             try:
                 result = subprocess.run(
-                    ["pkill", "-f", "auto_linting_agent.py.*--watch"],
-                    capture_output=True
+                    ["pkill", "-f", "auto_linting_agent.py.*--watch"], capture_output=True
                 )
                 if result.returncode == 0:
                     stopped = True
@@ -601,10 +624,16 @@ def cmd_lint(args: List[str]):
             print("✅ Perfect markdown fixer: Available")
             # Test the fixer quickly
             try:
-                result = subprocess.run([
-                    sys.executable, "-c",
-                    f"import sys; sys.path.insert(0, '{TOOLS_DIR}'); from auto_lint_fixer import AutoLintFixer; print('✅ Works')"
-                ], capture_output=True, text=True, timeout=5)
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        "-c",
+                        f"import sys; sys.path.insert(0, '{TOOLS_DIR}'); from auto_lint_fixer import AutoLintFixer; print('✅ Works')",
+                    ],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                )
                 if result.returncode == 0:
                     print("✅ Auto-fixer test: PASSED")
                 else:

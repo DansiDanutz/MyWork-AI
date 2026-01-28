@@ -10,10 +10,11 @@ requires:
 
   - phase: 01-01
 
-```
+```yaml
 provides: Next.js 15 project with modular structure
 
-```
+```yaml
+
 provides:
 
   - Prisma ORM configured with PostgreSQL adapter
@@ -33,7 +34,8 @@ tech-stack:
 key-files:
   created:
 
-```
+```markdown
+
 - prisma/schema.prisma
 - prisma.config.ts
 - src/shared/lib/db/prisma.ts
@@ -43,13 +45,16 @@ key-files:
 - .env.example
 
 ```
+
   modified:
 
-```
+```markdown
+
 - package.json
 - .gitignore
 
-```
+```yaml
+
 key-decisions:
 
   - "Prisma 7 with PostgreSQL adapter (PrismaPg) for database connection pooling"
@@ -61,10 +66,11 @@ patterns-established:
 
   - "Prisma singleton pattern: globalForPrisma prevents connection pool
 
-```
+```text
 exhaustion in development"
 
 ```
+
   - "Environment validation at import time: fails fast before application starts"
   - "Health check API pattern: structured JSON with status codes (200/503)"
 
@@ -105,15 +111,23 @@ Each task was committed atomically:
 ## Files Created/Modified
 
 - `prisma/schema.prisma` - Database schema with PostgreSQL datasource and
+
   HealthCheck model
+
 - `prisma.config.ts` - Prisma 7 configuration with DATABASE_URL from .env
 - `src/shared/lib/db/prisma.ts` - Prisma singleton client with PostgreSQL adapter
+
   and connection pool
+
 - `src/shared/lib/db/index.ts` - Public export for Prisma client
 - `src/shared/lib/env.ts` - Zod schema for environment validation (DATABASE_URL,
+
   NODE_ENV, NEXT_PUBLIC_APP_URL)
+
 - `src/app/api/health/route.ts` - Health check endpoint returning database and
+
   environment status
+
 - `.env.example` - Environment variable template for team onboarding
 - `package.json` - Added Prisma, Zod, and PostgreSQL adapter dependencies
 
@@ -123,9 +137,12 @@ Each task was committed atomically:
 (@prisma/adapter-pg) instead of direct connection
 
 - **Rationale:** Prisma 7 architectural change - uses adapters for all database
+
   connections
+
 - **Impact:** Added @prisma/adapter-pg, pg, and @types/pg dependencies
 - **Alternative considered:** Downgrade to Prisma 6 (rejected - stay on latest
+
   version)
 
 **CONFIG-001** (2026-01-24): Use local PostgreSQL user 'dansidanutz' instead of
@@ -138,9 +155,13 @@ Each task was committed atomically:
 **PATTERN-001** (2026-01-24): Implement Prisma singleton pattern with globalThis
 
 - **Rationale:** Prevents connection pool exhaustion during Next.js development
+
   hot reloads
+
 - **Pattern:** Store client instance on globalThis in development, create fresh
+
   in production
+
 - **Reference:** Official Prisma best practices for Next.js
 
 ## Deviations from Plan
@@ -194,10 +215,15 @@ system.
 **Prisma 7 architectural changes:**
 
 - Prisma 7 requires adapter-based connections instead of direct DATABASE_URL in
+
   schema
+
 - Solution: Removed `url` from schema.prisma, configured in prisma.config.ts,
+
   added @prisma/adapter-pg
+
 - Impact: Updated Prisma client instantiation to use PrismaPg adapter with
+
   connection pool
 
 **Build with NODE_ENV set:**

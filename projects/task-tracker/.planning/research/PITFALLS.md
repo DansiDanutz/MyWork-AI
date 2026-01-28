@@ -21,11 +21,16 @@ and production, thinking "it works" is sufficient.
 **How to avoid:**
 
 - Establish automated guardrails that prevent merging to production without
+
   tests, error handling, and security checks
+
 - Document hardening requirements explicitly in phase acceptance criteria
 - For MyWork framework: Each module must pass reusability checklist before
+
   integration
+
 - Never skip error handling, input validation, or security controls in initial
+
   implementation
 
 **Warning signs:**
@@ -60,10 +65,14 @@ clean interfaces.
 - Define explicit module boundaries and interfaces before implementation
 - Use dependency injection instead of direct imports
 - Keep framework-specific types (React components, database entities) within
+
   module boundaries
+
 - Export only public APIs, hide implementation details
 - For file attachments: Create storage abstraction that works with any backend
+
   (local, S3, etc.)
+
 - For GitHub integration: Isolate API calls behind service interface
 
 **Warning signs:**
@@ -98,9 +107,13 @@ modules.
 
 - Design tables with clear single responsibilities that map to reusable modules
 - Separate concerns: users table (auth module), files table (storage module),
+
   tasks table (domain-specific)
+
 - Use foreign keys, not embedded JSON, for relationships between reusable
+
   entities
+
 - Plan for partitioning on large tables (tasks, activity logs) from the start
 - Document purpose of each table and which module it belongs to
 - Avoid task queues in database tables - use proper queue service if needed
@@ -211,12 +224,16 @@ pagination on search results.
 **How to avoid:**
 
 - Add database indexes on all filterable columns (status, category,
+
   assigned_user, created_at)
+
 - Implement pagination from day one (limit results to 50-100 per page)
 - Use database query builder for filters, not in-memory filtering
 - Test with realistic dataset (10,000+ tasks) before shipping
 - For text search: Use database full-text search or dedicated search engine (not
+
   LIKE queries)
+
 - Monitor query performance and add EXPLAIN ANALYZE to CI/CD
 
 **Warning signs:**
@@ -285,10 +302,14 @@ afterthought when first production issue occurs.
 
 - Log all state changes with user_id, timestamp, old_value, new_value
 - For critical operations (delete, assign, status change): Create audit log
+
   entries
+
 - Include request IDs in logs to trace operations across services
 - For MyWork framework: Audit logging should be infrastructure-level concern, not
+
   per-feature
+
 - Implement soft deletes (deleted_at column) instead of hard deletes
 - Log GitHub API calls for rate limit debugging
 
@@ -381,20 +402,35 @@ Common user experience mistakes in this domain.
 Things that appear complete but are missing critical pieces.
 
 - [ ] **File Upload:** Often missing MIME type validation, size limits, virus
+
   scanning - verify security checklist completed
+
 - [ ] **Search:** Often missing indexes, pagination, performance testing - verify
+
   works with 10,000+ tasks
+
 - [ ] **GitHub Integration:** Often missing rate limit handling, retry logic,
+
   error handling - verify rate limit tests pass
+
 - [ ] **Task Deletion:** Often missing soft delete, cascade handling, audit
+
   logging - verify can recover deleted tasks
+
 - [ ] **User Authentication:** Often missing session timeout, CSRF protection,
+
   rate limiting - verify security audit completed
+
 - [ ] **Module Extraction:** Often missing clear interfaces, configuration
+
   abstraction - verify module can run standalone
+
 - [ ] **Error Handling:** Often missing user-friendly messages, logging,
+
   monitoring - verify all error paths tested
+
 - [ ] **State Transitions:** Often missing validation, audit trail - verify
+
   invalid transitions blocked
 
 ## Recovery Strategies
@@ -432,60 +468,91 @@ How roadmap phases should address these pitfalls.
 **Task Management Pitfalls:**
 
 - [Common Task Management Mistakes -
+
   Workast](https://www.workast.com/blog/common-task-management-mistakes-and-how-to-avoid-them/)
+
 - [Task Management Apps: 10 Common Mistakes - Captain
+
   Time](https://captaintime.com/task-management-apps-10-common-mistakes/)
+
 - [LinkedIn: Common Task Management
+
   Pitfalls](https://www.linkedin.com/advice/1/what-some-common-task-management-pitfalls-mistakes)
 
 **Architecture Anti-Patterns:**
 
 - [Software Architecture Anti-Patterns in 2026 -
+
   Medium](https://medium.com/@Adem_Korkmaz/software-architecture-anti-patterns-10-big-mistakes-we-somehow-still-make-in-2026-aeac8e0841f5)
+
 - [Modular Frontend Architecture -
+
   Medium](https://kodekx-solutions.medium.com/modular-frontend-architecture-long-term-maintainability-tips-a7296ee56b2c)
+
 - [Building Reusable React Components 2026 -
+
   Medium](https://medium.com/@romko.kozak/building-reusable-react-components-in-2026-a461d30f8ce4)
 
 **Database Design Pitfalls:**
 
 - [Database Schema Design Pitfalls -
+
   Medium](https://yu-ishikawa.medium.com/database-schema-design-for-data-engineering-essential-pitfalls-and-best-practices-9d3d8e3eba6d)
+
 - [How to Design Task Management System -
+
   Medium](https://medium.com/@koladilip/how-to-design-task-management-system-9349b4152394)
+
 - [Database Development with AI 2026 - Brent
+
   Ozar](https://www.brentozar.com/archive/2026/01/database-development-with-ai-in-2026/)
 
 **GitHub API Integration:**
 
 - [Managing GitHub API Rate Limits -
+
   Lunar.dev](https://www.lunar.dev/post/a-developers-guide-managing-rate-limits-for-the-github-api)
+
 - [Best Practices for GitHub REST API - GitHub
+
   Docs](https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api)
+
 - [Avoiding GitHub Rate Limiting -
+
   Kubeblogs](https://www.kubeblogs.com/how-to-avoid-github-token-rate-limiting-issues-complete-guide-for-devops-teams/)
 
 **File Upload Security:**
 
 - [Managing File Attachments Security -
+
   SoftwareMind](https://softwaremind.com/blog/managing-file-attachments-best-practices-for-cloud-security/)
+
 - [File Storage Best Practices -
+
   ManageEngine](https://www.manageengine.com/data-security/best-practices/file-storage-best-practices.html)
 
 **Production vs Prototype:**
 
 - [Production Ready Code vs Vibe Coded Prototype -
+
   Arbisoft](https://arbisoft.com/blogs/production-ready-code-vs-vibe-coded-prototype-what-s-the-difference)
+
 - [Technical Debt Strategic Guide 2026 -
+
   Monday.com](https://monday.com/blog/rnd/technical-debt/)
+
 - [Dark Side of AI Prototyping - Product Release
+
   Notes](https://www.productreleasenotes.com/p/the-dark-side-of-ai-prototyping-technical)
 
 **Performance and Scale:**
 
 - [Task Management Software Performance -
+
   Quixy](https://quixy.com/blog/no-code-task-management-system/)
+
 - [Microsoft Planner Filtering Performance - Manuel T.
+
   Gomes](https://manueltgomes.com/microsoft/planner/filtering-for-optimal-performance/)
 
 ---

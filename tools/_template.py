@@ -29,10 +29,7 @@ def main(input_value: str) -> dict:
         dict: Result containing status and data
     """
     # Your implementation here
-    result = {
-        "status": "success",
-        "data": input_value
-    }
+    result = {"status": "success", "data": input_value}
     return result
 
 

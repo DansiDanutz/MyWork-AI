@@ -19,8 +19,8 @@ class TestBrainManager:
         import sys
 
         # Remove cached module to force reload with new env
-        if 'brain' in sys.modules:
-            del sys.modules['brain']
+        if "brain" in sys.modules:
+            del sys.modules["brain"]
 
         from brain import BrainManager
 
@@ -33,8 +33,8 @@ class TestBrainManager:
         import importlib
         import sys
 
-        if 'brain' in sys.modules:
-            del sys.modules['brain']
+        if "brain" in sys.modules:
+            del sys.modules["brain"]
 
         from brain import BrainManager
 
@@ -47,8 +47,9 @@ class TestBrainManager:
     def test_add_entry(self, temp_mywork_root):
         """Should add new entries correctly."""
         import sys
-        if 'brain' in sys.modules:
-            del sys.modules['brain']
+
+        if "brain" in sys.modules:
+            del sys.modules["brain"]
 
         from brain import BrainManager
 
@@ -58,7 +59,7 @@ class TestBrainManager:
             content="New test pattern",
             context="Unit testing",
             status="EXPERIMENTAL",
-            tags=["test"]
+            tags=["test"],
         )
 
         assert entry.id in manager.entries
@@ -69,8 +70,9 @@ class TestBrainManager:
     def test_search_entries(self, temp_mywork_root, sample_brain_data):
         """Should search entries by query."""
         import sys
-        if 'brain' in sys.modules:
-            del sys.modules['brain']
+
+        if "brain" in sys.modules:
+            del sys.modules["brain"]
 
         from brain import BrainManager
 
@@ -83,8 +85,9 @@ class TestBrainManager:
     def test_search_no_results(self, temp_mywork_root, sample_brain_data):
         """Should return empty list when no matches."""
         import sys
-        if 'brain' in sys.modules:
-            del sys.modules['brain']
+
+        if "brain" in sys.modules:
+            del sys.modules["brain"]
 
         from brain import BrainManager
 
@@ -96,8 +99,9 @@ class TestBrainManager:
     def test_get_by_type(self, temp_mywork_root, sample_brain_data):
         """Should filter entries by type."""
         import sys
-        if 'brain' in sys.modules:
-            del sys.modules['brain']
+
+        if "brain" in sys.modules:
+            del sys.modules["brain"]
 
         from brain import BrainManager
 
@@ -110,8 +114,9 @@ class TestBrainManager:
     def test_update_entry(self, temp_mywork_root, sample_brain_data):
         """Should update existing entries."""
         import sys
-        if 'brain' in sys.modules:
-            del sys.modules['brain']
+
+        if "brain" in sys.modules:
+            del sys.modules["brain"]
 
         from brain import BrainManager
 
@@ -123,8 +128,9 @@ class TestBrainManager:
     def test_get_stats(self, temp_mywork_root, sample_brain_data):
         """Should return correct statistics."""
         import sys
-        if 'brain' in sys.modules:
-            del sys.modules['brain']
+
+        if "brain" in sys.modules:
+            del sys.modules["brain"]
 
         from brain import BrainManager
 
@@ -151,7 +157,7 @@ class TestBrainEntry:
             status="TESTED",
             tags=["test"],
             date_added="2024-01-01",
-            references=5
+            references=5,
         )
 
         assert entry.id == "test-123"
@@ -170,7 +176,7 @@ class TestBrainEntry:
             status="TESTED",
             tags=["test"],
             date_added="2024-01-01",
-            references=0
+            references=0,
         )
 
         result = entry.to_dict()

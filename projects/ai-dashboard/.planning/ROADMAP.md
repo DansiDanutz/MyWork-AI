@@ -26,7 +26,9 @@
 
 - [x] FastAPI app structure
 - [x] SQLAlchemy models (YouTubeVideo, AINews, GitHubProject, YouTubeAutomation,
+
   ScraperLog)
+
 - [x] Database initialization
 - [x] CORS middleware
 - [x] APScheduler integration

@@ -26,9 +26,13 @@
 ### Issue #1: Production Build Error (FIXED)
 
 - **Problem:** Build failed with "Html should not be imported outside
+
   pages/_document"
+
 - **Root Cause:** Missing `global-error.tsx` file required by Next.js 15 App
+
   Router
+
 - **Solution:** Created `/src/app/global-error.tsx` with proper error boundary
 - **Status:** ✅ Fixed - Production build now succeeds
 

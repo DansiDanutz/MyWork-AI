@@ -1,72 +1,73 @@
-'use client'
+"use client";
 
-import { useOptimistic, useTransition } from 'react'
-import { updateTaskStatus, deleteTask } from '@/app/actions/tasks'
-import Link from 'next/link'
-import { TagBadge } from './TagBadge'
-import { FileCountBadge } from './FileList'
+import { useOptimistic, useTransition } from "react";
+import { updateTaskStatus, deleteTask } from "@/app/actions/tasks";
+import Link from "next/link";
+import { TagBadge } from "./TagBadge";
+import { FileCountBadge } from "./FileList";
 
 type Task = {
-  id: string
-  title: string
-  description: string | null
-  status: 'TODO' | 'IN_PROGRESS' | 'DONE'
-  createdAt: Date
-  updatedAt: Date
-  tags?: { id: string; name: string; color: string | null }[]
-  attachments?: { id: string }[]
-}
+  id: string;
+  title: string;
+  description: string | null;
+  status: "TODO" | "IN_PROGRESS" | "DONE";
+  createdAt: Date;
+  updatedAt: Date;
+  tags?: { id: string; name: string; color: string | null }[];
+  attachments?: { id: string }[];
+};
 
 type TaskCardProps = {
-  task: Task
-}
+  task: Task;
+};
 
 const statusLabels = {
-  TODO: 'To Do',
-  IN_PROGRESS: 'In Progress',
-  DONE: 'Done',
-}
+  TODO: "To Do",
+  IN_PROGRESS: "In Progress",
+  DONE: "Done",
+};
 
 const statusColors = {
-  TODO: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  IN_PROGRESS: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-  DONE: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-}
+  TODO: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+  IN_PROGRESS:
+    "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+  DONE: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+};
 
 export function TaskCard({ task }: TaskCardProps) {
-  const [isPending, startTransition] = useTransition()
-  const [optimisticTask, setOptimisticTask] = useOptimistic(task)
+  const [isPending, startTransition] = useTransition();
+  const [optimisticTask, setOptimisticTask] = useOptimistic(task);
 
-  const handleStatusChange = async (newStatus: Task['status']) => {
+  const handleStatusChange = async (newStatus: Task["status"]) => {
     // Optimistic update
     startTransition(() => {
-      setOptimisticTask({ ...optimisticTask, status: newStatus })
-    })
+      setOptimisticTask({ ...optimisticTask, status: newStatus });
+    });
 
     // Server update
-    const result = await updateTaskStatus(task.id, newStatus)
+    const result = await updateTaskStatus(task.id, newStatus);
     if (!result.success) {
-      alert(`Failed to update status: ${result.error}`)
+      alert(`Failed to update status: ${result.error}`);
     }
-  }
+  };
 
   const handleDelete = async () => {
-    if (!confirm('Are you sure you want to delete this task?')) {
-      return
+    if (!confirm("Are you sure you want to delete this task?")) {
+      return;
     }
 
-    const result = await deleteTask(task.id)
+    const result = await deleteTask(task.id);
     if (!result.success) {
-      alert(`Failed to delete task: ${result.error}`)
+      alert(`Failed to delete task: ${result.error}`);
     }
-  }
+  };
 
   // Format date
-  const formattedDate = new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }).format(new Date(optimisticTask.createdAt))
+  const formattedDate = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(optimisticTask.createdAt));
 
   return (
     <div
@@ -74,8 +75,8 @@ export function TaskCard({ task }: TaskCardProps) {
         bg-white dark:bg-gray-800
         shadow rounded-lg p-4
         transition-opacity
-        ${optimisticTask.status === 'DONE' ? 'opacity-75' : 'opacity-100'}
-        ${isPending ? 'pointer-events-none' : ''}
+        ${optimisticTask.status === "DONE" ? "opacity-75" : "opacity-100"}
+        ${isPending ? "pointer-events-none" : ""}
       `}
     >
       {/* Status badge */}
@@ -89,7 +90,9 @@ export function TaskCard({ task }: TaskCardProps) {
           {statusLabels[optimisticTask.status]}
         </span>
         {isPending && (
-          <span className="text-xs text-gray-500 dark:text-gray-400">Saving...</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            Saving...
+          </span>
         )}
       </div>
 
@@ -130,9 +133,10 @@ export function TaskCard({ task }: TaskCardProps) {
         </p>
 
         {/* File attachment indicator */}
-        {optimisticTask.attachments && optimisticTask.attachments.length > 0 && (
-          <FileCountBadge count={optimisticTask.attachments.length} />
-        )}
+        {optimisticTask.attachments &&
+          optimisticTask.attachments.length > 0 && (
+            <FileCountBadge count={optimisticTask.attachments.length} />
+          )}
       </div>
 
       {/* Actions */}
@@ -140,7 +144,7 @@ export function TaskCard({ task }: TaskCardProps) {
         {/* Status dropdown */}
         <select
           value={optimisticTask.status}
-          onChange={(e) => handleStatusChange(e.target.value as Task['status'])}
+          onChange={(e) => handleStatusChange(e.target.value as Task["status"])}
           disabled={isPending}
           className="
             text-sm border border-gray-300 dark:border-gray-600
@@ -185,5 +189,5 @@ export function TaskCard({ task }: TaskCardProps) {
         </button>
       </div>
     </div>
-  )
+  );
 }

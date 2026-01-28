@@ -1,19 +1,19 @@
-'use client'
+"use client";
 
-import { TaskSearchBar } from './TaskSearchBar'
-import { TaskFilters } from './TaskFilters'
-import { TaskList } from './TaskList'
-import { EmptyState } from './EmptyState'
-import { useQueryStates } from 'nuqs'
-import { taskSearchParams } from '@/app/(app)/tasks/search-params'
-import type { Tag, Task } from '@prisma/client'
+import { TaskSearchBar } from "./TaskSearchBar";
+import { TaskFilters } from "./TaskFilters";
+import { TaskList } from "./TaskList";
+import { EmptyState } from "./EmptyState";
+import { useQueryStates } from "nuqs";
+import { taskSearchParams } from "@/app/(app)/tasks/search-params";
+import type { Tag, Task } from "@prisma/client";
 
-type TaskWithTags = Task & { tags: Tag[] }
+type TaskWithTags = Task & { tags: Tag[] };
 
 type TaskListWithFiltersProps = {
-  tasks: TaskWithTags[]
-  tags: Tag[]
-}
+  tasks: TaskWithTags[];
+  tags: Tag[];
+};
 
 /**
  * TaskListWithFilters: Combined task list with search and filter UI
@@ -37,13 +37,15 @@ type TaskListWithFiltersProps = {
  * Example URL: /tasks?q=meeting&status=TODO,IN_PROGRESS&tags=work-id,urgent-id
  */
 export function TaskListWithFilters({ tasks, tags }: TaskListWithFiltersProps) {
-  const [filters] = useQueryStates(taskSearchParams)
+  const [filters] = useQueryStates(taskSearchParams);
 
   const hasActiveFilters =
-    filters.q || (filters.status && filters.status.length > 0) || (filters.tags && filters.tags.length > 0)
+    filters.q ||
+    (filters.status && filters.status.length > 0) ||
+    (filters.tags && filters.tags.length > 0);
 
   // Show different empty state when filters are active
-  const isEmpty = tasks.length === 0
+  const isEmpty = tasks.length === 0;
 
   return (
     <div className="space-y-6">
@@ -87,7 +89,7 @@ export function TaskListWithFilters({ tasks, tags }: TaskListWithFiltersProps) {
               <EmptyState
                 title="No tasks yet!"
                 description="Create your first task to get started organizing your work."
-                action={{ label: 'Create your first task', href: '/tasks/new' }}
+                action={{ label: "Create your first task", href: "/tasks/new" }}
               />
             )
           ) : (
@@ -96,5 +98,5 @@ export function TaskListWithFilters({ tasks, tags }: TaskListWithFiltersProps) {
         </main>
       </div>
     </div>
-  )
+  );
 }

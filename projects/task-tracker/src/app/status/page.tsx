@@ -1,52 +1,56 @@
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 type ServiceCheck = {
-  name: string
-  url: string
-  expectJson?: boolean
-}
+  name: string;
+  url: string;
+  expectJson?: boolean;
+};
 
 type ServiceResult = {
-  name: string
-  url: string
-  ok: boolean
-  statusCode: number | null
-  detail: string
-  latencyMs: number | null
-}
+  name: string;
+  url: string;
+  ok: boolean;
+  statusCode: number | null;
+  detail: string;
+  latencyMs: number | null;
+};
 
 const SERVICES: ServiceCheck[] = [
   {
-    name: 'Task Tracker Frontend',
-    url: 'https://mywork-task-tracker.vercel.app',
+    name: "Task Tracker Frontend",
+    url: "https://mywork-task-tracker.vercel.app",
   },
   {
-    name: 'Task Tracker API',
-    url: 'https://mywork-task-tracker.vercel.app/api/health',
+    name: "Task Tracker API",
+    url: "https://mywork-task-tracker.vercel.app/api/health",
     expectJson: true,
   },
-]
+];
 
 async function checkService(service: ServiceCheck): Promise<ServiceResult> {
-  const started = Date.now()
+  const started = Date.now();
 
   try {
-    const response = await fetch(service.url, { cache: 'no-store' })
-    const latencyMs = Date.now() - started
-    let detail = `HTTP ${response.status}`
-    let ok = response.ok
+    const response = await fetch(service.url, { cache: "no-store" });
+    const latencyMs = Date.now() - started;
+    let detail = `HTTP ${response.status}`;
+    let ok = response.ok;
 
     if (service.expectJson) {
       try {
-        const data = (await response.json()) as { status?: string } | null
-        if (typeof data?.status === 'string') {
-          detail = data.status
-          const normalized = data.status.toLowerCase()
-          ok = ok && (normalized === 'healthy' || normalized === 'ok' || normalized === 'pass')
+        const data = (await response.json()) as { status?: string } | null;
+        if (typeof data?.status === "string") {
+          detail = data.status;
+          const normalized = data.status.toLowerCase();
+          ok =
+            ok &&
+            (normalized === "healthy" ||
+              normalized === "ok" ||
+              normalized === "pass");
         }
       } catch {
-        detail = 'Invalid JSON response'
-        ok = false
+        detail = "Invalid JSON response";
+        ok = false;
       }
     }
 
@@ -57,9 +61,9 @@ async function checkService(service: ServiceCheck): Promise<ServiceResult> {
       statusCode: response.status,
       detail,
       latencyMs,
-    }
+    };
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Request failed'
+    const message = error instanceof Error ? error.message : "Request failed";
     return {
       name: service.name,
       url: service.url,
@@ -67,13 +71,13 @@ async function checkService(service: ServiceCheck): Promise<ServiceResult> {
       statusCode: null,
       detail: message,
       latencyMs: null,
-    }
+    };
   }
 }
 
 export default async function StatusPage() {
-  const results = await Promise.all(SERVICES.map(checkService))
-  const checkedAt = new Date().toISOString()
+  const results = await Promise.all(SERVICES.map(checkService));
+  const checkedAt = new Date().toISOString();
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
@@ -103,11 +107,11 @@ export default async function StatusPage() {
                       <span
                         className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
                           result.ok
-                            ? 'bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300'
-                            : 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300'
+                            ? "bg-green-100 text-green-700 dark:bg-green-500/20 dark:text-green-300"
+                            : "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300"
                         }`}
                       >
-                        {result.ok ? 'UP' : 'DOWN'}
+                        {result.ok ? "UP" : "DOWN"}
                       </span>
                       <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                         {result.name}
@@ -121,10 +125,12 @@ export default async function StatusPage() {
                   <div className="text-right">
                     <div className="text-sm text-gray-500">Latency</div>
                     <div className="text-xl font-semibold text-gray-900 dark:text-white">
-                      {result.latencyMs !== null ? `${result.latencyMs}ms` : '—'}
+                      {result.latencyMs !== null
+                        ? `${result.latencyMs}ms`
+                        : "—"}
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
-                      Status: {result.statusCode ?? 'N/A'}
+                      Status: {result.statusCode ?? "N/A"}
                     </div>
                   </div>
                 </div>
@@ -133,11 +139,11 @@ export default async function StatusPage() {
           </div>
 
           <div className="mt-8 text-sm text-gray-500">
-            Status checks run server-side on every request. If you see a failure,
-            refresh in a few seconds to confirm.
+            Status checks run server-side on every request. If you see a
+            failure, refresh in a few seconds to confirm.
           </div>
         </div>
       </div>
     </main>
-  )
+  );
 }
