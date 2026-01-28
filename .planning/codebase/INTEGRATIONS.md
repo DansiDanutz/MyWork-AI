@@ -20,9 +20,11 @@
   - Used in: `backend/services/prompt_optimizer.py`,
 
 ```text
+text
 `backend/services/youtube_automation.py`
 
 ```text
+text
 
 - Models: claude-3-5-sonnet-20241022
 - DSPy Framework: Uses DSPy 2.4.0 for prompt engineering and optimization
@@ -48,17 +50,21 @@
 - RSS Feeds (multiple sources configured):
   - TechCrunch AI:
 
-```yaml
+```text
+yaml
 `https://techcrunch.com/category/artificial-intelligence/feed/`
 
 ```text
+text
 
 - The Verge AI:
 
-```yaml
+```text
+yaml
 `https://www.theverge.com/rss/ai-artificial-intelligence/index.xml`
 
 ```text
+text
 
 - MIT Technology Review: `https://www.technologyreview.com/feed/`
 - VentureBeat AI: `https://venturebeat.com/category/ai/feed/`
@@ -96,7 +102,8 @@
   - Async Driver: `aiosqlite` 0.19.0
   - Tables:
 
-```markdown
+```text
+markdown
 
 - `youtube_videos` - Scraped YouTube videos with engagement metrics
 - `ai_news` - Aggregated news articles
@@ -105,6 +112,7 @@
 - `scraper_logs` - Execution logs of scraper jobs
 
 ```text
+text
 
 **File Storage:**
 
@@ -150,9 +158,11 @@
   - Error logging in API calls
 
 ```text
+text
 (`/Users/dansidanutz/Desktop/MyWork/frontend/app/page.tsx`)
 
 ```text
+text
 
 **Scraper Monitoring:**
 

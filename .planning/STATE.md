@@ -8,10 +8,12 @@ Date: 2026-01-27
 - **SportsAI listed on marketplace** (2026-01-27):
   - Product page live:
 
-```yaml
+```text
+yaml
 <https://frontend-hazel-ten-17.vercel.app/products/sportsai-sports-betting-arbitrage-platform>
 
 ```text
+text
 
 - Demo: <https://sports-ai-one.vercel.app>
 - Source release: <https://github.com/DansiDanutz/SportsAI/releases/tag/v1.0.1>
@@ -39,18 +41,22 @@ Date: 2026-01-27
   - Smoke tests pass: `/api/health` returns 200 OK with database connection
 
 ```text
+text
 validated
 
 ```text
+text
 
 - Production UI loads with "Task Tracker" branding confirmed
 - **Marketplace platform updates completed** (2026-01-27):
   - Resend email notifications added (purchase, sale, payment failed,
 
 ```text
+text
 subscription, seller verification)
 
 ```text
+text
 
 - Webhook idempotency tracking added (Stripe + Clerk) with migration
 - E2E checklist script added at `scripts/e2e_checklist.sh`
@@ -65,10 +71,12 @@ subscription, seller verification)
 - **2026-01-26:** Brain webhook integration deployed
   - Endpoint:
 
-```yaml
+```text
+yaml
 `https://mywork-ai-production.up.railway.app/api/analytics/brain/ingest`
 
 ```text
+text
 
 - Status: Live, awaiting Task Tracker Vercel env var configuration
 - **2026-01-27:** Marketplace E2E checklist run

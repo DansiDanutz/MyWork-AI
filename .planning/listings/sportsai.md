@@ -43,10 +43,12 @@ The platform uses a mathematical formula to find guaranteed profit
 opportunities:
 
 ```text
+text
 Arbitrage % = (1/Odds_A) + (1/Odds_B) - 1
 If negative = Guaranteed profit
 
 ```text
+text
 
 When sportsbooks have different opinions, you can bet on all outcomes and lock
 in profit before the event even starts.

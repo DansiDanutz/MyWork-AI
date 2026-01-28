@@ -63,30 +63,36 @@ of the cross-product plan (`.planning/MARKETPLACE_TASKTRACKER_PLAN.md`).
 
 ### Suggested Post-Deploy Step
 
-```yaml
+```text
+yaml
 
 - name: Run Marketplace smoke tests
 
   working-directory: MyWork-AI  # repo checkout path with tools/
   env:
 
-```yaml
+```text
+yaml
 
 MARKETPLACE_FRONTEND_URL: <https://frontend-hazel-ten-17.vercel.app>
 MARKETPLACE_BACKEND_URL: <https://mywork-ai-production.up.railway.app>
 VERCEL_AUTOMATION_BYPASS_SECRET: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
 
 ```text
+text
 
   run: |
 
-```bash
+```text
+bash
 
 python tools/smoke_test_marketplace.py
 
 ```text
+text
 
 ```text
+text
 
 ## 4. Deployment Targets
 
@@ -122,7 +128,8 @@ python tools/smoke_test_marketplace.py
 
 3. [x] **COMPLETED 2026-01-26 20:52 UTC:** Smoke test passed locally:
 
-```yaml
+```text
+yaml
    [OK] frontend root
    [OK] backend root
    [OK] backend health
@@ -130,6 +137,7 @@ python tools/smoke_test_marketplace.py
    All smoke checks passed.
 
 ```text
+text
 
 4. [ ] Update `.planning/STATE.md` with deployment timestamp and any incidents.
 
@@ -160,19 +168,23 @@ python tools/smoke_test_marketplace.py
   - Go to:
 
 ```text
+text
 
 <https://vercel.com/irises-projects-ce549f63/frontend/settings/environment-variables>
 
-```yaml
+```text
+yaml
 
   - Add variable: `BRAIN_WEBHOOK_URL`
   - Value:
 
 ```text
+text
 
 `https://mywork-ai-production.up.railway.app/api/analytics/brain/ingest`
 
-```yaml
+```text
+yaml
 
 - [ ] **PENDING:** Test webhook by triggering Task Tracker events and verifying
 

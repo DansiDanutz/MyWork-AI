@@ -4,7 +4,8 @@
 
 ## Directory Layout
 
-```markdown
+```text
+markdown
 
 /Users/dansidanutz/Desktop/MyWork/
 ├── backend/                    # Python FastAPI backend
@@ -69,6 +70,7 @@
 └── README.md                  # Project documentation
 
 ```text
+text
 
 ## Directory Purposes
 

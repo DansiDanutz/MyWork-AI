@@ -38,7 +38,8 @@
 
 Use `git filter-repo` or BFG Repo-Cleaner to remove secrets from history.
 
-```bash
+```text
+bash
 
 # Install BFG
 
@@ -60,6 +61,7 @@ git gc --prune=now --aggressive
 git push origin --force --all
 
 ```text
+text
 
 **Pros:** Preserves commit history structure
 **Cons:** Force push required, invalidates existing clones
@@ -68,7 +70,8 @@ git push origin --force --all
 
 Create a new repository with only the clean current state.
 
-```bash
+```text
+bash
 
 # Remove git history
 
@@ -86,6 +89,7 @@ git remote add origin https://github.com/DansiDanutz/SportsAI-Clean.git
 git push -u origin main
 
 ```text
+text
 
 **Pros:** Guaranteed clean, simple
 **Cons:** Loses git history
