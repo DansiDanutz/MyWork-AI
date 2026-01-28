@@ -211,6 +211,7 @@ future projects benefit from lessons learned.
 ```text
 
 ```
+
                   │
 
 ```
@@ -264,6 +265,7 @@ future projects benefit from lessons learned.
 ```text
 
 ```
+
                │
                ▼
 
@@ -323,7 +325,8 @@ subgraph "Master Orchestrator"
 
 ```
 
-MO[CLAUDE.md<br/>Routes all requests]
+MO[CLAUDE.md
+Routes all requests]
 
 ```yaml
 
