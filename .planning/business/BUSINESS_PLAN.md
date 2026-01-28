@@ -187,7 +187,7 @@ build production-ready projects with AI assistance and monetize their creations.
 
 ---
 
-## 4. Technical Architecture <a name="technical-architecture"></a>
+## 4. Technical Architecture <a id="technical-architecture"></a>
 
 ### System Overview
 
