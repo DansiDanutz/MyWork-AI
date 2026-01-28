@@ -630,6 +630,36 @@ def fix_md031_fences_enhanced(content: str) -> str:
     return '\n'.join(result)
 
 
+def fix_md060_table_style(content: str) -> str:
+    """Fix MD060: Table column style (add spaces around pipes)."""
+    lines = content.split('\n')
+    result = []
+
+    for line in lines:
+        # Check if this is a table separator line
+        if '|' in line and line.strip().startswith('|') and line.strip().endswith('|'):
+            # Check if it's a separator line (contains dashes)
+            if '-' in line:
+                # Fix spacing around pipes for separator lines
+                # Convert |-------|-------| to | ------- | ------- |
+                line = line.strip()
+                if line.startswith('|') and line.endswith('|') and not (' |' in line or '| ' in line):
+                    # Split by pipes and rebuild with proper spacing
+                    parts = line.split('|')
+                    if len(parts) >= 3:  # At least |something|something|
+                        fixed_parts = ['']  # Start with empty for leading |
+                        for i, part in enumerate(parts[1:-1]):  # Skip first empty and last empty
+                            if part.strip():  # If not empty
+                                fixed_parts.append(' ' + part.strip() + ' ')
+                            else:
+                                fixed_parts.append(' ')
+                        fixed_parts.append('')  # End with empty for trailing |
+                        line = '|'.join(fixed_parts)
+        result.append(line)
+
+    return '\n'.join(result)
+
+
 def fix_file(filepath: str) -> Dict[str, int]:
     """Fix markdownlint violations in a single file."""
     try:
@@ -694,6 +724,11 @@ def fix_file(filepath: str) -> Dict[str, int]:
         new_content = fix_md031_fences_enhanced(content)
         if new_content != content:
             fixes_applied['MD031_enhanced'] = content.count('```')
+            content = new_content
+
+        new_content = fix_md060_table_style(content)
+        if new_content != content:
+            fixes_applied['MD060'] = content.count('|')
             content = new_content
 
         # Write back if changed
