@@ -10,7 +10,9 @@ Use it to find existing implementations before building new ones.
 
 ## Quick Search Commands
 
-```bash
+```
+
+bash
 
 # Search for modules
 
@@ -22,7 +24,9 @@ python tools/module_registry.py search "api endpoint"
 python tools/module_registry.py list api_endpoint
 python tools/module_registry.py list component
 
-```text
+```
+
+text
 
 ## Statistics
 
@@ -168,10 +172,14 @@ python tools/module_registry.py list component
   - File: `autocoder/server/routers/agent.py:163`
   - Notify scheduler of manual stop (to prevent auto-start during scheduled
 
-```text
+```
+
+text
 window)
 
-```text
+```
+
+text
 
 - Tags: agent.py, pause, autocoder, api_endpoint, server
 
@@ -248,16 +256,32 @@ window)
   - File: `autocoder/server/routers/filesystem.py:187`
   - for pattern in HIDDEN_PATTERNS:
 
-```yaml
+```
 
-```text
+yaml
+
+```
+
+text
 
 if re.match(pattern, name, re.IGNORECASE):
-    retur
 
-```text
+```
 
-```text
+text
+retur
+
+```
+
+text
+
+```
+
+text
+
+```
+
+text
 
 - Tags: list, autocoder, filesystem.py, api_endpoint, server
 
@@ -280,10 +304,14 @@ if re.match(pattern, name, re.IGNORECASE):
   - File: `autocoder/server/routers/agent.py:142`
   - Notify scheduler of manual start (to prevent auto-stop during scheduled
 
-```text
+```
+
+text
 window)
 
-```text
+```
+
+text
 
 - Tags: agent.py, stop, autocoder, api_endpoint, server
 
@@ -488,10 +516,14 @@ window)
   - File: `autocoder/ui/src/components/DevServerControl.tsx:62`
   - DevServerControl provides start/stop controls for a project's development
 
-```text
+```
+
+text
 server.
 
-```text
+```
+
+text
 
 - Tags: dev, control, components, devservercontrol.tsx, component
 
@@ -1500,10 +1532,14 @@ server.
   - File: `apps/web/src/hooks/usePresence.ts:11`
   - Presence hook for tracking user online status and receiving friend online
 
-```text
+```
+
+text
 notifications
 
-```text
+```
+
+text
 
 - Tags: hook, usepresence.ts, presence, hooks, apps
 
@@ -1554,10 +1590,14 @@ notifications
   - File: `autocoder/ui/src/hooks/useCelebration.ts:148`
   - Check if all features are complete (none pending or in progress, at least one
 
-```text
+```
+
+text
 done)
 
-```text
+```
+
+text
 
 - Tags: usecelebration.ts, hook, autocoder, hooks, celebration
 
@@ -1802,17 +1842,25 @@ done)
   - File: `autocoder/server/routers/terminal.py:92`
   - Validate terminal ID format.
 
-```yaml
+```
+
+yaml
 Args:
 
-```text
+```
+
+text
 
 terminal_id: The terminal ID to validate
 
-```text
+```
+
+text
 Return
 
-```text
+```
+
+text
 
 - Tags: rename, terminal.py, request, autocoder, schema
 
@@ -1855,13 +1903,17 @@ Return
   - File: `autocoder/server/schemas.py:121`
   - id: int
 
-```yaml
+```
+
+yaml
 priority: int
 passes: bool
 in_progress: bool
 blocked: bool = False  # Comput
 
-```text
+```
+
+text
 
 - Tags: feature, bulk, schemas.py, create, autocoder
 
@@ -2025,17 +2077,25 @@ blocked: bool = False  # Comput
   - File: `autocoder/server/routers/terminal.py:98`
   - Validate terminal ID format.
 
-```yaml
+```
+
+yaml
 Args:
 
-```text
+```
+
+text
 
 terminal_id: The terminal ID to validate
 
-```text
+```
+
+text
 Return
 
-```text
+```
+
+text
 
 - Tags: response, terminal.py, info, autocoder, schema
 
@@ -2261,17 +2321,25 @@ Return
   - File: `autocoder/server/routers/terminal.py:86`
   - Validate terminal ID format.
 
-```yaml
+```
+
+yaml
 Args:
 
-```text
+```
+
+text
 
 terminal_id: The terminal ID to validate
 
-```text
+```
+
+text
 Return
 
-```text
+```
+
+text
 
 - Tags: terminal.py, request, create, autocoder, schema
 
@@ -2500,15 +2568,23 @@ Return
   - File: `autocoder/server/services/dev_server_manager.py:81`
   - for pattern in SENSITIVE_PATTERNS:
 
-```text
+```
 
-```text
+text
+
+```
+
+text
 
 line = re.sub(pattern, '[REDACTED]', line, flags=re.IGNOR
 
-```text
+```
 
-```text
+text
+
+```
+
+text
 
 - Tags: service, dev, process, manager, services
 
@@ -2586,16 +2662,31 @@ line = re.sub(pattern, '[REDACTED]', line, flags=re.IGNOR
   - File: `backend/scrapers/github_trending.py:272`
   - return db.query(GitHubProject).filter(
 
-```text
+```
 
-```text
+text
 
-    GitHubProject.stars >= min_stars
+```
+
+text
+
+```
+
+text
+GitHubProject.stars >= min_stars
+
+```
+
+text
 ).order_
 
-```text
+```
 
-```text
+text
+
+```
+
+text
 
 - Tags: scrapers, backend, get, github_trending.py, updated
 
@@ -3315,10 +3406,14 @@ line = re.sub(pattern, '[REDACTED]', line, flags=re.IGNOR
   - File: `autocoder/server/routers/filesystem.py:316`
   - List available drives (Windows only).
 
-```text
+```
+
+text
 Returns null on non-Windows platforms.
 
-```text
+```
+
+text
 
 - Tags: get, windows, drives, autocoder, filesystem.py
 
@@ -3417,16 +3512,24 @@ Returns null on non-Windows platforms.
   - File: `autocoder/server/services/terminal_manager.py:695`
   - Remove a terminal session from the registry.
 
-```yaml
+```
+
+yaml
 Args:
 
-```text
+```
+
+text
 
 project_name: Name of the project
 
-```text
+```
 
-```text
+text
+
+```
+
+text
 
 - Tags: services, get, info, autocoder, terminal
 
@@ -3467,11 +3570,15 @@ project_name: Name of the project
   - File: `autocoder/prompts.py:141`
   - base_prompt = get_coding_prompt(project_dir)
 
-```markdown
+```
+
+markdown
 
 # Minimal header - the base prompt already contain
 
-```text
+```
+
+text
 
 - Tags: prompts.py, get, app, spec, autocoder
 
@@ -3550,10 +3657,14 @@ project_name: Name of the project
   - File: `apps/api/src/game-engines/chess/time-controls.ts:169`
   - Parse time control string (e.g., "10+5" for 10 minutes with 5 second
 
-```text
+```
+
+text
 increment)
 
-```text
+```
+
+text
 
 - Tags: api, chess, control, string, time-controls.ts
 
@@ -3854,10 +3965,14 @@ Functions for loading prompt templates with proje
   - File: `apps/api/src/game-engines/chess/rules.ts:68`
   - Get all legal moves for a color (excluding moves that would leave king in
 
-```text
+```
+
+text
 check)
 
-```text
+```
+
+text
 
 - Tags: api, rules.ts, chess, get, game-engines
 
@@ -3880,10 +3995,14 @@ check)
   - File: `apps/web/src/pages/AdminDashboardPage.tsx:366`
   - Helper function to get current datetime in format suitable for datetime-local
 
-```text
+```
+
+text
 input
 
-```text
+```
+
+text
 
 - Tags: validate, admindashboardpage.tsx, date, pages, apps
 
@@ -3978,16 +4097,24 @@ input
   - File: `autocoder/registry.py:318`
   - Get all registered projects.
 
-```yaml
+```
+
+yaml
 Returns:
 
-```text
+```
+
+text
 
 Dictionary mapping project names to their info di
 
-```text
+```
 
-```text
+text
+
+```
+
+text
 
 - Tags: get, info, autocoder, project, registry.py
 
@@ -4362,10 +4489,14 @@ Dictionary mapping project names to their info di
   - File: `apps/web/src/pages/AdminDashboardPage.tsx:359`
   - Helper function to get current datetime in format suitable for datetime-local
 
-```text
+```
+
+text
 input
 
-```text
+```
+
+text
 
 - Tags: admindashboardpage.tsx, date, get, min, pages
 
@@ -4607,16 +4738,31 @@ input
   - File: `autocoder/progress.py:108`
   - SELECT
 
-```text
+```
 
-```text
+text
 
-            COUNT(*) as total,
-            SUM(CASE WHEN passes = 1 THEN 1 EL
+```
 
-```text
+text
 
-```text
+```
+
+text
+        COUNT(*) as total,
+        SUM(CASE WHEN passes = 1 THEN 1 EL
+
+```
+
+text
+
+```
+
+text
+
+```
+
+text
 
 - Tags: get, all, features, passing, progress.py
 
@@ -4744,16 +4890,24 @@ input
   - File: `autocoder/registry.py:121`
   - Get the config directory: ~/.autocoder/
 
-```yaml
+```
+
+yaml
 Returns:
 
-```text
+```
+
+text
 
 Path to ~/.autocoder/ (created if it d
 
-```text
+```
 
-```text
+text
+
+```
+
+text
 
 - Tags: registry, get, path, autocoder, registry.py
 
@@ -5137,10 +5291,14 @@ Path to ~/.autocoder/ (created if it d
   - File: `autocoder/server/services/assistant_database.py:82`
   - Use as_posix() for cross-platform compatibility with SQLite connection
 
-```text
+```
+
+text
 strings
 
-```text
+```
+
+text
 
 - Tags: services, session, get, assistant_database.py, autocoder
 
@@ -5166,10 +5324,14 @@ strings
   - File: `autocoder/server/services/spec_chat_session.py:465`
   - return self.complete
 
-```python
+```
+
+python
 def get_messages(self) -> list[dict]:
 
-```text
+```
+
+text
 
 - Tags: services, session, create, autocoder, spec_chat_session.py
 

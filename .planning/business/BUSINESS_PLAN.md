@@ -46,13 +46,13 @@ developers can monetize their production-ready projects.
 1. [Vision & Mission](#vision)
 2. [Market Analysis](#2-market-analysis)
 3. [Product Strategy](#3-product-strategy)
-4. [Technical Architecture](#technical-architecture)
-5. [Pricing Strategy](#pricing-strategy)
-6. [Legal Framework](#legal-framework)
-7. [Go-To-Market Strategy](#go-to-market-strategy)
-8. [Financial Projections](#financial-projections)
-9. [Risk Analysis](#risk-analysis)
-10. [Roadmap](#roadmap)
+4. Technical Architecture
+5. Pricing Strategy
+6. Legal Framework
+7. Go-To-Market Strategy
+8. Financial Projections
+9. Risk Analysis
+10. Roadmap
 
 ---
 
@@ -136,7 +136,9 @@ build production-ready projects with AI assistance and monetize their creations.
 
 ### Product Tiers
 
-```bash
+```
+
+bash
 +------------------------------------------------------------------+
 
 |                         MyWork AI Platform                        |
@@ -161,7 +163,9 @@ build production-ready projects with AI assistance and monetize their creations.
 
 +------------------------------------------------------------------+
 
-```text
+```
+
+text
 
 ### Marketplace Categories
 
@@ -191,7 +195,9 @@ build production-ready projects with AI assistance and monetize their creations.
 
 ### System Overview
 
-```text
+```
+
+text
 
 +------------------------------------------------------------------+
 
@@ -200,17 +206,25 @@ build production-ready projects with AI assistance and monetize their creations.
 
 +------------------------------------------------------------------+
 
-```text
+```
 
-```text
+text
+
+```
+
+text
 
   |                 |                   |
 
   v                 v                   v
 
-```text
+```
 
-```text
+text
+
+```
+
+text
 
 +------------------------------------------------------------------+
 
@@ -223,17 +237,25 @@ build production-ready projects with AI assistance and monetize their creations.
 
 +------------------------------------------------------------------+
 
-```text
+```
 
-```text
+text
+
+```
+
+text
 
   |                 |                   |
 
   v                 v                   v
 
-```text
+```
 
-```text
+text
+
+```
+
+text
 
 +------------------------------------------------------------------+
 
@@ -246,17 +268,25 @@ build production-ready projects with AI assistance and monetize their creations.
 
 +------------------------------------------------------------------+
 
-```text
+```
 
-```text
+text
+
+```
+
+text
 
   |                 |                   |
 
   v                 v                   v
 
-```text
+```
 
-```text
+text
+
+```
+
+text
 
 +------------------------------------------------------------------+
 
@@ -268,17 +298,25 @@ build production-ready projects with AI assistance and monetize their creations.
 
 +------------------------------------------------------------------+
 
-```text
+```
 
-```text
+text
+
+```
+
+text
 
   |                 |                   |
 
   v                 v                   v
 
-```text
+```
 
-```text
+text
+
+```
+
+text
 
 +------------------------------------------------------------------+
 
@@ -290,13 +328,17 @@ build production-ready projects with AI assistance and monetize their creations.
 
 +------------------------------------------------------------------+
 
-```text
+```
+
+text
 
 ### Core Components
 
 #### 4.1 Brain API (Centralized Intelligence)
 
-```yaml
+```
+
+yaml
 Brain API Architecture
 +------------------------------------------------------------------+
 
@@ -336,11 +378,15 @@ API Endpoints:
 - GET  /brain/suggest    - Get recommendations
 - GET  /brain/patterns   - Discover patterns
 
-```text
+```
+
+text
 
 #### 4.2 Marketplace Platform
 
-```text
+```
+
+text
 
 Marketplace Architecture
 +------------------------------------------------------------------+
@@ -373,11 +419,15 @@ Database Schema (Simplified):
 - reviews (id, purchase_id, rating, comment)
 - payouts (id, seller_id, amount, status, stripe_transfer_id)
 
-```text
+```
+
+text
 
 #### 4.3 Payment Flow (Stripe Connect)
 
-```yaml
+```
+
+yaml
 Payment Flow
 +------------------------------------------------------------------+
 
@@ -409,7 +459,9 @@ Stripe Connect Setup:
 - Escrow: 7-day hold before payout
 - Fees: 2.9% + $0.30 (Stripe) + 10% (Platform)
 
-```text
+```
+
+text
 
 ### Infrastructure
 
@@ -426,7 +478,9 @@ Stripe Connect Setup:
 
 ### Security Architecture
 
-```text
+```
+
+text
 
 Security Layers
 +------------------------------------------------------------------+
@@ -455,7 +509,9 @@ Security Layers
 
 +------------------------------------------------------------------+
 
-```text
+```
+
+text
 
 ---
 
@@ -506,7 +562,9 @@ Security Layers
 
 **Framework (Open Source):**
 
-```markdown
+```
+
+markdown
 
 MIT License with Commons Clause
 
@@ -514,7 +572,9 @@ MIT License with Commons Clause
 - Cannot sell the framework itself
 - Can sell projects built with it
 
-```text
+```
+
+text
 
 **Marketplace Projects:**
 
@@ -636,61 +696,85 @@ MIT License with Commons Clause
 
 ### Launch Timeline
 
-```text
+```
+
+text
 
 Month 1-2: Framework polish, community setup
 
-```text
+```
+
+text
 
  |
 
  v
 
-```text
+```
+
+text
 
 Month 3: Public launch (GitHub, ProductHunt)
 
-```text
+```
+
+text
 
  |
 
  v
 
-```text
+```
+
+text
 
 Month 4-5: Pro tier launch, first sellers
 
-```text
+```
+
+text
 
  |
 
  v
 
-```text
+```
+
+text
 
 Month 6: Marketplace beta
 
-```text
+```
+
+text
 
  |
 
  v
 
-```text
+```
+
+text
 
 Month 7-9: Marketing push, partnerships
 
-```text
+```
+
+text
 
  |
 
  v
 
-```text
+```
+
+text
 
 Month 10-12: Enterprise tier, API access
 
-```text
+```
+
+text
 
 ---
 
@@ -698,7 +782,9 @@ Month 10-12: Enterprise tier, API access
 
 ### Revenue Model
 
-```yaml
+```
+
+yaml
 Revenue Streams:
 +------------------------------------------------------------------+
 
@@ -720,7 +806,9 @@ Revenue Streams:
 
 +------------------------------------------------------------------+
 
-```text
+```
+
+text
 
 ### Year 1 Projections (Conservative)
 

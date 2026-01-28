@@ -96,10 +96,14 @@ testing:
 - Not implemented - no test fixtures exist
 - Backend has hardcoded search queries in `youtube_scraper.py`:
 
-```python
+```
+
+python
 AI_SEARCH_QUERIES = [
 
-```markdown
+```
+
+markdown
 
 "AI tutorial 2025",
 "machine learning tutorial",
@@ -107,11 +111,15 @@ AI_SEARCH_QUERIES = [
 
 # ... more queries
 
-```text
+```
+
+text
 
 ]
 
-```text
+```
+
+text
 
 **Location:**
 
@@ -251,21 +259,31 @@ etc.)
 
 **Frontend:**
 
-```bash
+```
+
+bash
 npm install --save-dev vitest @vitest/ui jsdom @testing-library/react @testing-library/jest-dom
 
-```text
+```
+
+text
 
 **Backend:**
 
-```bash
+```
+
+bash
 pip install pytest pytest-asyncio pytest-cov httpx[http2]
 
-```text
+```
+
+text
 
 **Example Frontend Test Structure (would go in `__tests__/`):**
 
-```typescript
+```
+
+typescript
 
 // app/__tests__/page.test.tsx
 import { render, screen } from '@testing-library/react';
@@ -274,21 +292,29 @@ import Dashboard from '@/app/page';
 describe('Dashboard', () => {
   it('displays loading state initially', () => {
 
-```text
+```
+
+text
 
 render(<Dashboard />);
 expect(screen.getByRole('status')).toBeInTheDocument();
 
-```text
+```
+
+text
 
   });
 });
 
-```text
+```
+
+text
 
 **Example Backend Test Structure (would go in `tests/`):**
 
-```python
+```
+
+python
 
 # tests/test_youtube_scraper.py
 
@@ -298,25 +324,36 @@ from database.models import YouTubeVideo
 @pytest.mark.asyncio
 async def test_parse_apify_video():
 
-```yaml
+```
+
+yaml
 
 scraper = YouTubeScraper()
 item = {
 
-```text
+```
+
+text
 
 "id": "video123",
 "title": "Test Video",
 "channelName": "Test Channel"
 
-```text
+```
+
+text
+
 }
 result = scraper._parse_apify_video(item, "test query")
 assert result["video_id"] == "video123"
 
-```text
+```
 
-```text
+text
+
+```
+
+text
 
 ---
 

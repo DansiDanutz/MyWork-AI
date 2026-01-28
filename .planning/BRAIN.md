@@ -55,7 +55,9 @@ This file is the Master Orchestrator's persistent memory. It contains:
 
 ### Project Setup Pattern
 
-```bash
+```
+
+bash
 
 1. mw new <name> <template>     # Scaffold with template
 2. cd projects/<name>           # Enter project
@@ -63,13 +65,17 @@ This file is the Master Orchestrator's persistent memory. It contains:
 4. mw search "relevant keywords" # Find reusable modules
 5. /gsd:plan-phase 1           # Plan first phase
 
-```text
+```
+
+text
 
 **Status:** [TESTED] | **Added:** 2026-01-24
 
 ### Debug Pattern
 
-```bash
+```
+
+bash
 
 1. Check error message carefully
 2. Search module registry for similar patterns
@@ -77,13 +83,17 @@ This file is the Master Orchestrator's persistent memory. It contains:
 4. Fix in isolation, test, then integrate
 5. Document fix in BRAIN.md if novel
 
-```text
+```
+
+text
 
 **Status:** [TESTED] | **Added:** 2026-01-24
 
 ### Context Recovery Pattern
 
-```bash
+```
+
+bash
 
 1. Read .planning/STATE.md
 2. Read .planning/ROADMAP.md (current phase)
@@ -91,13 +101,17 @@ This file is the Master Orchestrator's persistent memory. It contains:
 4. Run mw status for system health
 5. Continue from documented state
 
-```text
+```
+
+text
 
 **Status:** [TESTED] | **Added:** 2026-01-24
 
 ### Safe Update Pattern
 
-```bash
+```
+
+bash
 
 1. python tools/auto_update.py check  # See what's available
 2. python tools/auto_update.py status # Current versions
@@ -106,7 +120,9 @@ This file is the Master Orchestrator's persistent memory. It contains:
 5. python tools/health_check.py       # Verify nothing broke
 6. python tools/auto_update.py rollback <component> # If needed
 
-```text
+```
+
+text
 
 **Status:** [TESTED] | **Added:** 2026-01-24
 
@@ -262,34 +278,64 @@ This file is the Master Orchestrator's persistent memory. It contains:
 
 **Adding a lesson:**
 
-```bash
+```
+
+bash
 python tools/brain.py add lesson "Your lesson here" \
-    --context "Where you learned it"
-```text
+
+```
+
+text
+--context "Where you learned it"
+
+```
+
+text
+
+```
+
+text
 
 **Adding a pattern:**
 
-```bash
+```
+
+bash
 python tools/brain.py add pattern "Pattern name" --steps "1. First\n2. Second"
-```text
+
+```
+
+text
 
 **Marking something deprecated:**
 
-```bash
+```
+
+bash
 python tools/brain.py deprecate "entry identifier"
 
-```text
+```
+
+text
 
 **Cleaning up:**
 
-```bash
+```
+
+bash
 python tools/brain.py cleanup  # Removes [DEPRECATED] entries
 
-```text
+```
+
+text
 
 **Reviewing:**
 
-```bash
+```
+
+bash
 python tools/brain.py review   # Shows entries needing attention
 
-```text
+```
+
+text
