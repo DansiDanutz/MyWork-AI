@@ -27,15 +27,18 @@ text
 
 ```text                 +------------------+
 
-                 |   CDN (Cloudflare)|
+```text
+             |   CDN (Cloudflare)|
 
-                 +--------+---------+
+         +--------+---------+
 
-                          |
+                  |
 
-                          v
+                  v
+```
 
 ```text
+
 ```text
 text
 
@@ -69,9 +72,12 @@ text
 
 ```text                          |
 
-                          v
+```text                      v
 
 ```text
+
+```text
+
 ```text
 text
 
@@ -809,7 +815,7 @@ text
 
    +----------------+     +----------------+     +----------------+
 
-   | Seller clicks  | --> | Stripe Connect | --> | Account ready  |
+| Seller clicks  | --> | Stripe Connect | --> | Account ready  |
    | "Become Seller"|     | Onboarding     |     | to receive $   |
 
    +----------------+     +----------------+     +----------------+
@@ -818,7 +824,7 @@ text
 
    +----------------+     +----------------+     +----------------+
 
-   | Buyer clicks   | --> | Stripe Payment | --> | Payment Intent |
+| Buyer clicks   | --> | Stripe Payment | --> | Payment Intent |
    | "Buy Now"      |     | Intent created |     | confirmed      |
 
    +----------------+     +----------------+     +----------------+
@@ -843,7 +849,7 @@ text
 
    +----------------+     +----------------+     +----------------+
 
-   | Webhook:       | --> | Order marked   | --> | Download URL   |
+| Webhook:       | --> | Order marked   | --> | Download URL   |
    | payment_intent |     | completed      |     | generated      |
    | .succeeded     |     |                |     |                |
 
@@ -853,7 +859,7 @@ text
 
    +----------------+     +----------------+     +----------------+
 
-   | Calculate      | --> | Create Stripe  | --> | Transfer to    |
+| Calculate      | --> | Create Stripe  | --> | Transfer to    |
    | seller balance |     | Transfer       |     | seller bank    |
 
    +----------------+     +----------------+     +----------------+
@@ -900,6 +906,7 @@ capabilities={
 "transfers": {"requested": True},
 
 ```text},
+
 metadata={"user_id": user_id}
 
 ```text
@@ -1374,6 +1381,7 @@ messages=[{
 the question.
 
 ```text
+
 ```text
 text
 
@@ -1478,17 +1486,24 @@ if r.score > 0.7:  # Only high-relevance suggestions
 
 ```textentry = await db.brain_entries.fetch(r.id.replace("brain_", ""))
 suggestions.append(Suggestion(
+
 ```text
+
 title=entry.title,
+
 ```text
 content=entry.content[:200] + "...",
+
 ```text
+
 relevance=r.score,
+
 ```text
 type=entry.type
 ))
 
 ```text
+
 ```text
 text
 return suggestions
@@ -1766,6 +1781,7 @@ text
 ```text   'mobile-apps', 'full-applications', 'components']
 
 ```text
+
 ```text
 text
 if v not in allowed:
@@ -1913,27 +1929,42 @@ with zipfile.ZipFile(package_path, 'r') as zip_ref:
 for root, dirs, files in os.walk(tmpdir):
 
 ```textfor file in files:
+
 ```text
+
 if file.endswith(('.py', '.js', '.ts')):
-        filepath = os.path.join(root, file)
-        file_issues = await scan_file(filepath)
-        issues.extend(file_issues)
+
+```text```text
+filepath = os.path.join(root, file)
+
+```text
+
+file_issues = await scan_file(filepath)
+
+```text
+issues.extend(file_issues)
+
+```text
 
 ```text# Run bandit for Python
 
 result = subprocess.run(
 
 ```text['bandit', '-r', tmpdir, '-f', 'json'],
+
 capture_output=True
 
 ```text)
 if result.returncode != 0:
 
 ```textbandit_issues = json.loads(result.stdout)
+
 issues.extend(bandit_issues.get('results', []))
 
 ```text
+
 ```text
+
 text
 return ScanResult(
 
@@ -1944,6 +1975,7 @@ passed=len(issues) == 0,
 issues=issues
 
 ```text
+
 text
 )
 
@@ -1952,6 +1984,7 @@ text
 text
 
 ```text
+
 markdown
 
 ```text
@@ -1965,6 +1998,7 @@ text
 ### Logging
 
 ```text
+
 python
 
 # utils/logging.py
@@ -1981,6 +2015,7 @@ text
 processors=[
 
 ```text
+
 text
 structlog.processors.TimeStamper(fmt="iso"),
 structlog.processors.JSONRenderer()
@@ -1992,6 +2027,7 @@ text
 ]
 
 ```text
+
 markdown
 
 )
@@ -2011,6 +2047,7 @@ amount=order.amount,
 seller_id=order.seller_id
 
 ```text
+
 markdown
 
 )
@@ -2022,6 +2059,7 @@ text
 ### Metrics
 
 ```text
+
 python
 
 # utils/metrics.py
@@ -2041,6 +2079,7 @@ text
 ['status']
 
 ```text
+
 markdown
 
 )
@@ -2058,6 +2097,7 @@ text
 buckets=[10, 50, 100, 250, 500, 1000, 5000]
 
 ```text
+
 markdown
 
 )
@@ -2074,6 +2114,7 @@ text
 ### Health Checks
 
 ```text
+
 python
 
 # api/health.py
@@ -2092,6 +2133,7 @@ text
 checks = {
 
 ```text
+
 text
 "database": await check_database(),
 "redis": await check_redis(),
@@ -2108,6 +2150,7 @@ healthy = all(checks.values())
 return {
 
 ```text
+
 text
 "status": "healthy" if healthy else "unhealthy",
 "checks": checks
@@ -2119,6 +2162,7 @@ text
 }
 
 ```text
+
 markdown
 
 ```text

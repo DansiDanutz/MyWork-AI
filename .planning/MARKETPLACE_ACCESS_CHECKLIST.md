@@ -12,7 +12,7 @@ of the cross-product plan (`.planning/MARKETPLACE_TASKTRACKER_PLAN.md`).
 ## 1. Repository Access & Branch Protection
 
 | Item | Status | Owner | Notes |
-|------|--------|-------|-------|
+| ------ | -------- | ------- | ------- |
   | Maintainer ac... | [x] | Dansi | **Verified 20... |  
   | Branch protec... | [~] | Codex (needs ... | **BLOCKED:** ... |  
   | Deploy bot/se... | [ ] | Dansi | Ensure `marke... |  
@@ -20,7 +20,7 @@ of the cross-product plan (`.planning/MARKETPLACE_TASKTRACKER_PLAN.md`).
 ## 2. Secret Inventory (CI/CD)
 
 | Target | Secret Name | Where to Configure | Notes |
-|--------|-------------|--------------------|-------|
+| -------- | ------------- | -------------------- | ------- |
   | Vercel Fron... | `VERCEL_TOK... | GitHub Acti... | Needed for ... |  
   | Vercel Prot... | `VERCEL_AUT... | GitHub Acti... | Optional bu... |  
   | Railway Bac... | `RAILWAY_TO... | GitHub Acti... | Enables `ra... |  

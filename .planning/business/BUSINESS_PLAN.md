@@ -28,7 +28,7 @@ developers can monetize their production-ready projects.
 ### Business Model
 
 | Revenue Stream | Model | Year 1 Target |
-|----------------|-------|---------------|
+| ---------------- | ------- | --------------- |
 | Pro Subscriptions | $49/month | $120K ARR |
 | Transaction Fees | 10% of sales | $50K |
 | Premium Features | $99/month | $60K |
@@ -107,7 +107,7 @@ build production-ready projects with AI assistance and monetize their creations.
 ### Market Size
 
 | Segment | TAM | SAM | SOM (Year 3) |
-|---------|-----|-----|--------------|
+| --------- | ----- | ----- | -------------- |
 | Dev Tools | $50B | $5B | $50M |
 | Code Marketplace | $2B | $500M | $5M |
 | AI Coding | $10B | $1B | $10M |
@@ -116,7 +116,7 @@ build production-ready projects with AI assistance and monetize their creations.
 ### Competitive Landscape
 
 | Competitor | Strength | Weakness | Our Advantage |
-|------------|----------|----------|---------------|
+| ------------ | ---------- | ---------- | --------------- |
 | **GitHub** | Distribution | No marketplace | Marketplace + AI |
 | **Envato** | Marketplace | No AI tools | AI-powered development |
 | **Vercel** | Deployment | No marketplace | Full lifecycle |
@@ -169,7 +169,7 @@ text
 ### Marketplace Categories
 
 | Category | Examples | Avg Price | Volume Est. |
-|----------|----------|-----------|-------------|
+| ---------- | ---------- | ----------- | ------------- |
 | **SaaS Starters** | CRM, Dashboard, Analytics | $299-999 | High |
 | **API Services** | Auth, Payment, AI endpoints | $99-499 | Very High |
 | **Automation Workflows** | n8n, Zapier templates | $49-199 | High |
@@ -182,7 +182,7 @@ text
 **Verification Levels:**
 
 | Level | Requirements | Badge | Fee |
-|-------|--------------|-------|-----|
+| ------- | -------------- | ------- | ----- |
 | **Basic** | Code review, runs locally | - | Free |
 | **Verified** | Tests pass, documented | ✓ | $49 |
 | **Production** | Deployed, monitored 30 days | ★ | $149 |
@@ -453,7 +453,7 @@ text
 ### Infrastructure
 
 | Component | Technology | Why |
-|-----------|------------|-----|
+| ----------- | ------------ | ----- |
 | **Hosting** | Vercel + Railway | Scalable, developer-friendly |
 | **Database** | PostgreSQL (Supabase) | Reliable, SQL, RLS |
 | **Cache** | Redis (Upstash) | Fast, serverless |
@@ -506,7 +506,7 @@ text
 ### Subscription Tiers
 
 | Tier | Price | Target | Key Features |
-|------|-------|--------|--------------|
+| ------ | ------- | -------- | -------------- |
 | **Community** | Free | Hobbyists | Framework, local Brain, community |
 | **Pro** | $49/mo | Indie devs | Cloud Brain, marketplace selling |
 | **Team** | $149/mo | Small teams | 5 seats, shared Brain, analytics |
@@ -515,7 +515,7 @@ text
 ### Marketplace Fees
 
 | Transaction Type | Platform Fee | Stripe Fee | Seller Gets |
-|------------------|--------------|------------|-------------|
+| ------------------ | -------------- | ------------ | ------------- |
 | Standard Sale | 10% | 2.9% + $0.30 | ~87% |
 | Featured Sale | 15% | 2.9% + $0.30 | ~82% |
 | Enterprise Sale | 8% | 2.9% + $0.30 | ~89% |
@@ -535,7 +535,7 @@ text
 **Competitor Comparison:**
 
 | Platform | Fee | Our Advantage |
-|----------|-----|---------------|
+| ---------- | ----- | --------------- |
 | Gumroad | 10% + payment | Same fee, better tools |
 | Envato | 12.5-37.5% | Lower fee |
 | App Store | 30% | Much lower fee |
@@ -564,7 +564,7 @@ text
 **Marketplace Projects:**
 
 | License Type | Description | % of Sales |
-|--------------|-------------|------------|
+| -------------- | ------------- | ------------ |
 | **Standard** | Single use, no resale | 70% |
 | **Extended** | Multiple uses, can modify | 20% |
 | **Enterprise** | Unlimited, white-label | 10% |
@@ -627,7 +627,7 @@ text
 **Channels:**
 
 | Channel | Action | Target |
-|---------|--------|--------|
+| --------- | -------- | -------- |
 | GitHub | Open source launch, stars | 500 stars |
 | Twitter/X | Daily dev content | 2,000 followers |
 | Discord | Community server | 500 members |
@@ -655,7 +655,7 @@ text
 **Incentives:**
 
 | Program | Benefit | Requirement |
-|---------|---------|-------------|
+| --------- | --------- | ------------- |
 | Founder | 5% fee forever | First 50 sellers |
 | Pioneer | 3 months Pro free | 500+ GitHub stars |
 | Advocate | 20% referral commission | Active promotion |
@@ -667,7 +667,7 @@ text
 **Channels:**
 
 | Channel | Budget | Expected ROI |
-|---------|--------|--------------|
+| --------- | -------- | -------------- |
 | Google Ads | $2K/mo | 3x |
 | Twitter Ads | $1K/mo | 4x |
 | Sponsorships | $1K/mo | 2x |
@@ -791,7 +791,7 @@ text
 ### Year 1 Projections (Conservative)
 
 | Month | Pro Subs | MRR | GMV | Trans. Rev | Total |
-|-------|----------|-----|-----|------------|-------|
+| ------- | ---------- | ----- | ----- | ------------ | ------- |
 | 1 | 10 | $490 | $0 | $0 | $490 |
 | 2 | 25 | $1,225 | $1,000 | $100 | $1,325 |
 | 3 | 50 | $2,450 | $5,000 | $500 | $2,950 |
@@ -810,7 +810,7 @@ text
 ### Year 2-3 Projections
 
 | Metric | Year 1 | Year 2 | Year 3 |
-|--------|--------|--------|--------|
+| -------- | -------- | -------- | -------- |
 | Pro Subscribers | 680 | 2,500 | 8,000 |
 | MRR (End) | $33K | $150K | $500K |
 | ARR | $225K | $1.8M | $6M |
@@ -821,7 +821,7 @@ text
 ### Cost Structure
 
 | Category | Year 1 | Year 2 | Year 3 |
-|----------|--------|--------|--------|
+| ---------- | -------- | -------- | -------- |
 | **Infrastructure** | | | |
 | Hosting | $6K | $24K | $72K |
 | AI API (Claude) | $12K | $60K | $200K |
@@ -838,7 +838,7 @@ text
 ### Profitability
 
 | Metric | Year 1 | Year 2 | Year 3 |
-|--------|--------|--------|--------|
+| -------- | -------- | -------- | -------- |
 | Revenue | $300K | $2.3M | $8.5M |
 | Costs | $44K | $549K | $1.72M |
 | **Net Profit** | **$256K** | **$1.75M** | **$6.78M** |
@@ -847,7 +847,7 @@ text
 ### Key Metrics to Track
 
 | Metric | Target Month 6 | Target Year 1 |
-|--------|----------------|---------------|
+| -------- | ---------------- | --------------- |
 | MAU (Monthly Active Users) | 5,000 | 25,000 |
 | Pro Conversion Rate | 3% | 4% |
 | Seller Activation Rate | 20% | 30% |
@@ -862,7 +862,7 @@ text
 ### Risk Matrix
 
 | Risk | Probability | Impact | Mitigation |
-|------|-------------|--------|------------|
+| ------ | ------------- | -------- | ------------ |
 | **Competition** | High | Medium | Speed, features, community |
 | **Low adoption** | Medium | High | Marketing, incentives, partnerships |
 | **Payment fraud** | Medium | Medium | Escrow, verification, monitoring |
@@ -966,7 +966,7 @@ text
 ### Success Milestones
 
 | Milestone | Target Date | Metric |
-|-----------|-------------|--------|
+| ----------- | ------------- | -------- |
 | Public Launch | March 2026 | Live |
 | 1K GitHub Stars | April 2026 | Stars |
 | First $10K MRR | July 2026 | Revenue |

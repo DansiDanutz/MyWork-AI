@@ -31,23 +31,23 @@ This file is the Master Orchestrator's persistent memory. It contains:
 
 | Lesson | Context | Date |
 | -------- | --------- | ------ |
-  | [T] Always check `.p... | Prevents duplicate e... | 2026-01-24 |  
-  | [T] Run module regis... | Found 1,347 reusable... | 2026-01-24 |  
-  | [T] GSD phases shoul... | Large phases cause c... | 2026-01-24 |  
+| [T] Always check `.p... | Prevents duplicate e... | 2026-01-24 |
+| [T] Run module regis... | Found 1,347 reusable... | 2026-01-24 |
+| [T] GSD phases shoul... | Large phases cause c... | 2026-01-24 |
 
 ### Code Quality
 
 | Lesson | Context | Date |
 | -------- | --------- | ------ |
-  | [T] Never hardcode A... | Security vulnerabili... | 2026-01-24 |  
-  | [T] Read from .env f... | Secure and configurable | 2026-01-24 |  
+| [T] Never hardcode A... | Security vulnerabili... | 2026-01-24 |
+| [T] Read from .env f... | Secure and configurable | 2026-01-24 |
 
 ### Tool Usage
 
 | Lesson | Context | Date |
 | -------- | --------- | ------ |
-  | [T] Use `npx` for n8... | Avoids stale cached ... | 2026-01-24 |  
-  | [T] Check Autocoder ... | Prevents corruption | 2026-01-24 |  
+| [T] Use `npx` for n8... | Avoids stale cached ... | 2026-01-24 |
+| [T] Check Autocoder ... | Prevents corruption | 2026-01-24 |
 
 ---
 
@@ -129,7 +129,7 @@ text
 ### Never Do These
 
 | Anti-Pattern | Why It's Bad | Better Approach |
-|--------------|--------------|-----------------|
+| -------------- | -------------- | ----------------- |
   | Building without s... | Wastes time reinve... | `mw search "keywor... |  
   | Hardcoding paths in ... | Breaks portability | Use Path variables f... |  
   | Skipping GSD state... | Lose context betwe... | Always update STAT... |  
@@ -140,7 +140,7 @@ text
 ### Common Mistakes
 
 | Mistake | Symptom | Fix |
-|---------|---------|-----|
+| --------- | --------- | ----- |
 | Forgot to activate venv | `ModuleNotFoundError` | `source venv/bin/activate` |
 | Port already in use | `Address already in use` | `lsof -i :<port>` then kill |
 | Stale node_modules | Mysterious JS errors | `rm -rf node_modules && npm ci` |
@@ -212,7 +212,7 @@ text
 ### Speed Optimizations
 
 | Tip | Impact | Verified |
-|-----|--------|----------|
+| ----- | -------- | ---------- |
 | Use `--concurrency 3` for Autocoder when specs are solid | 3x faster | Yes |
 | Run module registry scan in background | Non-blocking | Yes |
 | Use health_check quick mode for daily checks | 5x faster | Yes |
@@ -247,10 +247,10 @@ text
 ## Pending Experiments
 
 | Experiment | Hypothesis | Status |
-|------------|------------|--------|
-  | Auto-scan after git ... | Would keep registry ... | [IDEA] |  
+| ------------ | ------------ | -------- |
+| Auto-scan after git ... | Would keep registry ... | [IDEA] |
 | Weekly brain cleanup | Remove [DEPRECATED] entries automatically | [IDEA] |
-  | Cross-project depend... | Know when updating o... | [IDEA] |  
+| Cross-project depend... | Know when updating o... | [IDEA] |
 
 ---
 
@@ -260,7 +260,7 @@ text
 | 2026-01-28 | Auto-learning: 15 entries | Learning |
 
 | 2026-01-27 | Auto-learning: 14 entries | Learning |
-|------|--------|----------|
+| ------ | -------- | ---------- |
 | 2026-01-24 | Initial brain created | Setup |
 | 2026-01-24 | Added security lesson about hardcoded keys | Lessons |
 | 2026-01-24 | Added module registry insights | Tools |

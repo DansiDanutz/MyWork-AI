@@ -32,7 +32,7 @@ text
 ### By Type
 
 | Type | Count |
-|------|-------|
+| ------ | ------- |
 | utility | 779 |
 | component | 236 |
 | schema | 149 |
@@ -44,7 +44,7 @@ text
 ### By Project
 
 | Project | Modules |
-|---------|--------|
+| --------- | -------- |
 | my-games | 1197 |
 | ai-dashboard | 86 |
 
@@ -4717,11 +4717,14 @@ text
 ```text
 text
 
-```
-    COUNT(*) as total,
-    SUM(CASE WHEN passes = 1 THEN 1 EL
+```text
 
-```
+```textCOUNT(*) as total,
+SUM(CASE WHEN passes = 1 THEN 1 EL
+
+```text
+
+```text
 
 ```text
 

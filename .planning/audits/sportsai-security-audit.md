@@ -8,7 +8,7 @@
 ## Summary
 
 | Metric | Value |
-|--------|-------|
+| -------- | ------- |
 | Commits Scanned | 293 |
 | Data Scanned | 5.80 MB |
 | Leaks Found | 20 |
