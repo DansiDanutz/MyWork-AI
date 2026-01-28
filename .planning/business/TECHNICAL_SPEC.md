@@ -28,19 +28,16 @@ text
 ```text                 +------------------+
 
 ```text
-             |   CDN (Cloudflare)|
+         |   CDN (Cloudflare)|
 
-         +--------+---------+
+     +--------+---------+
 
-                  |
+              |
 
-                  v
+              v
 ```
 
 ```text
-
-```text
-text
 
 ```text
 
