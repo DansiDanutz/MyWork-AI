@@ -10492,5 +10492,115 @@
       "Fixed 2 markdown issues"
     ],
     "timestamp": "2026-01-29T01:23:16.052540"
+  },
+  {
+    "file_path": "/Users/dansidanutz/Desktop/MyWork/.planning/linting_results.json",
+    "tool": "prettier",
+    "issues_found": 1,
+    "issues_fixed": 1,
+    "success": true,
+    "messages": [
+      ".planning/linting_results.json 153ms\n"
+    ],
+    "timestamp": "2026-01-29T01:23:21.140046"
+  },
+  {
+    "file_path": "/Users/dansidanutz/Desktop/MyWork/README.md",
+    "tool": "markdownlint",
+    "issues_found": 1,
+    "issues_fixed": 1,
+    "success": true,
+    "messages": [
+      "Fixed 1 markdown issues"
+    ],
+    "timestamp": "2026-01-29T01:23:21.157789"
+  },
+  {
+    "file_path": "/Users/dansidanutz/Desktop/MyWork/.planning/linting_results.json",
+    "tool": "prettier",
+    "issues_found": 1,
+    "issues_fixed": 1,
+    "success": true,
+    "messages": [
+      ".planning/linting_results.json 112ms\n"
+    ],
+    "timestamp": "2026-01-29T01:23:29.432869"
+  },
+  {
+    "file_path": "/Users/dansidanutz/Desktop/MyWork/.planning/linting_results.json",
+    "tool": "prettier",
+    "issues_found": 1,
+    "issues_fixed": 1,
+    "success": true,
+    "messages": [
+      ".planning/linting_results.json 117ms\n"
+    ],
+    "timestamp": "2026-01-29T01:23:31.246830"
+  },
+  {
+    "file_path": "/Users/dansidanutz/Desktop/MyWork/README.md",
+    "tool": "markdownlint",
+    "issues_found": 0,
+    "issues_fixed": 0,
+    "success": true,
+    "messages": [
+      "Fixed 0 markdown issues"
+    ],
+    "timestamp": "2026-01-29T01:23:31.255997"
+  },
+  {
+    "file_path": "/Users/dansidanutz/Desktop/MyWork/projects/ai-dashboard/backend/services/youtube_automation.py",
+    "tool": "black",
+    "issues_found": 0,
+    "issues_fixed": 1,
+    "success": true,
+    "messages": [
+      "Formatted with Black"
+    ],
+    "timestamp": "2026-01-29T01:24:39.009205"
+  },
+  {
+    "file_path": "/Users/dansidanutz/Desktop/MyWork/projects/ai-dashboard/backend/services/youtube_automation.py",
+    "tool": "flake8",
+    "issues_found": 0,
+    "issues_fixed": 0,
+    "success": false,
+    "messages": [
+      "Error: [Errno 2] No such file or directory: 'flake8'"
+    ],
+    "timestamp": "2026-01-29T01:24:39.012993"
+  },
+  {
+    "file_path": "/Users/dansidanutz/Desktop/MyWork/.planning/linting_results.json",
+    "tool": "prettier",
+    "issues_found": 1,
+    "issues_fixed": 1,
+    "success": true,
+    "messages": [
+      ".planning/linting_results.json 128ms\n"
+    ],
+    "timestamp": "2026-01-29T01:24:41.102756"
+  },
+  {
+    "file_path": "/Users/dansidanutz/Desktop/MyWork/projects/ai-dashboard/.planning/STATE.md",
+    "tool": "markdownlint",
+    "issues_found": 0,
+    "issues_fixed": 0,
+    "success": true,
+    "messages": [
+      "Fixed 0 markdown issues"
+    ],
+    "timestamp": "2026-01-29T01:24:41.111743"
+  },
+  {
+    "file_path": "/Users/dansidanutz/Desktop/MyWork/.planning/linting_results.json",
+    "tool": "prettier",
+    "issues_found": 1,
+    "issues_fixed": 1,
+    "success": true,
+    "messages": [
+      ".planning/linting_results.json 136ms\n"
+    ],
+    "timestamp": "2026-01-29T01:24:43.033864"
   }
 ]

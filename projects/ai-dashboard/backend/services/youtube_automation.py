@@ -55,7 +55,9 @@ class YouTubeAutomationService:
         self.client = httpx.AsyncClient(timeout=60.0)
 
     def _has_upload_credentials(self) -> bool:
-        return bool(self.youtube_client_id and self.youtube_client_secret and self.youtube_refresh_token)
+        return bool(
+            self.youtube_client_id and self.youtube_client_secret and self.youtube_refresh_token
+        )
 
     def _normalize_tags(self, tags: Optional[object]) -> list[str] | None:
         if not tags:
@@ -395,7 +397,9 @@ class YouTubeAutomationService:
             if self.simulate_upload:
                 logger.warning("YouTube upload not configured - simulating upload")
                 automation.youtube_video_id = "simulated_" + str(automation.id)
-                automation.youtube_url = f"https://youtube.com/watch?v={automation.youtube_video_id}"
+                automation.youtube_url = (
+                    f"https://youtube.com/watch?v={automation.youtube_video_id}"
+                )
                 automation.uploaded_at = datetime.utcnow()
                 automation.status = "uploaded"
                 db.commit()
@@ -415,9 +419,7 @@ class YouTubeAutomationService:
         thumbnail_mime = None
 
         try:
-            video_path, _ = await self._download_asset(
-                automation.heygen_video_url, "video", ".mp4"
-            )
+            video_path, _ = await self._download_asset(automation.heygen_video_url, "video", ".mp4")
 
             if automation.thumbnail_url:
                 thumbnail_path, thumbnail_mime = await self._download_asset(
