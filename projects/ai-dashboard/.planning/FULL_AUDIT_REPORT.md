@@ -72,7 +72,7 @@ skeleton
 ```text
 skeleton
 
-```
+```markdown
 
   - [/app/projects/loading.tsx](../frontend/app/projects/loading.tsx) - Projects
 
@@ -86,7 +86,7 @@ grid skeleton
 ```text
 list skeleton
 
-```
+```markdown
 
   - [/app/youtube-bot/[id]/loading.tsx](../frontend/app/youtube-bot/[id]/loading.tsx)
 
@@ -101,7 +101,7 @@ list skeleton
 ```text
 skeleton
 
-```
+```yaml
 
 - **Status:** ✅ Fixed - All pages now have proper loading states with Tailwind
 
@@ -153,7 +153,7 @@ skeleton
 4. HeyGen creates AI avatar video
 5. User edits/approves
 6. Status tracking via HeyGen API
-7. *(YouTube upload pending - needs OAuth)*
+7. YouTube upload (OAuth-based)
 
 ### Dashboard Pages ✅
 
@@ -254,7 +254,10 @@ HEYGEN_API_KEY          → AI video creation
 ### Optional Keys
 
 ```text
-YOUTUBE_API_KEY         → For future upload feature
+YOUTUBE_API_KEY         → YouTube scraping fallback
+YOUTUBE_OAUTH_CLIENT_ID → YouTube uploads
+YOUTUBE_OAUTH_CLIENT_SECRET → YouTube uploads
+YOUTUBE_OAUTH_REFRESH_TOKEN → YouTube uploads
 GITHUB_TOKEN            → Higher API rate limits
 
 ```markdown
@@ -265,7 +268,7 @@ GITHUB_TOKEN            → Higher API rate limits
 
 | Feature | Status | Notes |
 | --------- | -------- | ------- |
-| YouTube Upload | ⏳ | Needs OAuth setup |
+| YouTube Upload | ✅ | Implemented (requires OAuth credentials) |
 | GitHub topic categorization | ⏳ | Data fetched, UI pending |
 | Advanced scheduler UI | ⏳ | Basic display implemented |
 
@@ -274,7 +277,7 @@ GITHUB_TOKEN            → Higher API rate limits
 ## Recommendations
 
 1. **Ready for production:** All core features working
-2. **Add YouTube OAuth:** When ready for auto-uploads
+2. **Configure YouTube OAuth:** Required for auto-uploads
 3. **Monitor HeyGen usage:** Track video generation costs
 4. **Add rate limiting:** For public API endpoints
 

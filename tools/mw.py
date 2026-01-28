@@ -518,151 +518,34 @@ def cmd_lint(args: List[str]):
 
     # Perfect Auto-Linting Commands
     if subcmd == "start":
-        print("🚀 Starting Perfect Auto-Linter...")
-        import subprocess
-        import platform
-
-        # Check if already running
-        if is_auto_linter_running():
-            print("⚠️  Auto-linter is already running!")
-            print("   Run 'mw lint status' to check or 'mw lint stop' to stop it first.")
+        # Use the new lint_watcher.py management tool
+        watcher_script = TOOLS_DIR / "lint_watcher.py"
+        if watcher_script.exists():
+            result = subprocess.run([sys.executable, str(watcher_script), "start"])
+            return result.returncode
+        else:
+            print("❌ Lint watcher tool not found")
             return 1
 
-        # Use platform-appropriate startup script
-        if platform.system() == "Windows":
-            script_path = TOOLS_DIR / "start_auto_linter.bat"
-            if script_path.exists():
-                subprocess.Popen([str(script_path)], creationflags=subprocess.CREATE_NEW_CONSOLE)
-                print("✅ Auto-linter started in new window")
-            else:
-                # Fallback to Python script
-                subprocess.Popen(
-                    [
-                        sys.executable,
-                        str(TOOLS_DIR / "auto_linting_agent.py"),
-                        "--watch",
-                        "--root",
-                        str(MYWORK_ROOT),
-                    ]
-                )
-                print("✅ Auto-linter started in background")
-        else:
-            script_path = TOOLS_DIR / "start_auto_linter.sh"
-            if script_path.exists():
-                subprocess.Popen(["/bin/bash", str(script_path)])
-                print("✅ Auto-linter started in background")
-            else:
-                # Fallback to Python script
-                subprocess.Popen(
-                    [
-                        sys.executable,
-                        str(TOOLS_DIR / "auto_linting_agent.py"),
-                        "--watch",
-                        "--root",
-                        str(MYWORK_ROOT),
-                    ]
-                )
-                print("✅ Auto-linter started in background")
-
-        print("\n💡 The auto-linter will now:")
-        print("   ✅ Monitor all markdown files for changes")
-        print("   ✅ Automatically fix markdown issues (MD001-MD060)")
-        print("   ✅ Maintain perfect 0-violation markdown quality")
-        print("   ✅ Work for all users in this project")
-        print("\n   Run 'mw lint status' to check if it's working.")
-        return 0
-
     elif subcmd == "stop":
-        print("🛑 Stopping Auto-Linter...")
-        import subprocess
-        import platform
-
-        stopped = False
-        if platform.system() == "Windows":
-            try:
-                result = subprocess.run(
-                    ["taskkill", "/F", "/FI", "WINDOWTITLE eq *auto_linting_agent*"],
-                    capture_output=True,
-                    text=True,
-                )
-                if result.returncode == 0:
-                    stopped = True
-            except:
-                pass
+        # Use the new lint_watcher.py management tool
+        watcher_script = TOOLS_DIR / "lint_watcher.py"
+        if watcher_script.exists():
+            result = subprocess.run([sys.executable, str(watcher_script), "stop"])
+            return result.returncode
         else:
-            try:
-                result = subprocess.run(
-                    ["pkill", "-f", "auto_linting_agent.py.*--watch"], capture_output=True
-                )
-                if result.returncode == 0:
-                    stopped = True
-            except:
-                pass
+            print("❌ Lint watcher tool not found")
+            return 1
 
-        if stopped:
-            print("✅ Auto-linter stopped successfully")
+    elif subcmd == "status" or subcmd == "restart" or subcmd == "logs":
+        # Use the new lint_watcher.py management tool
+        watcher_script = TOOLS_DIR / "lint_watcher.py"
+        if watcher_script.exists():
+            result = subprocess.run([sys.executable, str(watcher_script), subcmd])
+            return result.returncode
         else:
-            print("⚠️  No running auto-linter found (or already stopped)")
-        return 0
-
-    elif subcmd == "status":
-        print("📊 Auto-Linter Status")
-        print("=" * 50)
-
-        # Check if auto-linter is running
-        running = is_auto_linter_running()
-        if running:
-            print("🟢 Status: RUNNING")
-            print("✅ Perfect markdown quality is actively maintained")
-        else:
-            print("🔴 Status: STOPPED")
-            print("⚠️  Markdown files are not being automatically fixed")
-
-        # Check if auto_lint_fixer.py exists and works
-        auto_fixer_path = TOOLS_DIR / "auto_lint_fixer.py"
-        if auto_fixer_path.exists():
-            print("✅ Perfect markdown fixer: Available")
-            # Test the fixer quickly
-            try:
-                result = subprocess.run(
-                    [
-                        sys.executable,
-                        "-c",
-                        f"import sys; sys.path.insert(0, '{TOOLS_DIR}'); from auto_lint_fixer import AutoLintFixer; print('✅ Works')",
-                    ],
-                    capture_output=True,
-                    text=True,
-                    timeout=5,
-                )
-                if result.returncode == 0:
-                    print("✅ Auto-fixer test: PASSED")
-                else:
-                    print("❌ Auto-fixer test: FAILED")
-            except:
-                print("⚠️  Auto-fixer test: Could not test")
-        else:
-            print("❌ Perfect markdown fixer: MISSING")
-
-        # Check git hooks
-        git_hooks_dir = MYWORK_ROOT / ".git" / "hooks"
-        if git_hooks_dir.exists():
-            pre_commit_hook = git_hooks_dir / "pre-commit"
-            pre_push_hook = git_hooks_dir / "pre-push"
-            if pre_commit_hook.exists() and pre_push_hook.exists():
-                print("✅ Git hooks: Installed")
-            else:
-                print("⚠️  Git hooks: Partially installed")
-        else:
-            print("❌ Git hooks: Not installed")
-
-        # Show recommendation
-        print("\n💡 Recommendation:")
-        if not running:
-            print("   Run 'mw lint start' to enable automatic markdown fixing for all users")
-        if not (git_hooks_dir / "pre-commit").exists():
-            print("   Run 'mw lint install-hooks' to set up git integration")
-
-        return 0
+            print("❌ Lint watcher tool not found")
+            return 1
 
     elif subcmd == "install-hooks":
         print("🔗 Installing Git Hooks for Automatic Linting...")

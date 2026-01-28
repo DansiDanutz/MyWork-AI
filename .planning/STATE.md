@@ -1,6 +1,6 @@
 # MyWork Framework State
 
-Date: 2026-01-27
+Date: 2026-01-28
 
 ## Current Status
 
@@ -63,6 +63,16 @@ text
 
 - Webhook idempotency tracking added (Stripe + Clerk) with migration
 - E2E checklist script added at `scripts/e2e_checklist.sh`
+
+## Updates (2026-01-28)
+
+- Core Python tests: `pytest -q` → 34 passed, 0 failed.
+- Smoke/QA scripts now include retries/backoff; production webhook
+  test requires explicit opt-in.
+- AI Dashboard YouTube upload implemented with OAuth-based
+  credentials (see backend `.env.example`).
+- Note: live smoke checks were not validated in this environment
+  due to DNS/network restrictions.
 
 ## Deployment Log
 

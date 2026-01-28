@@ -92,8 +92,8 @@ echo 💡 The agent will now automatically fix markdown issues as you work.
 echo    Press Ctrl+C to stop, or close this terminal to run in background.
 echo.
 
-REM Change to project root
+REM Change to project root (agent uses cwd)
 cd /d "%PROJECT_ROOT%"
 
 REM Start the auto-linting agent with perfect markdown support
-python "%TOOLS_DIR%auto_linting_agent.py" --watch --root "%PROJECT_ROOT%"
+python "%TOOLS_DIR%auto_linting_agent.py" --watch

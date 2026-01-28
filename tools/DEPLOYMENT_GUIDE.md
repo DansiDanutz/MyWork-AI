@@ -281,7 +281,7 @@ python tools\mw.py lint start
 ```json
 {
 
-```
+```yaml
 
 "files.watcherExclude": {
 
@@ -298,7 +298,7 @@ python tools\mw.py lint start
 ```yaml
 "MD013": false
 
-```
+```markdown
 
 }
 

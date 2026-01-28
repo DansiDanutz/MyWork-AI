@@ -42,12 +42,18 @@ Date: 2026-01-28
 
   requires the Marketplace private repo and live environment checks.
 
-- **Immediate focus**: add integration tests for Task Tracker + AI Dashboard,
+- **Immediate focus**: add integration tests for Task Tracker + AI Dashboard and
 
-  guard production webhook test script, and verify marketplace deployments with
-  the existing smoke/QA tooling.
+  verify marketplace deployments with the existing smoke/QA tooling.
 
 ---
+
+## Progress Since Last Audit (2026-01-28)
+
+- Guarded production Brain webhook test to prevent accidental prod writes.
+- Added retries/backoff to smoke + QA scripts for transient network failures.
+- Made Marketplace CI CLI versions configurable via repo variables.
+- Implemented YouTube upload (OAuth-based) in AI Dashboard automation.
 
 ## Status Matrix (What Is Done)
 
@@ -89,10 +95,6 @@ Date: 2026-01-28
 
 ## Open TODOs / Known Gaps (What To Implement)
 
-1. **AI Dashboard YouTube upload not implemented**
-   - File: `projects/ai-dashboard/backend/services/youtube_automation.py`
-   - Impact: automation pipeline incomplete.
-
 1. **Task Tracker analytics uses placeholder flow**
    - File: `projects/task-tracker/src/shared/lib/analytics/tracker.ts`
    - Impact: analytics delivery is fire-and-forget until Next.js `after()` can be
@@ -100,11 +102,7 @@ Date: 2026-01-28
 ```text
  used.
 
-```
-
-1. **Production webhook test script posts directly to prod**
-   - File: `tools/test_brain_webhook.py`
-   - Impact: accidental production writes if run locally.
+```markdown
 
 ---
 
@@ -116,7 +114,7 @@ Date: 2026-01-28
 ```text
  pipeline.
 
-```
+```markdown
 
 1. **AI Dashboard**
    - Add tests for ingestion pipeline, storage, and automation services.
@@ -128,9 +126,7 @@ Date: 2026-01-28
 ```text
  live credentials.
 
-```
-
-   - Add retries/backoff for transient network errors.
+```markdown
 
 1. **CLI/tooling**
    - Add unit tests for `tools/brain_sync.py`, `tools/autocoder_service.py`, and
@@ -149,8 +145,7 @@ Date: 2026-01-28
    - Record results in `.planning/STATE.md`.
 
 1. **Close critical implementation gaps**
-   - Implement YouTube upload in AI Dashboard automation.
-   - Guard `tools/test_brain_webhook.py` behind env flags or explicit `--prod`.
+   - Verify YouTube OAuth credentials and perform a real upload test.
    - Update analytics tracker to use `after()` when Next.js version supports it.
 
 1. **Expand automated testing**
@@ -161,7 +156,7 @@ Date: 2026-01-28
 ```text
  writes.
 
-```
+```markdown
 
 1. **Re-run and publish results**
    - Run `pytest -q` plus new app tests.

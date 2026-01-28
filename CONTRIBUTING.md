@@ -149,7 +149,7 @@ Args:
 query: Search term
 limit: Maximum results to return
 
-```
+```yaml
 
 Returns:
 
@@ -181,7 +181,7 @@ MyWork/
 +-- .planning/       # Framework state
 +-- CLAUDE.md        # Orchestrator instructions
 
-```
+```markdown
 
 ### Adding a New Tool
 

@@ -30,7 +30,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.2.0] - 2026-01-27
 
-### Added
+### New Features
 
 - **GSD (Get Shit Done)** project orchestration layer
   - Automated project planning with AI research
@@ -98,7 +98,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.1.0] - 2026-01-15
 
-### Added
+### Implemented
 
 - Initial GSD skill set with basic project orchestration
 - Autocoder server integration
@@ -123,7 +123,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [1.0.0] - 2025-12-20
 
-### Added
+### Initial Release
 
 - Initial release of MyWork Framework
 - Basic project structure

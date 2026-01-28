@@ -232,7 +232,7 @@ https://api.github.com/search/repositories?q=ai+language:python&sort=stars&order
 
 3. Content Generation (Claude/GPT)
 
-```
+```markdown
 
    ↓
 
@@ -288,7 +288,8 @@ https://api.github.com/search/repositories?q=ai+language:python&sort=stars&order
 
 ## RECOMMENDED ARCHITECTURE
 
-```
+```markdown
+
 ┌─────────────────────────────────────────────────────────┐
 │                    AI DASHBOARD                          │
 ├─────────────────────────────────────────────────────────┤

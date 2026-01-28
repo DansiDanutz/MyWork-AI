@@ -56,7 +56,15 @@ def validate_api_keys():
     if not os.getenv("HEYGEN_API_KEY"):
         optional_keys.append("HEYGEN_API_KEY (video generation)")
     if not os.getenv("YOUTUBE_API_KEY"):
-        optional_keys.append("YOUTUBE_API_KEY (YouTube upload)")
+        optional_keys.append("YOUTUBE_API_KEY (YouTube scraping fallback)")
+    if not all(
+        [
+            os.getenv("YOUTUBE_OAUTH_CLIENT_ID"),
+            os.getenv("YOUTUBE_OAUTH_CLIENT_SECRET"),
+            os.getenv("YOUTUBE_OAUTH_REFRESH_TOKEN"),
+        ]
+    ):
+        optional_keys.append("YOUTUBE_OAUTH_* (YouTube upload)")
 
     if missing_keys:
         logger.error(f"Missing required API keys: {', '.join(missing_keys)}")

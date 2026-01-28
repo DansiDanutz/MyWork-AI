@@ -1,8 +1,12 @@
 # AI Dashboard - YouTube Automation Service
 
-import os
+import asyncio
 import logging
+import mimetypes
+import os
+import tempfile
 from datetime import datetime
+from pathlib import Path
 from typing import Optional, Dict
 import httpx
 from sqlalchemy.orm import Session
@@ -32,9 +36,120 @@ class YouTubeAutomationService:
         self.anthropic_key = anthropic_api_key or os.getenv("ANTHROPIC_API_KEY")
         self.heygen_key = heygen_api_key or os.getenv("HEYGEN_API_KEY")
         self.youtube_key = youtube_api_key or os.getenv("YOUTUBE_API_KEY")
+        self.youtube_client_id = os.getenv("YOUTUBE_OAUTH_CLIENT_ID")
+        self.youtube_client_secret = os.getenv("YOUTUBE_OAUTH_CLIENT_SECRET")
+        self.youtube_refresh_token = os.getenv("YOUTUBE_OAUTH_REFRESH_TOKEN")
+        self.youtube_token_uri = os.getenv(
+            "YOUTUBE_OAUTH_TOKEN_URI", "https://oauth2.googleapis.com/token"
+        )
+        self.youtube_privacy_status = os.getenv("YOUTUBE_UPLOAD_PRIVACY_STATUS", "unlisted")
+        self.youtube_category_id = os.getenv("YOUTUBE_UPLOAD_CATEGORY_ID", "28")
+        self.youtube_upload_dir = os.getenv("YOUTUBE_UPLOAD_DIR")
+        self.simulate_upload = os.getenv("SIMULATE_YOUTUBE_UPLOAD", "").strip().lower() in {
+            "1",
+            "true",
+            "yes",
+        }
 
         self.prompt_optimizer = PromptOptimizer(self.anthropic_key)
         self.client = httpx.AsyncClient(timeout=60.0)
+
+    def _has_upload_credentials(self) -> bool:
+        return bool(self.youtube_client_id and self.youtube_client_secret and self.youtube_refresh_token)
+
+    def _normalize_tags(self, tags: Optional[object]) -> list[str] | None:
+        if not tags:
+            return None
+        if isinstance(tags, str):
+            parsed = [item.strip() for item in tags.split(",") if item.strip()]
+            return parsed or None
+        if isinstance(tags, list):
+            parsed = [str(item).strip() for item in tags if str(item).strip()]
+            return parsed or None
+        return None
+
+    def _build_video_metadata(self, automation: YouTubeAutomation) -> dict:
+        tags = self._normalize_tags(automation.video_tags)
+        snippet = {
+            "title": (automation.video_title or "Untitled Video")[:100],
+            "description": automation.video_description or "",
+            "categoryId": str(self.youtube_category_id),
+        }
+        if tags:
+            snippet["tags"] = tags
+
+        return {
+            "snippet": snippet,
+            "status": {"privacyStatus": self.youtube_privacy_status},
+        }
+
+    async def _download_asset(self, url: str, label: str, fallback_suffix: str) -> tuple[Path, str]:
+        async with self.client.stream("GET", url, follow_redirects=True) as response:
+            response.raise_for_status()
+            content_type = response.headers.get("content-type", "")
+            extension = (
+                mimetypes.guess_extension(content_type.split(";")[0].strip())
+                or Path(url).suffix
+                or fallback_suffix
+            )
+
+            upload_dir = self.youtube_upload_dir or None
+            if upload_dir:
+                Path(upload_dir).mkdir(parents=True, exist_ok=True)
+
+            temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=extension, dir=upload_dir)
+            try:
+                async for chunk in response.aiter_bytes(chunk_size=1024 * 1024):
+                    temp_file.write(chunk)
+            finally:
+                temp_file.close()
+
+        logger.info("Downloaded %s asset to %s", label, temp_file.name)
+        return Path(temp_file.name), content_type
+
+    def _build_youtube_client(self):
+        from google.auth.transport.requests import Request
+        from google.oauth2.credentials import Credentials
+        from googleapiclient.discovery import build
+
+        credentials = Credentials(
+            token=None,
+            refresh_token=self.youtube_refresh_token,
+            token_uri=self.youtube_token_uri,
+            client_id=self.youtube_client_id,
+            client_secret=self.youtube_client_secret,
+            scopes=["https://www.googleapis.com/auth/youtube.upload"],
+        )
+        credentials.refresh(Request())
+        return build("youtube", "v3", credentials=credentials, cache_discovery=False)
+
+    def _upload_video_and_thumbnail(
+        self,
+        video_path: Path,
+        metadata: dict,
+        thumbnail_path: Optional[Path],
+        thumbnail_mime: Optional[str],
+    ) -> str:
+        from googleapiclient.http import MediaFileUpload
+
+        youtube = self._build_youtube_client()
+        media = MediaFileUpload(str(video_path), mimetype="video/*", resumable=True)
+        response = (
+            youtube.videos()
+            .insert(part="snippet,status", body=metadata, media_body=media)
+            .execute()
+        )
+        video_id = response.get("id")
+        if not video_id:
+            raise ValueError("YouTube upload succeeded but no video ID returned")
+
+        if thumbnail_path:
+            thumb_media = MediaFileUpload(
+                str(thumbnail_path), mimetype=thumbnail_mime or "image/png", resumable=False
+            )
+            youtube.thumbnails().set(videoId=video_id, media_body=thumb_media).execute()
+
+        return video_id
 
     async def create_video_draft(
         self,
@@ -276,24 +391,68 @@ class YouTubeAutomationService:
         automation.approved_at = datetime.utcnow()
         automation.status = "approved"
 
-        if not self.youtube_key:
-            logger.warning("YouTube API key not configured - simulating upload")
-            automation.youtube_video_id = "simulated_" + str(automation.id)
-            automation.youtube_url = f"https://youtube.com/watch?v={automation.youtube_video_id}"
+        if not self._has_upload_credentials():
+            if self.simulate_upload:
+                logger.warning("YouTube upload not configured - simulating upload")
+                automation.youtube_video_id = "simulated_" + str(automation.id)
+                automation.youtube_url = f"https://youtube.com/watch?v={automation.youtube_video_id}"
+                automation.uploaded_at = datetime.utcnow()
+                automation.status = "uploaded"
+                db.commit()
+                return automation
+
+            logger.warning("YouTube OAuth credentials not configured - marking ready for upload")
+            automation.status = "ready_for_upload"
+            db.commit()
+            return automation
+
+        if not automation.heygen_video_url:
+            raise ValueError("No generated video URL found for upload")
+
+        metadata = self._build_video_metadata(automation)
+        video_path = None
+        thumbnail_path = None
+        thumbnail_mime = None
+
+        try:
+            video_path, _ = await self._download_asset(
+                automation.heygen_video_url, "video", ".mp4"
+            )
+
+            if automation.thumbnail_url:
+                thumbnail_path, thumbnail_mime = await self._download_asset(
+                    automation.thumbnail_url, "thumbnail", ".png"
+                )
+
+            video_id = await asyncio.to_thread(
+                self._upload_video_and_thumbnail,
+                video_path,
+                metadata,
+                thumbnail_path,
+                thumbnail_mime,
+            )
+
+            automation.youtube_video_id = video_id
+            automation.youtube_url = f"https://youtube.com/watch?v={video_id}"
             automation.uploaded_at = datetime.utcnow()
             automation.status = "uploaded"
             db.commit()
             return automation
-
-        # TODO: Implement actual YouTube upload
-        # This requires OAuth2 authentication which needs user interaction
-        # For now, we'll mark as ready for manual upload
-
-        automation.status = "ready_for_upload"
-        db.commit()
-
-        logger.info(f"Video approved and ready for upload: {automation.id}")
-        return automation
+        except Exception as e:
+            error_detail = f"YouTube upload failed: {type(e).__name__}: {str(e)}"
+            logger.error(error_detail)
+            automation.status = "failed"
+            automation.user_edits = automation.user_edits or {}
+            automation.user_edits["youtube_error"] = error_detail
+            db.commit()
+            raise
+        finally:
+            for path in (video_path, thumbnail_path):
+                if path and path.exists():
+                    try:
+                        path.unlink()
+                    except Exception:
+                        logger.warning("Failed to delete temp file: %s", path)
 
     def get_draft(self, db: Session, automation_id: int) -> Optional[YouTubeAutomation]:
         """Get a video draft by ID"""

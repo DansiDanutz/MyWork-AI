@@ -97,6 +97,13 @@ Uses API keys from environment (backend `.env` by default via `load_dotenv()`):
 - `APIFY_API_KEY` - YouTube scraping
 - `ANTHROPIC_API_KEY` - Claude for scripts
 - `HEYGEN_API_KEY` - AI video creation
+- `YOUTUBE_API_KEY` - YouTube scraping fallback
+- `YOUTUBE_OAUTH_CLIENT_ID` / `YOUTUBE_OAUTH_CLIENT_SECRET` /
+
+  `YOUTUBE_OAUTH_REFRESH_TOKEN` - YouTube uploads
+
+- `YOUTUBE_UPLOAD_PRIVACY_STATUS` - Upload privacy (default: unlisted)
+- `SIMULATE_YOUTUBE_UPLOAD` - Set true to simulate uploads without OAuth
 - `GITHUB_TOKEN` - Higher rate limits
 
 ## Development

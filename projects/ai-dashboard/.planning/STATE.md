@@ -1,6 +1,6 @@
 # AI Dashboard - Current State
 
-> Last Updated: 2026-01-26
+> Last Updated: 2026-01-28
 
 ---
 
@@ -74,7 +74,7 @@ All 6 pages + 1 detail view are complete:
 lucide-react/useContext incompatibility. **Dev mode works perfectly** (`npm run
 dev`). Vercel deployments may handle this better.
 
-2. **YouTube Upload** - Not yet implemented (needs OAuth setup)
+2. **YouTube Upload** - Implemented, but requires OAuth credentials to enable
 
 3. **API Keys** - Apify and HeyGen keys need to be configured
 
@@ -88,6 +88,9 @@ dev`). Vercel deployments may handle this better.
 APIFY_API_KEY=          # For YouTube scraping
 ANTHROPIC_API_KEY=      # For Claude scripts
 HEYGEN_API_KEY=         # For video generation
+YOUTUBE_OAUTH_CLIENT_ID=        # For YouTube uploads
+YOUTUBE_OAUTH_CLIENT_SECRET=    # For YouTube uploads
+YOUTUBE_OAUTH_REFRESH_TOKEN=    # For YouTube uploads
 GITHUB_TOKEN=           # For higher rate limits
 
 ```markdown
