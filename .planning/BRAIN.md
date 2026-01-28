@@ -1,7 +1,7 @@
 # Master Orchestrator Brain
 
 > A living knowledge vault that grows with every project.
-> Last updated: 2026-01-27
+> Last updated: 2026-01-28
 
 ---
 
@@ -31,23 +31,23 @@ This file is the Master Orchestrator's persistent memory. It contains:
 
 | Lesson | Context | Date |
 |--------|---------|------|
-| [TESTED] Always check `.planning/STATE.md` before starting any work | Prevents duplicate effort and context loss | 2026-01-24 |
-| [TESTED] Run module registry search before building new features | Found 1,347 reusable modules in first scan | 2026-01-24 |
-| [TESTED] GSD phases should be small enough to complete in one session | Large phases cause context loss between sessions | 2026-01-24 |
+  | [T] Always check `.p... | Prevents duplicate e... | 2026-01-24 |  
+  | [T] Run module regis... | Found 1,347 reusable... | 2026-01-24 |  
+  | [T] GSD phases shoul... | Large phases cause c... | 2026-01-24 |  
 
 ### Code Quality
 
 | Lesson | Context | Date |
 |--------|---------|------|
-| [TESTED] Never hardcode API keys in source files | Security vulnerability found in switch_llm_provider.py | 2026-01-24 |
-| [TESTED] Read from .env files instead of embedding secrets | Secure and configurable | 2026-01-24 |
+  | [T] Never hardcode A... | Security vulnerabili... | 2026-01-24 |  
+  | [T] Read from .env f... | Secure and configurable | 2026-01-24 |  
 
 ### Tool Usage
 
 | Lesson | Context | Date |
 |--------|---------|------|
-| [TESTED] Use `npx` for n8n-mcp to always get latest version | Avoids stale cached versions | 2026-01-24 |
-| [TESTED] Check Autocoder server status before attempting updates | Prevents corruption | 2026-01-24 |
+  | [T] Use `npx` for n8... | Avoids stale cached ... | 2026-01-24 |  
+  | [T] Check Autocoder ... | Prevents corruption | 2026-01-24 |  
 
 ---
 
@@ -55,7 +55,7 @@ This file is the Master Orchestrator's persistent memory. It contains:
 
 ### Project Setup Pattern
 
-```
+```bash
 
 1. mw new <name> <template>     # Scaffold with template
 2. cd projects/<name>           # Enter project
@@ -63,13 +63,13 @@ This file is the Master Orchestrator's persistent memory. It contains:
 4. mw search "relevant keywords" # Find reusable modules
 5. /gsd:plan-phase 1           # Plan first phase
 
-```
+```text
 
 **Status:** [TESTED] | **Added:** 2026-01-24
 
 ### Debug Pattern
 
-```
+```bash
 
 1. Check error message carefully
 2. Search module registry for similar patterns
@@ -77,13 +77,13 @@ This file is the Master Orchestrator's persistent memory. It contains:
 4. Fix in isolation, test, then integrate
 5. Document fix in BRAIN.md if novel
 
-```
+```text
 
 **Status:** [TESTED] | **Added:** 2026-01-24
 
 ### Context Recovery Pattern
 
-```
+```bash
 
 1. Read .planning/STATE.md
 2. Read .planning/ROADMAP.md (current phase)
@@ -91,13 +91,13 @@ This file is the Master Orchestrator's persistent memory. It contains:
 4. Run mw status for system health
 5. Continue from documented state
 
-```
+```text
 
 **Status:** [TESTED] | **Added:** 2026-01-24
 
 ### Safe Update Pattern
 
-```
+```bash
 
 1. python tools/auto_update.py check  # See what's available
 2. python tools/auto_update.py status # Current versions
@@ -106,7 +106,7 @@ This file is the Master Orchestrator's persistent memory. It contains:
 5. python tools/health_check.py       # Verify nothing broke
 6. python tools/auto_update.py rollback <component> # If needed
 
-```
+```text
 
 **Status:** [TESTED] | **Added:** 2026-01-24
 
@@ -118,12 +118,12 @@ This file is the Master Orchestrator's persistent memory. It contains:
 
 | Anti-Pattern | Why It's Bad | Better Approach |
 |--------------|--------------|-----------------|
-| Building without searching registry first | Wastes time reinventing | `mw search "keyword"` first |
-| Hardcoding paths in scripts | Breaks portability | Use Path variables from config |
-| Skipping GSD state files | Lose context between sessions | Always update STATE.md |
-| Running git commands without checking status | May commit unwanted files | Always `git status` first |
-| Updating dependencies without backup | Can break everything | Use `auto_update.py` with rollback |
-| Editing production n8n workflows directly | Risk of breaking live automations | Copy, edit, test, then deploy |
+  | Building without s... | Wastes time reinve... | `mw search "keywor... |  
+  | Hardcoding paths in ... | Breaks portability | Use Path variables f... |  
+  | Skipping GSD state... | Lose context betwe... | Always update STAT... |  
+  | Running git comman... | May commit unwante... | Always `git status... |  
+  | Updating dependencie... | Can break everything | Use `auto_update.py`... |  
+  | Editing production... | Risk of breaking l... | Copy, edit, test, ... |  
 
 ### Common Mistakes
 
@@ -132,7 +132,7 @@ This file is the Master Orchestrator's persistent memory. It contains:
 | Forgot to activate venv | `ModuleNotFoundError` | `source venv/bin/activate` |
 | Port already in use | `Address already in use` | `lsof -i :<port>` then kill |
 | Stale node_modules | Mysterious JS errors | `rm -rf node_modules && npm ci` |
-| Git merge conflicts in .planning/ | GSD state corrupted | Manually resolve, prefer latest |
+  | Git merge conflicts ... | GSD state corrupted | Manually resolve, pr... |  
 
 ---
 
@@ -236,15 +236,17 @@ This file is the Master Orchestrator's persistent memory. It contains:
 
 | Experiment | Hypothesis | Status |
 |------------|------------|--------|
-| Auto-scan after git commit | Would keep registry fresh automatically | [IDEA] |
+  | Auto-scan after git ... | Would keep registry ... | [IDEA] |  
 | Weekly brain cleanup | Remove [DEPRECATED] entries automatically | [IDEA] |
-| Cross-project dependency tracking | Know when updating one breaks another | [IDEA] |
+  | Cross-project depend... | Know when updating o... | [IDEA] |  
 
 ---
 
 ## Changelog
 
 | Date | Change | Category |
+| 2026-01-28 | Auto-learning: 15 entries | Learning |
+
 | 2026-01-27 | Auto-learning: 14 entries | Learning |
 |------|--------|----------|
 | 2026-01-24 | Initial brain created | Setup |
@@ -261,34 +263,33 @@ This file is the Master Orchestrator's persistent memory. It contains:
 **Adding a lesson:**
 
 ```bash
-python tools/brain.py add lesson "Your lesson here" --context "Where you learned it"
-
-```
+python tools/brain.py add lesson "Your lesson here" \
+    --context "Where you learned it"
+```text
 
 **Adding a pattern:**
 
 ```bash
 python tools/brain.py add pattern "Pattern name" --steps "1. First\n2. Second"
-
-```
+```text
 
 **Marking something deprecated:**
 
 ```bash
 python tools/brain.py deprecate "entry identifier"
 
-```
+```text
 
 **Cleaning up:**
 
 ```bash
 python tools/brain.py cleanup  # Removes [DEPRECATED] entries
 
-```
+```text
 
 **Reviewing:**
 
 ```bash
 python tools/brain.py review   # Shows entries needing attention
 
-```
+```text

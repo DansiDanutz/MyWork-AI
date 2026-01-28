@@ -63,7 +63,10 @@
 
 **Frontend (React/Next.js Layer):**
 
-- axios 1.6.5 - HTTP client for API calls to backend (`/Users/dansidanutz/Desktop/MyWork/frontend/lib/api.ts`)
+- axios 1.6.5 - HTTP client for API calls to backend
+
+  (`/Users/dansidanutz/Desktop/MyWork/frontend/lib/api.ts`)
+
 - date-fns 3.3.1 - Date manipulation and formatting
 - lucide-react 0.312.0 - Icon library for UI
 - clsx 2.1.0 - Conditional className utility
@@ -74,17 +77,28 @@
 - httpx 0.25.1+ - Async HTTP client for making requests to external APIs
 - feedparser 6.0.10 - RSS feed parsing for news aggregation
 - python-dateutil 2.8.2 - Date/time parsing and manipulation
-- SQLAlchemy 2.0.25 - ORM for database abstraction (`/Users/dansidanutz/Desktop/MyWork/backend/database/`)
+- SQLAlchemy 2.0.25 - ORM for database abstraction
+
+  (`/Users/dansidanutz/Desktop/MyWork/backend/database/`)
+
 - aiosqlite 0.19.0 - Async SQLite driver for database queries
 
 **AI/LLM Integration:**
 
-- anthropic 0.18.1 - Claude API client for content generation (`/Users/dansidanutz/Desktop/MyWork/backend/services/prompt_optimizer.py`)
-- dspy-ai 2.4.0 - Framework for optimizing LLM pipelines (uses DSPy signatures for prompt engineering)
+- anthropic 0.18.1 - Claude API client for content generation
+
+  (`/Users/dansidanutz/Desktop/MyWork/backend/services/prompt_optimizer.py`)
+
+- dspy-ai 2.4.0 - Framework for optimizing LLM pipelines (uses DSPy signatures
+
+  for prompt engineering)
 
 **Scraping & Data Collection:**
 
-- apify-client 1.6.0 - Apify web scraping platform client (`/Users/dansidanutz/Desktop/MyWork/backend/scrapers/youtube_scraper.py`)
+- apify-client 1.6.0 - Apify web scraping platform client
+
+  (`/Users/dansidanutz/Desktop/MyWork/backend/scrapers/youtube_scraper.py`)
+
 - google-api-python-client 2.118.0 - Google APIs (YouTube Data API)
 - google-auth-oauthlib 1.2.0 - OAuth authentication for Google services
 
@@ -101,8 +115,13 @@
 **Environment:**
 Configuration via environment variables in `.env` files:
 
-- `/Users/dansidanutz/Desktop/MyWork/backend/.env` - Backend API keys (Apify, Anthropic, YouTube, HeyGen, GitHub)
-- Frontend uses `NEXT_PUBLIC_API_URL` for backend connection (defaults to `http://localhost:8000`)
+- `/Users/dansidanutz/Desktop/MyWork/backend/.env` - Backend API keys (Apify,
+
+  Anthropic, YouTube, HeyGen, GitHub)
+
+- Frontend uses `NEXT_PUBLIC_API_URL` for backend connection (defaults to
+
+  `http://localhost:8000`)
 
 **Key configs required:**
 
@@ -114,8 +133,14 @@ Configuration via environment variables in `.env` files:
 
 **Build:**
 
-- `next.config.js` - Next.js configuration (allows images from ytimg.com, youtube.com, avatars.githubusercontent.com)
-- `tsconfig.json` - TypeScript compiler settings with path aliases (`@/*` → root directory)
+- `next.config.js` - Next.js configuration (allows images from ytimg.com,
+
+  youtube.com, avatars.githubusercontent.com)
+
+- `tsconfig.json` - TypeScript compiler settings with path aliases (`@/*` → root
+
+  directory)
+
 - `.env.example` - Template for required environment variables
 
 ## Database
@@ -155,4 +180,6 @@ Configuration via environment variables in `.env` files:
 
 ---
 
-*Stack analysis: 2026-01-24*
+## Stack Analysis
+
+**Generated:** 2026-01-24

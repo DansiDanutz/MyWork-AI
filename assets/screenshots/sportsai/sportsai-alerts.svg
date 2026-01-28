@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#111827"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#bg)"/>
+  <text x="50%" y="45%" dominant-baseline="middle" text-anchor="middle" fill="#f1f5f9" font-size="56" font-family="Arial, Helvetica, sans-serif">SportsAI — Alerts &amp; Notifications</text>
+  <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" fill="#94a3b8" font-size="28" font-family="Arial, Helvetica, sans-serif">Placeholder Preview — Replace with real screenshot</text>
+</svg>

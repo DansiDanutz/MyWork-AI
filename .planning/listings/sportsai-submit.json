@@ -1,0 +1,16 @@
+{
+  "title": "SportsAI - Sports Betting Arbitrage Platform",
+  "short_description": "Real-time sports betting arbitrage detection across 10+ sportsbooks. Find guaranteed profit opportunities instantly.",
+  "description": "Real-time detection and delivery of sports betting arbitrage opportunities across 10+ sportsbooks. When bookmakers disagree on odds, you win regardless of the outcome.\n\n## Core Features\n\n**Real-Time Arbitrage Detection**\n- Scans 10+ sportsbooks continuously\n- Sub-2-second latency for live events\n- Supports 2-way, 3-way, and multi-way markets\n\n**Intelligent Scoring**\nEvery opportunity is scored on:\n- Profit margin (how much you will make)\n- Bookmaker trust (reliability)\n- Odds stability (how long it will last)\n- Market liquidity (how much you can stake)\n\n**AI-Powered Insights**\n- Predictions and recommendations\n- Pattern recognition\n- Personalized alerts\n\n**Credit System**\nBuilt-in monetization with Winning Tips - high-confidence opportunities that users pay credits to unlock.\n\n## Tech Stack\n- Frontend: React Native, TypeScript, TanStack Query, Tailwind CSS\n- Backend: Node.js, NestJS/Fastify, TypeScript\n- Database: PostgreSQL, Redis\n- APIs: The Odds API, API-Sports, TheSportsDB, OpenRouter AI\n\n## What You Get\n- Full source code (MIT License)\n- 415/417 features implemented (99.5%)\n- Deployment guides (Vercel + Render)\n- 6 months of updates",
+  "category": "Finance",
+  "subcategory": "Trading Tools",
+  "tags": ["sports", "betting", "arbitrage", "trading", "ai", "real-time"],
+  "price": 399,
+  "license_type": "MIT",
+  "tech_stack": ["React Native", "TypeScript", "Node.js", "NestJS", "PostgreSQL", "Redis"],
+  "framework": "React Native + NestJS",
+  "requirements": "Node.js 20+, PostgreSQL 16+, Redis, API keys for The Odds API",
+  "demo_url": "https://sports-ai-one.vercel.app",
+  "documentation_url": "https://github.com/DansiDanutz/SportsAI/blob/main/Sports_Ai/PRODUCT_README.md",
+  "package_url": "https://github.com/DansiDanutz/SportsAI/releases/tag/v1.0.1"
+}

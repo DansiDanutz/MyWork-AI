@@ -22,7 +22,7 @@ python tools/module_registry.py search "api endpoint"
 python tools/module_registry.py list api_endpoint
 python tools/module_registry.py list component
 
-```
+```text
 
 ## Statistics
 
@@ -166,8 +166,14 @@ python tools/module_registry.py list component
 
 - **/pause** (my-games)
   - File: `autocoder/server/routers/agent.py:163`
-  - Notify scheduler of manual stop (to prevent auto-start during scheduled window)
-  - Tags: agent.py, pause, autocoder, api_endpoint, server
+  - Notify scheduler of manual stop (to prevent auto-start during scheduled
+
+```text
+window)
+
+```text
+
+- Tags: agent.py, pause, autocoder, api_endpoint, server
 
 - **/status** (my-games)
   - File: `autocoder/server/routers/agent.py:85`
@@ -242,10 +248,18 @@ python tools/module_registry.py list component
   - File: `autocoder/server/routers/filesystem.py:187`
   - for pattern in HIDDEN_PATTERNS:
 
-        if re.match(pattern, name, re.IGNORECASE):
-            retur
+```yaml
 
-  - Tags: list, autocoder, filesystem.py, api_endpoint, server
+```text
+
+if re.match(pattern, name, re.IGNORECASE):
+    retur
+
+```text
+
+```text
+
+- Tags: list, autocoder, filesystem.py, api_endpoint, server
 
 - **/models** (my-games)
   - File: `autocoder/server/routers/settings.py:46`
@@ -264,8 +278,14 @@ python tools/module_registry.py list component
 
 - **/stop** (my-games)
   - File: `autocoder/server/routers/agent.py:142`
-  - Notify scheduler of manual start (to prevent auto-stop during scheduled window)
-  - Tags: agent.py, stop, autocoder, api_endpoint, server
+  - Notify scheduler of manual start (to prevent auto-stop during scheduled
+
+```text
+window)
+
+```text
+
+- Tags: agent.py, stop, autocoder, api_endpoint, server
 
 - **/api/setup/status** (my-games)
   - File: `autocoder/server/main.py:159`
@@ -466,8 +486,14 @@ python tools/module_registry.py list component
 
 - **DevServerControl** (my-games)
   - File: `autocoder/ui/src/components/DevServerControl.tsx:62`
-  - DevServerControl provides start/stop controls for a project's development server.
-  - Tags: dev, control, components, devservercontrol.tsx, component
+  - DevServerControl provides start/stop controls for a project's development
+
+```text
+server.
+
+```text
+
+- Tags: dev, control, components, devservercontrol.tsx, component
 
 - **Layout** (my-games)
   - File: `apps/web/src/components/Layout.tsx:40`
@@ -1472,8 +1498,14 @@ python tools/module_registry.py list component
 
 - **usePresence** (my-games)
   - File: `apps/web/src/hooks/usePresence.ts:11`
-  - Presence hook for tracking user online status and receiving friend online notifications
-  - Tags: hook, usepresence.ts, presence, hooks, apps
+  - Presence hook for tracking user online status and receiving friend online
+
+```text
+notifications
+
+```text
+
+- Tags: hook, usepresence.ts, presence, hooks, apps
 
 - **useAuth** (my-games)
   - File: `apps/web/src/context/AuthContext.tsx:156`
@@ -1520,8 +1552,14 @@ python tools/module_registry.py list component
 
 - **useCelebration** (my-games)
   - File: `autocoder/ui/src/hooks/useCelebration.ts:148`
-  - Check if all features are complete (none pending or in progress, at least one done)
-  - Tags: usecelebration.ts, hook, autocoder, hooks, celebration
+  - Check if all features are complete (none pending or in progress, at least one
+
+```text
+done)
+
+```text
+
+- Tags: usecelebration.ts, hook, autocoder, hooks, celebration
 
 - **useAgentStatus** (my-games)
   - File: `autocoder/ui/src/hooks/useProjects.ts:113`
@@ -1764,12 +1802,19 @@ python tools/module_registry.py list component
   - File: `autocoder/server/routers/terminal.py:92`
   - Validate terminal ID format.
 
-    Args:
-        terminal_id: The terminal ID to validate
+```yaml
+Args:
 
-    Return
+```text
 
-  - Tags: rename, terminal.py, request, autocoder, schema
+terminal_id: The terminal ID to validate
+
+```text
+Return
+
+```text
+
+- Tags: rename, terminal.py, request, autocoder, schema
 
 - **registerSchema** (my-games)
   - File: `apps/api/src/lib/validators.ts:12`
@@ -1810,12 +1855,15 @@ python tools/module_registry.py list component
   - File: `autocoder/server/schemas.py:121`
   - id: int
 
-    priority: int
-    passes: bool
-    in_progress: bool
-    blocked: bool = False  # Comput
+```yaml
+priority: int
+passes: bool
+in_progress: bool
+blocked: bool = False  # Comput
 
-  - Tags: feature, bulk, schemas.py, create, autocoder
+```text
+
+- Tags: feature, bulk, schemas.py, create, autocoder
 
 - **WSLogMessage** (my-games)
   - File: `autocoder/server/schemas.py:252`
@@ -1941,10 +1989,9 @@ python tools/module_registry.py list component
   - File: `autocoder/server/schemas.py:466`
   - custom_command: str | None = None  # None clears the custom command
 
-
 # ============================
 
-  - Tags: dev, schemas.py, message, autocoder, schema
+- Tags: dev, schemas.py, message, autocoder, schema
 
 - **joinTournamentSchema** (my-games)
   - File: `apps/api/src/lib/validators.ts:164`
@@ -1978,12 +2025,19 @@ python tools/module_registry.py list component
   - File: `autocoder/server/routers/terminal.py:98`
   - Validate terminal ID format.
 
-    Args:
-        terminal_id: The terminal ID to validate
+```yaml
+Args:
 
-    Return
+```text
 
-  - Tags: response, terminal.py, info, autocoder, schema
+terminal_id: The terminal ID to validate
+
+```text
+Return
+
+```text
+
+- Tags: response, terminal.py, info, autocoder, schema
 
 - **forgotPasswordSchema** (my-games)
   - File: `apps/api/src/lib/validators.ts:40`
@@ -2199,21 +2253,27 @@ python tools/module_registry.py list component
   - File: `autocoder/server/routers/assistant_chat.py:69`
   - return bool(re.match(r'^[a-zA-Z0-9_-]{1,50}$', name))
 
-
 # ==========================================
 
-  - Tags: conversation, message, autocoder, schema, model
+- Tags: conversation, message, autocoder, schema, model
 
 - **CreateTerminalRequest** (my-games)
   - File: `autocoder/server/routers/terminal.py:86`
   - Validate terminal ID format.
 
-    Args:
-        terminal_id: The terminal ID to validate
+```yaml
+Args:
 
-    Return
+```text
 
-  - Tags: terminal.py, request, create, autocoder, schema
+terminal_id: The terminal ID to validate
+
+```text
+Return
+
+```text
+
+- Tags: terminal.py, request, create, autocoder, schema
 
 - **PathValidationResponse** (my-games)
   - File: `autocoder/server/schemas.py:351`
@@ -2440,9 +2500,17 @@ python tools/module_registry.py list component
   - File: `autocoder/server/services/dev_server_manager.py:81`
   - for pattern in SENSITIVE_PATTERNS:
 
-        line = re.sub(pattern, '[REDACTED]', line, flags=re.IGNOR
+```text
 
-  - Tags: service, dev, process, manager, services
+```text
+
+line = re.sub(pattern, '[REDACTED]', line, flags=re.IGNOR
+
+```text
+
+```text
+
+- Tags: service, dev, process, manager, services
 
 - **AgentProcessManager** (my-games)
   - File: `autocoder/server/services/process_manager.py:54`
@@ -2518,10 +2586,18 @@ python tools/module_registry.py list component
   - File: `backend/scrapers/github_trending.py:272`
   - return db.query(GitHubProject).filter(
 
-            GitHubProject.stars >= min_stars
-        ).order_
+```text
 
-  - Tags: scrapers, backend, get, github_trending.py, updated
+```text
+
+    GitHubProject.stars >= min_stars
+).order_
+
+```text
+
+```text
+
+- Tags: scrapers, backend, get, github_trending.py, updated
 
 - **update_draft** (ai-dashboard)
   - File: `backend/services/youtube_automation.py:207`
@@ -3239,9 +3315,12 @@ python tools/module_registry.py list component
   - File: `autocoder/server/routers/filesystem.py:316`
   - List available drives (Windows only).
 
-    Returns null on non-Windows platforms.
+```text
+Returns null on non-Windows platforms.
 
-  - Tags: get, windows, drives, autocoder, filesystem.py
+```text
+
+- Tags: get, windows, drives, autocoder, filesystem.py
 
 - **calculateEnPassantTargetAfterMove** (my-games)
   - File: `apps/api/src/game-engines/chess/game-state.ts:344`
@@ -3338,10 +3417,18 @@ python tools/module_registry.py list component
   - File: `autocoder/server/services/terminal_manager.py:695`
   - Remove a terminal session from the registry.
 
-    Args:
-        project_name: Name of the project
-  
-  - Tags: services, get, info, autocoder, terminal
+```yaml
+Args:
+
+```text
+
+project_name: Name of the project
+
+```text
+
+```text
+
+- Tags: services, get, info, autocoder, terminal
 
 - **formatDate** (my-games)
   - File: `apps/web/src/pages/TournamentDetailPage.tsx:175`
@@ -3380,9 +3467,13 @@ python tools/module_registry.py list component
   - File: `autocoder/prompts.py:141`
   - base_prompt = get_coding_prompt(project_dir)
 
-    # Minimal header - the base prompt already contain
+```markdown
 
-  - Tags: prompts.py, get, app, spec, autocoder
+# Minimal header - the base prompt already contain
+
+```text
+
+- Tags: prompts.py, get, app, spec, autocoder
 
 - **formatDate** (my-games)
   - File: `apps/web/src/pages/AdminDashboardPage.tsx:1009`
@@ -3457,8 +3548,14 @@ python tools/module_registry.py list component
 
 - **parseTimeControlString** (my-games)
   - File: `apps/api/src/game-engines/chess/time-controls.ts:169`
-  - Parse time control string (e.g., "10+5" for 10 minutes with 5 second increment)
-  - Tags: api, chess, control, string, time-controls.ts
+  - Parse time control string (e.g., "10+5" for 10 minutes with 5 second
+
+```text
+increment)
+
+```text
+
+- Tags: api, chess, control, string, time-controls.ts
 
 - **getCategoryColor** (my-games)
   - File: `autocoder/ui/src/components/FeatureCard.tsx:16`
@@ -3477,13 +3574,14 @@ python tools/module_registry.py list component
 
 - **get_single_feature_prompt** (my-games)
   - File: `autocoder/prompts.py:110`
+
   - ## ASSIGNED FEATURE
 
 **You are assigned to regression test Feature #{testing_feature_id}.**
 
 ### You
 
-  - Tags: feature, single, prompts.py, get, autocoder
+- Tags: feature, single, prompts.py, get, autocoder
 
 - **deleteConversation** (my-games)
   - File: `autocoder/ui/src/components/ConversationHistory.tsx:56`
@@ -3516,7 +3614,7 @@ python tools/module_registry.py list component
 
 Functions for loading prompt templates with proje
 
-  - Tags: prompts.py, get, dir, autocoder, project
+- Tags: prompts.py, get, dir, autocoder, project
 
 - **getStateDescription** (my-games)
   - File: `autocoder/ui/src/components/OrchestratorAvatar.tsx:132`
@@ -3754,8 +3852,14 @@ Functions for loading prompt templates with proje
 
 - **getLegalMoves** (my-games)
   - File: `apps/api/src/game-engines/chess/rules.ts:68`
-  - Get all legal moves for a color (excluding moves that would leave king in check)
-  - Tags: api, rules.ts, chess, get, game-engines
+  - Get all legal moves for a color (excluding moves that would leave king in
+
+```text
+check)
+
+```text
+
+- Tags: api, rules.ts, chess, get, game-engines
 
 - **getUserLevelInfo** (my-games)
   - File: `apps/api/src/services/levelService.ts:176`
@@ -3774,8 +3878,14 @@ Functions for loading prompt templates with proje
 
 - **validateDateRanges** (my-games)
   - File: `apps/web/src/pages/AdminDashboardPage.tsx:366`
-  - Helper function to get current datetime in format suitable for datetime-local input
-  - Tags: validate, admindashboardpage.tsx, date, pages, apps
+  - Helper function to get current datetime in format suitable for datetime-local
+
+```text
+input
+
+```text
+
+- Tags: validate, admindashboardpage.tsx, date, pages, apps
 
 - **formatCredits** (my-games)
   - File: `apps/web/src/pages/TournamentsPage.tsx:268`
@@ -3868,10 +3978,18 @@ Functions for loading prompt templates with proje
   - File: `autocoder/registry.py:318`
   - Get all registered projects.
 
-    Returns:
-        Dictionary mapping project names to their info di
+```yaml
+Returns:
 
-  - Tags: get, info, autocoder, project, registry.py
+```text
+
+Dictionary mapping project names to their info di
+
+```text
+
+```text
+
+- Tags: get, info, autocoder, project, registry.py
 
 - **updatedWallet** (my-games)
   - File: `apps/api/src/routes/admin.ts:1143`
@@ -4242,8 +4360,14 @@ Functions for loading prompt templates with proje
 
 - **getMinDateTime** (my-games)
   - File: `apps/web/src/pages/AdminDashboardPage.tsx:359`
-  - Helper function to get current datetime in format suitable for datetime-local input
-  - Tags: admindashboardpage.tsx, date, get, min, pages
+  - Helper function to get current datetime in format suitable for datetime-local
+
+```text
+input
+
+```text
+
+- Tags: admindashboardpage.tsx, date, get, min, pages
 
 - **setAuthCookie** (my-games)
   - File: `apps/api/src/middleware/auth.ts:14`
@@ -4483,10 +4607,18 @@ Functions for loading prompt templates with proje
   - File: `autocoder/progress.py:108`
   - SELECT
 
-                    COUNT(*) as total,
-                    SUM(CASE WHEN passes = 1 THEN 1 EL
+```text
 
-  - Tags: get, all, features, passing, progress.py
+```text
+
+            COUNT(*) as total,
+            SUM(CASE WHEN passes = 1 THEN 1 EL
+
+```text
+
+```text
+
+- Tags: get, all, features, passing, progress.py
 
 - **formatCredits** (my-games)
   - File: `apps/web/src/pages/TournamentDetailPage.tsx:194`
@@ -4612,10 +4744,18 @@ Functions for loading prompt templates with proje
   - File: `autocoder/registry.py:121`
   - Get the config directory: ~/.autocoder/
 
-    Returns:
-        Path to ~/.autocoder/ (created if it d
+```yaml
+Returns:
 
-  - Tags: registry, get, path, autocoder, registry.py
+```text
+
+Path to ~/.autocoder/ (created if it d
+
+```text
+
+```text
+
+- Tags: registry, get, path, autocoder, registry.py
 
 - **getCapturedPosition** (my-games)
   - File: `apps/web/src/pages/CheckersKingPromotionTestPage.tsx:187`
@@ -4995,8 +5135,14 @@ Functions for loading prompt templates with proje
 
 - **get_session** (my-games)
   - File: `autocoder/server/services/assistant_database.py:82`
-  - Use as_posix() for cross-platform compatibility with SQLite connection strings
-  - Tags: services, session, get, assistant_database.py, autocoder
+  - Use as_posix() for cross-platform compatibility with SQLite connection
+
+```text
+strings
+
+```text
+
+- Tags: services, session, get, assistant_database.py, autocoder
 
 - **formatTimeLong** (my-games)
   - File: `apps/api/src/game-engines/chess/time-controls.ts:154`
@@ -5020,9 +5166,12 @@ Functions for loading prompt templates with proje
   - File: `autocoder/server/services/spec_chat_session.py:465`
   - return self.complete
 
-    def get_messages(self) -> list[dict]:
+```python
+def get_messages(self) -> list[dict]:
 
-  - Tags: services, session, create, autocoder, spec_chat_session.py
+```text
+
+- Tags: services, session, create, autocoder, spec_chat_session.py
 
 - **calculateTriviaWinner** (my-games)
   - File: `apps/api/src/socket/matchHandler.ts:4448`
@@ -5045,7 +5194,7 @@ Functions for loading prompt templates with proje
 
 - **get_playwright_headless** (my-games)
   - File: `autocoder/client.py:41`
-  - Custom API endpoint (e.g., https://api.z.ai/api/anthropic)
+  - Custom API endpoint (e.g., <https://api.z.ai/api/anthropic>)
   - Tags: playwright, get, headless, autocoder, client.py
 
 - **getRawMoves** (my-games)

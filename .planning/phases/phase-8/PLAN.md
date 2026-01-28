@@ -5,7 +5,8 @@ Owner: Dansi (Product) + Codex (Implementation)
 
 ## Objective
 
-Unify payments, credits, and escrow so every order is consistent, auditable, and reversible.
+Unify payments, credits, and escrow so every order is consistent, auditable, and
+reversible.
 
 ## Scope
 

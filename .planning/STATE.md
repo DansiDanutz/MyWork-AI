@@ -5,25 +5,55 @@ Date: 2026-01-27
 ## Current Status
 
 - Marketplace + Brain + Credits are live and healthy.
-- **SportsAI ready for marketplace listing** (2026-01-27):
-  - PRODUCT_README.md created in Sports_Ai/
-  - MIT LICENSE added
-  - Version tag v1.0.0 created and pushed
-  - Listing copy prepared at `.planning/listings/sportsai.md`
-  - Live demo: <https://sports-ai-one.vercel.app>
-  - 415/417 features (99.5% complete)
-  - Recommended price: $399
+- **SportsAI listed on marketplace** (2026-01-27):
+  - Product page live:
+
+```yaml
+<https://frontend-hazel-ten-17.vercel.app/products/sportsai-sports-betting-arbitrage-platform>
+
+```text
+
+- Demo: <https://sports-ai-one.vercel.app>
+- Source release: <https://github.com/DansiDanutz/SportsAI/releases/tag/v1.0.1>
+- Version tag v1.0.1 created and pushed
+- Listing details: `.planning/listings/sportsai.md`
+- Price: $399 (MIT)
 - Backend fixed for reserved SQLAlchemy field.
 - Credits UI and submission audit UX are updated.
-- Marketplace codebase lives in the private `DansiDanutz/Marketplace` repo with public Vercel/Railway deploys.
-- Marketplace access checklist completed (2026-01-26): see `.planning/MARKETPLACE_ACCESS_CHECKLIST.md`
+- Marketplace codebase lives in the private `DansiDanutz/Marketplace` repo with
+
+  public Vercel/Railway deploys.
+
+- Marketplace access checklist completed (2026-01-26): see
+
+  `.planning/MARKETPLACE_ACCESS_CHECKLIST.md`
+
   - CI/CD workflow deployed to Marketplace repo (commit `7c9f4cb`)
   - Smoke tests pass: 2026-01-26 20:52 UTC - all endpoints healthy
   - Brain ingestion endpoint live: `/api/analytics/brain/ingest`
-- **Task Tracker deployed to Vercel** (2026-01-26): <https://task-tracker-weld-delta.vercel.app>
+- **Task Tracker deployed to Vercel** (2026-01-26):
+
+  <https://task-tracker-weld-delta.vercel.app>
+
   - CI/CD workflow "Deploy Task Tracker to Vercel" is live and tested
-  - Smoke tests pass: `/api/health` returns 200 OK with database connection validated
-  - Production UI loads with "Task Tracker" branding confirmed
+  - Smoke tests pass: `/api/health` returns 200 OK with database connection
+
+```text
+validated
+
+```text
+
+- Production UI loads with "Task Tracker" branding confirmed
+- **Marketplace platform updates completed** (2026-01-27):
+  - Resend email notifications added (purchase, sale, payment failed,
+
+```text
+subscription, seller verification)
+
+```text
+
+- Webhook idempotency tracking added (Stripe + Clerk) with migration
+- E2E checklist script added at `scripts/e2e_checklist.sh`
 
 ## Deployment Log
 
@@ -33,8 +63,36 @@ Date: 2026-01-27
   - Health endpoint: `/health`
   - Products API: `/api/products`
 - **2026-01-26:** Brain webhook integration deployed
-  - Endpoint: `https://mywork-ai-production.up.railway.app/api/analytics/brain/ingest`
-  - Status: Live, awaiting Task Tracker Vercel env var configuration
+  - Endpoint:
+
+```yaml
+`https://mywork-ai-production.up.railway.app/api/analytics/brain/ingest`
+
+```text
+
+- Status: Live, awaiting Task Tracker Vercel env var configuration
+- **2026-01-27:** Marketplace E2E checklist run
+  - Backend health ✅
+  - Frontend reachable ✅
+  - Products API ✅
+  - Categories endpoint ⚠️ (404, expected if not implemented)
+  - Featured flag visible in API ✅
+  
+## Marketplace Readiness (Confirmed 2026-01-27)
+
+- Backend health: ✅ Healthy
+- Stripe keys: ✅ Configured
+- Stripe webhook: ✅ Active (11 events)
+- Stripe subscriptions: ✅ 3 tiers created
+- Clerk webhook: ✅ Active (Svix signature required)
+- Admin secret: ✅ Configured
+- Database schema: ✅ Fixed (credit_balance, credit_currency)
+- Admin endpoint: ✅ Working
+
+## Email Notifications
+
+- ✅ Resend configured and enabled (RESEND_API_KEY + FROM_EMAIL set)
+- ✅ Test email verified (2026-01-27)
 
 ## Current Phase
 
@@ -54,6 +112,9 @@ Date: 2026-01-27
 
 ## Next Action
 
-- Submit SportsAI to Marketplace as first listing ($399).
+- Verify Marketplace backend deploy has new email + idempotency changes.
+- Complete Marketplace manual steps (env vars, migration, secrets).
 - Execute Phase 8 plan in `.planning/phases/phase-8/PLAN.md`.
-- Follow the cross-product roadmap in `.planning/MARKETPLACE_TASKTRACKER_PLAN.md`.
+- Follow the cross-product roadmap in
+
+  `.planning/MARKETPLACE_TASKTRACKER_PLAN.md`.

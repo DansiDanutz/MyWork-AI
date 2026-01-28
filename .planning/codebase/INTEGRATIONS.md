@@ -17,9 +17,15 @@
 - Anthropic Claude - LLM for script and content generation
   - SDK/Client: `anthropic` 0.18.1
   - Auth: `ANTHROPIC_API_KEY` environment variable
-  - Used in: `backend/services/prompt_optimizer.py`, `backend/services/youtube_automation.py`
-  - Models: claude-3-5-sonnet-20241022
-  - DSPy Framework: Uses DSPy 2.4.0 for prompt engineering and optimization
+  - Used in: `backend/services/prompt_optimizer.py`,
+
+```text
+`backend/services/youtube_automation.py`
+
+```text
+
+- Models: claude-3-5-sonnet-20241022
+- DSPy Framework: Uses DSPy 2.4.0 for prompt engineering and optimization
 
 **Video Generation:**
 
@@ -40,17 +46,29 @@
 **News Aggregation:**
 
 - RSS Feeds (multiple sources configured):
-  - TechCrunch AI: `https://techcrunch.com/category/artificial-intelligence/feed/`
-  - The Verge AI: `https://www.theverge.com/rss/ai-artificial-intelligence/index.xml`
-  - MIT Technology Review: `https://www.technologyreview.com/feed/`
-  - VentureBeat AI: `https://venturebeat.com/category/ai/feed/`
-  - Towards Data Science: `https://towardsdatascience.com/feed`
-  - Google AI Blog: `https://blog.google/technology/ai/rss/`
-  - OpenAI Blog: `https://openai.com/blog/rss/`
-  - Anthropic Research: `https://www.anthropic.com/feed.xml`
-  - Hugging Face Blog: `https://huggingface.co/blog/feed.xml`
-  - SDK/Client: `feedparser` 6.0.10
-  - Used in: `backend/scrapers/news_aggregator.py`
+  - TechCrunch AI:
+
+```yaml
+`https://techcrunch.com/category/artificial-intelligence/feed/`
+
+```text
+
+- The Verge AI:
+
+```yaml
+`https://www.theverge.com/rss/ai-artificial-intelligence/index.xml`
+
+```text
+
+- MIT Technology Review: `https://www.technologyreview.com/feed/`
+- VentureBeat AI: `https://venturebeat.com/category/ai/feed/`
+- Towards Data Science: `https://towardsdatascience.com/feed`
+- Google AI Blog: `https://blog.google/technology/ai/rss/`
+- OpenAI Blog: `https://openai.com/blog/rss/`
+- Anthropic Research: `https://www.anthropic.com/feed.xml`
+- Hugging Face Blog: `https://huggingface.co/blog/feed.xml`
+- SDK/Client: `feedparser` 6.0.10
+- Used in: `backend/scrapers/news_aggregator.py`
 
 **Hacker News API:**
 
@@ -77,16 +95,23 @@
   - Connection: SQLAlchemy ORM (`sqlalchemy` 2.0.25)
   - Async Driver: `aiosqlite` 0.19.0
   - Tables:
-    - `youtube_videos` - Scraped YouTube videos with engagement metrics
-    - `ai_news` - Aggregated news articles
-    - `github_projects` - Trending GitHub projects
-    - `youtube_automation` - YouTube video automation pipeline records
-    - `scraper_logs` - Execution logs of scraper jobs
+
+```markdown
+
+- `youtube_videos` - Scraped YouTube videos with engagement metrics
+- `ai_news` - Aggregated news articles
+- `github_projects` - Trending GitHub projects
+- `youtube_automation` - YouTube video automation pipeline records
+- `scraper_logs` - Execution logs of scraper jobs
+
+```text
 
 **File Storage:**
 
 - Thumbnail URLs stored in database (from YouTube, RSS feeds, GitHub)
-- Images proxied through Next.js (allowed domains: `i.ytimg.com`, `img.youtube.com`, `avatars.githubusercontent.com`)
+- Images proxied through Next.js (allowed domains: `i.ytimg.com`,
+
+  `img.youtube.com`, `avatars.githubusercontent.com`)
 
 **Caching:**
 
@@ -122,11 +147,19 @@
   - Level: INFO
   - Used in: All backend services and scrapers
 - Browser console (frontend)
-  - Error logging in API calls (`/Users/dansidanutz/Desktop/MyWork/frontend/app/page.tsx`)
+  - Error logging in API calls
+
+```text
+(`/Users/dansidanutz/Desktop/MyWork/frontend/app/page.tsx`)
+
+```text
 
 **Scraper Monitoring:**
 
-- `ScraperLog` model tracks execution status, items scraped, errors, and timestamps
+- `ScraperLog` model tracks execution status, items scraped, errors, and
+
+  timestamps
+
 - Accessible via `/api/stats` and `/api/scheduler/status` endpoints
 
 ## CI/CD & Deployment
@@ -156,11 +189,25 @@
 
 **Backend:**
 
-- `APIFY_API_KEY` - Required for YouTube scraping (get at: https://console.apify.com/)
-- `ANTHROPIC_API_KEY` - Required for Claude-powered content generation (get at: https://console.anthropic.com/)
-- `YOUTUBE_API_KEY` - Required for YouTube uploads (get at: https://console.cloud.google.com/apis/credentials)
-- `HEYGEN_API_KEY` - Required for video generation (get at: https://app.heygen.com/settings)
-- `GITHUB_TOKEN` - Optional, for higher GitHub API rate limits (generate at: https://github.com/settings/tokens)
+- `APIFY_API_KEY` - Required for YouTube scraping (get at:
+
+  <https://console.apify.com/>)
+
+- `ANTHROPIC_API_KEY` - Required for Claude-powered content generation (get at:
+
+  <https://console.anthropic.com/>)
+
+- `YOUTUBE_API_KEY` - Required for YouTube uploads (get at:
+
+  <https://console.cloud.google.com/apis/credentials>)
+
+- `HEYGEN_API_KEY` - Required for video generation (get at:
+
+  <https://app.heygen.com/settings>)
+
+- `GITHUB_TOKEN` - Optional, for higher GitHub API rate limits (generate at:
+
+  <https://github.com/settings/tokens>)
 
 **Secrets location:**
 

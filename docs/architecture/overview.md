@@ -1,276 +1,174 @@
-# MyWork Framework - Architecture Overview
+# Architecture Overview
 
-## 🏗️ System Architecture
+MyWork Framework is a layered system that routes different types of development tasks to the appropriate tool or engine.
 
-MyWork is built on a 3-layer architecture that separates concerns and enables powerful AI-driven development:
+## System Diagram
 
 ```mermaid
 graph TB
-    subgraph "🧠 USER LAYER"
-        USER[👨‍💻 Developer]
-        IDEA[💡 Project Idea]
+    subgraph "User Interface"
+        CLI[Claude Code CLI]
+        MW[mw.py CLI]
     end
 
-    subgraph "📋 LAYER 1: GSD (Get Shit Done)"
-        GSD_NEW[🆕 /gsd:new-project]
-        GSD_PLAN[📝 /gsd:plan-phase]
-        GSD_EXEC[⚡ /gsd:execute-phase]
-        GSD_VERIFY[✅ /gsd:verify-work]
+    subgraph "Master Orchestrator"
+        CLAUDE[CLAUDE.md<br/>Decision routing]
+    end
 
+    subgraph "Layer 1: GSD"
+        direction TB
+        GSD_NEW[new-project]
+        GSD_PLAN[plan-phase]
+        GSD_EXEC[execute-phase]
+        GSD_VERIFY[verify-work]
         GSD_NEW --> GSD_PLAN --> GSD_EXEC --> GSD_VERIFY
     end
 
-    subgraph "🔄 LAYER 2: WAT (Workflows/Agents/Tools)"
-        subgraph "2A: Workflows"
-            WAT_WORKFLOWS[📄 Markdown SOPs<br/>• create_n8n_workflow.md<br/>• use_autocoder.md<br/>• session_handoff.md]
-        end
-
-        subgraph "2B: Agents"
-            WAT_AGENTS[🤖 AI Decision-Makers<br/>• Read workflows<br/>• Execute tools<br/>• Handle failures]
-        end
-
-        subgraph "2C: Tools"
-            WAT_TOOLS[🛠️ Python Scripts<br/>• mw.py (unified CLI)<br/>• brain.py<br/>• health_check.py<br/>• autocoder_api.py]
-        end
+    subgraph "Layer 2: WAT"
+        WORKFLOWS[Workflows<br/>SOPs in markdown]
+        TOOLS[Tools<br/>Python scripts]
+        WORKFLOWS --> TOOLS
     end
 
-    subgraph "🚀 LAYER 3: AUTOMATION ENGINES"
-        AUTOCODER[🤖 Autocoder<br/>Long-running<br/>autonomous coding]
-        N8N[🔗 n8n Workflows<br/>Visual automation<br/>2,709 templates]
-        INTEGRATIONS[🔌 Integrations<br/>GitHub, Vercel<br/>Various APIs]
+    subgraph "Layer 3: Engines"
+        AUTOCODER[Autocoder<br/>Autonomous coding]
+        N8N[n8n<br/>Workflow automation]
     end
 
-    subgraph "🧠 INTELLIGENCE LAYER"
-        BRAIN[🧠 Brain<br/>Knowledge vault<br/>Auto-learning]
-        REGISTRY[📊 Module Registry<br/>Code indexing<br/>Reusable patterns]
-        ANALYTICS[📈 Analytics<br/>Usage tracking<br/>Pattern analysis]
+    subgraph "Self-Learning"
+        BRAIN[Brain<br/>Knowledge vault]
+        REGISTRY[Module Registry<br/>Code patterns]
     end
 
-    %% User Flow
-    USER --> IDEA
-    IDEA --> GSD_NEW
+    CLI --> CLAUDE
+    MW --> CLAUDE
+    CLAUDE --> GSD_NEW
+    CLAUDE --> WORKFLOWS
+    CLAUDE --> AUTOCODER
+    CLAUDE --> N8N
+    GSD_VERIFY --> BRAIN
+    TOOLS --> REGISTRY
 
-    %% GSD to WAT
-    GSD_PLAN --> WAT_WORKFLOWS
-    GSD_EXEC --> WAT_AGENTS
-    WAT_AGENTS --> WAT_TOOLS
-
-    %% WAT to Automation
-    WAT_TOOLS --> AUTOCODER
-    WAT_TOOLS --> N8N
-    WAT_TOOLS --> INTEGRATIONS
-
-    %% Intelligence Layer Connections
-    WAT_TOOLS <--> BRAIN
-    WAT_TOOLS <--> REGISTRY
-    GSD_EXEC --> ANALYTICS
-    AUTOCODER --> ANALYTICS
-    N8N --> ANALYTICS
-
-    %% Feedback Loop
-    ANALYTICS --> BRAIN
-    BRAIN --> WAT_WORKFLOWS
-    REGISTRY --> WAT_TOOLS
-
-    classDef userLayer fill:#e1f5fe
-    classDef gsdLayer fill:#f3e5f5
-    classDef watLayer fill:#e8f5e8
-    classDef autoLayer fill:#fff3e0
-    classDef intLayer fill:#fce4ec
-
-    class USER,IDEA userLayer
-    class GSD_NEW,GSD_PLAN,GSD_EXEC,GSD_VERIFY gsdLayer
-    class WAT_WORKFLOWS,WAT_AGENTS,WAT_TOOLS watLayer
-    class AUTOCODER,N8N,INTEGRATIONS autoLayer
-    class BRAIN,REGISTRY,ANALYTICS intLayer
-
+    style CLAUDE fill:#4A90D9,stroke:#333,color:#fff
+    style BRAIN fill:#34A853,stroke:#333,color:#fff
+    style AUTOCODER fill:#EA4335,stroke:#333,color:#fff
+    style N8N fill:#EA4B71,stroke:#333,color:#fff
 ```
 
-## 🔄 Data Flow & Decision Tree
+## Layer Details
+
+### Layer 1: GSD (Get Shit Done)
+
+**Purpose:** Project lifecycle management with phased execution.
+
+**Components:**
+- `/gsd:new-project` - Discovery, research, roadmap creation
+- `/gsd:plan-phase N` - Detailed task planning for a phase
+- `/gsd:execute-phase N` - Parallel execution with atomic commits
+- `/gsd:verify-work` - User acceptance testing
+
+**State Files:**
+- `.planning/PROJECT.md` - Vision and scope
+- `.planning/ROADMAP.md` - Phases and progress
+- `.planning/STATE.md` - Current context
+
+### Layer 2: WAT (Workflows, Agents, Tools)
+
+**Purpose:** Deterministic task execution with clear separation of concerns.
+
+**Components:**
+- **Workflows** (`workflows/`) - Markdown SOPs defining procedures
+- **Agents** - Claude acting as decision-maker
+- **Tools** (`tools/`) - Python scripts for execution
+
+**Philosophy:** AI handles reasoning, scripts handle execution. This prevents accuracy degradation over multi-step processes.
+
+### Layer 3: Automation Engines
+
+**Autocoder:**
+- Long-running autonomous coding
+- Multi-session persistence
+- Best for 20+ feature projects
+- Server: `http://127.0.0.1:8889`
+
+**n8n:**
+- Visual workflow automation
+- 2,709 templates available
+- Webhook processing, API integrations
+- MCP integration via n8n-mcp
+
+### Self-Learning System
+
+**Brain (Knowledge Vault):**
+- Captures lessons learned
+- Patterns that work, anti-patterns to avoid
+- Auto-learning from completed phases
+- File: `.planning/BRAIN.md`
+
+**Module Registry:**
+- Indexes reusable code patterns
+- 1,300+ modules across projects
+- Searchable by keyword or type
+- File: `.planning/module_registry.json`
+
+## Decision Flow
 
 ```mermaid
 flowchart TD
-    START[🎯 User Request] --> ANALYZE{📊 Analyze Request}
+    A[Request] --> B{Type?}
 
-    ANALYZE -->|New Project| NEW_PROJECT[🆕 /gsd:new-project<br/>Research → Requirements → Roadmap]
-    ANALYZE -->|Phase Work| PHASE_WORK[📋 /gsd:plan-phase → /gsd:execute-phase]
-    ANALYZE -->|Quick Task| QUICK_TASK[⚡ /gsd:quick OR WAT workflow]
-    ANALYZE -->|Long Coding| LONG_CODING[🤖 Autocoder with GSD tracking]
-    ANALYZE -->|Automation| AUTOMATION[🔗 n8n workflow creation]
+    B -->|New Project| C[GSD]
+    B -->|Quick Fix| D[GSD Quick]
+    B -->|Large Feature| E{20+ features?}
+    B -->|Automation| F[n8n]
 
-    NEW_PROJECT --> PLANNING[📝 Planning Phase]
-    PHASE_WORK --> PLANNING
+    E -->|Yes| G[Autocoder]
+    E -->|No| C
 
-    PLANNING --> EXECUTION{🔄 Execution Strategy}
+    C --> H[Plan → Execute → Verify]
+    D --> I[Quick task with guarantees]
+    G --> J[Multi-session coding]
+    F --> K[Visual workflow]
 
-    EXECUTION -->|< 20 features| GSD_EXECUTION[📋 GSD Phase-by-phase]
-    EXECUTION -->|20+ features| AUTOCODER_EXECUTION[🤖 Autocoder autonomous]
-    EXECUTION -->|Webhooks/APIs| N8N_EXECUTION[🔗 n8n visual workflows]
-
-    GSD_EXECUTION --> VERIFY[✅ Verify Work]
-    AUTOCODER_EXECUTION --> MONITOR[📊 Monitor Progress]
-    N8N_EXECUTION --> TEST[🧪 Test Workflow]
-
-    VERIFY --> LEARN[🧠 Brain Learning]
-    MONITOR --> LEARN
-    TEST --> LEARN
-
-    LEARN --> REGISTRY[📊 Update Module Registry]
-    LEARN --> PATTERNS[🔍 Extract Patterns]
-
-    PATTERNS --> IMPROVE[⚡ Improve Framework]
-    REGISTRY --> REUSE[♻️ Enable Code Reuse]
-
-    IMPROVE --> START
-    REUSE --> START
-
-    classDef start fill:#e1f5fe
-    classDef process fill:#f3e5f5
-    classDef execution fill:#e8f5e8
-    classDef intelligence fill:#fce4ec
-
-    class START start
-    class ANALYZE,PLANNING,EXECUTION process
-    class GSD_EXECUTION,AUTOCODER_EXECUTION,N8N_EXECUTION execution
-    class LEARN,REGISTRY,PATTERNS,IMPROVE intelligence
-
+    H --> L[Brain learns]
+    I --> L
+    J --> L
+    K --> L
 ```
 
-## 🧩 Component Interaction
-
-```mermaid
-sequenceDiagram
-    participant U as 👨‍💻 User
-    participant G as 📋 GSD
-    participant W as 🔄 WAT
-    participant A as 🤖 Autocoder
-    participant N as 🔗 n8n
-    participant B as 🧠 Brain
-    participant R as 📊 Registry
-
-    Note over U,R: Project Creation Flow
-
-    U->>G: /gsd:new-project "AI Dashboard"
-    G->>W: Spawn researchers (4 parallel)
-    W->>B: Search existing patterns
-    B-->>W: Return relevant knowledge
-    W->>G: Research complete
-    G->>G: Generate requirements & roadmap
-    G->>U: Present plan for approval
-
-    Note over U,R: Phase Execution Flow
-
-    U->>G: /gsd:execute-phase 3
-    G->>W: Spawn executor agents (parallel waves)
-    W->>A: Hand off to Autocoder (if 20+ features)
-    W->>N: Create workflows (if automation needed)
-
-    par Autocoder Work
-        A->>A: Generate code autonomously
-        A->>B: Log patterns and decisions
-    and n8n Work
-        N->>N: Process webhooks/APIs
-        N->>B: Track usage patterns
-    and WAT Work
-        W->>W: Execute deterministic tasks
-        W->>R: Index new modules
-    end
-
-    Note over U,R: Learning & Improvement
-
-    A->>B: "FastAPI + Auth pattern works"
-    N->>B: "Webhook validation template effective"
-    W->>B: "Auto-save with 3s debounce optimal"
-
-    B->>B: Synthesize learnings
-    B->>R: Update module recommendations
-    B->>W: Improve future workflows
-
-    R->>U: Suggest reusable code for new projects
+## Data Flow
 
 ```
-
-## 🎯 User Journey Map
-
-```mermaid
-journey
-    title MyWork Framework User Journey
-    section Discovery
-      Finds framework: 3: User
-      Reads README: 4: User
-      Watches demo video: 5: User
-    section Onboarding
-      Runs quick start: 5: User
-      Creates first project: 4: User, Framework
-      Completes tutorial: 5: User, Framework
-    section Regular Use
-      Plans new features: 5: User, GSD
-      Executes phases: 4: User, WAT, Autocoder
-      Reviews generated code: 4: User, Framework
-      Deploys to production: 5: User, Framework
-    section Mastery
-      Contributes patterns: 5: User, Brain
-      Creates workflows: 4: User, WAT
-      Mentors new users: 5: User, Community
-    section Framework Growth
-      Framework learns patterns: 5: Brain
-      Suggests improvements: 4: Registry
-      Accelerates development: 5: All Components
-
+User Request
+     │
+     ▼
+┌─────────────┐
+│   CLAUDE.md │ ← Routes to appropriate layer
+└─────────────┘
+     │
+     ├─────────────────┬─────────────────┐
+     ▼                 ▼                 ▼
+┌─────────┐      ┌─────────┐      ┌─────────┐
+│   GSD   │      │   WAT   │      │ Engines │
+└─────────┘      └─────────┘      └─────────┘
+     │                 │                 │
+     ▼                 ▼                 ▼
+┌─────────┐      ┌─────────┐      ┌─────────┐
+│.planning│      │ tools/  │      │ Project │
+│  STATE  │      │ output  │      │  code   │
+└─────────┘      └─────────┘      └─────────┘
+     │                 │                 │
+     └────────────────┬┴─────────────────┘
+                      ▼
+              ┌─────────────┐
+              │    Brain    │ ← Learns from all
+              └─────────────┘
 ```
 
-## 🏛️ Architecture Principles
+## Key Principles
 
-### 1. **Separation of Concerns**
-
-- **GSD**: What to build (orchestration, planning)
-- **WAT**: How to build it (execution, tools)
-- **Automation**: Scale the building (AI agents, workflows)
-
-### 2. **Progressive Enhancement**
-
-- Start simple (GSD phases)
-- Add automation when beneficial (Autocoder for 20+ features)
-- Scale with visual tools (n8n for complex integrations)
-
-### 3. **Continuous Learning**
-
-- **Brain** captures what works
-- **Registry** indexes reusable code
-- **Analytics** measures effectiveness
-
-### 4. **Human-AI Collaboration**
-
-- AI handles repetitive tasks
-- Human provides direction and judgment
-- Clear handoff points between human and AI work
-
-### 5. **Modularity & Reuse**
-
-- Everything is a reusable module
-- Clear interfaces between components
-- Plugin architecture for extensions
-
-## 🔧 Technical Stack
-
-| Layer | Technologies | Purpose |
-|-------|-------------|---------|
-| **Orchestration** | Python, Bash, Markdown | GSD workflow management |
-| **Execution** | Python tools, AI agents | Task automation |
-| **Code Generation** | Autocoder, OpenAI API | Autonomous coding |
-| **Workflow Automation** | n8n, JavaScript, APIs | Visual automation |
-| **Data Storage** | SQLite, JSON, Markdown | State and knowledge |
-| **Intelligence** | Vector embeddings, Analytics | Learning and patterns |
-| **Deployment** | Vercel, GitHub Actions | Production deployment |
-
-## 📊 Performance Characteristics
-
-- **Project Setup**: 2-5 minutes (vs 30-60 min manual)
-- **Feature Development**: 60-80% faster than manual coding
-- **Code Quality**: Consistent patterns, auto-testing
-- **Learning Curve**: 1-2 days to productivity
-- **Maintenance**: Self-healing and auto-updating
-
----
-
-*Next: [Quickstart →](../quickstart.md) | [Tutorials →](../tutorials/index.md) | [CLI Reference →](../api/mw-cli.md)*
+1. **Separation of Concerns** - Reasoning in AI, execution in scripts
+2. **Deterministic Tools** - Python scripts for reliable, testable operations
+3. **State Preservation** - `.planning/` tracks everything across sessions
+4. **Self-Improvement** - Brain learns from every completed task
+5. **Parallel Execution** - GSD runs independent tasks concurrently

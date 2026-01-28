@@ -11,16 +11,24 @@
 
 ### High-Level Overview
 
-```
-                                 +------------------+
+```text
 
-                                 |   CDN (Cloudflare)|
+```text
 
-                                 +--------+---------+
+```text
+                         +------------------+
 
-                                          |
+                         |   CDN (Cloudflare)|
 
-                                          v
+                         +--------+---------+
+
+                                  |
+
+                                  v
+
+```text
+
+```text
 +------------------------------------------------------------------+
 
 |                         FRONTEND LAYER                            |
@@ -32,9 +40,16 @@
 
 +------------------------------------------------------------------+
 
-                                          |
+```text
 
-                                          v
+```text
+                                  |
+
+                                  v
+
+```text
+
+```text
 +------------------------------------------------------------------+
 
 |                         API GATEWAY                               |
@@ -43,13 +58,20 @@
 
 +------------------------------------------------------------------+
 
-                                          |
+```text
 
-              +---------------------------+---------------------------+
+```text
+                                  |
 
-              |                           |                           |
+      +---------------------------+---------------------------+
 
-              v                           v                           v
+      |                           |                           |
+
+      v                           v                           v
+
+```text
+
+```text
 +------------------+          +------------------+          +------------------+
 
 |   AUTH SERVICE   |          | MARKETPLACE API  |          |   BRAIN API      |
@@ -61,9 +83,16 @@
 
 +------------------+          +------------------+          +------------------+
 
-              |                           |                           |
+```text
 
-              v                           v                           v
+```text
+      |                           |                           |
+
+      v                           v                           v
+
+```text
+
+```text
 +------------------------------------------------------------------+
 
 |                         DATA LAYER                                |
@@ -79,9 +108,17 @@
 
 +------------------------------------------------------------------+
 
-              |                           |                           |
+```text
 
-              v                           v                           v
+```text
+      |                           |                           |
+
+      v                           v                           v
+
+```text
+
+```markdown
+
 +------------------------------------------------------------------+
 
 |                      EXTERNAL SERVICES                            |
@@ -96,7 +133,7 @@
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 ---
 
@@ -105,226 +142,274 @@
 ### Core Tables
 
 ```sql
+
 -- Users & Authentication
 CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    clerk_id VARCHAR(255) UNIQUE NOT NULL,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    username VARCHAR(50) UNIQUE NOT NULL,
-    display_name VARCHAR(100),
-    avatar_url TEXT,
-    role VARCHAR(20) DEFAULT 'buyer', -- buyer, seller, admin
-    stripe_customer_id VARCHAR(255),
-    stripe_connect_id VARCHAR(255), -- For sellers
-    subscription_tier VARCHAR(20) DEFAULT 'free', -- free, pro, team, enterprise
-    subscription_expires_at TIMESTAMP,
-    verified_seller BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+
+```text
+
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+clerk_id VARCHAR(255) UNIQUE NOT NULL,
+email VARCHAR(255) UNIQUE NOT NULL,
+username VARCHAR(50) UNIQUE NOT NULL,
+display_name VARCHAR(100),
+avatar_url TEXT,
+role VARCHAR(20) DEFAULT 'buyer', -- buyer, seller, admin
+stripe_customer_id VARCHAR(255),
+stripe_connect_id VARCHAR(255), -- For sellers
+subscription_tier VARCHAR(20) DEFAULT 'free', -- free, pro, team, enterprise
+subscription_expires_at TIMESTAMP,
+verified_seller BOOLEAN DEFAULT FALSE,
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+
+```text
 );
 
 -- Seller Profiles
 CREATE TABLE seller_profiles (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    bio TEXT,
-    website VARCHAR(255),
-    github_username VARCHAR(50),
-    twitter_handle VARCHAR(50),
-    total_sales INTEGER DEFAULT 0,
-    total_revenue DECIMAL(12,2) DEFAULT 0,
-    average_rating DECIMAL(3,2) DEFAULT 0,
-    verification_level VARCHAR(20) DEFAULT 'basic', -- basic, verified, premium
-    payout_schedule VARCHAR(20) DEFAULT 'weekly', -- weekly, monthly
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+
+```text
+
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+bio TEXT,
+website VARCHAR(255),
+github_username VARCHAR(50),
+twitter_handle VARCHAR(50),
+total_sales INTEGER DEFAULT 0,
+total_revenue DECIMAL(12,2) DEFAULT 0,
+average_rating DECIMAL(3,2) DEFAULT 0,
+verification_level VARCHAR(20) DEFAULT 'basic', -- basic, verified, premium
+payout_schedule VARCHAR(20) DEFAULT 'weekly', -- weekly, monthly
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+
+```text
 );
 
 -- Products
 CREATE TABLE products (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    seller_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    title VARCHAR(200) NOT NULL,
-    slug VARCHAR(200) UNIQUE NOT NULL,
-    description TEXT NOT NULL,
-    short_description VARCHAR(500),
-    category VARCHAR(50) NOT NULL,
-    subcategory VARCHAR(50),
-    tags TEXT[], -- Array of tags
 
-    -- Pricing
-    price DECIMAL(10,2) NOT NULL,
-    currency VARCHAR(3) DEFAULT 'USD',
-    license_type VARCHAR(20) DEFAULT 'standard', -- standard, extended, enterprise
+```text
 
-    -- Technical Details
-    tech_stack TEXT[], -- ['Next.js', 'FastAPI', 'PostgreSQL']
-    framework VARCHAR(50),
-    requirements TEXT,
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+seller_id UUID REFERENCES users(id) ON DELETE CASCADE,
+title VARCHAR(200) NOT NULL,
+slug VARCHAR(200) UNIQUE NOT NULL,
+description TEXT NOT NULL,
+short_description VARCHAR(500),
+category VARCHAR(50) NOT NULL,
+subcategory VARCHAR(50),
+tags TEXT[], -- Array of tags
 
-    -- Files
-    preview_images TEXT[], -- Array of URLs
-    demo_url VARCHAR(255),
-    documentation_url VARCHAR(255),
-    package_url VARCHAR(255), -- R2/S3 URL to zip
-    package_size_bytes BIGINT,
+-- Pricing
+price DECIMAL(10,2) NOT NULL,
+currency VARCHAR(3) DEFAULT 'USD',
+license_type VARCHAR(20) DEFAULT 'standard', -- standard, extended, enterprise
 
-    -- Stats
-    views INTEGER DEFAULT 0,
-    sales INTEGER DEFAULT 0,
-    rating_average DECIMAL(3,2) DEFAULT 0,
-    rating_count INTEGER DEFAULT 0,
+-- Technical Details
+tech_stack TEXT[], -- ['Next.js', 'FastAPI', 'PostgreSQL']
+framework VARCHAR(50),
+requirements TEXT,
 
-    -- Status
-    status VARCHAR(20) DEFAULT 'draft', -- draft, pending, active, suspended
-    featured BOOLEAN DEFAULT FALSE,
-    featured_until TIMESTAMP,
+-- Files
+preview_images TEXT[], -- Array of URLs
+demo_url VARCHAR(255),
+documentation_url VARCHAR(255),
+package_url VARCHAR(255), -- R2/S3 URL to zip
+package_size_bytes BIGINT,
 
-    -- Metadata
-    version VARCHAR(20) DEFAULT '1.0.0',
-    last_updated_at TIMESTAMP,
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+-- Stats
+views INTEGER DEFAULT 0,
+sales INTEGER DEFAULT 0,
+rating_average DECIMAL(3,2) DEFAULT 0,
+rating_count INTEGER DEFAULT 0,
+
+-- Status
+status VARCHAR(20) DEFAULT 'draft', -- draft, pending, active, suspended
+featured BOOLEAN DEFAULT FALSE,
+featured_until TIMESTAMP,
+
+-- Metadata
+version VARCHAR(20) DEFAULT '1.0.0',
+last_updated_at TIMESTAMP,
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+
+```text
 );
 
 -- Product Versions (for updates)
 CREATE TABLE product_versions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-    version VARCHAR(20) NOT NULL,
-    changelog TEXT,
-    package_url VARCHAR(255) NOT NULL,
-    package_size_bytes BIGINT,
-    created_at TIMESTAMP DEFAULT NOW()
+
+```text
+
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+product_id UUID REFERENCES products(id) ON DELETE CASCADE,
+version VARCHAR(20) NOT NULL,
+changelog TEXT,
+package_url VARCHAR(255) NOT NULL,
+package_size_bytes BIGINT,
+created_at TIMESTAMP DEFAULT NOW()
+
+```text
 );
 
 -- Orders
 CREATE TABLE orders (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    order_number VARCHAR(20) UNIQUE NOT NULL, -- MW-2026-00001
-    buyer_id UUID REFERENCES users(id),
-    seller_id UUID REFERENCES users(id),
-    product_id UUID REFERENCES products(id),
 
-    -- Pricing
-    amount DECIMAL(10,2) NOT NULL,
-    currency VARCHAR(3) DEFAULT 'USD',
-    platform_fee DECIMAL(10,2) NOT NULL, -- 10%
-    stripe_fee DECIMAL(10,2) NOT NULL, -- 2.9% + $0.30
-    seller_amount DECIMAL(10,2) NOT NULL, -- amount - fees
+```text
 
-    -- Payment
-    stripe_payment_intent_id VARCHAR(255),
-    stripe_charge_id VARCHAR(255),
-    payment_status VARCHAR(20) DEFAULT 'pending', -- pending, completed, refunded, failed
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+order_number VARCHAR(20) UNIQUE NOT NULL, -- MW-2026-00001
+buyer_id UUID REFERENCES users(id),
+seller_id UUID REFERENCES users(id),
+product_id UUID REFERENCES products(id),
 
-    -- Fulfillment
-    download_url VARCHAR(255),
-    download_expires_at TIMESTAMP,
-    download_count INTEGER DEFAULT 0,
+-- Pricing
+amount DECIMAL(10,2) NOT NULL,
+currency VARCHAR(3) DEFAULT 'USD',
+platform_fee DECIMAL(10,2) NOT NULL, -- 10%
+stripe_fee DECIMAL(10,2) NOT NULL, -- 2.9% + $0.30
+seller_amount DECIMAL(10,2) NOT NULL, -- amount - fees
 
-    -- Status
-    status VARCHAR(20) DEFAULT 'pending', -- pending, completed, refunded, disputed
-    refund_reason TEXT,
-    refunded_at TIMESTAMP,
+-- Payment
+stripe_payment_intent_id VARCHAR(255),
+stripe_charge_id VARCHAR(255),
+payment_status VARCHAR(20) DEFAULT 'pending', -- pending, completed, refunded,
+failed
 
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+-- Fulfillment
+download_url VARCHAR(255),
+download_expires_at TIMESTAMP,
+download_count INTEGER DEFAULT 0,
+
+-- Status
+status VARCHAR(20) DEFAULT 'pending', -- pending, completed, refunded, disputed
+refund_reason TEXT,
+refunded_at TIMESTAMP,
+
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+
+```text
 );
 
 -- Payouts
 CREATE TABLE payouts (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    seller_id UUID REFERENCES users(id),
 
-    -- Amount
-    amount DECIMAL(10,2) NOT NULL,
-    currency VARCHAR(3) DEFAULT 'USD',
+```text
 
-    -- Stripe
-    stripe_transfer_id VARCHAR(255),
-    stripe_payout_id VARCHAR(255),
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+seller_id UUID REFERENCES users(id),
 
-    -- Status
-    status VARCHAR(20) DEFAULT 'pending', -- pending, processing, completed, failed
-    failure_reason TEXT,
+-- Amount
+amount DECIMAL(10,2) NOT NULL,
+currency VARCHAR(3) DEFAULT 'USD',
 
-    -- Period
-    period_start TIMESTAMP NOT NULL,
-    period_end TIMESTAMP NOT NULL,
+-- Stripe
+stripe_transfer_id VARCHAR(255),
+stripe_payout_id VARCHAR(255),
 
-    processed_at TIMESTAMP,
-    created_at TIMESTAMP DEFAULT NOW()
+-- Status
+status VARCHAR(20) DEFAULT 'pending', -- pending, processing, completed, failed
+failure_reason TEXT,
+
+-- Period
+period_start TIMESTAMP NOT NULL,
+period_end TIMESTAMP NOT NULL,
+
+processed_at TIMESTAMP,
+created_at TIMESTAMP DEFAULT NOW()
+
+```text
 );
 
 -- Reviews
 CREATE TABLE reviews (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
-    buyer_id UUID REFERENCES users(id),
-    product_id UUID REFERENCES products(id),
 
-    rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
-    title VARCHAR(200),
-    content TEXT,
+```text
 
-    -- Helpful votes
-    helpful_count INTEGER DEFAULT 0,
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+order_id UUID REFERENCES orders(id) ON DELETE CASCADE,
+buyer_id UUID REFERENCES users(id),
+product_id UUID REFERENCES products(id),
 
-    -- Status
-    status VARCHAR(20) DEFAULT 'active', -- active, hidden, flagged
-    seller_response TEXT,
-    seller_response_at TIMESTAMP,
+rating INTEGER NOT NULL CHECK (rating >= 1 AND rating <= 5),
+title VARCHAR(200),
+content TEXT,
 
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+-- Helpful votes
+helpful_count INTEGER DEFAULT 0,
+
+-- Status
+status VARCHAR(20) DEFAULT 'active', -- active, hidden, flagged
+seller_response TEXT,
+seller_response_at TIMESTAMP,
+
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+
+```text
 );
 
 -- Brain Knowledge
 CREATE TABLE brain_entries (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    contributor_id UUID REFERENCES users(id),
 
-    -- Content
-    type VARCHAR(50) NOT NULL, -- pattern, solution, lesson, tip
-    title VARCHAR(200) NOT NULL,
-    content TEXT NOT NULL,
-    context TEXT,
-    tags TEXT[],
+```text
 
-    -- Embedding
-    embedding_id VARCHAR(255), -- Pinecone ID
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+contributor_id UUID REFERENCES users(id),
 
-    -- Stats
-    usage_count INTEGER DEFAULT 0,
-    helpful_votes INTEGER DEFAULT 0,
+-- Content
+type VARCHAR(50) NOT NULL, -- pattern, solution, lesson, tip
+title VARCHAR(200) NOT NULL,
+content TEXT NOT NULL,
+context TEXT,
+tags TEXT[],
 
-    -- Status
-    status VARCHAR(20) DEFAULT 'active', -- active, deprecated, merged
+-- Embedding
+embedding_id VARCHAR(255), -- Pinecone ID
 
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+-- Stats
+usage_count INTEGER DEFAULT 0,
+helpful_votes INTEGER DEFAULT 0,
+
+-- Status
+status VARCHAR(20) DEFAULT 'active', -- active, deprecated, merged
+
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+
+```text
 );
 
 -- Subscriptions
 CREATE TABLE subscriptions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
 
-    tier VARCHAR(20) NOT NULL, -- pro, team, enterprise
+```text
 
-    stripe_subscription_id VARCHAR(255),
-    stripe_price_id VARCHAR(255),
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+user_id UUID REFERENCES users(id) ON DELETE CASCADE,
 
-    status VARCHAR(20) DEFAULT 'active', -- active, canceled, past_due
+tier VARCHAR(20) NOT NULL, -- pro, team, enterprise
 
-    current_period_start TIMESTAMP,
-    current_period_end TIMESTAMP,
-    cancel_at_period_end BOOLEAN DEFAULT FALSE,
-    canceled_at TIMESTAMP,
+stripe_subscription_id VARCHAR(255),
+stripe_price_id VARCHAR(255),
 
-    created_at TIMESTAMP DEFAULT NOW(),
-    updated_at TIMESTAMP DEFAULT NOW()
+status VARCHAR(20) DEFAULT 'active', -- active, canceled, past_due
+
+current_period_start TIMESTAMP,
+current_period_end TIMESTAMP,
+cancel_at_period_end BOOLEAN DEFAULT FALSE,
+canceled_at TIMESTAMP,
+
+created_at TIMESTAMP DEFAULT NOW(),
+updated_at TIMESTAMP DEFAULT NOW()
+
+```markdown
+
 );
 
 -- Indexes
@@ -339,39 +424,65 @@ CREATE INDEX idx_reviews_product ON reviews(product_id);
 CREATE INDEX idx_brain_type ON brain_entries(type);
 CREATE INDEX idx_brain_tags ON brain_entries USING GIN(tags);
 
-```
+```text
 
 ### Row-Level Security (Supabase)
 
 ```sql
+
 -- Users can only see their own data
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view own profile" ON users
-    FOR SELECT USING (auth.uid() = clerk_id);
 
+```text
+
+FOR SELECT USING (auth.uid() = clerk_id);
+
+```text
 CREATE POLICY "Users can update own profile" ON users
-    FOR UPDATE USING (auth.uid() = clerk_id);
 
+```text
+
+FOR UPDATE USING (auth.uid() = clerk_id);
+
+```text
 -- Products are public to view, but only seller can edit
 ALTER TABLE products ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Products are viewable by everyone" ON products
-    FOR SELECT USING (status = 'active');
 
+```text
+
+FOR SELECT USING (status = 'active');
+
+```text
 CREATE POLICY "Sellers can manage own products" ON products
-    FOR ALL USING (seller_id = auth.uid());
 
+```text
+
+FOR ALL USING (seller_id = auth.uid());
+
+```text
 -- Orders visible to buyer and seller
 ALTER TABLE orders ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Order visible to buyer" ON orders
-    FOR SELECT USING (buyer_id = auth.uid());
 
+```text
+
+FOR SELECT USING (buyer_id = auth.uid());
+
+```text
 CREATE POLICY "Order visible to seller" ON orders
-    FOR SELECT USING (seller_id = auth.uid());
 
-```
+```text
+
+FOR SELECT USING (seller_id = auth.uid());
+
+```markdown
+
+```text
 
 ---
 
@@ -381,10 +492,11 @@ CREATE POLICY "Order visible to seller" ON orders
 
 All authenticated endpoints require:
 
-```
+```text
+
 Authorization: Bearer <clerk_session_token>
 
-```
+```text
 
 ### Marketplace API Endpoints
 
@@ -437,7 +549,7 @@ POST   /api/user/become-seller          # Upgrade to seller
 
 POST   /api/webhooks/stripe             # Stripe events
 
-```
+```text
 
 ### Brain API Endpoints
 
@@ -455,7 +567,7 @@ GET    /api/brain/patterns?type=<>      # List patterns
 GET    /api/brain/mine                  # My contributions
 GET    /api/brain/stats                 # My brain stats
 
-```
+```text
 
 ### Example API Responses
 
@@ -472,29 +584,47 @@ GET    /api/brain/stats                 # My brain stats
   "category": "saas-starters",
   "tech_stack": ["Next.js", "FastAPI", "PostgreSQL"],
   "preview_images": [
-    "https://r2.mywork.ai/products/uuid/preview-1.png"
+
+```yaml
+
+"<https://r2.mywork.ai/products/uuid/preview-1.png">
+
+```text
+
   ],
-  "demo_url": "https://demo.mywork.ai/ai-dashboard",
+  "demo_url": "<https://demo.mywork.ai/ai-dashboard>",
   "seller": {
-    "id": "uuid",
-    "username": "devmaster",
-    "display_name": "Dev Master",
-    "avatar_url": "...",
-    "verified": true,
-    "rating": 4.8,
-    "total_sales": 142
+
+```yaml
+
+"id": "uuid",
+"username": "devmaster",
+"display_name": "Dev Master",
+"avatar_url": "...",
+"verified": true,
+"rating": 4.8,
+"total_sales": 142
+
+```text
+
   },
   "stats": {
-    "views": 1523,
-    "sales": 47,
-    "rating_average": 4.7,
-    "rating_count": 32
+
+```yaml
+
+"views": 1523,
+"sales": 47,
+"rating_average": 4.7,
+"rating_count": 32
+
+```text
+
   },
   "created_at": "2026-01-15T10:00:00Z",
   "updated_at": "2026-01-20T15:30:00Z"
 }
 
-```
+```text
 
 **POST /api/orders**
 
@@ -514,7 +644,7 @@ GET    /api/brain/stats                 # My brain stats
   "status": "pending"
 }
 
-```
+```text
 
 ---
 
@@ -522,7 +652,7 @@ GET    /api/brain/stats                 # My brain stats
 
 ### Stripe Connect Flow
 
-```
+```text
 
 1. SELLER ONBOARDING
 
@@ -542,9 +672,18 @@ GET    /api/brain/stats                 # My brain stats
 
    +----------------+     +----------------+     +----------------+
 
-           |
+```text
 
-           v
+```text
+
+   |
+
+   v
+
+```text
+
+```text
+
    +----------------+     +----------------+     +----------------+
 
    | Webhook:       | --> | Order marked   | --> | Download URL   |
@@ -562,7 +701,7 @@ GET    /api/brain/stats                 # My brain stats
 
    +----------------+     +----------------+     +----------------+
 
-```
+```text
 
 ### Stripe Integration Code
 
@@ -577,64 +716,90 @@ stripe.api_key = settings.STRIPE_SECRET_KEY
 
 class StripeService:
 
-    @staticmethod
-    async def create_connect_account(user_id: str, email: str) -> str:
-        """Create Stripe Connect Express account for seller."""
-        account = stripe.Account.create(
-            type="express",
-            email=email,
-            capabilities={
-                "card_payments": {"requested": True},
-                "transfers": {"requested": True},
-            },
-            metadata={"user_id": user_id}
-        )
-        return account.id
+```javascript
 
-    @staticmethod
-    async def create_onboarding_link(account_id: str) -> str:
-        """Generate Stripe Connect onboarding URL."""
-        link = stripe.AccountLink.create(
-            account=account_id,
-            refresh_url=f"{settings.APP_URL}/seller/onboarding/refresh",
-            return_url=f"{settings.APP_URL}/seller/onboarding/complete",
-            type="account_onboarding",
-        )
-        return link.url
+@staticmethod
+async def create_connect_account(user_id: str, email: str) -> str:
 
-    @staticmethod
-    async def create_payment_intent(
-        amount: int,  # cents
-        seller_connect_id: str,
-        platform_fee: int,  # cents (10%)
-        metadata: dict
-    ) -> stripe.PaymentIntent:
-        """Create payment with automatic split to seller."""
-        return stripe.PaymentIntent.create(
-            amount=amount,
-            currency="usd",
-            automatic_payment_methods={"enabled": True},
-            application_fee_amount=platform_fee,
-            transfer_data={"destination": seller_connect_id},
-            metadata=metadata
-        )
+```text
 
-    @staticmethod
-    async def process_payout(seller_id: str, amount: int) -> stripe.Transfer:
-        """Transfer funds to seller's connected account."""
+"""Create Stripe Connect Express account for seller."""
+account = stripe.Account.create(
+    type="express",
+    email=email,
+    capabilities={
+        "card_payments": {"requested": True},
+        "transfers": {"requested": True},
+    },
+    metadata={"user_id": user_id}
+)
+return account.id
 
-        # Get seller's connect account
+```text
+@staticmethod
+async def create_onboarding_link(account_id: str) -> str:
 
-        seller = await get_seller(seller_id)
+```text
 
-        return stripe.Transfer.create(
-            amount=amount,
-            currency="usd",
-            destination=seller.stripe_connect_id,
-            metadata={"seller_id": seller_id}
-        )
+"""Generate Stripe Connect onboarding URL."""
+link = stripe.AccountLink.create(
+    account=account_id,
+    refresh_url=f"{settings.APP_URL}/seller/onboarding/refresh",
+    return_url=f"{settings.APP_URL}/seller/onboarding/complete",
+    type="account_onboarding",
+)
+return link.url
 
-```
+```text
+@staticmethod
+async def create_payment_intent(
+
+```text
+
+amount: int,  # cents
+seller_connect_id: str,
+platform_fee: int,  # cents (10%)
+metadata: dict
+
+```text
+) -> stripe.PaymentIntent:
+
+```text
+
+"""Create payment with automatic split to seller."""
+return stripe.PaymentIntent.create(
+    amount=amount,
+    currency="usd",
+    automatic_payment_methods={"enabled": True},
+    application_fee_amount=platform_fee,
+    transfer_data={"destination": seller_connect_id},
+    metadata=metadata
+)
+
+```text
+@staticmethod
+async def process_payout(seller_id: str, amount: int) -> stripe.Transfer:
+
+```text
+
+"""Transfer funds to seller's connected account."""
+
+# Get seller's connect account
+
+seller = await get_seller(seller_id)
+
+return stripe.Transfer.create(
+    amount=amount,
+    currency="usd",
+    destination=seller.stripe_connect_id,
+    metadata={"seller_id": seller_id}
+)
+
+```text
+
+```text
+
+```text
 
 ### Webhook Handler
 
@@ -649,67 +814,112 @@ router = APIRouter()
 
 @router.post("/webhooks/stripe")
 async def stripe_webhook(request: Request):
-    payload = await request.body()
-    sig_header = request.headers.get("stripe-signature")
 
-    try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
-        )
-    except ValueError:
-        raise HTTPException(400, "Invalid payload")
-    except stripe.error.SignatureVerificationError:
-        raise HTTPException(400, "Invalid signature")
+```yaml
 
-    # Handle events
+payload = await request.body()
+sig_header = request.headers.get("stripe-signature")
 
-    if event.type == "payment_intent.succeeded":
-        await handle_payment_success(event.data.object)
+try:
 
-    elif event.type == "payment_intent.payment_failed":
-        await handle_payment_failed(event.data.object)
+```text
 
-    elif event.type == "account.updated":
-        await handle_account_updated(event.data.object)
+event = stripe.Webhook.construct_event(
+    payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
+)
 
-    elif event.type == "payout.paid":
-        await handle_payout_completed(event.data.object)
+```text
+except ValueError:
 
-    return {"status": "success"}
+```text
 
+raise HTTPException(400, "Invalid payload")
+
+```text
+except stripe.error.SignatureVerificationError:
+
+```text
+
+raise HTTPException(400, "Invalid signature")
+
+```text
+# Handle events
+
+if event.type == "payment_intent.succeeded":
+
+```text
+
+await handle_payment_success(event.data.object)
+
+```text
+elif event.type == "payment_intent.payment_failed":
+
+```text
+
+await handle_payment_failed(event.data.object)
+
+```text
+elif event.type == "account.updated":
+
+```text
+
+await handle_account_updated(event.data.object)
+
+```text
+elif event.type == "payout.paid":
+
+```text
+
+await handle_payout_completed(event.data.object)
+
+```text
+return {"status": "success"}
+
+
+```text
 
 async def handle_payment_success(payment_intent):
-    """Process successful payment."""
-    order_id = payment_intent.metadata.get("order_id")
 
-    # Update order status
+```markdown
 
-    order = await update_order(
-        order_id,
-        status="completed",
-        payment_status="completed",
-        stripe_charge_id=payment_intent.latest_charge
-    )
+"""Process successful payment."""
+order_id = payment_intent.metadata.get("order_id")
 
-    # Generate download URL
+# Update order status
 
-    download_url = await generate_download_url(order.product_id)
-    await update_order(order_id, download_url=download_url)
+order = await update_order(
 
-    # Update product sales count
+```text
 
-    await increment_product_sales(order.product_id)
+order_id,
+status="completed",
+payment_status="completed",
+stripe_charge_id=payment_intent.latest_charge
 
-    # Update seller stats
+```text
+)
 
-    await update_seller_stats(order.seller_id, order.seller_amount)
+# Generate download URL
 
-    # Send confirmation emails
+download_url = await generate_download_url(order.product_id)
+await update_order(order_id, download_url=download_url)
 
-    await send_purchase_confirmation(order)
-    await send_sale_notification(order)
+# Update product sales count
 
-```
+await increment_product_sales(order.product_id)
+
+# Update seller stats
+
+await update_seller_stats(order.seller_id, order.seller_amount)
+
+# Send confirmation emails
+
+await send_purchase_confirmation(order)
+await send_sale_notification(order)
+
+```text
+
+```text
 
 ---
 
@@ -717,7 +927,7 @@ async def handle_payment_success(payment_intent):
 
 ### Embedding & Search Flow
 
-```
+```yaml
 KNOWLEDGE INGESTION
 +------------------------------------------------------------------+
 
@@ -769,7 +979,7 @@ KNOWLEDGE QUERY
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 ### Brain Service Implementation
 
@@ -788,151 +998,184 @@ index = pinecone.Index("mywork-brain")
 
 class BrainService:
 
-    @staticmethod
-    async def learn(entry: BrainEntry, user_id: str) -> BrainEntry:
-        """Add knowledge to the brain."""
+```text
 
-        # Generate embedding
+@staticmethod
+async def learn(entry: BrainEntry, user_id: str) -> BrainEntry:
 
-        text = f"{entry.title}\n{entry.content}"
-        embedding = await generate_embedding(text)
+```text
+"""Add knowledge to the brain."""
 
-        # Store in Pinecone
+# Generate embedding
 
-        pinecone_id = f"brain_{entry.id}"
-        index.upsert(vectors=[{
-            "id": pinecone_id,
-            "values": embedding,
-            "metadata": {
-                "type": entry.type,
-                "title": entry.title,
-                "tags": entry.tags,
-                "contributor_id": user_id
-            }
-        }])
+text = f"{entry.title}\n{entry.content}"
+embedding = await generate_embedding(text)
 
-        # Store in PostgreSQL
+# Store in Pinecone
 
-        entry.embedding_id = pinecone_id
-        entry.contributor_id = user_id
-        await db.brain_entries.insert(entry)
+pinecone_id = f"brain_{entry.id}"
+index.upsert(vectors=[{
+    "id": pinecone_id,
+    "values": embedding,
+    "metadata": {
+        "type": entry.type,
+        "title": entry.title,
+        "tags": entry.tags,
+        "contributor_id": user_id
+    }
+}])
 
-        return entry
+# Store in PostgreSQL
 
-    @staticmethod
-    async def query(question: str, user_id: str) -> BrainResponse:
-        """Query the brain for answers."""
+entry.embedding_id = pinecone_id
+entry.contributor_id = user_id
+await db.brain_entries.insert(entry)
 
-        # Generate query embedding
+return entry
 
-        query_embedding = await generate_embedding(question)
+```text
 
-        # Search Pinecone
+@staticmethod
+async def query(question: str, user_id: str) -> BrainResponse:
 
-        results = index.query(
-            vector=query_embedding,
-            top_k=10,
-            include_metadata=True
-        )
+```text
+"""Query the brain for answers."""
 
-        # Fetch full entries
+# Generate query embedding
 
-        entry_ids = [r.id.replace("brain_", "") for r in results.matches]
-        entries = await db.brain_entries.fetch_many(entry_ids)
+query_embedding = await generate_embedding(question)
 
-        # Generate response with Claude
+# Search Pinecone
 
-        context = "\n\n".join([
-            f"[{e.type}] {e.title}:\n{e.content}"
-            for e in entries
-        ])
+results = index.query(
+    vector=query_embedding,
+    top_k=10,
+    include_metadata=True
+)
 
-        response = anthropic.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=1024,
-            messages=[{
-                "role": "user",
-                "content": f"""Based on the following knowledge base entries, answer the question.
+# Fetch full entries
 
+entry_ids = [r.id.replace("brain_", "") for r in results.matches]
+entries = await db.brain_entries.fetch_many(entry_ids)
+
+# Generate response with Claude
+
+context = "\n\n".join([
+    f"[{e.type}] {e.title}:\n{e.content}"
+    for e in entries
+])
+
+response = anthropic.messages.create(
+    model="claude-sonnet-4-20250514",
+    max_tokens=1024,
+    messages=[{
+        "role": "user",
+        "content": f"""Based on the following knowledge base entries, answer
+        the question.
+
+```text
+
+```yaml
 KNOWLEDGE BASE:
 {context}
 
 QUESTION: {question}
 
 Provide a helpful, practical answer. Reference specific entries when relevant."""
-            }]
-        )
 
-        # Track usage
+```text
 
-        for entry in entries:
-            await db.brain_entries.increment_usage(entry.id)
+```text
+    }]
+)
 
-        return BrainResponse(
-            answer=response.content[0].text,
-            sources=[{
-                "id": e.id,
-                "title": e.title,
-                "type": e.type
-            } for e in entries[:5]]
-        )
+# Track usage
 
-    @staticmethod
-    async def suggest(context: str, user_id: str) -> List[Suggestion]:
-        """Get contextual suggestions based on current work."""
+for entry in entries:
+    await db.brain_entries.increment_usage(entry.id)
 
-        # Generate embedding from context
+return BrainResponse(
+    answer=response.content[0].text,
+    sources=[{
+        "id": e.id,
+        "title": e.title,
+        "type": e.type
+    } for e in entries[:5]]
+)
 
-        embedding = await generate_embedding(context)
+```text
 
-        # Find similar patterns
+@staticmethod
+async def suggest(context: str, user_id: str) -> List[Suggestion]:
 
-        results = index.query(
-            vector=embedding,
-            top_k=5,
-            filter={"type": {"$in": ["pattern", "tip"]}},
-            include_metadata=True
-        )
+```text
+"""Get contextual suggestions based on current work."""
 
-        # Format suggestions
+# Generate embedding from context
 
-        suggestions = []
-        for r in results.matches:
-            if r.score > 0.7:  # Only high-relevance suggestions
-                entry = await db.brain_entries.fetch(r.id.replace("brain_", ""))
-                suggestions.append(Suggestion(
-                    title=entry.title,
-                    content=entry.content[:200] + "...",
-                    relevance=r.score,
-                    type=entry.type
-                ))
+embedding = await generate_embedding(context)
 
-        return suggestions
+# Find similar patterns
+
+results = index.query(
+    vector=embedding,
+    top_k=5,
+    filter={"type": {"$in": ["pattern", "tip"]}},
+    include_metadata=True
+)
+
+# Format suggestions
+
+suggestions = []
+for r in results.matches:
+    if r.score > 0.7:  # Only high-relevance suggestions
+        entry = await db.brain_entries.fetch(r.id.replace("brain_", ""))
+        suggestions.append(Suggestion(
+            title=entry.title,
+            content=entry.content[:200] + "...",
+            relevance=r.score,
+            type=entry.type
+        ))
+
+return suggestions
 
 
+```text
+
+```javascript
 async def generate_embedding(text: str) -> List[float]:
-    """Generate embedding using Claude."""
 
-    # Using Claude's embedding capability
+```text
 
-    # In production, might use dedicated embedding model
+"""Generate embedding using Claude."""
 
-    response = anthropic.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=1,
-        messages=[{
-            "role": "user",
-            "content": f"Generate a semantic embedding for: {text[:1000]}"
-        }]
-    )
+# Using Claude's embedding capability
 
-    # Parse embedding from response
+# In production, might use dedicated embedding model
 
-    # (This is simplified - actual implementation would use proper embedding API)
+response = anthropic.messages.create(
 
-    return [0.0] * 1536  # Placeholder
+```text
+model="claude-sonnet-4-20250514",
+max_tokens=1,
+messages=[{
+    "role": "user",
+    "content": f"Generate a semantic embedding for: {text[:1000]}"
+}]
 
-```
+```text
+
+)
+
+# Parse embedding from response
+
+# (This is simplified - actual implementation would use proper embedding API)
+
+return [0.0] * 1536  # Placeholder
+
+```markdown
+
+```text
 
 ---
 
@@ -946,23 +1189,34 @@ async def generate_embedding(text: str) -> List[float]:
   "framework": "nextjs",
   "regions": ["iad1", "sfo1", "cdg1"],
   "functions": {
-    "api/**/*.ts": {
-      "maxDuration": 30
-    }
+
+```text
+
+"api/**/*.ts": {
+  "maxDuration": 30
+}
+
+```yaml
   },
   "crons": [
-    {
-      "path": "/api/cron/process-payouts",
-      "schedule": "0 0 * * 1"
-    },
-    {
-      "path": "/api/cron/update-analytics",
-      "schedule": "0 * * * *"
-    }
+
+```text
+
+{
+  "path": "/api/cron/process-payouts",
+  "schedule": "0 0 ** 1"
+},
+{
+  "path": "/api/cron/update-analytics",
+  "schedule": "0 ** **"
+}
+
+```markdown
+
   ]
 }
 
-```
+```text
 
 ### Railway Configuration
 
@@ -995,7 +1249,7 @@ internalPort = 8001
 name = "worker"
 type = "worker"
 
-```
+```text
 
 ### Docker Configuration
 
@@ -1020,7 +1274,7 @@ COPY . .
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
-```
+```text
 
 ### Environment Variables
 
@@ -1065,7 +1319,7 @@ RESEND_API_KEY=re_xxx
 
 POSTHOG_API_KEY=phc_xxx
 
-```
+```text
 
 ---
 
@@ -1082,28 +1336,40 @@ from typing import List, Optional
 import re
 
 class ProductCreate(BaseModel):
-    title: str = Field(..., min_length=10, max_length=200)
-    description: str = Field(..., min_length=100, max_length=10000)
-    price: float = Field(..., ge=0, le=10000)
-    category: str
-    tech_stack: List[str] = Field(..., max_items=10)
 
-    @validator('title')
-    def sanitize_title(cls, v):
+```text
 
-        # Remove potentially dangerous characters
+title: str = Field(..., min_length=10, max_length=200)
+description: str = Field(..., min_length=100, max_length=10000)
+price: float = Field(..., ge=0, le=10000)
+category: str
+tech_stack: List[str] = Field(..., max_items=10)
 
-        return re.sub(r'[<>\"\';&]', '', v)
+@validator('title')
+def sanitize_title(cls, v):
 
-    @validator('category')
-    def validate_category(cls, v):
-        allowed = ['saas-starters', 'api-services', 'automation',
-                   'mobile-apps', 'full-applications', 'components']
-        if v not in allowed:
-            raise ValueError(f'Category must be one of: {allowed}')
-        return v
+```text
+# Remove potentially dangerous characters
 
-```
+return re.sub(r'[<>\"\';&]', '', v)
+
+```text
+
+@validator('category')
+def validate_category(cls, v):
+
+```text
+allowed = ['saas-starters', 'api-services', 'automation',
+           'mobile-apps', 'full-applications', 'components']
+if v not in allowed:
+    raise ValueError(f'Category must be one of: {allowed}')
+return v
+
+```text
+
+```markdown
+
+```text
 
 ### Rate Limiting
 
@@ -1118,21 +1384,40 @@ import time
 redis = Redis.from_url(settings.REDIS_URL)
 
 async def rate_limit(request: Request, limit: int = 100, window: int = 60):
-    """Rate limit by IP address."""
 
-    ip = request.client.host
-    key = f"rate_limit:{ip}"
+```text
 
-    current = redis.get(key)
+"""Rate limit by IP address."""
 
-    if current is None:
-        redis.setex(key, window, 1)
-    elif int(current) >= limit:
-        raise HTTPException(429, "Rate limit exceeded")
-    else:
-        redis.incr(key)
+ip = request.client.host
+key = f"rate_limit:{ip}"
 
-```
+current = redis.get(key)
+
+if current is None:
+
+```text
+redis.setex(key, window, 1)
+
+```text
+
+elif int(current) >= limit:
+
+```text
+raise HTTPException(429, "Rate limit exceeded")
+
+```text
+
+else:
+
+```text
+redis.incr(key)
+
+```text
+
+```markdown
+
+```text
 
 ### Code Scanning
 
@@ -1146,53 +1431,66 @@ import zipfile
 
 class SecurityService:
 
-    DANGEROUS_PATTERNS = [
-        r'eval\s*\(',
-        r'exec\s*\(',
-        r'__import__\s*\(',
-        r'subprocess\.',
-        r'os\.system\s*\(',
-        r'os\.popen\s*\(',
-    ]
+```text
 
-    @staticmethod
-    async def scan_package(package_path: str) -> ScanResult:
-        """Scan uploaded package for security issues."""
+DANGEROUS_PATTERNS = [
 
-        issues = []
+```text
+r'eval\s*\(',
+r'exec\s*\(',
+r'__import__\s*\(',
+r'subprocess\.',
+r'os\.system\s*\(',
+r'os\.popen\s*\(',
 
-        with tempfile.TemporaryDirectory() as tmpdir:
+```text
 
-            # Extract package
+]
 
-            with zipfile.ZipFile(package_path, 'r') as zip_ref:
-                zip_ref.extractall(tmpdir)
+@staticmethod
+async def scan_package(package_path: str) -> ScanResult:
 
-            # Scan for dangerous patterns
+```text
+"""Scan uploaded package for security issues."""
 
-            for root, dirs, files in os.walk(tmpdir):
-                for file in files:
-                    if file.endswith(('.py', '.js', '.ts')):
-                        filepath = os.path.join(root, file)
-                        file_issues = await scan_file(filepath)
-                        issues.extend(file_issues)
+issues = []
 
-            # Run bandit for Python
+with tempfile.TemporaryDirectory() as tmpdir:
 
-            result = subprocess.run(
-                ['bandit', '-r', tmpdir, '-f', 'json'],
-                capture_output=True
-            )
-            if result.returncode != 0:
-                bandit_issues = json.loads(result.stdout)
-                issues.extend(bandit_issues.get('results', []))
+    # Extract package
 
-        return ScanResult(
-            passed=len(issues) == 0,
-            issues=issues
-        )
+    with zipfile.ZipFile(package_path, 'r') as zip_ref:
+        zip_ref.extractall(tmpdir)
 
-```
+    # Scan for dangerous patterns
+
+    for root, dirs, files in os.walk(tmpdir):
+        for file in files:
+            if file.endswith(('.py', '.js', '.ts')):
+                filepath = os.path.join(root, file)
+                file_issues = await scan_file(filepath)
+                issues.extend(file_issues)
+
+    # Run bandit for Python
+
+    result = subprocess.run(
+        ['bandit', '-r', tmpdir, '-f', 'json'],
+        capture_output=True
+    )
+    if result.returncode != 0:
+        bandit_issues = json.loads(result.stdout)
+        issues.extend(bandit_issues.get('results', []))
+
+return ScanResult(
+    passed=len(issues) == 0,
+    issues=issues
+)
+
+```text
+
+```markdown
+
+```text
 
 ---
 
@@ -1208,10 +1506,21 @@ import structlog
 from config import settings
 
 structlog.configure(
-    processors=[
-        structlog.processors.TimeStamper(fmt="iso"),
-        structlog.processors.JSONRenderer()
-    ]
+
+```text
+
+processors=[
+
+```text
+structlog.processors.TimeStamper(fmt="iso"),
+structlog.processors.JSONRenderer()
+
+```text
+
+]
+
+```markdown
+
 )
 
 logger = structlog.get_logger()
@@ -1219,12 +1528,18 @@ logger = structlog.get_logger()
 # Usage
 
 logger.info("order_created",
-    order_id=order.id,
-    amount=order.amount,
-    seller_id=order.seller_id
+
+```text
+
+order_id=order.id,
+amount=order.amount,
+seller_id=order.seller_id
+
+```markdown
+
 )
 
-```
+```text
 
 ### Metrics
 
@@ -1237,17 +1552,29 @@ from prometheus_client import Counter, Histogram
 # Counters
 
 orders_total = Counter(
-    'orders_total',
-    'Total orders',
-    ['status']
+
+```text
+
+'orders_total',
+'Total orders',
+['status']
+
+```markdown
+
 )
 
 # Histograms
 
 order_amount = Histogram(
-    'order_amount_dollars',
-    'Order amounts',
-    buckets=[10, 50, 100, 250, 500, 1000, 5000]
+
+```text
+
+'order_amount_dollars',
+'Order amounts',
+buckets=[10, 50, 100, 250, 500, 1000, 5000]
+
+```markdown
+
 )
 
 # Usage
@@ -1255,7 +1582,7 @@ order_amount = Histogram(
 orders_total.labels(status='completed').inc()
 order_amount.observe(order.amount)
 
-```
+```text
 
 ### Health Checks
 
@@ -1269,20 +1596,35 @@ router = APIRouter()
 
 @router.get("/health")
 async def health_check():
-    checks = {
-        "database": await check_database(),
-        "redis": await check_redis(),
-        "stripe": await check_stripe(),
-    }
 
-    healthy = all(checks.values())
+```text
 
-    return {
-        "status": "healthy" if healthy else "unhealthy",
-        "checks": checks
-    }
+checks = {
 
-```
+```text
+"database": await check_database(),
+"redis": await check_redis(),
+"stripe": await check_stripe(),
+
+```text
+
+}
+
+healthy = all(checks.values())
+
+return {
+
+```text
+"status": "healthy" if healthy else "unhealthy",
+"checks": checks
+
+```text
+
+}
+
+```markdown
+
+```text
 
 ---
 
@@ -1319,4 +1661,5 @@ async def health_check():
 
 ---
 
-*This technical specification is a living document and will be updated as the platform evolves.*
+*This technical specification is a living document and will be updated as the
+platform evolves.*

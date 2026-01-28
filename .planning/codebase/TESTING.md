@@ -26,7 +26,9 @@
 **Location:**
 
 - No test files exist in the codebase
-- No `tests/`, `__tests__/`, or `.test.ts/.spec.ts` files found (outside node_modules)
+- No `tests/`, `__tests__/`, or `.test.ts/.spec.ts` files found (outside
+
+  node_modules)
 
 **Naming:**
 
@@ -38,19 +40,29 @@
 
 ## Manual Testing Approach
 
-Since automated tests are not configured, the project appears to rely on manual testing:
+Since automated tests are not configured, the project appears to rely on manual
+testing:
 
 **Frontend Manual Testing:**
 
 - Navigate through pages and verify UI renders correctly
-- Test data loading: visit `/` (dashboard), `/videos`, `/news`, `/projects`, `/youtube-bot`
+- Test data loading: visit `/` (dashboard), `/videos`, `/news`, `/projects`,
+
+  `/youtube-bot`
+
 - Verify buttons trigger correct API calls
 - Check error states display properly when API fails
 
 **Backend Manual Testing:**
 
-- Use FastAPI's built-in `/docs` endpoint for testing (accessible at `http://localhost:8000/docs`)
-- Manually trigger scrapers via endpoint: `POST /api/videos/scrape`, `POST /api/news/scrape`, `POST /api/projects/scrape`
+- Use FastAPI's built-in `/docs` endpoint for testing (accessible at
+
+  `http://localhost:8000/docs`)
+
+- Manually trigger scrapers via endpoint: `POST /api/videos/scrape`, `POST
+
+  /api/news/scrape`,`POST /api/projects/scrape`
+
 - Monitor database directly to verify data is persisted
 - Check scheduler status via `GET /api/scheduler/status`
 
@@ -86,15 +98,20 @@ Since automated tests are not configured, the project appears to rely on manual 
 
 ```python
 AI_SEARCH_QUERIES = [
-    "AI tutorial 2025",
-    "machine learning tutorial",
-    "ChatGPT tutorial",
 
-    # ... more queries
+```markdown
+
+"AI tutorial 2025",
+"machine learning tutorial",
+"ChatGPT tutorial",
+
+# ... more queries
+
+```text
 
 ]
 
-```
+```text
 
 **Location:**
 
@@ -107,19 +124,30 @@ AI_SEARCH_QUERIES = [
 
 **View Coverage:**
 
-- Not available - would typically use `pytest --cov` for Python or `jest --coverage` for TS
+- Not available - would typically use `pytest --cov` for Python or `jest
+
+  --coverage` for TS
 
 ## Test Types
 
 **Unit Tests:**
 
-- Should test: Individual functions like `formatNumber()`, scoring algorithms (`calculate_quality_score()`, `calculate_trending_score()`)
+- Should test: Individual functions like `formatNumber()`, scoring algorithms
+
+  (`calculate_quality_score()`, `calculate_trending_score()`)
+
 - Not currently implemented
 
 **Integration Tests:**
 
-- Should test: API endpoints with database (scrapers saving to DB, retrieving data)
-- Should test: End-to-end automation flow (create automation → generate video → upload)
+- Should test: API endpoints with database (scrapers saving to DB, retrieving
+
+  data)
+
+- Should test: End-to-end automation flow (create automation → generate video →
+
+  upload)
+
 - Not currently implemented
 
 **E2E Tests:**
@@ -156,7 +184,9 @@ AI_SEARCH_QUERIES = [
 3. Fill in prompt, target audience, video length
 4. Submit form - should create automation and show in list
 5. Verify status badges display correctly for different automation states
-6. Verify actions appear for each status (Edit for draft, Generate for pending, etc.)
+6. Verify actions appear for each status (Edit for draft, Generate for pending,
+
+etc.)
 
 **API Endpoint Testing (via Swagger UI at localhost:8000/docs):**
 
@@ -191,9 +221,18 @@ AI_SEARCH_QUERIES = [
 
 **Critical Areas Lacking Tests:**
 
-1. Video quality score calculation logic (`YouTubeVideo.calculate_quality_score()`)
-2. Project trending score calculation (`GitHubProject.calculate_trending_score()`)
-3. YouTube data parsing logic (`_parse_apify_video()`, `_parse_youtube_api_video()`)
+1. Video quality score calculation logic
+
+(`YouTubeVideo.calculate_quality_score()`)
+
+2. Project trending score calculation
+
+(`GitHubProject.calculate_trending_score()`)
+
+3. YouTube data parsing logic (`_parse_apify_video()`,
+
+`_parse_youtube_api_video()`)
+
 4. Prompt optimization and content generation (`PromptOptimizer` class)
 5. Video automation pipeline (`YouTubeAutomationService`)
 6. API request/response handling
@@ -215,30 +254,37 @@ AI_SEARCH_QUERIES = [
 ```bash
 npm install --save-dev vitest @vitest/ui jsdom @testing-library/react @testing-library/jest-dom
 
-```
+```text
 
 **Backend:**
 
 ```bash
 pip install pytest pytest-asyncio pytest-cov httpx[http2]
 
-```
+```text
 
 **Example Frontend Test Structure (would go in `__tests__/`):**
 
 ```typescript
+
 // app/__tests__/page.test.tsx
 import { render, screen } from '@testing-library/react';
 import Dashboard from '@/app/page';
 
 describe('Dashboard', () => {
   it('displays loading state initially', () => {
-    render(<Dashboard />);
-    expect(screen.getByRole('status')).toBeInTheDocument();
+
+```text
+
+render(<Dashboard />);
+expect(screen.getByRole('status')).toBeInTheDocument();
+
+```text
+
   });
 });
 
-```
+```text
 
 **Example Backend Test Structure (would go in `tests/`):**
 
@@ -251,16 +297,26 @@ from database.models import YouTubeVideo
 
 @pytest.mark.asyncio
 async def test_parse_apify_video():
-    scraper = YouTubeScraper()
-    item = {
-        "id": "video123",
-        "title": "Test Video",
-        "channelName": "Test Channel"
-    }
-    result = scraper._parse_apify_video(item, "test query")
-    assert result["video_id"] == "video123"
 
-```
+```yaml
+
+scraper = YouTubeScraper()
+item = {
+
+```text
+
+"id": "video123",
+"title": "Test Video",
+"channelName": "Test Channel"
+
+```text
+}
+result = scraper._parse_apify_video(item, "test query")
+assert result["video_id"] == "video123"
+
+```text
+
+```text
 
 ---
 

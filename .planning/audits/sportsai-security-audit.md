@@ -2,7 +2,7 @@
 
 **Date:** 2026-01-27
 **Tool:** gitleaks v8.x
-**Repository:** https://github.com/DansiDanutz/SportsAI
+**Repository:** <https://github.com/DansiDanutz/SportsAI>
 **Result:** FAILED - 20 secrets found
 
 ## Summary
@@ -39,21 +39,27 @@
 Use `git filter-repo` or BFG Repo-Cleaner to remove secrets from history.
 
 ```bash
+
 # Install BFG
+
 brew install bfg
 
 # Create list of secrets to remove
-echo "tC8KHr0EjGnTez5zyIVMwiU5" >> secrets.txt
-echo "4e9471d4c3e744a1982aa5af1b114ce7.f8lbPkqjVUsCHTrr" >> secrets.txt
+
+echo "[REDACTED_TOKEN_1]" >> secrets.txt
+echo "[REDACTED_TOKEN_2]" >> secrets.txt
 
 # Clean the repo
+
 bfg --replace-text secrets.txt
 
 # Force push (DESTRUCTIVE - breaks existing clones)
+
 git reflog expire --expire=now --all
 git gc --prune=now --aggressive
 git push origin --force --all
-```
+
+```text
 
 **Pros:** Preserves commit history structure
 **Cons:** Force push required, invalidates existing clones
@@ -63,18 +69,23 @@ git push origin --force --all
 Create a new repository with only the clean current state.
 
 ```bash
+
 # Remove git history
+
 rm -rf .git
 
 # Initialize fresh
+
 git init
 git add .
 git commit -m "Initial commit - SportsAI v1.0.0"
 
 # Push to new repo
+
 git remote add origin https://github.com/DansiDanutz/SportsAI-Clean.git
 git push -u origin main
-```
+
+```text
 
 **Pros:** Guaranteed clean, simple
 **Cons:** Loses git history
@@ -105,9 +116,11 @@ After fixing, verify:
 
 ## Recommendation
 
-**Use Option A (Clean Git History)** for a professional marketplace listing. The 293 commits of history have value, and cleaning is straightforward with BFG.
+**Use Option A (Clean Git History)** for a professional marketplace listing. The
+293 commits of history have value, and cleaning is straightforward with BFG.
 
 After cleaning:
+
 1. Rotate all leaked credentials
 2. Re-run gitleaks to verify
 3. Tag new release as v1.0.1

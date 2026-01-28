@@ -2,7 +2,8 @@
 
 > **You Build. You Share. You Sell.**
 >
-> An AI-powered development framework with a marketplace for production-ready projects.
+> An AI-powered development framework with a marketplace for production-ready
+projects.
 
 **Version:** 1.0
 **Date:** January 2026
@@ -12,7 +13,10 @@
 
 ## Executive Summary
 
-MyWork AI is a unified development framework that combines AI-powered project orchestration, autonomous coding, and workflow automation. Our vision extends beyond open-source tooling to create a **marketplace ecosystem** where developers can monetize their production-ready projects.
+MyWork AI is a unified development framework that combines AI-powered project
+orchestration, autonomous coding, and workflow automation. Our vision extends
+beyond open-source tooling to create a **marketplace ecosystem** where
+developers can monetize their production-ready projects.
 
 ### The Opportunity
 
@@ -39,7 +43,7 @@ MyWork AI is a unified development framework that combines AI-powered project or
 
 ## Table of Contents
 
-1. [Vision & Mission](#1-vision--mission)
+1. [Vision & Mission](#vision)
 2. [Market Analysis](#2-market-analysis)
 3. [Product Strategy](#3-product-strategy)
 4. [Technical Architecture](#4-technical-architecture)
@@ -56,7 +60,8 @@ MyWork AI is a unified development framework that combines AI-powered project or
 
 ### Vision
 
-**Democratize software development** by creating an ecosystem where anyone can build production-ready projects with AI assistance and monetize their creations.
+**Democratize software development** by creating an ecosystem where anyone can
+build production-ready projects with AI assistance and monetize their creations.
 
 ### Mission
 
@@ -131,7 +136,7 @@ MyWork AI is a unified development framework that combines AI-powered project or
 
 ### Product Tiers
 
-```
+```bash
 +------------------------------------------------------------------+
 
 |                         MyWork AI Platform                        |
@@ -156,7 +161,7 @@ MyWork AI is a unified development framework that combines AI-powered project or
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 ### Marketplace Categories
 
@@ -186,7 +191,8 @@ MyWork AI is a unified development framework that combines AI-powered project or
 
 ### System Overview
 
-```
+```text
+
 +------------------------------------------------------------------+
 
 |                        USERS & CLIENTS                            |
@@ -194,9 +200,18 @@ MyWork AI is a unified development framework that combines AI-powered project or
 
 +------------------------------------------------------------------+
 
-          |                 |                   |
+```text
 
-          v                 v                   v
+```text
+
+  |                 |                   |
+
+  v                 v                   v
+
+```text
+
+```text
+
 +------------------------------------------------------------------+
 
 |                         WEB LAYER                                 |
@@ -208,9 +223,18 @@ MyWork AI is a unified development framework that combines AI-powered project or
 
 +------------------------------------------------------------------+
 
-          |                 |                   |
+```text
 
-          v                 v                   v
+```text
+
+  |                 |                   |
+
+  v                 v                   v
+
+```text
+
+```text
+
 +------------------------------------------------------------------+
 
 |                        API LAYER                                  |
@@ -222,9 +246,18 @@ MyWork AI is a unified development framework that combines AI-powered project or
 
 +------------------------------------------------------------------+
 
-          |                 |                   |
+```text
 
-          v                 v                   v
+```text
+
+  |                 |                   |
+
+  v                 v                   v
+
+```text
+
+```text
+
 +------------------------------------------------------------------+
 
 |                       DATA LAYER                                  |
@@ -235,9 +268,18 @@ MyWork AI is a unified development framework that combines AI-powered project or
 
 +------------------------------------------------------------------+
 
-          |                 |                   |
+```text
 
-          v                 v                   v
+```text
+
+  |                 |                   |
+
+  v                 v                   v
+
+```text
+
+```text
+
 +------------------------------------------------------------------+
 
 |                    EXTERNAL SERVICES                              |
@@ -248,13 +290,13 @@ MyWork AI is a unified development framework that combines AI-powered project or
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 ### Core Components
 
 #### 4.1 Brain API (Centralized Intelligence)
 
-```
+```yaml
 Brain API Architecture
 +------------------------------------------------------------------+
 
@@ -294,11 +336,12 @@ API Endpoints:
 - GET  /brain/suggest    - Get recommendations
 - GET  /brain/patterns   - Discover patterns
 
-```
+```text
 
 #### 4.2 Marketplace Platform
 
-```
+```text
+
 Marketplace Architecture
 +------------------------------------------------------------------+
 
@@ -330,11 +373,11 @@ Database Schema (Simplified):
 - reviews (id, purchase_id, rating, comment)
 - payouts (id, seller_id, amount, status, stripe_transfer_id)
 
-```
+```text
 
 #### 4.3 Payment Flow (Stripe Connect)
 
-```
+```yaml
 Payment Flow
 +------------------------------------------------------------------+
 
@@ -366,7 +409,7 @@ Stripe Connect Setup:
 - Escrow: 7-day hold before payout
 - Fees: 2.9% + $0.30 (Stripe) + 10% (Platform)
 
-```
+```text
 
 ### Infrastructure
 
@@ -383,7 +426,8 @@ Stripe Connect Setup:
 
 ### Security Architecture
 
-```
+```text
+
 Security Layers
 +------------------------------------------------------------------+
 
@@ -411,7 +455,7 @@ Security Layers
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 ---
 
@@ -462,14 +506,15 @@ Security Layers
 
 **Framework (Open Source):**
 
-```
+```markdown
+
 MIT License with Commons Clause
 
 - Free to use, modify, distribute
 - Cannot sell the framework itself
 - Can sell projects built with it
 
-```
+```text
 
 **Marketplace Projects:**
 
@@ -591,35 +636,61 @@ MIT License with Commons Clause
 
 ### Launch Timeline
 
-```
+```text
+
 Month 1-2: Framework polish, community setup
 
-     |
+```text
 
-     v
+ |
+
+ v
+
+```text
+
 Month 3: Public launch (GitHub, ProductHunt)
 
-     |
+```text
 
-     v
+ |
+
+ v
+
+```text
+
 Month 4-5: Pro tier launch, first sellers
 
-     |
+```text
 
-     v
+ |
+
+ v
+
+```text
+
 Month 6: Marketplace beta
 
-     |
+```text
 
-     v
+ |
+
+ v
+
+```text
+
 Month 7-9: Marketing push, partnerships
 
-     |
+```text
 
-     v
+ |
+
+ v
+
+```text
+
 Month 10-12: Enterprise tier, API access
 
-```
+```text
 
 ---
 
@@ -627,7 +698,7 @@ Month 10-12: Enterprise tier, API access
 
 ### Revenue Model
 
-```
+```yaml
 Revenue Streams:
 +------------------------------------------------------------------+
 
@@ -649,7 +720,7 @@ Revenue Streams:
 
 +------------------------------------------------------------------+
 
-```
+```text
 
 ### Year 1 Projections (Conservative)
 
@@ -862,7 +933,7 @@ Revenue Streams:
 ## Contact
 
 **Project:** MyWork AI
-**Repository:** https://github.com/DansiDanutz/MyWork-AI
+**Repository:** <https://github.com/DansiDanutz/MyWork-AI>
 **Status:** Building in Public
 
 ---

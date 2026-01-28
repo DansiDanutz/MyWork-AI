@@ -6,9 +6,12 @@
 
 A complete ecosystem where builders can:
 
-1. Use powerful tools to build faster (Framework Tools - included with subscription)
-2. Sell their creations on the marketplace (Marketplace Products - for sale)
-3. Grow collective knowledge through the Brain
+1. Use powerful tools to build faster (Framework Tools - included with
+
+subscription)
+
+1. Sell their creations on the marketplace (Marketplace Products - for sale)
+2. Grow collective knowledge through the Brain
 
 ---
 
@@ -16,7 +19,8 @@ A complete ecosystem where builders can:
 
 ### Category 1: Framework Tools (Included with Subscription)
 
-Tools that help subscribers work better. **NOT for sale** - included with Pro/Enterprise.
+Tools that help subscribers work better. **NOT for sale** - included with
+Pro/Enterprise.
 
 | Tool | Purpose | Status |
 | ---- | ------- | ------ |
@@ -79,4 +83,5 @@ Complete projects built by users that can be listed and sold on the marketplace.
 
 ## Next Milestone
 
-First Marketplace Listing - List SportsAI or Games Platform to validate "You Sell, You Earn".
+First Marketplace Listing - List SportsAI or Games Platform to validate "You
+Sell, You Earn".

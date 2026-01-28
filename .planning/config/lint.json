@@ -1,0 +1,79 @@
+{
+  "markdownlint": true,
+  "pylint": true,
+  "eslint": true,
+  "prettier": true,
+  "black": true,
+  "flake8": true,
+  "auto_fix": true,
+  "ignore_patterns": [
+    "node_modules/**",
+    ".git/**",
+    "venv/**",
+    ".venv/**",
+    "__pycache__/**",
+    "*.pyc",
+    ".tmp/**",
+    "dist/**",
+    "build/**",
+    "coverage/**",
+    ".coverage",
+    ".pytest_cache/**",
+    ".mypy_cache/**",
+    ".tox/**",
+    "*.egg-info/**",
+    ".DS_Store",
+    "Thumbs.db",
+    "*.log"
+  ],
+  "file_extensions": {
+    "markdown": [".md", ".mdx"],
+    "python": [".py", ".pyi"],
+    "javascript": [".js", ".jsx", ".ts", ".tsx", ".mjs"],
+    "json": [".json"],
+    "yaml": [".yaml", ".yml"]
+  },
+  "tools": {
+    "markdownlint": {
+      "enabled": true,
+      "auto_fix": true,
+      "rules": {
+        "MD013": false,
+        "MD033": false,
+        "MD041": false
+      }
+    },
+    "black": {
+      "enabled": true,
+      "line_length": 88,
+      "target_versions": ["py39"]
+    },
+    "prettier": {
+      "enabled": true,
+      "print_width": 100,
+      "tab_width": 2,
+      "use_tabs": false
+    },
+    "eslint": {
+      "enabled": true,
+      "auto_fix": true,
+      "extensions": [".js", ".jsx", ".ts", ".tsx"]
+    },
+    "flake8": {
+      "enabled": true,
+      "max_line_length": 88,
+      "ignore": ["E203", "W503"]
+    }
+  },
+  "watch_mode": {
+    "debounce_seconds": 2.0,
+    "ignore_temporary_files": true,
+    "batch_processing": true
+  },
+  "reporting": {
+    "save_results": true,
+    "max_history": 1000,
+    "show_summary": true,
+    "verbose": false
+  }
+}

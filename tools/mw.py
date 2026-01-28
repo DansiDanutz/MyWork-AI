@@ -47,11 +47,22 @@ Brain Commands:
     mw brain learn           Discover new learnings automatically
     mw brain learn-deep      Weekly deep analysis
 
+Lint Commands:
+    mw lint scan             Scan all files for linting issues
+    mw lint scan --file X    Scan specific file
+    mw lint scan --dir X     Scan specific directory
+    mw lint watch            Watch files and auto-lint changes
+    mw lint fix              Fix all linting issues
+    mw lint config --show    Show current linting configuration
+    mw lint config --edit    Edit linting configuration
+    mw lint stats            Show linting statistics
+
 Examples:
     mw status                # Quick overview
     mw search "auth"         # Find authentication modules
     mw new my-app fastapi    # Create FastAPI project
     mw ac start my-app       # Start Autocoder
+    mw lint watch            # Auto-fix linting as you code
 """
 
 import os
@@ -458,6 +469,75 @@ def cmd_brain(args: List[str]):
         return 1
 
 
+def cmd_lint(args: List[str]):
+    """Auto-linting commands."""
+    if not args:
+        print("Usage: mw lint <scan|watch|fix|config|stats>")
+        print("\nCommands:")
+        print("   scan [--dir DIR] [--file FILE]  Scan for linting issues")
+        print("   watch [--dir DIR]               Watch files and auto-lint")
+        print("   fix [--dir DIR]                 Fix all linting issues")
+        print("   config [--show] [--edit]        Show or edit configuration")
+        print("   stats                           Show linting statistics")
+        return 1
+
+    subcmd = args[0]
+    remaining = args[1:]
+
+    if subcmd == "scan":
+        lint_args = ["--scan"]
+        for i in range(0, len(remaining), 2):
+            if i + 1 < len(remaining):
+                if remaining[i] == "--dir":
+                    lint_args.extend(["--dir", remaining[i + 1]])
+                elif remaining[i] == "--file":
+                    lint_args.extend(["--file", remaining[i + 1]])
+        return run_tool("auto_linting_agent", lint_args)
+
+    elif subcmd == "watch":
+        lint_args = ["--watch"]
+        for i in range(0, len(remaining), 2):
+            if i + 1 < len(remaining) and remaining[i] == "--dir":
+                lint_args.extend(["--dir", remaining[i + 1]])
+        return run_tool("auto_linting_agent", lint_args)
+
+    elif subcmd == "fix":
+        lint_args = ["--scan"]  # Scan mode with auto-fix enabled
+        for i in range(0, len(remaining), 2):
+            if i + 1 < len(remaining) and remaining[i] == "--dir":
+                lint_args.extend(["--dir", remaining[i + 1]])
+        return run_tool("auto_linting_agent", lint_args)
+
+    elif subcmd == "config":
+        config_path = MYWORK_ROOT / ".planning" / "config" / "lint.json"
+        if "--show" in remaining:
+            if config_path.exists():
+                print(f"📁 Lint Configuration: {config_path}")
+                print("-" * 50)
+                with open(config_path) as f:
+                    print(f.read())
+            else:
+                print("No lint configuration found. Run 'mw lint scan' to create default config.")
+            return 0
+        elif "--edit" in remaining:
+            if not config_path.exists():
+                print("No lint configuration found. Creating default config...")
+                return run_tool("auto_linting_agent", ["--config", str(config_path)])
+            subprocess.call(["code", str(config_path)])
+            print(f"✅ Opened lint config in VS Code: {config_path}")
+            return 0
+        else:
+            print("Usage: mw lint config [--show] [--edit]")
+            return 1
+
+    elif subcmd == "stats":
+        return run_tool("auto_linting_agent", ["--stats"])
+
+    else:
+        print(f"Unknown lint command: {subcmd}")
+        return 1
+
+
 def print_help():
     """Print help message."""
     print(__doc__)
@@ -489,6 +569,7 @@ def main():
         "autocoder": lambda: cmd_autocoder(args),
         "n8n": lambda: cmd_n8n(args),
         "brain": lambda: cmd_brain(args),
+        "lint": lambda: cmd_lint(args),
         "remember": lambda: cmd_brain(["add"] + args),  # Shortcut
         "help": lambda: print_help() or 0,
         "-h": lambda: print_help() or 0,
