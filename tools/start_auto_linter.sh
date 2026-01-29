@@ -1,6 +1,6 @@
 #!/bin/bash
-# Auto-Linting Agent Startup Script
-# Automatically starts the perfect auto-linter for all users
+# Auto-Linting Scheduler Startup Script
+# Starts scheduled markdownlint fixes (default: every 4 hours)
 
 set -e
 
@@ -8,7 +8,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TOOLS_DIR="$SCRIPT_DIR"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-echo "🚀 Starting Auto-Linting Agent with Perfect Markdown Support"
+echo "🚀 Starting Auto-Linting Scheduler"
 echo "   Project: $PROJECT_ROOT"
 echo "   Tools: $TOOLS_DIR"
 echo ""
@@ -20,40 +20,31 @@ if [[ ! -f "$TOOLS_DIR/auto_lint_fixer.py" ]]; then
     exit 1
 fi
 
-# Check if auto_linting_agent.py exists
-if [[ ! -f "$TOOLS_DIR/auto_linting_agent.py" ]]; then
-    echo "❌ Error: auto_linting_agent.py not found"
-    echo "   Expected at: $TOOLS_DIR/auto_linting_agent.py"
+# Check if auto_lint_scheduler.py exists
+if [[ ! -f "$TOOLS_DIR/auto_lint_scheduler.py" ]]; then
+    echo "❌ Error: auto_lint_scheduler.py not found"
+    echo "   Expected at: $TOOLS_DIR/auto_lint_scheduler.py"
     exit 1
 fi
 
-# Install required Python packages if needed
-echo "📦 Checking Python dependencies..."
-python3 -c "import watchdog" 2>/dev/null || {
-    echo "   Installing watchdog..."
-    pip3 install watchdog
-}
+# Optional git hooks (disabled by default)
+if [[ "${AUTO_LINT_INSTALL_HOOKS:-false}" == "true" ]]; then
+    GIT_HOOKS_DIR="$PROJECT_ROOT/.git/hooks"
+    if [[ -d "$GIT_HOOKS_DIR" ]]; then
+        echo "🔗 Installing git hooks for automatic linting..."
 
-echo "✅ Dependencies ready"
-echo ""
-
-# Set up git hooks for automatic linting
-GIT_HOOKS_DIR="$PROJECT_ROOT/.git/hooks"
-if [[ -d "$GIT_HOOKS_DIR" ]]; then
-    echo "🔗 Setting up git hooks for automatic linting..."
-
-    # Pre-commit hook
-    cat > "$GIT_HOOKS_DIR/pre-commit" << 'EOF'
+        # Pre-commit hook
+        cat > "$GIT_HOOKS_DIR/pre-commit" << 'EOF'
 #!/bin/bash
 # Auto-lint markdown files before commit
 echo "🔧 Auto-linting markdown files..."
 find . -name "*.md" -not -path "./.git/*" -not -path "./node_modules/*" -exec python3 tools/auto_lint_fixer.py {} \;
 EOF
-    chmod +x "$GIT_HOOKS_DIR/pre-commit"
-    echo "   ✅ Pre-commit hook installed"
+        chmod +x "$GIT_HOOKS_DIR/pre-commit"
+        echo "   ✅ Pre-commit hook installed"
 
-    # Pre-push hook
-    cat > "$GIT_HOOKS_DIR/pre-push" << 'EOF'
+        # Pre-push hook
+        cat > "$GIT_HOOKS_DIR/pre-push" << 'EOF'
 #!/bin/bash
 # Final lint check before push
 echo "🚀 Final markdown validation before push..."
@@ -65,40 +56,34 @@ if find . -name "*.md" -not -path "./.git/*" -not -path "./node_modules/*" -exec
 fi
 echo "✅ All markdown files perfect!"
 EOF
-    chmod +x "$GIT_HOOKS_DIR/pre-push"
-    echo "   ✅ Pre-push hook installed"
+        chmod +x "$GIT_HOOKS_DIR/pre-push"
+        echo "   ✅ Pre-push hook installed"
+    fi
+else
+    echo "🛑 Git hooks are disabled (linting kept out of git flow)"
 fi
 
-echo ""
-echo "🎯 Auto-Linting Agent Configuration:"
-echo "   ✅ Perfect markdown auto-fixing enabled"
-echo "   ✅ Git hooks installed for automatic operation"
-echo "   ✅ File watcher ready for real-time fixes"
-echo ""
-
-# Function to check if agent is already running
-is_agent_running() {
-    pgrep -f "auto_linting_agent.py.*--watch" >/dev/null 2>&1
+# Function to check if scheduler is already running
+is_scheduler_running() {
+    pgrep -f "auto_lint_scheduler.py.*--daemon" >/dev/null 2>&1
 }
 
-# Stop existing agent if running
-if is_agent_running; then
-    echo "🔄 Stopping existing auto-linting agent..."
-    pkill -f "auto_linting_agent.py.*--watch" || true
+# Stop existing scheduler if running
+if is_scheduler_running; then
+    echo "🔄 Stopping existing lint scheduler..."
+    pkill -f "auto_lint_scheduler.py.*--daemon" || true
     sleep 2
 fi
 
-# Start the agent in watch mode
-echo "👁️  Starting file watcher for automatic markdown fixing..."
-echo "   Monitoring: $PROJECT_ROOT"
-echo "   Perfect markdown quality guaranteed for all users!"
-echo ""
-echo "💡 The agent will now automatically fix markdown issues as you work."
-echo "   Press Ctrl+C to stop, or close this terminal to run in background."
+INTERVAL_SECONDS="${AUTO_LINT_INTERVAL_SECONDS:-14400}"
+INTERVAL_HOURS=$((INTERVAL_SECONDS / 3600))
+
+echo "⏱️  Starting scheduled markdown fixes..."
+echo "   Interval: ${INTERVAL_HOURS} hour(s) (override with AUTO_LINT_INTERVAL_SECONDS)"
 echo ""
 
-# Change to project root (agent uses cwd)
+# Change to project root (scheduler uses cwd)
 cd "$PROJECT_ROOT"
 
-# Start the auto-linting agent with perfect markdown support
-exec python3 "$TOOLS_DIR/auto_linting_agent.py" --watch
+# Start the auto-linting scheduler
+exec python3 "$TOOLS_DIR/auto_lint_scheduler.py" --daemon --interval "$INTERVAL_SECONDS"

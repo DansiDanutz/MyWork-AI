@@ -197,6 +197,7 @@ git log --oneline | grep "auto-lint"
 3. **Review commits** occasionally for unexpected changes
 4. **Customize intervals** based on team workflow
 5. **Use single runs** during development for immediate feedback
+6. **Safe mode**: Scheduler skips runs when the working tree is dirty (use `--force` to override)
 
 ## 🔗 Integration
 

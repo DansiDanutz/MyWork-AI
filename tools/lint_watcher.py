@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Lint Watcher Manager - Control the auto-linting agent
+Lint Scheduler Manager - Control the scheduled linting runner
 Part of the MyWork Framework
 
 Usage:
-    python tools/lint_watcher.py start    # Start in background
-    python tools/lint_watcher.py stop     # Stop running agent
+    python tools/lint_watcher.py start    # Start scheduler in background
+    python tools/lint_watcher.py stop     # Stop running scheduler
     python tools/lint_watcher.py status   # Check if running
-    python tools/lint_watcher.py restart  # Restart agent
+    python tools/lint_watcher.py restart  # Restart scheduler
     python tools/lint_watcher.py logs     # Show recent logs
 """
 
@@ -18,8 +18,9 @@ import signal
 import subprocess
 from pathlib import Path
 
-PID_FILE = Path(__file__).parent.parent / ".tmp" / "lint_watcher.pid"
-LOG_FILE = Path(__file__).parent.parent / ".tmp" / "lint_watcher.log"
+PID_FILE = Path(__file__).parent.parent / ".tmp" / "lint_scheduler.pid"
+LOG_FILE = Path(__file__).parent.parent / ".tmp" / "lint_scheduler.log"
+DEFAULT_INTERVAL = int(os.getenv("AUTO_LINT_INTERVAL_SECONDS", "14400"))
 
 
 def get_pid():
@@ -42,26 +43,32 @@ def is_running(pid):
 
 
 def start():
-    """Start the lint watcher in the background"""
+    """Start the lint scheduler in the background"""
     pid = get_pid()
     if pid and is_running(pid):
-        print(f"✅ Lint watcher is already running (PID: {pid})")
+        print(f"✅ Lint scheduler is already running (PID: {pid})")
         return
 
     # Ensure .tmp directory exists
     PID_FILE.parent.mkdir(exist_ok=True)
 
     # Start the agent
-    agent_script = Path(__file__).parent / "auto_linting_agent.py"
+    scheduler_script = Path(__file__).parent / "auto_lint_scheduler.py"
     project_root = Path(__file__).parent.parent
 
-    print("🚀 Starting lint watcher...")
+    print("🚀 Starting lint scheduler...")
 
     # Open log file
     log_handle = open(LOG_FILE, "a")
 
     process = subprocess.Popen(
-        ["python3", str(agent_script), "--watch"],
+        [
+            "python3",
+            str(scheduler_script),
+            "--daemon",
+            "--interval",
+            str(DEFAULT_INTERVAL),
+        ],
         cwd=str(project_root),
         stdout=log_handle,
         stderr=subprocess.STDOUT,
@@ -72,16 +79,16 @@ def start():
     with open(PID_FILE, "w") as f:
         f.write(str(process.pid))
 
-    print(f"✅ Lint watcher started (PID: {process.pid})")
+    print(f"✅ Lint scheduler started (PID: {process.pid})")
     print(f"   Log file: {LOG_FILE}")
     print(f"   Monitor with: python tools/lint_watcher.py status")
 
 
 def stop():
-    """Stop the lint watcher"""
+    """Stop the lint scheduler"""
     pid = get_pid()
     if not pid:
-        print("⚠️  Lint watcher is not running")
+        print("⚠️  Lint scheduler is not running")
         return
 
     if not is_running(pid):
@@ -89,7 +96,7 @@ def stop():
         PID_FILE.unlink()
         return
 
-    print(f"🛑 Stopping lint watcher (PID: {pid})...")
+    print(f"🛑 Stopping lint scheduler (PID: {pid})...")
     try:
         os.kill(pid, signal.SIGTERM)
         # Wait for process to terminate
@@ -103,16 +110,16 @@ def stop():
             time.sleep(0.5)
 
         PID_FILE.unlink(missing_ok=True)
-        print("✅ Lint watcher stopped")
+        print("✅ Lint scheduler stopped")
     except Exception as e:
-        print(f"❌ Error stopping lint watcher: {e}")
+        print(f"❌ Error stopping lint scheduler: {e}")
 
 
 def status():
-    """Check the status of the lint watcher"""
+    """Check the status of the lint scheduler"""
     pid = get_pid()
     if pid and is_running(pid):
-        print(f"✅ Lint watcher is RUNNING (PID: {pid})")
+        print(f"✅ Lint scheduler is RUNNING (PID: {pid})")
 
         # Check recent activity
         if LOG_FILE.exists():
@@ -128,7 +135,7 @@ def status():
                 print("   (no recent activity)")
         return True
     else:
-        print("⚠️  Lint watcher is NOT running")
+        print("⚠️  Lint scheduler is NOT running")
         if pid:
             print(f"   (stale PID file: {pid}, cleaning up)")
             PID_FILE.unlink(missing_ok=True)
@@ -136,7 +143,7 @@ def status():
 
 
 def restart():
-    """Restart the lint watcher"""
+    """Restart the lint scheduler"""
     stop()
     time.sleep(1)
     start()
@@ -156,12 +163,12 @@ def logs():
 def main():
     """Main CLI entry point"""
     if len(sys.argv) < 2:
-        print("Lint Watcher Manager - MyWork Framework")
+        print("Lint Scheduler Manager - MyWork Framework")
         print("\nUsage:")
-        print("  python tools/lint_watcher.py start    # Start in background")
-        print("  python tools/lint_watcher.py stop     # Stop running agent")
+        print("  python tools/lint_watcher.py start    # Start scheduler in background")
+        print("  python tools/lint_watcher.py stop     # Stop running scheduler")
         print("  python tools/lint_watcher.py status   # Check if running")
-        print("  python tools/lint_watcher.py restart  # Restart agent")
+        print("  python tools/lint_watcher.py restart  # Restart scheduler")
         print("  python tools/lint_watcher.py logs     # Show recent logs")
         sys.exit(1)
 

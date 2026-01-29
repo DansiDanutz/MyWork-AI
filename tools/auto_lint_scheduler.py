@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
 Automated Markdownlint Scheduler
-Runs markdownlint fixes every 15 minutes and commits changes automatically.
+Runs markdownlint fixes on a scheduled interval (default: every 4 hours).
 
 Usage:
     python3 tools/auto_lint_scheduler.py          # Run once
-    python3 tools/auto_lint_scheduler.py --daemon # Run continuously every 15 minutes
+    python3 tools/auto_lint_scheduler.py --daemon # Run continuously every 4 hours
 """
 
 import os
@@ -30,15 +30,16 @@ def run_command(command: list, cwd: str = ".") -> tuple[bool, str]:
         return False, str(e)
 
 
-def check_git_status() -> tuple[bool, int]:
-    """Check if there are uncommitted markdown changes."""
+def check_git_status() -> tuple[bool, int, int]:
+    """Check git status and count markdown changes."""
     success, output = run_command(["git", "status", "--porcelain"])
     if not success:
-        return False, 0
+        return False, 0, 0
 
     # Count markdown files with changes
     md_changes = sum(1 for line in output.split("\n") if line.strip().endswith(".md"))
-    return True, md_changes
+    total_changes = sum(1 for line in output.split("\n") if line.strip())
+    return True, md_changes, total_changes
 
 
 def run_lint_fixer() -> tuple[bool, dict]:
@@ -69,7 +70,18 @@ def run_lint_fixer() -> tuple[bool, dict]:
     return True, results
 
 
-def commit_changes(results: dict) -> bool:
+def _format_interval(seconds: int) -> str:
+    """Format an interval in seconds for logs/commit messages."""
+    if seconds % 3600 == 0:
+        hours = seconds // 3600
+        return f"{hours} hour{'s' if hours != 1 else ''}"
+    if seconds % 60 == 0:
+        minutes = seconds // 60
+        return f"{minutes} minute{'s' if minutes != 1 else ''}"
+    return f"{seconds} seconds"
+
+
+def commit_changes(results: dict, interval_seconds: int) -> bool:
     """Commit the linting fixes to git."""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
 
@@ -91,7 +103,10 @@ def commit_changes(results: dict) -> bool:
             description = rule_descriptions.get(rule, "various violations")
             commit_msg += f"- {rule}: {count} ({description})\n"
 
-    commit_msg += f"\nFiles: {results['files_fixed']}/{results['files_processed']} modified\nScheduled run: every 15 minutes"
+    commit_msg += (
+        f"\nFiles: {results['files_fixed']}/{results['files_processed']} modified"
+        f"\nScheduled run: every {_format_interval(interval_seconds)}"
+    )
 
     # Stage markdown files only
     success1, _ = run_command(["git", "add", "*.md", "**/*.md"])
@@ -111,15 +126,18 @@ def commit_changes(results: dict) -> bool:
             return False
 
 
-def run_single_cycle() -> bool:
+def run_single_cycle(interval_seconds: int, force: bool) -> bool:
     """Run a single lint-fix-commit cycle."""
     print(f"🔍 [{datetime.now().strftime('%H:%M:%S')}] Checking for markdown lint issues...")
 
     # Check if there are any changes first
-    git_ok, changes = check_git_status()
+    git_ok, _, total_changes = check_git_status()
     if not git_ok:
         print("❌ Error checking git status")
         return False
+    if total_changes > 0 and not force:
+        print("⏭️  Working tree is not clean. Skipping scheduled lint run.")
+        return True
 
     # Run lint fixer
     success, results = run_lint_fixer()
@@ -142,35 +160,40 @@ def run_single_cycle() -> bool:
         print(f"   • {rule}: {count}")
 
     # Commit changes
-    return commit_changes(results)
+    return commit_changes(results, interval_seconds)
 
 
 def main():
     """Main execution function."""
     parser = argparse.ArgumentParser(description="Automated markdownlint fixer")
-    parser.add_argument("--daemon", action="store_true", help="Run continuously every 15 minutes")
+    parser.add_argument("--daemon", action="store_true", help="Run continuously on the configured interval")
     parser.add_argument(
         "--interval",
         type=int,
-        default=900,  # 15 minutes in seconds
-        help="Interval between runs in seconds (default: 900)",
+        default=14400,  # 4 hours in seconds
+        help="Interval between runs in seconds (default: 14400)",
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Run even if the working tree has uncommitted changes",
     )
 
     args = parser.parse_args()
 
     if not args.daemon:
         # Single run
-        success = run_single_cycle()
+        success = run_single_cycle(args.interval, args.force)
         sys.exit(0 if success else 1)
 
     # Daemon mode
-    print(f"🤖 Starting automated lint fixer (every {args.interval//60} minutes)")
+    print(f"🤖 Starting automated lint fixer (every {_format_interval(args.interval)})")
     print("   Press Ctrl+C to stop")
 
     try:
         while True:
-            run_single_cycle()
-            print(f"⏰ Sleeping for {args.interval//60} minutes...")
+            run_single_cycle(args.interval, args.force)
+            print(f"⏰ Sleeping for {_format_interval(args.interval)}...")
             time.sleep(args.interval)
 
     except KeyboardInterrupt:

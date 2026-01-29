@@ -475,7 +475,7 @@ def cmd_brain(args: List[str]):
 
 
 def is_auto_linter_running() -> bool:
-    """Check if auto-linter is currently running."""
+    """Check if auto-lint scheduler is currently running."""
     import subprocess
     import platform
 
@@ -484,10 +484,10 @@ def is_auto_linter_running() -> bool:
             result = subprocess.run(
                 ["tasklist", "/FI", "IMAGENAME eq python.exe"], capture_output=True, text=True
             )
-            return "auto_linting_agent" in result.stdout
+            return "auto_lint_scheduler" in result.stdout
         else:
             result = subprocess.run(
-                ["pgrep", "-f", "auto_linting_agent.py.*--watch"], capture_output=True
+                ["pgrep", "-f", "auto_lint_scheduler.py.*--daemon"], capture_output=True
             )
             return result.returncode == 0
     except:
@@ -498,13 +498,12 @@ def cmd_lint(args: List[str]):
     """Auto-linting commands."""
     if not args:
         print("Usage: mw lint <command>")
-        print("\n🎯 Perfect Auto-Linting Commands:")
-        print(
-            "   start                           Start auto-linter (with perfect markdown support)"
-        )
-        print("   stop                            Stop auto-linter")
-        print("   status                          Check auto-linter status")
-        print("   install-hooks                   Install git hooks for automatic linting")
+        print("\n🎯 Scheduled Linting Commands:")
+        print("   start                           Start lint scheduler (every 4 hours)")
+        print("   stop                            Stop lint scheduler")
+        print("   status                          Check scheduler status")
+        print("   install-hooks                   Install git hooks for automatic linting (optional)")
+        print("   uninstall-hooks                 Remove git hooks to keep linting out of git flow")
         print("\n📋 Standard Linting Commands:")
         print("   scan [--dir DIR] [--file FILE]  Scan for linting issues")
         print("   watch [--dir DIR]               Watch files and auto-lint")
@@ -516,7 +515,7 @@ def cmd_lint(args: List[str]):
     subcmd = args[0]
     remaining = args[1:]
 
-    # Perfect Auto-Linting Commands
+    # Scheduled Auto-Linting Commands
     if subcmd == "start":
         # Use the new lint_watcher.py management tool
         watcher_script = TOOLS_DIR / "lint_watcher.py"
@@ -587,6 +586,26 @@ echo "✅ All markdown files perfect!"
         print("   ✅ Pre-commit: Auto-fixes markdown before each commit")
         print("   ✅ Pre-push: Ensures perfect markdown before push")
         print("\n💡 All users will now get automatic markdown fixing during git operations!")
+        return 0
+
+    elif subcmd == "uninstall-hooks":
+        print("🧹 Removing Git Hooks for Automatic Linting...")
+
+        git_hooks_dir = MYWORK_ROOT / ".git" / "hooks"
+        if not git_hooks_dir.exists():
+            print("❌ Error: Not a git repository or .git/hooks directory not found")
+            return 1
+
+        removed = False
+        for hook_name in ("pre-commit", "pre-push"):
+            hook_path = git_hooks_dir / hook_name
+            if hook_path.exists():
+                hook_path.unlink()
+                removed = True
+                print(f"✅ Removed {hook_name}")
+
+        if not removed:
+            print("ℹ️  No linting hooks found to remove")
         return 0
 
     # Standard Linting Commands
