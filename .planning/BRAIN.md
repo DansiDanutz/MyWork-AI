@@ -1,7 +1,7 @@
 # Master Orchestrator Brain
 
 > A living knowledge vault that grows with every project.
-> Last updated: 2026-01-28
+> Last updated: 2026-01-29
 
 ---
 
@@ -48,6 +48,7 @@ This file is the Master Orchestrator's persistent memory. It contains:
 | -------- | --------- | ------ |
 | [T] Use `npx` for n8... | Avoids stale cached ... | 2026-01-24 |
 | [T] Check Autocoder ... | Prevents corruption | 2026-01-24 |
+| [T] Verify n8n with `mw n8n status` and `mw n8n list` | Confirms API/DNS and workflow access (19 workflows) | 2026-01-29 |
 
 ---
 

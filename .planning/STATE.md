@@ -94,6 +94,9 @@ text
   (`projects/task-tracker/tests/integration/http.test.js`).
 - Task Tracker production integration tests executed successfully
   (2 tests passed).
+- n8n connection verified via `mw n8n status` and `mw n8n list`:
+  - Status: ok
+  - Workflows: 19 accessible
 
 ## Deployment Log
 
