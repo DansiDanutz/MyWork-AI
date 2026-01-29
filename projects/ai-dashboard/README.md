@@ -106,6 +106,18 @@ Uses API keys from environment (backend `.env` by default via `load_dotenv()`):
 - `SIMULATE_YOUTUBE_UPLOAD` - Set true to simulate uploads without OAuth
 - `GITHUB_TOKEN` - Higher rate limits
 
+## YouTube Upload Smoke Test
+
+Run from the backend directory after setting OAuth env vars:
+
+```bash
+cd backend
+python3 scripts/youtube_upload_smoke.py --dry-run
+
+# Real upload (requires --confirm and a local video file)
+python3 scripts/youtube_upload_smoke.py --video /path/to/video.mp4 --confirm
+```
+
 ## Development
 
 **Backend only:**

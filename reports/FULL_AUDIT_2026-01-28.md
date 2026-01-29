@@ -55,6 +55,8 @@ Date: 2026-01-28
 - Made Marketplace CI CLI versions configurable via repo variables.
 - Implemented YouTube upload (OAuth-based) in AI Dashboard automation.
 - Switched auto-linting to scheduled runs every 4 hours; hooks optional.
+- Added YouTube OAuth upload smoke test helper and ran production smoke tests.
+- Added Task Tracker HTTP integration test suite (Node test runner).
 
 ## Status Matrix (What Is Done)
 

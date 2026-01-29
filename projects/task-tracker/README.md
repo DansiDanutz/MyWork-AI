@@ -48,6 +48,7 @@ See `.env.example` for required values. Key items:
 - `npm run build` - production build
 - `npm run start` - start production server
 - `npm run lint` - lint
+- `npm run test:integration` - HTTP integration checks (set `TASK_TRACKER_BASE_URL`)
 
 ## Tech Stack
 
