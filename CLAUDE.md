@@ -316,24 +316,386 @@ MyWork/                         # Master Framework Root (CLEAN)
 - Source code (backend, frontend, etc.)
 - Start scripts
 - README.md
+- `CLAUDE.md` (if available) - Project-specific AI agent instructions
 
-**To switch between projects:**
+---
 
+## Active Projects Reference
+
+The MyWork framework has several active projects. When a user mentions working on a specific project, always check that project's `CLAUDE.md` for project-specific instructions.
+
+### AI Dashboard
+
+- **Purpose**: Personal AI command center for content aggregation and automation
+- **Status**: ✅ MVP Complete, Audited (Phase 7 complete)
+- **Tech Stack**: FastAPI + Next.js 14 + SQLite
+- **Key Files**:
+  - `projects/ai-dashboard/CLAUDE.md` - Project-specific AI instructions
+  - `projects/ai-dashboard/.planning/STATE.md` - Current status
+  - `projects/ai-dashboard/backend/scrapers/` - Scrapers (GitHub, YouTube, News)
+  - `projects/ai-dashboard/backend/services/youtube_automation.py` - YouTube upload automation
+  - `projects/ai-dashboard/frontend/app/` - Next.js 14 frontend
+- **When to use**: When working on YouTube scraping, news aggregation, or automation
+- **Important**: This is a personal tool (not multi-user SaaS), MVP is complete (focus on polish, not new features)
+- **Start**: `cd projects/ai-dashboard && ./start.sh` (Mac/Linux) or `start.bat` (Windows)
+
+### Task Tracker
+
+- **Purpose**: Framework validation project - demonstrates reusable patterns
+- **Status**: ✅ Deployed to production (Phase 8 complete)
+- **Tech Stack**: Next.js 15 + Prisma + PostgreSQL
+- **Key Files**:
+  - `projects/task-tracker/CLAUDE.md` - Project-specific AI instructions
+  - `projects/task-tracker/.planning/STATE.md` - Current status
+  - `projects/task-tracker/.planning/research/ARCHITECTURE.md` - Comprehensive architecture (30,534 bytes!)
+  - `projects/task-tracker/.planning/research/FEATURES.md` - Complete feature inventory (14,023 bytes!)
+  - `projects/task-tracker/.planning/research/PITFALLS.md` - Common mistakes to avoid (20,252 bytes!)
+- **When to use**: When validating framework patterns or task management features
+- **Important**: GitHub OAuth is mandatory, all code must meet reusability standards
+- **Start**: `cd projects/task-tracker && npm run dev`
+
+### Marketplace
+
+- **Purpose**: Future platform for sharing reusable modules from the brain
+- **Status**: ⚠️ Phase 10 (Planned) - Not implemented yet
+- **Tech Stack**: TBD (likely Next.js + Supabase)
+- **Key Files**:
+  - `tools/smoke_test_marketplace.py` - Test marketplace contributions
+  - `tools/marketplace_upload_previews.py` - Upload module previews
+  - `.github/workflows/smoke-marketplace.yml` - Marketplace smoke tests
+- **When to use**: N/A (not yet implemented)
+- **Current Focus**: Build reusable patterns in task-tracker and ai-dashboard first
+
+---
+
+## Symlinked/External Projects
+
+The following projects are symlinked from external locations (outside the framework):
+
+### sports-ai
+- **Target**: `/Users/dansidanutz/Desktop/SportsAi`
+- **Purpose**: Sports betting platform
+- **Status**: Live
+- **Note**: Has own `.planning/` directory, GSD commands work
+
+### games
+- **Target**: `/Users/dansidanutz/Desktop/Games`
+- **Purpose**: Gaming platform
+- **Status**: 326 features, Live
+- **Note**: Legacy project, may not follow all framework conventions
+
+### my-games
+- **Target**: `/Users/dansidanutz/Desktop/GamesAI`
+- **Purpose**: Games AI platform
+- **Status**: Active development
+- **Note**: Has autonomous agent (agent.py)
+
+**Working with Symlinked Projects**:
+- Symlinks work like regular directories for most operations
+- GSD commands work if symlinked project has `.planning/` directory
+- Be aware that symlinked projects may have different structure
+- Always check symlinked project's documentation first
+
+---
+
+## Marketplace (Phase 10 - Future)
+
+### What is the Marketplace?
+
+The marketplace is a **future platform** (Phase 10) where users can:
+
+- **Share reusable modules** from the brain with the community
+- **Discover patterns** contributed by other users
+- **Download verified, tested components** for their own projects
+- **Contribute back** to the MyWork ecosystem
+- **Monetize expertise** through premium modules and templates
+
+**Current Status**: ⚠️ **Planned** - The marketplace does not exist yet
+
+### Marketplace Vision
+
+The marketplace will integrate with:
+
+1. **Brain Knowledge Vault** (`/Users/dansidanutz/Desktop/MyWork/.planning/BRAIN.md`)
+   - Modules captured from completed work
+   - Tested patterns and components
+   - Proven architectures and workflows
+
+2. **Module Registry** (`tools/module_registry.py`)
+   - Automatic indexing of reusable code
+   - Searchable module database
+   - Dependency tracking between modules
+
+3. **Project Templates** (`projects/_template/`)
+   - Starter templates for common project types
+   - Pre-configured with best practices
+   - Integrated with GSD and Autocoder
+
+### Marketplace Tools
+
+The framework includes tools for future marketplace integration:
+
+**`tools/smoke_test_marketplace.py`**:
+- Purpose: Test marketplace contributions for quality
+- Validates: Code quality, documentation, reusability
+- Status: Ready for Phase 10 implementation
+
+**`tools/marketplace_upload_previews.py`**:
+- Purpose: Upload module screenshots and previews
+- Generates: Automated previews from code examples
+- Status: Ready for Phase 10 implementation
+
+**`workflows/marketplace_smoke_cron.yml`**:
+- Purpose: Scheduled smoke tests for marketplace modules
+- Runs: Quality checks on published modules
+- Status: Ready for Phase 10 implementation
+
+**`workflows/marketplace_ci_template.yml`**:
+- Purpose: CI/CD template for marketplace contributors
+- Ensures: All modules meet quality standards
+- Status: Ready for Phase 10 implementation
+
+### Current Focus (Pre-Marketplace)
+
+Before implementing the marketplace, the framework focuses on:
+
+1. **Build reusable patterns** in active projects (ai-dashboard, task-tracker)
+2. **Capture knowledge** in the brain from completed work
+3. **Validate reusability** through multiple project implementations
+4. **Document best practices** in project CLAUDE.md files
+5. **Test module registry** for automatic pattern discovery
+
+### When Marketplace is Implemented
+
+**For Contributors**:
+1. Run `mw brain learn` to extract patterns from completed work
+2. Run `python tools/smoke_test_marketplace.py` to validate quality
+3. Run `python tools/marketplace_upload_previews.py` to generate previews
+4. Submit to marketplace via CLI or web interface
+5. Community reviews and approves contributions
+
+**For Consumers**:
+1. Search marketplace via `mw search` or web interface
+2. Browse by category, rating, or popularity
+3. Download modules with automatic dependency resolution
+4. Integrate into projects via Autocoder or manual import
+5. Provide feedback and ratings
+
+### Marketplace vs Module Registry
+
+**Module Registry** (`tools/module_registry.py`):
+- ✅ **Internal** - Scans your local projects
+- ✅ **Automatic** - Runs `mw scan` to update
+- ✅ **Private** - Only your patterns
+- ✅ **Current** - Available now
+
+**Marketplace** (Phase 10):
+- ⚠️ **External** - Community contributions
+- ⚠️ **Manual** - Submit and review process
+- ⚠️ **Public** - Shared with community
+- ⚠️ **Future** - Phase 10, not yet implemented
+
+### How to Prepare for Marketplace
+
+**Now** (while marketplace is being built):
+1. ✅ Document patterns in project CLAUDE.md files
+2. ✅ Run `mw brain learn` after completing work
+3. ✅ Use reusable patterns in multiple projects
+4. ✅ Test patterns with `mw search` and `mw scan`
+5. ✅ Build quality, tested, documented code
+
+**Later** (when marketplace is implemented):
+1. Submit patterns to marketplace
+2. Contribute to community modules
+3. Monetize expertise through premium content
+4. Help review and validate contributions
+
+---
+
+## Framework-Level vs Project-Level Tasks
+
+**How to determine where to work**:
+
+### Framework-Level Tasks (Work in `/Users/dansidanutz/Desktop/MyWork/`)
+
+Work at the framework level when:
+- ✅ Modifying framework tools (`tools/`)
+- ✅ Updating documentation (`CLAUDE.md`, `README.md`)
+- ✅ Managing the brain (`.planning/BRAIN.md`)
+- ✅ Creating new projects from `_template/`
+- ✅ Running framework diagnostics (`mw doctor`)
+- ✅ Updating framework dependencies
+- ✅ Working on GSD/Autocoder/n8n integrations
+
+**Commands**:
+```bash
+cd /Users/dansidanutz/Desktop/MyWork
+/gsd:progress              # Check framework status
+mw doctor                  # Framework diagnostics
+mw brain search "keyword"  # Search knowledge vault
+```
+
+### Project-Level Tasks (Work in `projects/[project-name]/`)
+
+Work at the project level when:
+- ✅ Adding features to a specific project
+- ✅ Fixing bugs in a specific project
+- ✅ Modifying project-specific code
+- ✅ Running project tests
+- ✅ Deploying a specific project
+- ✅ Working on project documentation
+
+**Commands**:
 ```bash
 cd /Users/dansidanutz/Desktop/MyWork/projects/[project-name]
+/gsd:progress              # Check project status
+cat CLAUDE.md              # Read project-specific instructions
+npm run dev                # Start development server
+```
 
-```yaml
+**When in doubt**:
+1. Check if the user mentioned a specific project name
+2. Check if the work affects framework tools or a specific project
+3. Check if there's a project-specific `CLAUDE.md`
+4. Default to framework level if uncertain
 
-**To create a new project:**
+---
 
-1. Copy the template: `cp -r projects/_template projects/my-new-project`
-2. Initialize GSD: `/gsd:new-project` (while in project folder)
-3. Or use Autocoder: Follow `workflows/use_autocoder.md`
+## Project Switching Workflow
 
-**Project-specific vs Framework-level:**
+When switching between projects, follow this workflow:
 
-- `.planning/` at root = Framework state (MyWork itself)
-- `projects/[name]/.planning/` = Project state (that specific app)
+### Step 1: Save Current Context
+
+```bash
+# If working on a project, save context
+/gsd:pause-work           # Creates handoff document
+```
+
+### Step 2: Navigate to New Project
+
+```bash
+# Navigate to project directory
+cd /Users/dansidanutz/Desktop/MyWork/projects/[project-name]
+
+# Or use mw command
+mw open [project-name]    # Opens project in VS Code
+```
+
+### Step 3: Restore Project Context
+
+```bash
+# Check project status
+/gsd:progress             # Shows current state and what's next
+
+# Read project-specific instructions
+cat CLAUDE.md             # Project-specific AI instructions
+
+# If paused, restore context
+/gsd:resume-work          # Restores full context from last session
+```
+
+### Step 4: Verify Context
+
+Before starting work:
+1. ✅ Read `STATE.md` to understand current status
+2. ✅ Check `ROADMAP.md` to see what phase is active
+3. ✅ Read project `CLAUDE.md` for specific instructions
+4. ✅ Verify you're in the correct directory
+
+---
+
+## Creating a New Project
+
+### Option 1: Copy Template
+
+```bash
+# 1. Copy template
+cp -r projects/_template projects/my-new-project
+
+# 2. Navigate to new project
+cd projects/my-new-project
+
+# 3. Initialize GSD
+/gsd:new-project
+
+# 4. Follow the prompts to set up:
+#    - PROJECT.md (vision, scope, success criteria)
+#    - REQUIREMENTS.md (v1, v2, out-of-scope)
+#    - ROADMAP.md (phases with completion tracking)
+```
+
+### Option 2: Use Autocoder
+
+```bash
+# 1. Navigate to framework root
+cd /Users/dansidanutz/Desktop/MyWork
+
+# 2. Use mw CLI
+mw new my-app fastapi      # Create FastAPI project
+mw new my-app nextjs       # Create Next.js project
+mw new my-app fullstack    # Create fullstack project
+
+# 3. Follow prompts to set up Autocoder
+```
+
+---
+
+## Project-Specific Documentation
+
+**Every project should have**:
+1. ✅ `CLAUDE.md` - Project-specific AI agent instructions (CRITICAL!)
+2. ✅ `README.md` - Project overview and setup
+3. ✅ `.planning/PROJECT.md` - Vision, scope, success criteria
+4. ✅ `.planning/REQUIREMENTS.md` - Detailed requirements
+5. ✅ `.planning/ROADMAP.md` - Phases and completion status
+6. ✅ `.planning/STATE.md` - Current state, decisions, blockers
+7. ✅ `.planning/research/` - Codebase analysis (optional but recommended)
+
+**If a project is missing `CLAUDE.md`**, create it! This is the most critical file for AI agents to understand how to work on the project.
+
+---
+
+## Common Project Workflows
+
+### Working on AI Dashboard
+
+1. **Read project CLAUDE.md**: `cat projects/ai-dashboard/CLAUDE.md`
+2. **Check current status**: `cat projects/ai-dashboard/.planning/STATE.md`
+3. **Navigate to project**: `cd projects/ai-dashboard`
+4. **Start development**: `./start.sh` (Mac/Linux) or `start.bat` (Windows)
+5. **For scraper work**: Focus on `backend/scrapers/`
+6. **For frontend work**: Focus on `frontend/app/`
+7. **For YouTube automation**: Focus on `backend/services/youtube_automation.py` (be careful!)
+
+### Working on Task Tracker
+
+1. **Read project CLAUDE.md**: `cat projects/task-tracker/CLAUDE.md`
+2. **Check current status**: `cat projects/task-tracker/.planning/STATE.md`
+3. **Read research docs**: `cat projects/task-tracker/.planning/research/*.md`
+4. **Navigate to project**: `cd projects/task-tracker`
+5. **Start development**: `npm run dev`
+6. **For authentication**: Check `src/app/api/auth/[...nextauth]/route.ts`
+7. **For tasks**: Check `src/app/api/tasks/` and `src/shared/components/TaskList.tsx`
+8. **For files**: Check `src/app/api/files/` and `src/shared/components/FileDropzone.tsx`
+
+---
+
+## Project Documentation Standards
+
+**Every project CLAUDE.md must include**:
+1. ✅ Project Overview (purpose, status, tech stack)
+2. ✅ Quick Start for AI Agents
+3. ✅ Common Workflows (how to do X, how to do Y)
+4. ✅ Project-Specific Context (important notes, gotchas)
+5. ✅ File Organization Guide
+6. ✅ Integration with Framework Documentation
+7. ✅ Current Status
+8. ✅ Important Notes
+9. ✅ Testing Instructions
+10. ✅ Common Issues
+
+**When creating a new project**, always copy the CLAUDE.md template from `_template/` and customize it for the project.
 
 ---
 

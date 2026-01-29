@@ -20,10 +20,99 @@ import json
 import argparse
 from pathlib import Path
 from typing import Optional
-import httpx
-from dotenv import load_dotenv
+import urllib.error
+import urllib.parse
+import urllib.request
+
+try:
+    import httpx  # type: ignore
+    _HTTPX_AVAILABLE = True
+except ModuleNotFoundError:
+    httpx = None  # type: ignore
+    _HTTPX_AVAILABLE = False
+
+try:
+    from dotenv import load_dotenv
+except ModuleNotFoundError:
+    def load_dotenv(*args, **kwargs) -> bool:  # type: ignore
+        return False
 
 load_dotenv()
+
+
+class HttpRequestError(Exception):
+    def __init__(self, status_code: int, message: str, response_text: str = "") -> None:
+        super().__init__(message)
+        self.status_code = status_code
+        self.response_text = response_text
+
+
+def _request_json(
+    method: str,
+    url: str,
+    headers: dict,
+    *,
+    params: Optional[dict] = None,
+    json_body: Optional[dict] = None,
+    timeout: float = 30.0,
+    allow_text: bool = False,
+) -> dict:
+    if _HTTPX_AVAILABLE:
+        try:
+            response = httpx.request(  # type: ignore
+                method,
+                url,
+                headers=headers,
+                params=params,
+                json=json_body,
+                timeout=timeout,
+            )
+            response.raise_for_status()
+        except httpx.HTTPStatusError as e:  # type: ignore
+            raise HttpRequestError(e.response.status_code, str(e), e.response.text) from e
+        except httpx.RequestError as e:  # type: ignore
+            raise HttpRequestError(0, str(e), "") from e
+
+        try:
+            return response.json()
+        except json.JSONDecodeError:
+            if allow_text:
+                return {"status": "success", "response": response.text}
+            raise
+
+    if params:
+        query = urllib.parse.urlencode(params, doseq=True)
+        separator = "&" if "?" in url else "?"
+        url = f"{url}{separator}{query}"
+
+    body = None
+    if json_body is not None:
+        body = json.dumps(json_body).encode("utf-8")
+        headers = dict(headers)
+        headers.setdefault("Content-Type", "application/json")
+
+    request = urllib.request.Request(url, data=body, headers=headers, method=method)
+
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            text = response.read().decode()
+    except urllib.error.HTTPError as e:
+        response_text = ""
+        try:
+            response_text = e.read().decode()
+        except Exception:
+            response_text = ""
+        raise HttpRequestError(e.code, f"HTTP {e.code}", response_text) from e
+    except urllib.error.URLError as e:
+        raise HttpRequestError(0, str(e), "") from e
+
+    if allow_text:
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            return {"status": "success", "response": text}
+
+    return json.loads(text)
 
 
 def _is_placeholder(value: str) -> bool:
@@ -78,11 +167,13 @@ def list_workflows(active_only: bool = False) -> dict:
         dict: API response with workflow list
     """
     params = {"active": "true"} if active_only else {}
-    response = httpx.get(
-        f"{N8N_API_URL}/api/v1/workflows", headers=get_headers(), params=params, timeout=30.0
+    return _request_json(
+        "GET",
+        f"{N8N_API_URL}/api/v1/workflows",
+        get_headers(),
+        params=params,
+        timeout=30.0,
     )
-    response.raise_for_status()
-    return response.json()
 
 
 def get_workflow(workflow_id: str) -> dict:
@@ -95,11 +186,12 @@ def get_workflow(workflow_id: str) -> dict:
     Returns:
         dict: Workflow details
     """
-    response = httpx.get(
-        f"{N8N_API_URL}/api/v1/workflows/{workflow_id}", headers=get_headers(), timeout=30.0
+    return _request_json(
+        "GET",
+        f"{N8N_API_URL}/api/v1/workflows/{workflow_id}",
+        get_headers(),
+        timeout=30.0,
     )
-    response.raise_for_status()
-    return response.json()
 
 
 def create_workflow(workflow_data: dict) -> dict:
@@ -112,11 +204,13 @@ def create_workflow(workflow_data: dict) -> dict:
     Returns:
         dict: Created workflow with ID
     """
-    response = httpx.post(
-        f"{N8N_API_URL}/api/v1/workflows", headers=get_headers(), json=workflow_data, timeout=30.0
+    return _request_json(
+        "POST",
+        f"{N8N_API_URL}/api/v1/workflows",
+        get_headers(),
+        json_body=workflow_data,
+        timeout=30.0,
     )
-    response.raise_for_status()
-    return response.json()
 
 
 def update_workflow(workflow_id: str, workflow_data: dict) -> dict:
@@ -130,14 +224,13 @@ def update_workflow(workflow_id: str, workflow_data: dict) -> dict:
     Returns:
         dict: Updated workflow
     """
-    response = httpx.put(
+    return _request_json(
+        "PUT",
         f"{N8N_API_URL}/api/v1/workflows/{workflow_id}",
-        headers=get_headers(),
-        json=workflow_data,
+        get_headers(),
+        json_body=workflow_data,
         timeout=30.0,
     )
-    response.raise_for_status()
-    return response.json()
 
 
 def delete_workflow(workflow_id: str) -> dict:
@@ -150,10 +243,12 @@ def delete_workflow(workflow_id: str) -> dict:
     Returns:
         dict: Deletion confirmation
     """
-    response = httpx.delete(
-        f"{N8N_API_URL}/api/v1/workflows/{workflow_id}", headers=get_headers(), timeout=30.0
+    _request_json(
+        "DELETE",
+        f"{N8N_API_URL}/api/v1/workflows/{workflow_id}",
+        get_headers(),
+        timeout=30.0,
     )
-    response.raise_for_status()
     return {"status": "deleted", "workflow_id": workflow_id}
 
 
@@ -167,13 +262,12 @@ def activate_workflow(workflow_id: str) -> dict:
     Returns:
         dict: Activation result
     """
-    response = httpx.post(
+    return _request_json(
+        "POST",
         f"{N8N_API_URL}/api/v1/workflows/{workflow_id}/activate",
-        headers=get_headers(),
+        get_headers(),
         timeout=30.0,
     )
-    response.raise_for_status()
-    return response.json()
 
 
 def deactivate_workflow(workflow_id: str) -> dict:
@@ -186,13 +280,12 @@ def deactivate_workflow(workflow_id: str) -> dict:
     Returns:
         dict: Deactivation result
     """
-    response = httpx.post(
+    return _request_json(
+        "POST",
         f"{N8N_API_URL}/api/v1/workflows/{workflow_id}/deactivate",
-        headers=get_headers(),
+        get_headers(),
         timeout=30.0,
     )
-    response.raise_for_status()
-    return response.json()
 
 
 def execute_workflow(workflow_id: str, data: Optional[dict] = None) -> dict:
@@ -207,14 +300,13 @@ def execute_workflow(workflow_id: str, data: Optional[dict] = None) -> dict:
         dict: Execution result
     """
     body = data or {}
-    response = httpx.post(
+    return _request_json(
+        "POST",
         f"{N8N_API_URL}/api/v1/workflows/{workflow_id}/execute",
-        headers=get_headers(),
-        json=body,
-        timeout=120.0,  # Longer timeout for execution
+        get_headers(),
+        json_body=body,
+        timeout=120.0,
     )
-    response.raise_for_status()
-    return response.json()
 
 
 def trigger_webhook(webhook_path: str, data: dict, method: str = "POST") -> dict:
@@ -232,16 +324,22 @@ def trigger_webhook(webhook_path: str, data: dict, method: str = "POST") -> dict
     url = f"{N8N_API_URL}/webhook/{webhook_path}"
 
     if method.upper() == "GET":
-        response = httpx.get(url, params=data, timeout=60.0)
-    else:
-        response = httpx.post(url, json=data, timeout=60.0)
-
-    response.raise_for_status()
-
-    try:
-        return response.json()
-    except json.JSONDecodeError:
-        return {"status": "success", "response": response.text}
+        return _request_json(
+            "GET",
+            url,
+            get_headers(),
+            params=data,
+            timeout=60.0,
+            allow_text=True,
+        )
+    return _request_json(
+        "POST",
+        url,
+        get_headers(),
+        json_body=data,
+        timeout=60.0,
+        allow_text=True,
+    )
 
 
 def list_executions(workflow_id: Optional[str] = None, status: Optional[str] = None) -> dict:
@@ -261,11 +359,13 @@ def list_executions(workflow_id: Optional[str] = None, status: Optional[str] = N
     if status:
         params["status"] = status
 
-    response = httpx.get(
-        f"{N8N_API_URL}/api/v1/executions", headers=get_headers(), params=params, timeout=30.0
+    return _request_json(
+        "GET",
+        f"{N8N_API_URL}/api/v1/executions",
+        get_headers(),
+        params=params,
+        timeout=30.0,
     )
-    response.raise_for_status()
-    return response.json()
 
 
 def health_check() -> dict:
@@ -275,9 +375,12 @@ def health_check() -> dict:
     Returns:
         dict: Health status with workflow count (if available)
     """
-    response = httpx.get(f"{N8N_API_URL}/api/v1/workflows", headers=get_headers(), timeout=10.0)
-    response.raise_for_status()
-    data = response.json()
+    data = _request_json(
+        "GET",
+        f"{N8N_API_URL}/api/v1/workflows",
+        get_headers(),
+        timeout=10.0,
+    )
 
     # n8n can return either a list or an object containing data
     if isinstance(data, dict) and "data" in data:
@@ -393,14 +496,14 @@ def main():
 
         print(json.dumps(result, indent=2))
 
-    except httpx.HTTPStatusError as e:
+    except HttpRequestError as e:
         print(
             json.dumps(
                 {
                     "status": "error",
-                    "code": e.response.status_code,
+                    "code": e.status_code,
                     "message": str(e),
-                    "response": e.response.text,
+                    "response": e.response_text,
                 }
             )
         )
