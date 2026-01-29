@@ -101,7 +101,7 @@ src/
 
 └── search/
 
-```
+```text
 ├── highlight-utils.ts        # Text highlighting helpers
 └── search-utils.ts           # Query building utilities
 
@@ -235,7 +235,7 @@ export function TaskSearchBar({ value, onChange }: Props) {
 
   const debouncedSearch = useDebouncedCallback(async (query: string) => {
 
-```
+```javascript
 
 if (!query.trim()) {
   setResults([]);
@@ -277,7 +277,7 @@ value={value}
 onChange={handleChange}
 placeholder="Search tasks..."
 
-```
+```bash
 
   />
   {isSearching && <Spinner />}
@@ -350,7 +350,7 @@ include: { tags: true },
 export async function filterTasksByTags(userId: string, tagIds: string[]) {
   return await prisma.task.findMany({
 
-```
+```yaml
 
 where: {
   userId,
@@ -396,7 +396,7 @@ tasks,
 (state, { ids, status }: { ids: string[], status: TaskStatus }) => {
   return state.map(task =>
 
-```
+```yaml
 ids.includes(task.id) ? { ...task, status } : task
 
 ```text
@@ -433,7 +433,8 @@ try {
 <DropdownMenu>
   <DropdownMenuItem onClick={() => handleBulkStatusChange('IN_PROGRESS')}>
 
-```
+```html
+
 Mark as In Progress
 
 ```html
@@ -485,7 +486,7 @@ export function TaskCard({ task, searchQuery }: Props) {
   textToHighlight={task.title}
 />
 
-```
+```html
 
   </h3>
   <p>
@@ -599,7 +600,7 @@ for exact prefix matching (e.g., username autocomplete).
 await prisma.task.findMany({
   where: {
 
-```
+```yaml
 
 OR: [
   { title: { contains: query, mode: 'insensitive' } },
@@ -814,7 +815,8 @@ export default function TasksPage() {
   onChange={(e) => setFilters({ q: e.target.value })}
 />
 
-```
+```markdown
+
   );
 }
 
@@ -884,7 +886,7 @@ userId: userId,
 tags: {
   connectOrCreate: [
 
-```
+```yaml
 {
   where: { name: 'feature' },
   create: { name: 'feature', color: '#3b82f6' },
@@ -929,7 +931,7 @@ const tasks = await prisma.task.findMany({
 tags: {
   some: {
 
-```
+```yaml
 id: { in: tagIds },
 
 ```yaml
@@ -983,7 +985,7 @@ if (selectedIds.size === tasks.length) {
   setSelectedIds(new Set(tasks.map(t => t.id)));
 }
 
-```
+```javascript
   };
 
   const toggleOne = (id: string) => {
@@ -1013,7 +1015,8 @@ setSelectedIds(newSelected);
 <tr>
   <th>
 
-```
+```text
+
 <input
   ref={headerCheckboxRef}
   type="checkbox"
@@ -1030,21 +1033,27 @@ setSelectedIds(newSelected);
   </thead>
   <tbody>
 
-```
+```javascript
 {tasks.map(task => (
   <tr key={task.id}>
 
 ```
+
 <td>
   <input
-    type="checkbox"
-    checked={selectedIds.has(task.id)}
-    onChange={() => toggleOne(task.id)}
+
+```
+type="checkbox"
+checked={selectedIds.has(task.id)}
+onChange={() => toggleOne(task.id)}
+
+```
   />
 </td>
 <td>{task.title}</td>
 
-```
+```html
+
   </tr>
 ))}
 
@@ -1084,7 +1093,7 @@ export function EmptyState({
   {illustration}
 </div>
 
-```
+```html
 
   )}
 
@@ -1105,7 +1114,7 @@ export function EmptyState({
   {description}
 </p>
 
-```
+```bash
 
   )}
 
@@ -1182,7 +1191,7 @@ Things that couldn't be fully resolved:
 1. **Optimal search_vector update strategy**
    - What we know: Generated columns (STORED) are simplest but require PostgreSQL
 
-```
+```yaml
  12+. Triggers are alternative.
 
 ```yaml
@@ -1211,7 +1220,7 @@ Things that couldn't be fully resolved:
 
    - What's unclear: At what point does fuzzy fallback overhead outweigh UX
 
-```
+```yaml
  benefit? Depends on user typing accuracy.
 
 ```yaml
@@ -1240,7 +1249,7 @@ Things that couldn't be fully resolved:
 
    - Recommendation: Implement AND between types, OR within types initially. Add
 
-```
+```yaml
  toggle if users request different behavior.
 
 ```yaml

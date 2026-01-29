@@ -77,7 +77,7 @@ Severity: **High → Medium → Low**
 ```text
  Add refund and chargeback handling in both ledger and order state.
 
-```
+```yaml
 
 2) **Brain ingestion quality**
 
@@ -114,7 +114,7 @@ Severity: **High → Medium → Low**
 ```text
  submissions list.
 
-```
+```yaml
 
    - **Fix**: add detailed audit report view with pass/fail check list and
 

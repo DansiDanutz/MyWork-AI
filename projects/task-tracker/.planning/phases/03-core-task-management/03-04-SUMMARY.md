@@ -93,7 +93,8 @@ Dashboard → "New Task" → /tasks/new → (create) → /tasks
 
 ↓
 
-```
+```markdown
+
 /tasks/[id]/edit → "Delete" → (confirm) → /tasks
 
 ```markdown

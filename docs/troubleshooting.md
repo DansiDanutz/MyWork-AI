@@ -140,7 +140,7 @@ bash: mw: command not found
    export PATH="/Users/dansidanutz/Desktop/MyWork/tools:$PATH"
    alias mw="python /Users/dansidanutz/Desktop/MyWork/tools/mw.py"
 
-   ```
+```yaml
 
 3. **Use full commands:**
 
@@ -323,7 +323,7 @@ Run /gsd:new-project to start a new project.
 
    # Clarify implementation approach before planning
 
-   ```
+```yaml
 
 3. **Manually edit requirements:**
 
@@ -495,7 +495,7 @@ MCP server connection failed
 
    # Use validate_node tool for each node
 
-   ```
+```markdown
 
 ### **💾 Data & File Issues**
 
@@ -706,7 +706,7 @@ echo "GITHUB_TOKEN: ${GITHUB_TOKEN:0:10}..."
 
    mw gsd execute-phase 1  # Just one phase
 
-   ```
+```yaml
 
 2. **Break into smaller phases:**
 

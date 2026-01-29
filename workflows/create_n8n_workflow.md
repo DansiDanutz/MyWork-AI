@@ -72,7 +72,7 @@ tools.
    get_node({nodeType: 'type1', detail: 'standard', includeExamples: true})
    get_node({nodeType: 'type2', detail: 'standard', includeExamples: true})
 
-   ```
+```markdown
 
 3. **Build node configurations**
    - ALWAYS set ALL parameters explicitly
@@ -146,7 +146,8 @@ tools.
  id: workflowId,
  operations: [{type: 'activateWorkflow'}]
 
-```
+```markdown
+
    })
 
 ```markdown

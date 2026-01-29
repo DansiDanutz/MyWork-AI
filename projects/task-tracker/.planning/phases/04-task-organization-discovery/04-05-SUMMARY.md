@@ -20,7 +20,7 @@ provides: Tag model and backend tag management
 ```yaml
 provides: Search functionality with full-text and fuzzy search
 
-```
+```yaml
 
   - phase: 04-03
 
@@ -77,7 +77,7 @@ patterns-established:
 ```text
 instructions"
 
-```
+```yaml
 
   - "Phase validation: All success criteria explicitly tested before marking
 

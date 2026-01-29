@@ -44,7 +44,7 @@ tech-stack:
 - Hamburger menu with overlay and backdrop
 - 44x44px minimum touch targets (WCAG 2.1 AAA compliance)
 
-```
+```yaml
 
 key-files:
   created:
@@ -88,7 +88,7 @@ decision: 100px swipe threshold to trigger actions
 rationale: Prevents accidental triggers while keeping gestures responsive
 context: Tested threshold balances safety and UX
 
-```
+```yaml
 
   - id: UX-001
 
@@ -300,7 +300,7 @@ const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0
 const isNarrow = window.innerWidth < 768
 setIsMobile(hasTouch && isNarrow)
 
-```
+```javascript
   }
 
   checkMobile()
@@ -380,7 +380,7 @@ if (Math.abs(swipeOffset) > 100) {
 
   {isOpen && (
 
-```
+```html
 
 <>
   <div className="fixed inset-0 bg-black/50 z-40" onClick={() =>

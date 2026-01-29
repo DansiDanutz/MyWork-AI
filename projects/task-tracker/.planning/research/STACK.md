@@ -163,7 +163,7 @@ reusability):
 {
   "compilerOptions": {
 
-```
+```yaml
 
 "strict": true,
 "strictNullChecks": true,

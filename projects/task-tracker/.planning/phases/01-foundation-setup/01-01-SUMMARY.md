@@ -41,7 +41,7 @@ tech-stack:
 - Modular monolith architecture
 - Feature-based organization
 
-```
+```yaml
 
 key-files:
   created:
@@ -94,7 +94,7 @@ application
 impact: All code must satisfy strict TypeScript checks
 date: 2026-01-24
 
-```
+```yaml
 
 metrics:
   duration: 8 minutes

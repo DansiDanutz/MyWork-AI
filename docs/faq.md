@@ -274,7 +274,7 @@ cat .planning/STATE.md
 
 mw doctor --check dependencies
 
-```
+```markdown
 
 ### **Q: GSD execution failed. What now?**
 

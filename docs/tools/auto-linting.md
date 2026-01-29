@@ -1,13 +1,13 @@
 # Auto-Linting Agent
 
-The Auto-Linting Agent is a powerful tool that automatically monitors and fixes
-code quality issues across your entire MyWork framework. It supports multiple
-linting tools and can run continuously to maintain perfect code quality.
+The Auto-Linting Agent is a tool that fixes code quality issues across your
+MyWork framework. It supports multiple linting tools and can run on a schedule
+(default: every 4 hours) or in watch mode when you explicitly enable it.
 
 ## Features
 
 ✨ **Multi-Tool Support**: Markdownlint, Pylint, ESLint, Prettier, Black, Flake8
-🔄 **Real-Time Monitoring**: Watch files for changes and auto-fix immediately
+⏱️ **Scheduled Runs**: Batch-fix issues every 4 hours by default
 ⚡ **Instant Fixes**: Automatically resolves common linting issues
 📊 **Detailed Reporting**: Track linting statistics and improvement over time
 🎯 **Smart Filtering**: Configurable ignore patterns and file type handling
@@ -17,11 +17,15 @@ linting tools and can run continuously to maintain perfect code quality.
 
 ```bash
 
+# Start scheduled linting (every 4 hours)
+
+mw lint start
+
 # Scan all files for linting issues
 
 mw lint scan
 
-# Watch files and auto-fix as you code
+# Watch files and auto-fix as you code (optional)
 
 mw lint watch
 
@@ -43,17 +47,22 @@ mw lint stats
 
 The Auto-Linting Agent operates in several modes:
 
-### 1. Scan Mode
+### 1. Scheduled Mode (Default)
+
+Runs the lint fixer every 4 hours (configurable). This keeps linting out of
+your day-to-day git flow while still maintaining documentation quality.
+
+### 2. Scan Mode
 
 Analyzes all files in a project and applies appropriate linting tools based on
 file extensions.
 
-### 2. Watch Mode
+### 3. Watch Mode
 
 Monitors file system changes and automatically runs linting tools when files are
 modified. Includes intelligent debouncing to avoid excessive processing.
 
-### 3. Fix Mode
+### 4. Fix Mode
 
 Same as scan mode but focuses on fixing issues rather than just reporting them.
 
@@ -144,7 +153,7 @@ mw lint scan --dir projects/my-app
 
 mw lint scan --file README.md
 
-```
+```markdown
 
 ### `mw lint watch`
 
@@ -226,11 +235,11 @@ Example output:
 
 The Auto-Linting Agent is fully integrated with the MyWork framework:
 
-### Git Workflows
+### Git Workflows (Optional)
 
-- Automatically fixes issues before commits
-- Integrates with pre-commit hooks
-- Maintains clean commit history
+- Git hooks are **disabled by default**
+- Use `mw lint install-hooks` to enable pre-commit/pre-push checks
+- Use `mw lint uninstall-hooks` to remove them
 
 ### Project Structure
 
@@ -265,7 +274,7 @@ You can customize individual tools in the configuration:
 "MD013": false,  // Disable line length rule
 "MD033": false   // Allow HTML in markdown
 
-```
+```yaml
 
   }
 },
@@ -413,7 +422,7 @@ For large projects, you can optimize performance:
   ],
   "watch_mode": {
 
-```
+```yaml
 
 "debounce_seconds": 5.0,
 "batch_processing": true
@@ -495,14 +504,15 @@ This data powers the statistics and helps track improvement over time.
 
 - Share linting configuration across team
 - Include auto-linting in CI/CD pipelines
-- Set up pre-commit hooks for automatic linting
+- Use pre-commit hooks only if your team wants linting in git flow
 - Document team-specific linting standards
 
 ## Integration Examples
 
-### Pre-commit Hook
+### Pre-commit Hook (Optional)
 
-Add to `.git/hooks/pre-commit`:
+Hooks are **disabled by default**. Enable them with `mw lint install-hooks`, or
+add the following manually:
 
 ```bash
 
@@ -533,7 +543,8 @@ Add to `.vscode/tasks.json`:
   "problemMatcher": []
 }
 
-```
+```markdown
+
   ]
 }
 

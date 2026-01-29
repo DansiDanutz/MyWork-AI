@@ -93,7 +93,7 @@ mw gsd new-project
 
 **Project description:**
 
-```
+```python
 A simple CLI task manager for developers who want quick task tracking from the terminal.
 
 ```yaml
@@ -212,7 +212,7 @@ python src/task_manager.py add "Share my project with friends"
 
 python src/task_manager.py list
 
-```
+```yaml
 
 **Expected output:**
 

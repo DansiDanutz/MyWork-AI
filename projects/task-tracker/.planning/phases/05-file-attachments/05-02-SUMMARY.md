@@ -94,12 +94,13 @@ uploads/
 ├── [fileId].ext
 └── thumbs/
 
-```
+```text
+
 └── [fileId].webp
 
 ```
 
-```
+```markdown
 
 ```markdown
 

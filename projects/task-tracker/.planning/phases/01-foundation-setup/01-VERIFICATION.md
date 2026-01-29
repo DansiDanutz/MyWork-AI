@@ -225,14 +225,18 @@ unset NODE_ENV && npm run build
 ```bash
 psql -h localhost -U dansidanutz -d tasktracker -c "\dt"
 
-```
+```text
 
 ```text
 
 ```
-     List of relations
 
 ```
+ List of relations
+
+```
+
+```text
 
 ```
 
@@ -322,7 +326,7 @@ src/
 │   └── env.ts
 └── types/
 
-```
+```text
 └── index.ts   # ApiResponse<T> type
 
 ```text

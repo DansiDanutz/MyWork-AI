@@ -22,7 +22,7 @@ provides: Next.js config, environment validation foundation
 provides: Auth.js environment variables (AUTH_SECRET, AUTH_GITHUB_ID,
 AUTH_GITHUB_SECRET)
 
-```
+```yaml
 
 provides:
 
@@ -71,7 +71,7 @@ key-files:
 - src/app/api/health/route.ts (enhanced with uptime and structured response)
 - src/middleware.ts (added conditional rate limiting)
 
-```
+```yaml
 
 key-decisions:
 
@@ -102,7 +102,7 @@ configured (MVP friendly)"
 ```text
 balancer detection"
 
-```
+```yaml
 
 patterns-established:
 

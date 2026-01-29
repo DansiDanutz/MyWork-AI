@@ -91,7 +91,7 @@ Update the task plan with workflow details:
 - [x] Payload transformed correctly
 - [x] Slack message sent to #alerts
 
-```
+```markdown
 
 ### Step 4: Test via GSD Verification
 

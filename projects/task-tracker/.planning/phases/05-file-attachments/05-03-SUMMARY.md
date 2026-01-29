@@ -30,7 +30,7 @@ tech-stack:
 - "Server Action file upload pattern"
 - "Authenticated file serving pattern"
 
-```
+```yaml
 
 key-files:
   created:
@@ -74,7 +74,7 @@ rationale: "Server Actions have payload limits, TUS provides resumable
 uploads for large files"
 date: "2026-01-25"
 
-```
+```yaml
 
   - id: "SECURITY-001"
 

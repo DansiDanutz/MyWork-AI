@@ -36,7 +36,7 @@ tech-stack:
 - Reuse analytics infrastructure for new event types
 - Fixed-position overlay components for global features
 
-```
+```yaml
 
 key-files:
   created:

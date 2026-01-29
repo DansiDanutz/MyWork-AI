@@ -74,15 +74,19 @@ User Authentication
 
 ```text
 
+```text
+
 ```
-           └──requires──> Task Lists/Projects
-           └──requires──> Search & Filtering
-           └──enables──> File Attachments
-           └──enables──> GitHub Integration
+       └──requires──> Task Lists/Projects
+       └──requires──> Search & Filtering
+       └──enables──> File Attachments
+       └──enables──> GitHub Integration
 
 ```
 
 ```
+
+```text
 
 ```text
 Task CRUD
@@ -111,7 +115,7 @@ File Attachments
 └──requires──> Storage System
 └──requires──> Task CRUD (attach to what?)
 
-```
+```text
 GitHub Integration
 
 ```text

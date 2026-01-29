@@ -44,7 +44,7 @@ key-files:
 - src/app/api/health/route.ts
 - .env.example
 
-```
+```yaml
 
   modified:
 

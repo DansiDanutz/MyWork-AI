@@ -394,7 +394,7 @@ export async function updateField(field, value) {
 useEffect(() => {
   function handleClickOutside(event) {
 
-```
+```bash
 
 if (menuRef.current && !menuRef.current.contains(event.target)) {
   setIsOpen(false)

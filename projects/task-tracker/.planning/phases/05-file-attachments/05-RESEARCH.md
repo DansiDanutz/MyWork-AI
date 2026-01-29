@@ -111,15 +111,20 @@ src/
 
 └── [userId]/
 
-```
+```text
 └── [taskId]/
 
 ```
+
 ├── [fileId].ext
 └── thumbs/
-    └── [fileId].webp
 
 ```
+└── [fileId].webp
+
+```
+```markdown
+
 ```markdown
 
 ```markdown
@@ -194,7 +199,7 @@ data: {
   return { success: true, id: attachment.id }
 }
 
-```
+```yaml
 
 **Configure body size limit in next.config.ts:**
 
@@ -294,7 +299,7 @@ export function FileDropzone({ taskId }: { taskId: string }) {
 acceptedFiles.forEach((file) => {
   const upload = new tus.Upload(file, {
 
-```
+```yaml
 endpoint: '/api/files/upload',
 retryDelays: [0, 3000, 5000, 10000, 20000],
 metadata: {
@@ -311,10 +316,11 @@ onSuccess: () => {
   setUploads((prev) => {
 
 ```
+
 const { [file.name]: _, ...rest } = prev
 return rest
 
-```
+```javascript
   })
 },
 onError: (error) => {
@@ -357,7 +363,7 @@ maxSize: 25 * 1024 * 1024, // 25MB
 
   return (
 
-```
+```html
 
 <div {...getRootProps()} className="border-2 border-dashed p-8">
   <input {...getInputProps()} />
@@ -375,7 +381,7 @@ maxSize: 25 * 1024 * 1024, // 25MB
 
 <p>Drag files here, or click to select</p>
 
-```
+```javascript
 
   )}
 
@@ -387,10 +393,12 @@ maxSize: 25 * 1024 * 1024, // 25MB
   <div className="flex justify-between">
 
 ```
+
 <span>{filename}</span>
 <button onClick={() => cancelUpload(filename)}>Cancel</button>
 
-```
+```html
+
   </div>
   <progress value={pct} max="100" className="w-full" />
 </div>
@@ -449,7 +457,7 @@ return { isValid: false, error: 'Unable to detect file type' }
 
   if (!ALLOWED_MIME_TYPES.includes(type.mime)) {
 
-```
+```yaml
 
 return {
   isValid: false,
@@ -519,7 +527,7 @@ export async function GET(
 
 return new NextResponse('Unauthorized', { status: 401 })
 
-```
+```javascript
   }
 
   // Get file metadata
@@ -563,7 +571,7 @@ file.userId,
 file.taskId,
 file.storedFilename
 
-```
+```javascript
   )
 
   try {
@@ -592,7 +600,8 @@ return new NextResponse(buffer, {
 
 return new NextResponse('File not found on disk', { status: 404 })
 
-```
+```markdown
+
   }
 }
 
@@ -664,7 +673,7 @@ position: 'center',
 
 return thumbPath
 
-```
+```yaml
   } catch (error) {
 
 ```yaml
@@ -745,7 +754,7 @@ try {
   // Delete main file
   const filePath = path.join(
 
-```
+```javascript
 process.cwd(),
 'uploads',
 file.userId,
@@ -776,7 +785,7 @@ await fs.unlink(file.thumbnailPath).catch(() => {})
   // Prisma cascade will delete DB records automatically
 }
 
-```
+```markdown
 
 ### Anti-Patterns to Avoid
 
@@ -1075,7 +1084,7 @@ return { error: `File too large. Max size: ${MAX_FILE_SIZE / 1024 / 1024}MB` }
 
   if (!fileType || !ALLOWED_TYPES.includes(fileType.mime)) {
 
-```
+```bash
 
 return {
   error: `Invalid file type. Detected: ${fileType?.mime || 'unknown'}`,
@@ -1129,7 +1138,7 @@ taskId
   let thumbnailPath: string | null = null
   if (fileType.mime.startsWith('image/')) {
 
-```
+```javascript
 
 thumbnailPath = await generateThumbnail(
   filePath,
@@ -1211,18 +1220,19 @@ for (const file of acceptedFiles) {
   // Client-side size validation
   if (file.size > 25 * 1024 * 1024) {
 
-```
+```javascript
 setUploadStates((prev) => {
   const next = new Map(prev)
   next.set(file.name, {
 
 ```
+
 filename: file.name,
 progress: 0,
 status: 'error',
 error: 'File exceeds 25MB limit',
 
-```
+```javascript
   })
   return next
 })
@@ -1251,7 +1261,7 @@ return next
   // Create TUS upload
   const upload = new tus.Upload(file, {
 
-```
+```yaml
 endpoint: '/api/files/upload',
 retryDelays: [0, 3000, 5000, 10000, 20000], // Retry strategy
 chunkSize: 5 * 1024 * 1024, // 5MB chunks
@@ -1265,6 +1275,7 @@ onProgress: (bytesUploaded, bytesTotal) => {
   setUploadStates((prev) => {
 
 ```
+
 const next = new Map(prev)
 const state = next.get(file.name)
 if (state) {
@@ -1272,13 +1283,14 @@ if (state) {
 }
 return next
 
-```
+```javascript
   })
 },
 onSuccess: () => {
   setUploadStates((prev) => {
 
 ```
+
 const next = new Map(prev)
 const state = next.get(file.name)
 if (state) {
@@ -1286,7 +1298,7 @@ if (state) {
 }
 return next
 
-```
+```javascript
   })
   uploads.delete(file.name)
 },
@@ -1294,18 +1306,23 @@ onError: (error) => {
   setUploadStates((prev) => {
 
 ```
+
 const next = new Map(prev)
 const state = next.get(file.name)
 if (state) {
   next.set(file.name, {
-    ...state,
-    status: 'error',
-    error: error.message,
+
+```
+...state,
+status: 'error',
+error: error.message,
+
+```
   })
 }
 return next
 
-```
+```javascript
   })
 },
 
@@ -1339,7 +1356,7 @@ const next = new Map(prev)
 next.delete(filename)
 return next
 
-```
+```javascript
 
   })
 }
@@ -1374,7 +1391,7 @@ className={`
   hover:border-gray-400'}
 `}
 
-```
+```html
 
   >
 
@@ -1387,11 +1404,13 @@ className={`
   <div>
 
 ```
+
 <p className="text-gray-600">Drag & drop files here, or click to
 select</p>
 <p className="text-sm text-gray-400 mt-2">Max 25MB per file</p>
 
-```
+```html
+
   </div>
 )}
 
@@ -1407,14 +1426,23 @@ select</p>
 <div key={state.filename} className="border rounded-lg p-4">
   <div className="flex justify-between items-center mb-2">
 
-```
+```html
+
 <span className="font-medium truncate">{state.filename}</span>
 {state.status === 'uploading' && (
   <button
-    onClick={() => cancelUpload(state.filename)}
-    className="text-red-600 hover:text-red-700 text-sm"
+
+```
+onClick={() => cancelUpload(state.filename)}
+className="text-red-600 hover:text-red-700 text-sm"
+
+```
   >
-    Cancel
+
+```
+Cancel
+
+```
   </button>
 )}
 
@@ -1423,16 +1451,25 @@ select</p>
 
   {state.status === 'uploading' && (
 
-```
+```html
+
 <div>
   <div className="w-full bg-gray-200 rounded-full h-2">
-    <div
-      className="bg-blue-600 h-2 rounded-full transition-all"
-      style={{ width: `${state.progress}%` }}
-    />
+
+```
+<div
+  className="bg-blue-600 h-2 rounded-full transition-all"
+  style={{ width: `${state.progress}%` }}
+/>
+
+```
   </div>
   <p className="text-sm text-gray-500 mt-1">
-    {state.progress.toFixed(1)}%
+
+```
+{state.progress.toFixed(1)}%
+
+```
   </p>
 </div>
 
@@ -1441,7 +1478,8 @@ select</p>
 
   {state.status === 'complete' && (
 
-```
+```html
+
 <p className="text-green-600 text-sm">✓ Upload complete</p>
 
 ```
@@ -1449,14 +1487,15 @@ select</p>
 
   {state.status === 'error' && (
 
-```
+```html
+
 <p className="text-red-600 text-sm">✗ {state.error}</p>
 
 ```
   )}
 </div>
 
-```
+```html
 
   ))}
 </div>
@@ -1510,7 +1549,7 @@ include: { task: true },
 
 return { error: 'File not found' }
 
-```
+```yaml
   }
 
   // Verify ownership
@@ -1559,7 +1598,7 @@ console.error('Filesystem cleanup failed:', error)
 
 where: { id: fileId },
 
-```
+```yaml
   })
 
   revalidatePath(`/tasks/${file.taskId}`)
@@ -1628,7 +1667,7 @@ Things that couldn't be fully resolved:
 ```text
  Actions max out ~5MB
 
-```
+```yaml
 
    - What's unclear: Whether to implement TUS protocol (complex but standard) or
 
@@ -1658,7 +1697,7 @@ Things that couldn't be fully resolved:
 ```text
  if performance issues arise. Sharp is fast enough (<500ms for most images).
 
-```
+```yaml
 
 4. **Storage scalability**
    - What we know: Local filesystem chosen in CONTEXT.md

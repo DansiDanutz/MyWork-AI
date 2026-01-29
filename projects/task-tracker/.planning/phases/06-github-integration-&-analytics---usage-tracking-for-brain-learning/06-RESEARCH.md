@@ -139,7 +139,7 @@ await trackEvent({
   return Response.json({ success: true, id: result.id })
 }
 
-```
+```markdown
 
 ### Pattern 2: GitHub API Rate Limit Handling
 
@@ -207,7 +207,8 @@ throw new Error(`Rate limited. Retry after ${waitTime}ms`)
 
 return getCachedUser() // Not modified, use cache
 
-```
+```markdown
+
   }
 
   return response.json()
@@ -378,7 +379,8 @@ might be useful"
   - Set strict size limits on `properties` JSONB field (e.g., 5KB max)
   - Store large data (file contents, full request bodies) separately or not at
 
-```
+```markdown
+
 all
 
 ```markdown
@@ -486,7 +488,7 @@ export async function createTaskAction(formData: FormData) {
   // Track AFTER response sent
   after(() => {
 
-```
+```yaml
 
 trackEvent({
   type: 'task_created',
@@ -546,7 +548,7 @@ const response = await fetch('<https://api.github.com/user',> {
 'Accept': 'application/vnd.github.v3+json',
 'If-None-Match': cached?.etag || ''
 
-```
+```yaml
 
   },
   // Prevent hanging requests
@@ -581,7 +583,7 @@ if (response.status === 403 || response.status === 429) {
 ```bash
 response.headers.get('x-ratelimit-reset') || '0'
 
-```
+```text
 
   )
   console.error(
@@ -609,7 +611,8 @@ return data
 console.error('GitHub API error:', error)
 return cached?.data || null // Graceful degradation
 
-```
+```markdown
+
   }
 }
 
@@ -667,7 +670,7 @@ WHERE "eventType" = ${eventType}
 GROUP BY DATE_TRUNC('day', "createdAt")
 ORDER BY date DESC
 
-```
+```javascript
   `
 }
 
@@ -702,7 +705,7 @@ select: {
   id: true // Only user ID, no PII
 }
 
-```
+```yaml
 
   }
 },
@@ -740,7 +743,7 @@ Date.now() - DEFAULT_RETENTION_DAYS * 24 * 60 * 60 * 1000
 where: {
   createdAt: {
 
-```
+```yaml
 lt: cutoffDate
 
 ```javascript
@@ -808,7 +811,7 @@ Things that couldn't be fully resolved:
 
    - Recommendation: Start with 90-day retention, make configurable, extend if
 
-```
+```yaml
  brain analysis shows longer periods improve pattern quality
 
 ```yaml
@@ -838,7 +841,7 @@ Things that couldn't be fully resolved:
 3. **Real-time vs. batch export for brain**
    - What we know: Brain analysis scripts could pull data real-time (API) or
 
-```
+```yaml
  batch (daily export)
 
 ```yaml
@@ -868,7 +871,8 @@ Things that couldn't be fully resolved:
 
    - Recommendation: Add `projectId` to events, defer cross-project aggregation
 
-```
+```markdown
+
  to brain analysis layer
 
 ```markdown

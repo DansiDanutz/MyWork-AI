@@ -37,7 +37,7 @@ tech-stack:
 - Status-based task grouping
 - Empty state handling with CTAs
 
-```
+```yaml
 
 key-files:
   created:
@@ -79,7 +79,7 @@ feedback"
 ```text
 validation"
 
-```
+```yaml
 
   - "Status grouping: Separate sections for Todo/In Progress/Done with counts"
   - "Empty states: Helpful illustrations and CTAs when no content exists"

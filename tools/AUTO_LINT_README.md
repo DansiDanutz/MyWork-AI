@@ -6,7 +6,7 @@ Three tools for maintaining professional markdown standards across the MyWork
 repository:
 
 1. **`auto_lint_fixer.py`** - Fixes common markdownlint violations
-2. **`auto_lint_scheduler.py`** - Runs fixes automatically every 15 minutes
+2. **`auto_lint_scheduler.py`** - Runs fixes automatically every 4 hours
 3. **`start_auto_linter.sh`** - Background startup script
 
 ## ✅ Fixed Violation Types
@@ -44,7 +44,7 @@ python3 tools/auto_lint_fixer.py
 
 ```bash
 
-# Start background service (every 15 minutes)
+# Start background service (every 4 hours)
 
 ./start_auto_linter.sh
 
@@ -66,7 +66,7 @@ pkill -f auto_lint_scheduler
 
 python3 tools/auto_lint_scheduler.py
 
-# Run every 15 minutes
+# Run every 4 hours
 
 python3 tools/auto_lint_scheduler.py --daemon
 
@@ -103,7 +103,7 @@ python3 tools/auto_lint_scheduler.py --daemon --interval 1800
 
 1. **Runs** the lint fixer
 2. **Commits** changes automatically with detailed commit messages
-3. **Schedules** next run (default: 15 minutes)
+3. **Schedules** next run (default: 4 hours)
 4. **Logs** all activity for monitoring
 
 ## 📁 Files Processed
@@ -146,7 +146,7 @@ Uses standard markdownlint rules. To customize, create `.markdownlint.json`:
 
 Edit `auto_lint_scheduler.py` to change:
 
-- **Interval**: `--interval 900` (15 minutes)
+- **Interval**: `--interval 14400` (4 hours)
 - **Timeout**: `timeout=300` (5 minutes per run)
 - **Git behavior**: Automatic commits vs manual review
 
@@ -186,7 +186,7 @@ git log --oneline | grep "auto-lint"
    • MD022: 8
    • MD032: 4
 ✅ Committed 12 fixes
-⏰ Sleeping for 15 minutes...
+⏰ Sleeping for 4 hours...
 
 ```markdown
 
@@ -200,9 +200,11 @@ git log --oneline | grep "auto-lint"
 
 ## 🔗 Integration
 
-### With Git Hooks
+### With Git Hooks (Optional)
 
-Add to `.git/hooks/pre-commit`:
+To keep linting out of your day-to-day git flow, hooks are **disabled by
+default**.
+If you want them, use `mw lint install-hooks` or add the following manually:
 
 ```bash
 

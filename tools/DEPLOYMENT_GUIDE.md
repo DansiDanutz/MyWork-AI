@@ -1,12 +1,11 @@
-# Perfect Auto-Linting: Deployment Guide for All Users 🎯
+# Scheduled Auto-Linting: Deployment Guide 🎯
 
-This guide shows how to enable the perfect auto-linting agent so it
-**automatically runs when needed for ALL USERS** - not just for specific
-individuals.
+This guide shows how to enable scheduled markdown linting so it
+**runs every 4 hours by default** without interfering with daily git workflows.
 
 ## 🎯 What We Built
 
-A complete auto-linting system that:
+A scheduled auto-linting system that:
 
 - ✅ **Maintains 0 markdownlint violations** across 12+ rules (including MD060)
 - ✅ **Never stops on problems** - robust error handling with comprehensive
@@ -14,71 +13,39 @@ A complete auto-linting system that:
   try-catch
 
 - ✅ **Works for all users** - not tied to specific individuals or setups
-- ✅ **Runs automatically** - file watching + git hooks + easy CLI management
+- ✅ **Runs automatically** - scheduled fixes + optional git hooks
 
 ## 🚀 Deployment Steps
 
-### 1. Enable Auto-Linting for Everyone
+### 1. Enable Scheduled Auto-Linting
 
 ```bash
 
-# Start the perfect auto-linter (file watcher mode)
+# Start the lint scheduler (every 4 hours)
 
 mw lint start
 
-# Install git hooks for all users
+# Verify it's working
 
+mw lint status
+
+```yaml
+
+**Result**: Scheduled markdown fixing is enabled for this workspace.
+
+### 2. Optional: Enable Git Hooks
+
+Hooks are **disabled by default** to keep linting out of git flow.
+If your team wants hooks:
+
+```bash
 mw lint install-hooks
-
-# Verify it's working
-
-mw lint status
-
-```yaml
-
-**Result**: Every user now gets automatic markdown fixing!
-
-### 2. Make It Permanent
-
-**For Project Owners** (commit the hooks so all users get them):
-
-```bash
-
-# Add git hooks to repository so all users get them
-
-git add .git/hooks/pre-commit .git/hooks/pre-push
-git commit -m "feat: add perfect auto-linting for all users
-
-✅ Automatic markdown fixing on file changes
-✅ Git hooks for perfect commits/pushes
-✅ 0-violation guarantee for all documentation
-✅ Works for all team members automatically"
-git push
-
-```yaml
-
-**For Team Members** (one-time setup):
-
-```bash
-
-# Clone repository (git hooks included)
-
-git clone <repository>
-cd <project>
-
-# Start auto-linter
-
-mw lint start
-
-# Verify it's working
-
-mw lint status
 
 ```markdown
 
-### 3. Verify Universal Operation
+### 3. Verify Operation
 
-**Test that it works for everyone:**
+**Test that scheduled linting works:**
 
 ```bash
 
@@ -97,7 +64,9 @@ code here
 
 |---|---|" > test.md
 
-# The auto-linter should fix it automatically
+# Run a manual fix (or wait for the next scheduled run)
+
+mw lint fix
 
 # Check the result
 
@@ -105,18 +74,17 @@ cat test.md
 
 ```yaml
 
-**Expected result**: The file is automatically fixed to perfect markdown.
+**Expected result**: The file is fixed to clean markdown.
 
 ## 🔧 How It Works for All Users
 
-### File Watcher Mode (`mw lint start`)
+### Scheduled Mode (`mw lint start`)
 
 **What happens:**
 
-1. **File monitoring** starts for all `.md` files
-2. **Any user** edits a markdown file
-3. **Auto-fixer** immediately fixes violations
-4. **Perfect quality** maintained automatically
+1. **Scheduler** starts and runs every 4 hours
+2. **Auto-fixer** batches markdown fixes
+3. **Git flow stays clean** unless hooks are explicitly enabled
 
 **Benefits:**
 

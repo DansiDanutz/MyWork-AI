@@ -108,7 +108,7 @@ File Size Decision:
 
 ```text
 
-```
+```markdown
 
 ### State Management
 

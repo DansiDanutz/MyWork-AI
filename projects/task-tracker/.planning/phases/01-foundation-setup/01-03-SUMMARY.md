@@ -34,7 +34,7 @@ tech-stack:
 - "Next.js manages NODE_ENV automatically - never set in .env"
 - "Use process.env.NODE_ENV directly for runtime environment checks"
 
-```
+```yaml
 
 key-files:
   created: []

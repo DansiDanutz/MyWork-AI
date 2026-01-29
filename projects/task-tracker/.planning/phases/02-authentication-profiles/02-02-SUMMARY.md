@@ -44,7 +44,7 @@ tech-stack:
 - React cache() for request deduplication
 - Next.js middleware for route protection
 
-```
+```yaml
 
   patterns:
 
@@ -89,7 +89,7 @@ decision: 3000ms debounce delay for auto-save
 rationale: Balance between responsiveness and server load per RESEARCH.md
 alternatives: 1000ms (too frequent), 5000ms (feels sluggish)
 
-```
+```markdown
 
 ---
 

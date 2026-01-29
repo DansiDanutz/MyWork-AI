@@ -120,7 +120,7 @@ task-tracker/
 
 ```text
 
-```
+```markdown
 
 ### Structure Rationale
 
@@ -267,7 +267,7 @@ return await db.tasks.create(taskData);
 
 return await db.tasks.update({ id: taskId }, updates);
 
-```
+```javascript
   }
 
   async delete(taskId) {
@@ -358,7 +358,7 @@ return task;
 
   async deleteTask(taskId, userId) {
 
-```
+```javascript
 
 const task = await this.taskRepo.findById(taskId);
 
@@ -488,7 +488,7 @@ return filter === 'all'
   {children}
 </TaskContext.Provider>
 
-```
+```javascript
   );
 }
 
@@ -539,7 +539,7 @@ React Component → API Service → POST /api/tasks
 ```text
 Express Router → Auth Middleware → Validation Middleware
 
-```
+```text
 
 ↓
 
@@ -571,7 +571,7 @@ Response ← transforms data ← returns task object
 ```text
 React Component ← updates local state ← receives response
 
-```
+```markdown
 
 ↓
 
@@ -589,13 +589,17 @@ UI Re-renders (shows new task)
 
 ```
 
+```text
+
 ```
-      ┌───────────────┐
-      │  Task Context │ (Global State)
-      │  - tasks[]    │
-      │  - filter     │
-      └───────┬───────┘
-              │
+  ┌───────────────┐
+  │  Task Context │ (Global State)
+  │  - tasks[]    │
+  │  - filter     │
+  └───────┬───────┘
+          │
+
+```
 
 ```
 ┌─────────────────┼─────────────────┐
@@ -604,7 +608,7 @@ UI Re-renders (shows new task)
 
 ```text
 
-```
+```text
   ┌──────────┐      ┌──────────┐      ┌──────────┐
   │ TaskList │      │  Filters │      │ TaskForm │
   │ Component│      │ Component│      │ Component│
@@ -620,14 +624,18 @@ UI Re-renders (shows new task)
 ```text
 
 ```
-             │
-    Actions dispatched
-             ↓
-      Context updates
-             ↓
-    Components re-render
 
 ```
+         │
+Actions dispatched
+         ↓
+  Context updates
+         ↓
+Components re-render
+
+```
+
+```text
 
 ```
 
@@ -674,7 +682,7 @@ blocking
 ```text
  frequently accessed data
 
-```
+```yaml
 
    - **Cost:** Low - configuration changes mostly
 
@@ -748,7 +756,7 @@ class TaskController {
 const task = await taskService.createTask(req.body, req.user.id, req.files);
 res.json(task);
 
-```
+```python
   }
 }
 
@@ -807,7 +815,7 @@ taskRoutes.js
 taskService.js
 taskRepository.js
 
-```
+```text
 
   auth/
 
@@ -823,7 +831,7 @@ authService.js
 fileRoutes.js
 fileService.js
 
-```
+```markdown
 
 app.js  // Assembles all modules
 
@@ -891,7 +899,7 @@ userId: req.user?.id
 
   res.status(err.statusCode || 500).json({
 
-```
+```yaml
 
 error: err.message,
 // Only expose stack in development
@@ -936,7 +944,7 @@ return this.props.children;
   }
 }
 
-```
+```markdown
 
 ### Anti-Pattern 4: Mixing Database Schema with API Response
 
@@ -1041,7 +1049,7 @@ if (allowed.includes(file.mimetype)) {
   cb(new Error(`File type ${file.mimetype} not allowed`));
 }
 
-```
+```javascript
   }
 });
 

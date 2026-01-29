@@ -93,7 +93,7 @@ GitHub Repository
 ```text
 GitHub Actions (CI/CD)
 
-```
+```text
 
 ↓
 
@@ -147,7 +147,7 @@ return NextResponse.json({
 ```text
   } catch (error) {
 
-```
+```json
 
 return NextResponse.json(
   { status: 'unhealthy', error: 'Database connection failed' },
@@ -226,7 +226,7 @@ uses: actions/setup-node@v3
 with:
   node-version: '20'
 
-```
+```yaml
 
   - name: Install dependencies
 
@@ -242,7 +242,7 @@ env:
   DATABASE_URL: ${{ secrets.DATABASE_URL }}
 run: npx prisma migrate deploy
 
-```
+```yaml
 
   - name: Deploy to Vercel
 
@@ -274,7 +274,7 @@ export function reportWebVitals(metric: any) {
   // Log to console in development
   if (process.env.NODE_ENV === 'development') {
 
-```
+```javascript
 
 console.log(metric);
 
@@ -319,7 +319,7 @@ timestamp: new Date().toISOString(),
   );
 }
 
-```
+```markdown
 
 ### Pattern 6: Rate Limiting for Abuse Prevention
 
@@ -568,7 +568,7 @@ import { prisma } from '@/lib/prisma';
 export async function GET() {
   const checks = {
 
-```
+```yaml
 
 uptime: process.uptime(),
 timestamp: new Date().toISOString(),
@@ -605,7 +605,7 @@ status: 'unhealthy',
 checks,
 error: error instanceof Error ? error.message : 'Unknown error',
 
-```
+```yaml
 
   },
   { status: 503 }
@@ -688,7 +688,7 @@ userId: session?.user?.id,
 page: window.location.pathname,
 userAgent: navigator.userAgent,
 
-```
+```bash
 
   }}
   user={session?.user?.name || 'Anonymous User'}
@@ -740,7 +740,8 @@ if (!success) {
   status: 429,
   headers: {
 
-```
+```yaml
+
 'X-RateLimit-Limit': limit.toString(),
 'X-RateLimit-Remaining': remaining.toString(),
 'X-RateLimit-Reset': reset.toString(),
@@ -764,7 +765,7 @@ export const config = {
   matcher: '/api/:path*',
 };
 
-```
+```markdown
 
 ### Analytics Integration (PostHog)
 
@@ -870,7 +871,7 @@ Things that couldn't be fully resolved:
 ```text
  20 active users
 
-```
+```yaml
 
 2. **Usage quotas for free tier validation**
    - What we know: Vercel free tier allows 100GB bandwidth/month, Neon free tier
@@ -901,7 +902,7 @@ Things that couldn't be fully resolved:
 ```text
  production domain
 
-```
+```yaml
 
    - Recommendation: Use .vercel.app for validation (e.g.,
 
@@ -931,7 +932,7 @@ Things that couldn't be fully resolved:
 ```text
  identify highest-value patterns
 
-```
+```yaml
 
 5. **Data persistence strategy post-validation**
    - What we know: Validation data is valuable for framework learning

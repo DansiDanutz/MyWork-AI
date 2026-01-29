@@ -37,7 +37,7 @@ key-files:
 - src/shared/components/index.ts
 - src/shared/hooks/useDebounce.ts
 
-```
+```yaml
 
 duration: 4 minutes
 completed: 2026-01-24

@@ -122,7 +122,7 @@ python tools/health_check.py
 ```bash
 python tools/health_check.py fix
 
-```
+```yaml
 
 This can fix:
 

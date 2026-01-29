@@ -88,7 +88,7 @@ Create a new project from templates with optional framework integration.
 ```bash
 mw new <project_name> [template] [options]
 
-```
+```markdown
 
 ### Parameters
 
@@ -254,7 +254,7 @@ mw search "api" --type api_endpoint --language python --limit 5
 ```bash
 mw search "auth middleware" --detail
 
-```
+```yaml
 
 ```yaml
 🔐 auth-middleware (Python)
@@ -437,7 +437,7 @@ Check Autocoder server and project status.
 ```bash
 mw ac status [project]
 
-```
+```yaml
 
 **Examples:**
 
@@ -615,7 +615,7 @@ mw update --check
 
 ```text
 
-```
+```yaml
 🔍 Update Status:
 
 ✅ GSD: Up to date (v1.2.0)

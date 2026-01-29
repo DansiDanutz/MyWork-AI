@@ -34,7 +34,7 @@ key-files:
 - prisma/migrations/20260125200020_add_tags_and_search/migration.sql
 - src/app/actions/tags.ts
 
-```
+```yaml
 
   modified:
 
@@ -77,7 +77,7 @@ rationale: PostgreSQL 12+ native feature, automatic maintenance without
 custom code
 impact: Cleaner schema, no trigger maintenance burden
 
-```
+```yaml
 
   - id: TAG-001
 
@@ -312,7 +312,7 @@ tags: {
 where: { userId_name: { userId, name: tagName } },
 create: { name: tagName, color: '#6b7280', userId }
 
-```
+```markdown
 
   }
 }

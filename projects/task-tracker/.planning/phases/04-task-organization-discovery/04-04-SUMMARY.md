@@ -20,7 +20,7 @@ provides: TaskSearchBar component with debounced search
 ```yaml
 provides: TaskFilters component with status and tag filtering
 
-```
+```yaml
 
   - phase: 03-01
 
@@ -70,7 +70,7 @@ key-files:
 - src/shared/components/index.ts
 - src/app/(app)/tasks/page.tsx
 
-```
+```yaml
 
 key-decisions:
 
@@ -105,7 +105,7 @@ app"
 ```text
 pieces"
 
-```
+```yaml
 
   - "Context-aware UX: Different empty states based on whether filters are
 

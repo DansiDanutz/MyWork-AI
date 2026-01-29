@@ -86,7 +86,7 @@ k in data if k in fields}`).
 ```text
 failures.
 
-```
+```yaml
 
 2) **Module Registry scan is effectively broken**
 

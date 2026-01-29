@@ -68,10 +68,19 @@ text
 
 - Core Python tests: `pytest -q` → 34 passed, 0 failed.
 - Smoke/QA scripts now include retries/backoff; production webhook
+
   test requires explicit opt-in.
+
 - AI Dashboard YouTube upload implemented with OAuth-based
+
   credentials (see backend `.env.example`).
+
+- Auto-linting moved to scheduled runs every 4 hours; git hooks are
+
+  optional and disabled by default.
+
 - Note: live smoke checks were not validated in this environment
+
   due to DNS/network restrictions.
 
 ## Deployment Log

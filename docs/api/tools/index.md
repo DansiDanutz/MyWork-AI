@@ -66,7 +66,8 @@ description="Always validate tokens server-side",
 pattern_type="security",
 confidence=0.95
 
-```
+```markdown
+
 )
 
 ```markdown
@@ -139,7 +140,7 @@ client = AutocoderClient("http://127.0.0.1:8888")
 
 session = client.start_project(
 
-```
+```markdown
 
 project_name="my-app",
 concurrency=3,
@@ -185,7 +186,7 @@ print(f"❌ Project error: {e.message}")
 
 # Handle missing project
 
-```
+```yaml
 except MyWorkError as e:
 
 ```python
@@ -245,7 +246,8 @@ with log.progress("Scanning modules...") as progress:
 
 for i, module in enumerate(modules):
 
-```
+```markdown
+
 progress.update(f"Processing {module.name}")
 
 # Do work
@@ -301,7 +303,7 @@ brain_learning=True
 
 print(f"🚀 Framework initialized: {framework.version}")
 
-```
+```markdown
 
 ### Environment Variables
 
@@ -365,7 +367,8 @@ KnowledgePattern, BrainEntry,
 HealthCheck, DiagnosticResult,
 AutocoderSession, ProgressUpdate
 
-```
+```markdown
+
 )
 
 # Project data
@@ -407,7 +410,8 @@ confidence=0.95,
 usage_count=5,
 success_rate=1.0
 
-```
+```markdown
+
 )
 
 ```markdown
@@ -430,7 +434,8 @@ def setUp(self):
 ```
 self.mock_brain = mock_knowledge_base([
 
-```
+```json
+
 {"title": "Auth Pattern", "type": "security"},
 {"title": "React Hook", "type": "frontend"}
 
@@ -441,7 +446,7 @@ self.mock_brain = mock_knowledge_base([
 
 def test_search_by_type(self):
 
-```
+```python
 results = search_knowledge("auth", pattern_type="security")
 self.assertEqual(len(results), 1)
 self.assertEqual(results[0].title, "Auth Pattern")
@@ -470,7 +475,7 @@ class TestProjectCreation(IntegrationTest):
 
 def test_full_project_lifecycle(self):
 
-```
+```markdown
 
 # Create project
 
@@ -522,7 +527,7 @@ if result.success:
 
 print(f"✅ Phase 3 planned: {result.plans_created} plans")
 
-```
+```yaml
 else:
 
 ```python
@@ -556,7 +561,7 @@ environment_vars={
 
 }
 
-```
+```python
 )
 
 print(f"🔗 Workflow created: {workflow.url}")
@@ -600,11 +605,16 @@ result = self.do_work(project, options)
 
 if result.success:
 
-```
+```text
+
 self.brain.add_pattern(
-    title=f"Custom operation on {project.name}",
-    pattern=result.pattern,
-    confidence=0.8
+
+```
+title=f"Custom operation on {project.name}",
+pattern=result.pattern,
+confidence=0.8
+
+```
 )
 
 ```

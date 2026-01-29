@@ -250,7 +250,7 @@ export async function createTask(formData: FormData) {
   // Always validate on server
   const validated = createTaskSchema.parse({
 
-```
+```yaml
 
 title: formData.get('title'),
 description: formData.get('description'),
@@ -571,7 +571,7 @@ model Task {
   @@index([status])
 }
 
-```
+```markdown
 
 ### Run First Migration
 
@@ -716,7 +716,7 @@ Expected response:
 ```text
  direct connection string params
 
-```
+```yaml
 
    - What's unclear: Optimal pool size for development vs. production, whether to
 
@@ -746,7 +746,7 @@ Expected response:
 ```text
  directly (e.g., `@/modules/tasks/lib/internal` instead of `@/modules/tasks`)
 
-```
+```yaml
 
    - Recommendation: Document convention in ARCHITECTURE.md, consider ESLint
 
@@ -776,7 +776,7 @@ Expected response:
 ```text
  Prisma 7 adoption, plan migration when ecosystem documentation catches up
 
-```
+```yaml
 
 4. **Environment Variable Validation Timing**
    - What we know: Zod validation should happen at startup

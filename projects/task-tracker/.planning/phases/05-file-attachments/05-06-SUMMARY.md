@@ -133,7 +133,7 @@ TaskCard → Shows FileCountBadge if attachments exist
 ```text
 Edit Task → TaskEditFormWithTags with full file management
 
-```
+```text
 
 ↓
 

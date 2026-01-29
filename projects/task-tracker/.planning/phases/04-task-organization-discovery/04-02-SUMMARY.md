@@ -28,7 +28,7 @@ key-files:
 - src/app/(app)/tasks/page.tsx
 - package.json
 
-```
+```yaml
 
 decisions: []
 metrics:

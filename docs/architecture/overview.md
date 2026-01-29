@@ -17,7 +17,7 @@ subgraph "User Interface"
 CLI[Claude Code CLI]
 MW[mw.py CLI]
 
-```
+```text
 
 end
 
@@ -40,7 +40,7 @@ GSD_EXEC[execute-phase]
 GSD_VERIFY[verify-work]
 GSD_NEW --> GSD_PLAN --> GSD_EXEC --> GSD_VERIFY
 
-```
+```yaml
 
 end
 
@@ -61,7 +61,7 @@ subgraph "Layer 3: Engines"
 AUTOCODER[Autocoder<br/>Autonomous coding]
 N8N[n8n<br/>Workflow automation]
 
-```
+```text
 
 end
 
@@ -185,7 +185,7 @@ I --> L
 J --> L
 K --> L
 
-```
+```markdown
 
 ```markdown
 
@@ -226,7 +226,7 @@ User Request
 │  STATE  │      │ output  │      │  code   │
 └─────────┘      └─────────┘      └─────────┘
 
-```
+```text
 
  │                 │                 │
  └────────────────┬┴─────────────────┘
@@ -234,12 +234,16 @@ User Request
 ```python
 
 ```
-          ▼
+
+```
+      ▼
+
+```
   ┌─────────────┐
   │    Brain    │ ← Learns from all
   └─────────────┘
 
-```
+```text
 
 ```
 

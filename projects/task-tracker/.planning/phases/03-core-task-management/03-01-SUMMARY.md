@@ -25,7 +25,7 @@ key-files:
 - prisma/schema.prisma
 - src/shared/lib/dal.ts
 
-```
+```yaml
 
 decisions:
 
@@ -85,7 +85,7 @@ authentication, validation, and performance optimization:
 ```text
  support)
 
-```
+```yaml
 
    - `deleteTask`: Delete with ownership verification
    - All actions include authentication, analytics tracking, path revalidation

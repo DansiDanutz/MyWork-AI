@@ -33,7 +33,7 @@ decisions:
 ```text
 createdAt)
 
-```
+```python
 
   - ANALYTICS-005: trackSessionEvent helper auto-injects userId from auth session
 

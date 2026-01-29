@@ -27,7 +27,7 @@ scale)
 ```text
 consumption
 
-```
+```yaml
 
 tech-stack:
   added: []
@@ -200,7 +200,7 @@ project)
 ```text
  APIs
 
-```
+```markdown
 
 2. **In-Memory Cache with TTL** (MEDIUM value)
    - Map-based cache with timestamp tracking

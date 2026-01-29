@@ -24,7 +24,7 @@ provides:
 ```text
 providers)
 
-```
+```markdown
 
   - Database-backed sessions with 24h expiry and 1h refresh
   - Type-safe session with user.id access
@@ -74,7 +74,7 @@ capability"
 ```text
 features"
 
-```
+```markdown
 
   - "24-hour session expiry with 1-hour silent refresh for balance between
 

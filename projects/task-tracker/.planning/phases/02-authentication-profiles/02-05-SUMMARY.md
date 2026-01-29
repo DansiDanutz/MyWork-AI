@@ -17,7 +17,7 @@ provides: Auth.js infrastructure with GitHub OAuth and Prisma adapter
 ```yaml
 provides: Authorization layer with DAL and middleware
 
-```
+```yaml
 
   - phase: 02-03
 
@@ -322,7 +322,7 @@ export default async function DashboardPage() {
 
   return (
 
-```
+```html
 
 <div>
   <h1>Welcome back, {user?.name}!</h1>
@@ -347,7 +347,7 @@ export default async function DashboardPage() {
 <h2>Getting Started</h2>
 <p>Task management features coming in Phase 3.</p>
 
-```
+```html
 
   </div>
 </div>

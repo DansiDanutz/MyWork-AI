@@ -41,7 +41,7 @@ key-files:
 - src/shared/components/TaskFormWithTags.tsx
 - src/shared/components/TaskEditFormWithTags.tsx
 
-```
+```yaml
 
   modified:
 

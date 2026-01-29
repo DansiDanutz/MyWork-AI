@@ -1,22 +1,22 @@
-# Perfect Auto-Linting Agent 🎯
+# Auto-Linting Scheduler 🎯
 
-**Status: ✅ PERFECT - Maintains 0 markdownlint violations automatically**
+**Status: ✅ ACTIVE - Scheduled markdown fixes every 4 hours**
 
-The MyWork Framework includes a perfect auto-linting agent that ensures all
-markdown files maintain perfect quality without any manual intervention. This
-works for **ALL USERS** automatically.
+The MyWork Framework includes a scheduled auto-linting system that keeps
+markdown files healthy without interfering with day-to-day git workflows.
+Linting is **out of the git flow by default** and runs on a schedule.
 
 ## 🚀 Quick Start (For All Users)
 
-### Enable Perfect Auto-Linting
+### Enable Scheduled Auto-Linting
 
 ```bash
 
-# Start the auto-linter (monitors files and fixes issues automatically)
+# Start the lint scheduler (runs every 4 hours)
 
 mw lint start
 
-# Install git hooks (fixes issues during commits/pushes)
+# Install git hooks (optional; keeps linting out by default)
 
 mw lint install-hooks
 
@@ -26,8 +26,8 @@ mw lint status
 
 ```markdown
 
-That's it! Perfect markdown quality is now guaranteed for everyone working on
-this project.
+That's it! Scheduled markdown fixes are now running without disrupting your
+commit/push workflow.
 
 ## 🎯 What It Does
 
@@ -48,23 +48,24 @@ The auto-linter automatically fixes these markdown violations:
 - **MD058**: Table spacing
 - **MD060**: Table column style with pipe spacing
 
-### Never Stops Working
+### Reliable by Design
 
 - ✅ **Robust Error Handling**: Never crashes or stops on problematic files
 - ✅ **Self-Healing**: Fixes issues created during processing
 - ✅ **Cross-Platform**: Works on macOS, Linux, and Windows
-- ✅ **Git Integration**: Automatically fixes during commits and pushes
+- ✅ **Git-Friendly**: Hooks are optional and disabled by default
 
 ## 📋 Available Commands
 
 ```bash
 
-# Perfect Auto-Linting Management
+# Scheduled Linting Management
 
-mw lint start                 # Start file watcher (recommended for all users)
-mw lint stop                  # Stop file watcher
-mw lint status                # Check if auto-linter is running
-mw lint install-hooks         # Set up git hooks for automatic fixing
+mw lint start                 # Start scheduler (every 4 hours)
+mw lint stop                  # Stop scheduler
+mw lint status                # Check scheduler status
+mw lint install-hooks         # Optional: add git hooks
+mw lint uninstall-hooks       # Remove git hooks
 
 # Manual Operations
 
@@ -78,31 +79,38 @@ mw lint stats                 # Show statistics
 
 ## 🔧 How It Works
 
-### File Watcher Mode (Recommended)
+### Scheduled Mode (Default)
 
-When you run `mw lint start`, the agent:
+When you run `mw lint start`, the scheduler:
 
-1. **Monitors** all markdown files for changes
-2. **Automatically fixes** any markdownlint violations immediately
-3. **Maintains** perfect 0-violation quality
-4. **Works for everyone** on the project
+1. **Runs every 4 hours** (configurable)
+2. **Fixes markdownlint violations** in batch
+3. **Keeps linting out of git flow** by default
+4. **Logs results** for visibility
 
-### Git Hook Mode
+### Watch Mode (Optional)
+
+If you want real-time fixes while editing:
+
+- Run `mw lint watch` to start a file watcher
+- This is **optional** and not enabled by default
+
+### Git Hook Mode (Optional)
 
 When you run `mw lint install-hooks`, git operations will:
 
 1. **Pre-commit**: Fix all markdown files before committing
-2. **Pre-push**: Verify perfect markdown quality before pushing
+2. **Pre-push**: Verify markdown quality before pushing
 3. **Auto-fix**: Resolve any issues and prompt for review
 
 ## 💡 For All Users
 
 ### New Team Members
 
-New team members automatically get perfect markdown quality when they:
+New team members can enable scheduled linting by running:
 
-- Clone the repository (git hooks are included)
-- Run `mw lint start` once (file watcher monitors their work)
+- `mw lint start` (runs every 4 hours)
+- `mw lint install-hooks` only if they want lint checks in git operations
 
 ### Existing Team Members
 
@@ -110,7 +118,7 @@ Existing team members can enable it by running:
 
 ```bash
 mw lint start           # Enable automatic fixing
-mw lint install-hooks   # Enable git integration
+mw lint install-hooks   # Optional: enable git integration
 
 ```markdown
 
@@ -120,7 +128,7 @@ Add to your CI pipeline:
 
 ```bash
 
-# Check that all markdown is perfect
+# Check markdown quality in CI
 
 python3 tools/auto_lint_fixer.py .
 markdownlint . || exit 1
@@ -138,14 +146,14 @@ markdownlint . || exit 1
 
 ### For Teams
 
-- **Consistent quality**: All documentation is perfectly formatted
+- **Consistent quality**: All documentation is consistently formatted
 - **No review delays**: Markdown issues never block PRs
 - **Reduced maintenance**: No manual markdown cleanup needed
 - **Professional appearance**: All docs look polished
 
 ### For Projects
 
-- **Documentation quality**: Perfect markdown enhances project credibility
+- **Documentation quality**: Consistent markdown enhances project credibility
 - **Automation**: One less thing to worry about
 - **Scalability**: Works for projects of any size
 - **Reliability**: Never breaks or stops working
@@ -155,7 +163,7 @@ markdownlint . || exit 1
 ### Architecture
 
 ```text
-File Changes → File Watcher → Auto-Fixer → Perfect Markdown
+Scheduled Runs → Auto-Fixer → Consistent Markdown
 
 ```text
 
@@ -163,20 +171,22 @@ File Changes → File Watcher → Auto-Fixer → Perfect Markdown
 
 ```markdown
 
-Git Commits → Git Hooks → Auto-Fixer → Perfect Commits
+Git Commits → Git Hooks (Optional) → Auto-Fixer → Clean Commits
 
 ```markdown
 
 ### Files
 
-- `auto_lint_fixer.py` - The perfect markdown fixing engine
-- `auto_linting_agent.py` - File watching and orchestration
+- `auto_lint_fixer.py` - Markdown fixing engine
+- `auto_lint_scheduler.py` - Scheduled runner (default every 4 hours)
+- `auto_linting_agent.py` - Optional file watcher
+- `lint_watcher.py` - Scheduler manager
 - `start_auto_linter.sh/bat` - Cross-platform startup scripts
 - `mw.py lint` - User-friendly management commands
 
 ### Zero Configuration
 
-The auto-linter works perfectly out of the box with no configuration needed. It
+The auto-linter works out of the box with no configuration needed. It
 intelligently:
 
 - Detects all markdown files
@@ -188,7 +198,7 @@ intelligently:
 
 ### For Framework Administrators
 
-To ensure all users get perfect auto-linting:
+To ensure all users get scheduled auto-linting:
 
 1. **Enable by default in new projects:**
 
@@ -197,7 +207,8 @@ To ensure all users get perfect auto-linting:
    # Add to project templates
 
    mw lint start
-   mw lint install-hooks
+
+   # Optional: mw lint install-hooks
 
 ```yaml
 
@@ -217,7 +228,7 @@ To ensure all users get perfect auto-linting:
 
    ```bash
 
-   # Ensure perfect markdown in CI
+   # Ensure markdown quality in CI
 
    python3 tools/auto_lint_fixer.py .
    markdownlint . || exit 1
@@ -226,13 +237,13 @@ To ensure all users get perfect auto-linting:
 
 ### For Project Owners
 
-Enable perfect markdown quality for your entire team:
+Enable scheduled markdown quality for your entire team:
 
 ```bash
 mw lint start           # Start monitoring
 mw lint install-hooks   # Set up git integration
 git add .git/hooks/     # Commit hooks for all users
-git commit -m "feat: add perfect auto-linting for all users"
+git commit -m "feat: add scheduled auto-linting for docs"
 git push
 
 ```markdown

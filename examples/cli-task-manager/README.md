@@ -175,7 +175,7 @@ cli-task-manager/
 ├── README.md                   # This file
 └── .gitignore                  # Git ignore rules
 
-```
+```markdown
 
 ## 🧪 **Testing**
 
@@ -264,7 +264,7 @@ HIGH = "high"
 @dataclass
 class Task:
 
-```
+```yaml
 
 id: int
 title: str
@@ -298,13 +298,14 @@ self.ensure_file_exists()
 
 def save_tasks(self, tasks: List[Task]) -> None:
 
-```
+```yaml
 with open(self.file_path, 'w') as f:
 
 ```
+
 json.dump([asdict(task) for task in tasks], f, indent=2, default=str)
 
-```
+```text
 
 ```text
 
@@ -339,7 +340,7 @@ priority_color = {"high": "red", "normal": "white", "low":
 table.add_row(str(task.id), status, task.title, task.priority.value,
 style=priority_color)
 
-```
+```markdown
 
 console.print(table)
 

@@ -42,7 +42,7 @@ key-files:
 - src/app/(app)/tasks/page.tsx
 - src/app/(app)/tasks/new/page.tsx
 
-```
+```yaml
 
   modified:
 
@@ -291,7 +291,7 @@ export default function Page() {
   <AsyncContent />
 </Suspense>
 
-```
+```javascript
   )
 }
 

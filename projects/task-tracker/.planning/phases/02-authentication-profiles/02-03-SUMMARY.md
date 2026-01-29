@@ -33,7 +33,7 @@ key-files:
 - src/app/(auth)/login/page.tsx
 - src/app/(auth)/welcome/page.tsx
 
-```
+```yaml
 
   modified:
 
@@ -72,7 +72,7 @@ title: Post-OAuth Onboarding Flow
 choice: Redirect to /welcome after first login with guided tour
 rationale: Helps new users understand features immediately after sign-up
 
-```
+```yaml
 
 metrics:
   duration: 50 minutes

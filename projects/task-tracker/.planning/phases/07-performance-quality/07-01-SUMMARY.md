@@ -19,7 +19,7 @@ deliverable: File attachments UI components
 ```yaml
 deliverable: Task management UI patterns
 
-```
+```yaml
 
 provides:
 
@@ -73,7 +73,7 @@ key-files:
 - src/app/(app)/settings/loading.tsx
 - src/app/(app)/settings/profile/loading.tsx
 
-```
+```yaml
 
   modified: []
 

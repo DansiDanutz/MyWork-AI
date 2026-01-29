@@ -28,7 +28,7 @@ key-files:
 - src/shared/components/index.ts
 - next.config.ts
 
-```
+```yaml
 
 decisions:
 
@@ -303,7 +303,7 @@ flagged earlier in phase
    ssr: false, // if uses browser APIs
  }
 
-```
+```yaml
    )
 
 ```yaml

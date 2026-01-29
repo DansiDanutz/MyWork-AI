@@ -120,7 +120,7 @@ GitHub({
   clientSecret: process.env.AUTH_GITHUB_SECRET!,
   authorization: {
 
-```
+```yaml
 params: {
   // Scopes: user profile + email + repo read access
   scope: "read:user user:email repo"
@@ -162,7 +162,7 @@ async redirect({ url, baseUrl }) {
   },
   pages: {
 
-```
+```yaml
 
 signIn: '/login',
 error: '/login',  // Redirect errors to login (per user context)
@@ -259,7 +259,7 @@ export async function updateProfile(formData: FormData) {
 where: { id: session.userId },
 data: { name, bio }
 
-```
+```yaml
   })
 
   revalidatePath('/settings/profile')
@@ -344,7 +344,7 @@ export async function fetchGitHubData(
   // Add conditional request headers
   if (cached) {
 
-```
+```javascript
 
 if (cached.etag) headers['If-None-Match'] = cached.etag
 if (cached.lastModified) headers['If-Modified-Since'] = cached.lastModified
@@ -427,7 +427,7 @@ export const config = {
   matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
 }
 
-```
+```markdown
 
 ### Anti-Patterns to Avoid
 
@@ -700,7 +700,7 @@ timeoutRef.current = setTimeout(() => {
 return () => {
   if (timeoutRef.current) {
 
-```
+```text
 clearTimeout(timeoutRef.current)
 
 ```text
@@ -746,7 +746,8 @@ limit: data.resources.core.limit,        // 5000 for authenticated
 remaining: data.resources.core.remaining,
 reset: new Date(data.resources.core.reset * 1000),  // UTC timestamp
 
-```
+```markdown
+
   }
 }
 
@@ -814,7 +815,7 @@ Things that couldn't be fully resolved:
 ```text
  reasonable?
 
-```
+```yaml
 
    - Recommendation: Enforce 5MB client-side limit (covers profile photos,
 
@@ -843,7 +844,7 @@ Things that couldn't be fully resolved:
 ```text
  handle 401 by saving to localStorage
 
-```
+```yaml
 
 4. **GitHub webhook integration scope**
    - What we know: User context mentions "bidirectional sync" with GitHub repos

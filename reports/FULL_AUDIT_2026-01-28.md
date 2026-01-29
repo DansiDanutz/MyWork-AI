@@ -54,6 +54,7 @@ Date: 2026-01-28
 - Added retries/backoff to smoke + QA scripts for transient network failures.
 - Made Marketplace CI CLI versions configurable via repo variables.
 - Implemented YouTube upload (OAuth-based) in AI Dashboard automation.
+- Switched auto-linting to scheduled runs every 4 hours; hooks optional.
 
 ## Status Matrix (What Is Done)
 
@@ -134,7 +135,7 @@ Date: 2026-01-28
 ```text
  `tools/n8n_api.py`.
 
-```
+```markdown
 
 ---
 

@@ -136,7 +136,7 @@ model User {
   tasks Task[]  // Add relation
 }
 
-```
+```markdown
 
 ### Pattern 2: Server Action with Zod Validation (Extends profile.ts)
 
@@ -200,7 +200,7 @@ const task = await prisma.task.create({
 ...validation.data,
 userId,
 
-```
+```yaml
 
   },
 })
@@ -261,7 +261,8 @@ addOptimisticUpdate(newStatus)
 // 2. Send to server in background
 await updateTaskStatus(task.id, newStatus)
 
-```
+```html
+
   }
 
   return (
@@ -286,7 +287,7 @@ onChange={(e) => handleStatusChange(e.target.value)}
 <option value="in_progress">In Progress</option>
 <option value="done">Done</option>
 
-```
+```html
 
   </select>
 </div>
@@ -380,7 +381,7 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
 
   return (
 
-```
+```html
 
 <div className="space-y-8">
   <TaskSection title="To Do" tasks={todoTasks} />
@@ -414,7 +415,7 @@ return (
 
   return (
 
-```
+```html
 
 <section>
   <h2 className="text-lg font-semibold mb-4">
@@ -432,7 +433,7 @@ return (
   <TaskCard key={task.id} task={task} />
 ))}
 
-```
+```html
 
   </div>
 </section>
@@ -648,7 +649,8 @@ confusion.
   <button>Create Task</button>
 </Link>
 
-```
+```html
+
   </div>
 ) : (
   <TaskList tasks={tasks} />
@@ -716,7 +718,7 @@ await prisma.task.create({
 userId,
 status: 'todo',
 
-```
+```yaml
 
   },
 })
@@ -792,7 +794,7 @@ return { success: true }
 ```text
   } catch (error) {
 
-```
+```yaml
 
 console.error('Status update error:', error)
 return { success: false, error: 'Failed to update status' }
@@ -847,7 +849,7 @@ return { success: true }
 ```text
   } catch (error) {
 
-```
+```yaml
 
 console.error('Task deletion error:', error)
 return { success: false, error: 'Failed to delete task' }
@@ -905,7 +907,7 @@ startTransition(async () => {
 ```yaml
 console.error('Failed to update status:', result.error)
 
-```
+```javascript
 
   }
 })
@@ -931,7 +933,7 @@ alert(result.error || 'Failed to delete task')
   }
 })
 
-```
+```yaml
   }
 
   return (
@@ -974,7 +976,7 @@ alert(result.error || 'Failed to delete task')
   Delete
 </button>
 
-```
+```html
 
   </div>
 
@@ -1014,16 +1016,19 @@ export default async function TasksPage() {
 <div className="container mx-auto px-4 py-8">
   <div className="flex justify-between items-center mb-8">
 
-```
+```html
+
 <h1 className="text-3xl font-bold">My Tasks</h1>
 <Link href="/tasks/new">
   <button className="bg-blue-600 text-white px-4 py-2 rounded-lg
   hover:bg-blue-700">
 
 ```
+
 + New Task
 
-```
+```html
+
   </button>
 </Link>
 
@@ -1041,7 +1046,7 @@ export default async function TasksPage() {
   </Suspense>
 </div>
 
-```
+```javascript
   )
 }
 
@@ -1065,9 +1070,11 @@ return (
   hover:bg-blue-700">
 
 ```
+
 Create Your First Task
 
-```
+```html
+
   </button>
 </Link>
 
@@ -1090,17 +1097,20 @@ function TaskListSkeleton() {
 <div className="space-y-8">
   {['To Do', 'In Progress', 'Done'].map(status => (
 
-```
+```html
+
 <div key={status}>
   <div className="h-6 w-32 bg-gray-200 rounded mb-4 animate-pulse" />
   <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 
 ```
+
 {[1, 2, 3].map(i => (
   <div key={i} className="h-32 bg-gray-100 rounded-lg animate-pulse" />
 ))}
 
-```
+```html
+
   </div>
 </div>
 
@@ -1158,7 +1168,7 @@ Things that couldn't be fully resolved:
    - What's unclear: Tradeoffs between approaches for this specific use case
    - Recommendation: Research in planning phase. Options:
 
-```
+```yaml
 
  - **Inline editing**: Fastest UX, but complex state management
  - **Modal**: Good balance, reuses form component
@@ -1200,7 +1210,8 @@ Things that couldn't be fully resolved:
    - What's unclear: Confirmation dialog vs undo toast vs require typing "delete"
    - Recommendation: Simple confirm() dialog for MVP (native, accessible, no
 
-```
+```markdown
+
  extra code). Consider toast-based undo in future iteration if analytics show
  frequent accidental deletions.
 

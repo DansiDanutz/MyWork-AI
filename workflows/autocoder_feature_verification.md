@@ -56,7 +56,8 @@ Be specific about the domain (e-commerce, gaming, SaaS, etc.)
 <feature>Buyer can checkout with Stripe</feature>
 <!-- Be explicit - don't assume anything -->
 
-```
+```html
+
   </core_features>
 
   <feature_count>45</feature_count>
@@ -171,16 +172,21 @@ warnings = []
 gaming_terms = ['game', 'lobby', 'room', 'player', 'match', 'XP', 'credits']
 for feature in features:
 
-```
+```yaml
 for term in gaming_terms:
 
 ```
+
 if term.lower() in feature[0].lower():
-    if 'game' not in project_name_from_spec.lower():
-        warnings.append(f"Feature '{feature[0]}' contains gaming term
-        '{term}'")
 
 ```
+if 'game' not in project_name_from_spec.lower():
+    warnings.append(f"Feature '{feature[0]}' contains gaming term
+    '{term}'")
+
+```
+
+```yaml
 
 ```yaml
 
@@ -190,7 +196,8 @@ if warnings:
 print("⚠️  FEATURE VERIFICATION WARNINGS:")
 for w in warnings:
 
-```
+```python
+
 print(f"   - {w}")
 
 ```
@@ -200,7 +207,7 @@ return False
 
 return True
 
-```
+```markdown
 
 ```markdown
 

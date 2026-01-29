@@ -96,7 +96,7 @@ mw gsd new-project
 ```text
 A modern web-based todo application with user authentication, task categories, and responsive design. Users can sign up, create tasks, organize them by category, and manage their personal productivity.
 
-```
+```yaml
 
 **Target audience:**
 
@@ -219,7 +219,7 @@ mw gsd plan-phase 1
 ```bash
 mw gsd execute-phase 1
 
-```
+```yaml
 
 **Watch parallel execution:**
 
@@ -390,7 +390,7 @@ src/
 
 ```text
 
-```
+```markdown
 
 ### **3.2 Key design patterns**
 

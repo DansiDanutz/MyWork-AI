@@ -22,7 +22,7 @@ model
 ```yaml
 provides: GitHub API integration with rate limiting and ETag caching
 
-```
+```yaml
 
 provides:
 

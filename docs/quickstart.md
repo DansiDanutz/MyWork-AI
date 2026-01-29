@@ -122,7 +122,7 @@ python ../../tools/mw.py gsd execute-phase 1
 
 # ✅ Make atomic commits for each task
 
-```
+```yaml
 
 **Real-time progress:**
 

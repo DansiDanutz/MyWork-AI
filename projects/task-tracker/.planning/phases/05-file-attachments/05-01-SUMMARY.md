@@ -28,7 +28,7 @@ key-files:
 - next.config.ts
 - package.json
 
-```
+```yaml
 
 decisions:
 
@@ -66,7 +66,7 @@ title: Cascade delete file attachments when task deleted
 rationale: Clean orphan file prevention, no abandoned attachments in
 database or filesystem
 
-```
+```yaml
 
 metrics:
   duration: 4 minutes

@@ -20,7 +20,7 @@ deliverable: Loading states with skeleton screens
 ```yaml
 deliverable: Code splitting for file components
 
-```
+```yaml
 
   - phase: 07-03
 
@@ -63,7 +63,7 @@ tech-stack:
 - next/web-vitals (useReportWebVitals hook)
 - navigator.sendBeacon API for reliable metric reporting
 
-```
+```yaml
 
   patterns:
 
@@ -110,7 +110,7 @@ transitions
 alternatives: Manual web-vitals library (more control but requires
 integration work)
 
-```
+```yaml
 
   - id: VITALS-002
 

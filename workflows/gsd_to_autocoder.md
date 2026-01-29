@@ -162,7 +162,7 @@ python tools/autocoder_api.py stop {project-name}
 
 python tools/autocoder_api.py ui
 
-```
+```markdown
 
 ---
 

@@ -13,9 +13,13 @@ Before starting any task, determine which layer handles it:
 │                         USER REQUEST                             │
 └─────────────────────────────────────────────────────────────────┘
 
+```text
+
 ```
-                          │
-                          ▼
+                      │
+                      ▼
+
+```
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -23,9 +27,13 @@ Before starting any task, determine which layer handles it:
 │     YES → /gsd:new-project (full planning, requirements, roadmap)│
 └─────────────────────────────────────────────────────────────────┘
 
+```text
+
 ```
-                          │ NO
-                          ▼
+                      │ NO
+                      ▼
+
+```
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -33,9 +41,13 @@ Before starting any task, determine which layer handles it:
 │     YES → /gsd:plan-phase N → /gsd:execute-phase N              │
 └─────────────────────────────────────────────────────────────────┘
 
+```text
+
 ```
-                          │ NO
-                          ▼
+                      │ NO
+                      ▼
+
+```
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -43,9 +55,13 @@ Before starting any task, determine which layer handles it:
 │     YES → /gsd:quick OR WAT workflow                            │
 └─────────────────────────────────────────────────────────────────┘
 
+```text
+
 ```
-                          │ NO
-                          ▼
+                      │ NO
+                      ▼
+
+```
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -53,9 +69,13 @@ Before starting any task, determine which layer handles it:
 │     YES → Autocoder (with GSD tracking via /gsd-to-autocoder-spec)│
 └─────────────────────────────────────────────────────────────────┘
 
+```text
+
 ```
-                          │ NO
-                          ▼
+                      │ NO
+                      ▼
+
+```
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -63,9 +83,13 @@ Before starting any task, determine which layer handles it:
 │     YES → n8n workflow via create_n8n_workflow.md               │
 └─────────────────────────────────────────────────────────────────┘
 
+```text
+
 ```
-                          │ NO
-                          ▼
+                      │ NO
+                      ▼
+
+```
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -73,7 +97,7 @@ Before starting any task, determine which layer handles it:
 │     YES → WAT tool from tools/                                  │
 └─────────────────────────────────────────────────────────────────┘
 
-```
+```markdown
 
 ## Quick Reference Table
 
@@ -184,7 +208,7 @@ DISCUSS → PLAN → EXECUTE → VERIFY
    │        └─> Research + XML plans + verification loop
    └─> Capture implementation decisions
 
-```
+```markdown
 
 ---
 
@@ -200,7 +224,9 @@ execution.
 
 - Markdown SOPs stored in `workflows/`
 - Each workflow defines: objective, required inputs, tools to use, expected
+
   outputs, edge cases
+
 - Written in plain language like you'd brief a team member
 
 **Layer 2b: Agents (The Decision-Maker)**
@@ -327,7 +353,7 @@ Install via npx - no setup required:
 ```bash
 npx n8n-mcp
 
-```
+```yaml
 
 **2. n8n-skills** (provides expert guidance)
 
@@ -352,15 +378,20 @@ cp -r n8n-skills/skills/* ~/.claude/skills/
 {
   "mcpServers": {
 
-```
+```yaml
+
 "n8n-mcp": {
   "command": "npx",
   "args": ["n8n-mcp"],
   "env": {
-    "MCP_MODE": "stdio",
-    "LOG_LEVEL": "error",
-    "N8N_API_URL": "https://seme.app.n8n.cloud",
-    "N8N_API_KEY": "your-api-key-here"
+
+```
+"MCP_MODE": "stdio",
+"LOG_LEVEL": "error",
+"N8N_API_URL": "<https://seme.app.n8n.cloud",>
+"N8N_API_KEY": "your-api-key-here"
+
+```
   }
 }
 
@@ -434,7 +465,7 @@ These skills activate automatically when relevant:
 
 **ALWAYS follow this process:**
 
-```
+```markdown
 
 1. TEMPLATE FIRST
 
@@ -475,11 +506,16 @@ These skills activate automatically when relevant:
 #### Critical Rules
 
 1. **Templates First** - ALWAYS check templates before building from scratch
+
 (2,709 available)
+
 2. **Never Trust Defaults** - Default parameter values cause runtime failures
 3. **Multi-Level Validation** - `validate_node(mode='minimal')` →
+
 `validate_node(mode='full')` → `validate_workflow`
+
 4. **Batch Operations** - Use `n8n_update_partial_workflow` with multiple
+
 operations in a single call
 
 #### Common AI/LLM Node Types
@@ -508,9 +544,13 @@ $env.VAR_NAME   // Environment variable
 #### Resources
 
 - [n8n-mcp GitHub](https://github.com/czlonkowski/n8n-mcp) - MCP server (1,084
+
   nodes, 99% property coverage)
+
 - [n8n-skills GitHub](https://github.com/czlonkowski/n8n-skills) - 7
+
   complementary Claude Code skills
+
 - [n8n API Documentation](https://docs.n8n.io/api/)
 - [n8n Workflow Templates](https://n8n.io/workflows/) - 2,709 templates
 
@@ -610,7 +650,7 @@ python tools/autocoder_api.py start my-app --concurrency 3 --yolo
 
 python tools/autocoder_api.py start my-app --concurrency 5 --yolo
 
-```
+```markdown
 
 **See `workflows/gsd_to_autocoder.md` for full SOP.**
 
@@ -630,7 +670,8 @@ When a GSD phase has 20+ features, hand off to Autocoder:
 ```
  3`
 
-```
+```bash
+
    - **Manual:** `python tools/autocoder_api.py ui`
 4. Monitor: `python tools/autocoder_api.py progress {project}`
 5. Track in GSD STATE.md
@@ -707,10 +748,11 @@ projects/
 └── project-c/
 
 ```
+
 ├── .planning/          # Project C's GSD state
 └── ...
 
-```
+```text
 
 ```
 
@@ -798,7 +840,7 @@ python tools/auto_update.py status
 
 python tools/auto_update.py rollback autocoder
 
-```
+```yaml
 
 **Safety features:**
 
@@ -942,7 +984,7 @@ part of your workflow.
 ```bash
 python tools/mw.py brain learn
 
-```
+```yaml
 
 **Weekly (deep analysis):**
 
@@ -1008,7 +1050,7 @@ python tools/mw.py brain stats
 ```bash
 python tools/mw.py status
 
-```
+```yaml
 
 **After completing work:**
 
@@ -1071,6 +1113,6 @@ The framework gets stronger with every project:
 ```bash
 mw remember "What you just learned"
 
-```
+```text
 
 Stay pragmatic. Stay reliable. Keep improving.

@@ -42,7 +42,7 @@ key-decisions:
 ```text
 and verified"
 
-```
+```yaml
 
 patterns-established:
 

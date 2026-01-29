@@ -99,7 +99,8 @@ src/app/
 
 └── analytics/
 
-```
+```markdown
+
 └── web-vitals.ts   # Core Web Vitals reporting
 
 ```markdown
@@ -163,7 +164,7 @@ const FileDropzone = dynamic(
 loading: () => <div className="animate-pulse bg-gray-100 h-64 rounded" />,
 ssr: false // Client-only (uses browser APIs)
 
-```
+```javascript
   }
 )
 
@@ -253,7 +254,7 @@ import Image from 'next/image'
 export function TaskThumbnail({ file }) {
   return (
 
-```
+```yaml
 
 <Image
   src={file.url}
@@ -501,7 +502,7 @@ Verified patterns from official sources:
 export default function TasksLoading() {
   return (
 
-```
+```html
 
 <div className="container mx-auto p-4">
   {/* Header skeleton */}
@@ -523,7 +524,8 @@ export default function TasksLoading() {
 {[1, 2, 3, 4, 5].map((i) => (
   <div key={i} className="border rounded-lg p-4">
 
-```
+```html
+
 <div className="h-6 w-3/4 bg-gray-200 rounded animate-pulse mb-2" />
 <div className="h-4 w-1/2 bg-gray-200 rounded animate-pulse" />
 
@@ -531,7 +533,7 @@ export default function TasksLoading() {
   </div>
 ))}
 
-```
+```html
 
   </div>
 </div>
@@ -591,7 +593,7 @@ console.error('Tasks error:', error)
   Try again
 </button>
 
-```
+```html
 
   </div>
 </div>
@@ -632,7 +634,7 @@ loading: () => (
 ),
 ssr: false // File APIs are browser-only
 
-```
+```javascript
   }
 )
 
@@ -668,13 +670,17 @@ export function TaskCard({ task }) {
 
 ```yaml
 
+```yaml
+
 ```
-        sm:p-6
-        md:flex md:items-center md:justify-between">
+    sm:p-6
+    md:flex md:items-center md:justify-between">
 
 ```
 
 ```
+
+```yaml
 
   {/* Content: Full width on mobile, flex on desktop */}
   <div className="mb-4 md:mb-0 md:flex-1">
@@ -683,18 +689,26 @@ export function TaskCard({ task }) {
 <h3 className="text-lg font-semibold
 
 ```
-           sm:text-xl
-           lg:text-2xl">
 
 ```
+       sm:text-xl
+       lg:text-2xl">
+
+```
+```html
+
   {task.title}
 </h3>
 <p className="text-sm text-gray-600
 
 ```
-          sm:text-base">
 
 ```
+      sm:text-base">
+
+```
+```html
+
   {task.description}
 </p>
 
@@ -707,29 +721,41 @@ export function TaskCard({ task }) {
 
 ```yaml
 
+```yaml
+
 ```
-          sm:flex-row
-          md:flex-shrink-0 md:ml-4">
+      sm:flex-row
+      md:flex-shrink-0 md:ml-4">
+
+```
 
 ```
 <button className="px-4 py-2 bg-blue-600 text-white rounded
 
+```text
+
 ```
-               min-w-[44px] min-h-[44px]">
+           min-w-[44px] min-h-[44px]">
+
+```
 
 ```
   Edit
 </button>
 <button className="px-4 py-2 bg-red-600 text-white rounded
 
+```text
+
 ```
-               min-w-[44px] min-h-[44px]">
+           min-w-[44px] min-h-[44px]">
+
+```
 
 ```
   Delete
 </button>
 
-```
+```html
 
   </div>
 </div>
@@ -775,7 +801,7 @@ onComplete(task.id)
 onSwipedLeft: () => {
   if (Math.abs(swipeOffset) > 100) {
 
-```
+```yaml
 onDelete(task.id)
 
 ```yaml
@@ -800,7 +826,7 @@ trackMouse: false // Desktop uses buttons
  style={{ transform: `translateX(${swipeOffset}px)` }}
  className="touch-pan-y transition-transform">
 
-```
+```html
 
   {/* Task content */}
 </div>
@@ -841,7 +867,7 @@ loading="lazy" // Below-the-fold images
   />
 )
 
-```
+```javascript
   }
 
   // Fallback for non-images
@@ -917,7 +943,7 @@ export default function RootLayout({ children }) {
 <WebVitalsReporter />
 {children}
 
-```
+```html
 
   </body>
 </html>
@@ -970,7 +996,7 @@ Things that couldn't be fully resolved:
 
    - Recommendation: Run bundle analyzer first, then set realistic budgets based
 
-```
+```yaml
  on current state
 
 ```yaml
@@ -1002,7 +1028,7 @@ Things that couldn't be fully resolved:
    - What's unclear: Which specific device/OS versions to target
    - Recommendation: Test latest iOS + Android, use BrowserStack for older
 
-```
+```yaml
  versions if needed
 
 ```yaml
