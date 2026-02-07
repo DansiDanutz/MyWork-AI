@@ -85,6 +85,22 @@ text
 
 ## Updates (2026-02-07)
 
+- **Phase 9 COMPLETED** - Brain Intelligence implemented
+  - Embedding pipeline with OpenAI/hash-based fallback
+  - Semantic search via Pinecone integration
+  - Deduplication check before adding entries (409 on duplicate)
+  - Quality scoring (vote ratio, usage, verification, recency)
+  - Provenance endpoint (`GET /{entry_id}/provenance`)
+  - Contributor leaderboard (`GET /contributors/leaderboard`)
+  - Auto-regenerate embeddings on content update
+  - Delete embeddings when entry removed
+  - Commit: `ac6847a` pushed to Marketplace repo
+
+- **Escrow Cron Job Added**
+  - GitHub Action: `.github/workflows/escrow-release.yml`
+  - Runs daily at 6 AM UTC
+  - Manual trigger available via workflow_dispatch
+
 - **Phase 8 COMPLETED** - Payments, Credits, Escrow fully implemented
   - P8-A: Ledger & Order Reconciliation ✅
     - Refund reversal ledger entries added
@@ -177,6 +193,7 @@ text
 ## Current Phase
 
 - Phase 8 (Payments/Credits/Escrow) **COMPLETED** ✅ (2026-02-07)
+- Phase 9 (Brain Intelligence) **COMPLETED** ✅ (2026-02-07)
 
 ## Recent Decisions
 
@@ -192,8 +209,9 @@ text
 
 ## Next Action
 
-- Deploy Phase 8 changes to Railway (automatic via GitHub push)
-- Test refund flow in production with test transaction
-- Set up cron job for escrow release (daily or hourly)
-- Begin Phase 9: Brain Intelligence
+- Deploy Phase 8+9 changes to Railway (automatic via GitHub push) ✅
+- Verify escrow cron job is running (check GitHub Actions)
+- Test semantic search with real Brain entries
+- Configure Pinecone index for production
+- Begin Phase 10: Marketplace Growth
 - Follow the cross-product roadmap in `.planning/MARKETPLACE_TASKTRACKER_PLAN.md`
