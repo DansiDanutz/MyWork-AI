@@ -83,6 +83,28 @@ text
 
   due to DNS/network restrictions.
 
+## Updates (2026-02-07)
+
+- **Phase 8 COMPLETED** - Payments, Credits, Escrow fully implemented
+  - P8-A: Ledger & Order Reconciliation ✅
+    - Refund reversal ledger entries added
+    - Orders reconcile to ledger totals
+  - P8-B: Escrow Automation ✅
+    - Enhanced release_due_escrow with ledger entries
+    - Seller notification on escrow release
+    - Escrow summary reporting
+    - Release tool with dry-run and no-notify options
+  - P8-C: Refund & Dispute Flow ✅
+    - charge.refunded webhook handler with ledger reversal
+    - charge.dispute.created/closed handlers
+    - Manual admin adjustment entries
+    - Email notifications for refunds and disputes
+  - P8-D: Config Validation + Reliability ✅
+    - Startup config checks (fail-fast in production)
+    - Runtime health checks at /health/detailed
+    - Service status monitoring
+  - Commit: `bebf10d` pushed to Marketplace repo
+
 ## Updates (2026-01-29)
 
 - **Comprehensive framework audit completed** - See `.planning/AUDIT_REPORT_2026-01-29.md`
@@ -154,7 +176,7 @@ text
 
 ## Current Phase
 
-- Phase 8 (Payments/Credits/Escrow) is in progress.
+- Phase 8 (Payments/Credits/Escrow) **COMPLETED** ✅ (2026-02-07)
 
 ## Recent Decisions
 
@@ -170,9 +192,8 @@ text
 
 ## Next Action
 
-- Verify Marketplace backend deploy has new email + idempotency changes.
-- Complete Marketplace manual steps (env vars, migration, secrets).
-- Execute Phase 8 plan in `.planning/phases/phase-8/PLAN.md`.
-- Follow the cross-product roadmap in
-
-  `.planning/MARKETPLACE_TASKTRACKER_PLAN.md`.
+- Deploy Phase 8 changes to Railway (automatic via GitHub push)
+- Test refund flow in production with test transaction
+- Set up cron job for escrow release (daily or hourly)
+- Begin Phase 9: Brain Intelligence
+- Follow the cross-product roadmap in `.planning/MARKETPLACE_TASKTRACKER_PLAN.md`
