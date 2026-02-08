@@ -8,6 +8,7 @@ Usage:
     mw <command> [options]
 
 Commands:
+    dashboard       Interactive framework dashboard with metrics and status
     status          Quick health check of all components
     update          Check and apply updates (GSD, AutoForge, n8n)
     search <query>  Search module registry for reusable code
@@ -178,6 +179,144 @@ def cmd_report():
 def cmd_doctor():
     """Full system diagnostics."""
     return run_tool("health_check")
+
+
+def cmd_dashboard():
+    """Interactive framework dashboard with metrics and status."""
+    import shutil
+    import datetime
+    from pathlib import Path
+    
+    # Terminal colors
+    RESET = "\033[0m"
+    BOLD = "\033[1m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    BLUE = "\033[94m"
+    CYAN = "\033[96m"
+    
+    def colored_box(title, content, color=CYAN):
+        """Create a colored box with title and content."""
+        lines = content.strip().split('\n')
+        max_width = max(len(line) for line in [title] + lines) + 4
+        
+        print(f"\n{color}{'╭' + '─' * (max_width - 2) + '╮'}{RESET}")
+        print(f"{color}│{BOLD} {title:^{max_width - 4}} {RESET}{color}│{RESET}")
+        print(f"{color}├{'─' * (max_width - 2)}┤{RESET}")
+        for line in lines:
+            print(f"{color}│ {line:<{max_width - 4}} │{RESET}")
+        print(f"{color}╰{'─' * (max_width - 2)}╯{RESET}")
+    
+    def get_git_status():
+        """Get recent git activity."""
+        try:
+            # Get last 3 commits
+            result = subprocess.run(
+                ["git", "log", "--oneline", "-3"],
+                cwd=MYWORK_ROOT,
+                capture_output=True,
+                text=True
+            )
+            if result.returncode == 0:
+                commits = result.stdout.strip().split('\n')[:3]
+                return '\n'.join(commits) if commits else "No commits found"
+            else:
+                return "Not a git repository"
+        except Exception:
+            return "Git not available"
+    
+    def get_disk_usage():
+        """Get disk usage for framework."""
+        try:
+            total, used, free = shutil.disk_usage(MYWORK_ROOT)
+            framework_size = subprocess.run(
+                ["du", "-sh", str(MYWORK_ROOT)],
+                capture_output=True,
+                text=True
+            )
+            if framework_size.returncode == 0:
+                size = framework_size.stdout.split()[0]
+                return f"Framework size: {size}\nFree space: {free // (1024**3)}GB"
+            else:
+                return f"Free space: {free // (1024**3)}GB"
+        except Exception:
+            return "Unable to get disk usage"
+    
+    def get_project_count():
+        """Get number of projects."""
+        try:
+            projects_path = MYWORK_ROOT / "projects"
+            if projects_path.exists():
+                count = len([p for p in projects_path.iterdir() if p.is_dir()])
+                return f"{count} projects found"
+            else:
+                return "Projects directory not found"
+        except Exception:
+            return "Unable to count projects"
+    
+    def get_component_status():
+        """Check status of framework components."""
+        components = {
+            "AutoForge API": "autoforge_api.py",
+            "Brain": "brain.py", 
+            "Health Check": "health_check.py",
+            "Module Registry": "module_registry.py",
+            "n8n API": "n8n_api.py"
+        }
+        
+        statuses = []
+        tools_dir = MYWORK_ROOT / "tools"
+        
+        for name, filename in components.items():
+            file_path = tools_dir / filename
+            if file_path.exists():
+                statuses.append(f"{GREEN}✓{RESET} {name}")
+            else:
+                statuses.append(f"{RED}✗{RESET} {name}")
+        
+        return '\n'.join(statuses)
+    
+    def get_framework_version():
+        """Get framework version."""
+        try:
+            pyproject_path = MYWORK_ROOT / "pyproject.toml"
+            if pyproject_path.exists():
+                with open(pyproject_path, 'r') as f:
+                    for line in f:
+                        if line.startswith('version ='):
+                            version = line.split('=')[1].strip().strip('"')
+                            return f"MyWork-AI v{version}"
+            return "Version not found"
+        except Exception:
+            return "Unable to get version"
+    
+    # Main dashboard display
+    print(f"\n{BOLD}{BLUE}{'═' * 60}{RESET}")
+    print(f"{BOLD}{BLUE} MyWork-AI Framework Dashboard {RESET}")
+    print(f"{BOLD}{BLUE}{'═' * 60}{RESET}")
+    print(f"{CYAN} Generated at: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}{RESET}")
+    
+    # Framework Info
+    colored_box("FRAMEWORK INFO", get_framework_version(), BLUE)
+    
+    # Project Count
+    colored_box("PROJECTS", get_project_count(), GREEN)
+    
+    # Component Status
+    colored_box("COMPONENT STATUS", get_component_status(), YELLOW)
+    
+    # Git Activity  
+    colored_box("RECENT GIT ACTIVITY", get_git_status(), CYAN)
+    
+    # Disk Usage
+    colored_box("DISK USAGE", get_disk_usage(), GREEN)
+    
+    print(f"\n{BOLD}{BLUE}{'═' * 60}{RESET}")
+    print(f"{CYAN} Use 'mw status' for quick health check or 'mw doctor' for diagnostics{RESET}")
+    print(f"{BOLD}{BLUE}{'═' * 60}{RESET}\n")
+    
+    return 0
 
 
 def cmd_projects():
@@ -682,6 +821,7 @@ def main():
 
     # Command routing
     commands = {
+        "dashboard": lambda: cmd_dashboard(),
         "status": lambda: cmd_status(),
         "update": lambda: cmd_update(args),
         "search": lambda: cmd_search(args),
