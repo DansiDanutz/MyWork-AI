@@ -9,7 +9,7 @@ Usage:
 
 Commands:
     status          Quick health check of all components
-    update          Check and apply updates (GSD, Autocoder, n8n)
+    update          Check and apply updates (GSD, AutoForge, n8n)
     search <query>  Search module registry for reusable code
     new <name>      Create a new project (see: mw new --help)
     scan            Scan all projects and update module registry
@@ -24,16 +24,19 @@ Project Commands:
     mw open <name>  Open project in VS Code
     mw cd <name>    Print cd command for project
 
-Autocoder Commands:
-    mw ac start <project>    Start Autocoder for project
-    mw ac stop <project>     Stop Autocoder
-    mw ac pause <project>    Pause Autocoder
-    mw ac resume <project>   Resume Autocoder
-    mw ac status             Check Autocoder status
-    mw ac progress <project> Show Autocoder progress
-    mw ac list               List Autocoder projects
-    mw ac ui                 Open Autocoder UI
-    mw ac service <command>  Manage Autocoder service (macOS)
+AutoForge Commands:
+    mw af start <project>    Start AutoForge for project
+    mw af stop <project>     Stop AutoForge
+    mw af pause <project>    Pause AutoForge
+    mw af resume <project>   Resume AutoForge
+    mw af status             Check AutoForge status
+    mw af progress <project> Show AutoForge progress
+    mw af list               List AutoForge projects
+    mw af ui                 Open AutoForge UI
+    mw af service <command>  Manage AutoForge service (macOS)
+
+Legacy Commands (deprecated but supported):
+    mw ac <subcommand>       Alias for AutoForge commands (backwards compatibility)
 
 n8n Commands:
     mw n8n list              List n8n workflows
@@ -61,7 +64,7 @@ Examples:
     mw status                # Quick overview
     mw search "auth"         # Find authentication modules
     mw new my-app fastapi    # Create FastAPI project
-    mw ac start my-app       # Start Autocoder
+    mw af start my-app       # Start AutoForge
     mw lint watch            # Auto-fix linting as you code
 """
 
@@ -347,8 +350,8 @@ def cmd_cd(args: List[str]):
     return 0
 
 
-def cmd_autocoder(args: List[str]):
-    """Autocoder commands."""
+def cmd_autoforge(args: List[str]):
+    """AutoForge commands."""
     if not args:
         print("Usage: mw ac <start|stop|status|ui> [project]")
         return 1
@@ -359,40 +362,40 @@ def cmd_autocoder(args: List[str]):
         if len(args) < 2:
             print("Usage: mw ac start <project-name>")
             return 1
-        return run_tool("autocoder_api", ["start", args[1]])
+        return run_tool("autoforge_api", ["start", args[1]])
 
     elif subcmd == "stop":
         if len(args) < 2:
             print("Usage: mw ac stop <project-name>")
             return 1
-        return run_tool("autocoder_api", ["stop", args[1]])
+        return run_tool("autoforge_api", ["stop", args[1]])
 
     elif subcmd == "pause":
         if len(args) < 2:
             print("Usage: mw ac pause <project-name>")
             return 1
-        return run_tool("autocoder_api", ["pause", args[1]])
+        return run_tool("autoforge_api", ["pause", args[1]])
 
     elif subcmd == "resume":
         if len(args) < 2:
             print("Usage: mw ac resume <project-name>")
             return 1
-        return run_tool("autocoder_api", ["resume", args[1]])
+        return run_tool("autoforge_api", ["resume", args[1]])
 
     elif subcmd == "status":
-        return run_tool("autocoder_api", ["status"])
+        return run_tool("autoforge_api", ["status"])
 
     elif subcmd == "progress":
         if len(args) < 2:
             print("Usage: mw ac progress <project-name>")
             return 1
-        return run_tool("autocoder_api", ["progress", args[1]])
+        return run_tool("autoforge_api", ["progress", args[1]])
 
     elif subcmd == "list":
-        return run_tool("autocoder_api", ["list"])
+        return run_tool("autoforge_api", ["list"])
 
     elif subcmd == "ui":
-        return run_tool("autocoder_api", ["ui"])
+        return run_tool("autoforge_api", ["ui"])
 
     elif subcmd == "service":
         if len(args) < 2:
@@ -400,7 +403,7 @@ def cmd_autocoder(args: List[str]):
                 "Usage: mw ac service <setup|install|start|stop|restart|status|logs|uninstall> [options]"
             )
             return 1
-        return run_tool("autocoder_service", args[1:])
+        return run_tool("autoforge_service", args[1:])
 
     else:
         print(f"Unknown autocoder command: {subcmd}")
@@ -690,8 +693,10 @@ def main():
         "projects": lambda: cmd_projects(),
         "open": lambda: cmd_open(args),
         "cd": lambda: cmd_cd(args),
-        "ac": lambda: cmd_autocoder(args),
-        "autocoder": lambda: cmd_autocoder(args),
+        "af": lambda: cmd_autoforge(args),
+        "autoforge": lambda: cmd_autoforge(args),
+        "ac": lambda: cmd_autoforge(args),  # Backwards compatibility alias
+        "autocoder": lambda: cmd_autoforge(args),  # Backwards compatibility alias
         "n8n": lambda: cmd_n8n(args),
         "brain": lambda: cmd_brain(args),
         "lint": lambda: cmd_lint(args),
