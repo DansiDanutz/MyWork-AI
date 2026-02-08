@@ -83,6 +83,15 @@ text
 
   due to DNS/network restrictions.
 
+## Updates (2026-02-08)
+
+- **Test coverage improvement** - Added 10 unit tests for `mw` CLI (`tests/test_mw_cli.py`)
+  - Command routing (help, unknown commands, case insensitivity)
+  - Colors class and color() wrapper
+  - run_tool error handling, search arg validation, help output
+  - Total test suite: 34 → 44 tests, all passing
+  - Commit: `3cb92e9`
+
 ## Updates (2026-02-07)
 
 - **Phase 10 COMPLETED** - Marketplace Growth implemented
