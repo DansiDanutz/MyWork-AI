@@ -1,0 +1,353 @@
+{
+  "balances": {
+    "user_001": {
+      "user_id": "user_001",
+      "balance": 371.18,
+      "total_earned": 396.68,
+      "total_spent": 25.5,
+      "total_transferred_in": 0.0,
+      "total_transferred_out": 0.0,
+      "total_commissions": 0.0,
+      "total_refunds": 0.0,
+      "created_at": "2026-02-09T00:32:23.528082",
+      "last_updated": "2026-02-09T00:32:23.528339",
+      "is_frozen": false,
+      "credit_limit": 0.0
+    },
+    "user_002": {
+      "user_id": "user_002",
+      "balance": 49.89,
+      "total_earned": 99.89,
+      "total_spent": 0.0,
+      "total_transferred_in": 0.0,
+      "total_transferred_out": 50.0,
+      "total_commissions": 0.0,
+      "total_refunds": 0.0,
+      "created_at": "2026-02-09T00:32:23.528179",
+      "last_updated": "2026-02-09T00:32:23.528355",
+      "is_frozen": false,
+      "credit_limit": 0.0
+    },
+    "user_003": {
+      "user_id": "user_003",
+      "balance": 360.89,
+      "total_earned": 310.89,
+      "total_spent": 0.0,
+      "total_transferred_in": 50.0,
+      "total_transferred_out": 0.0,
+      "total_commissions": 0.0,
+      "total_refunds": 0.0,
+      "created_at": "2026-02-09T00:32:23.528234",
+      "last_updated": "2026-02-09T00:32:23.528357",
+      "is_frozen": false,
+      "credit_limit": 0.0
+    },
+    "user_004": {
+      "user_id": "user_004",
+      "balance": 189.95,
+      "total_earned": 174.95,
+      "total_spent": 0.0,
+      "total_transferred_in": 0.0,
+      "total_transferred_out": 0.0,
+      "total_commissions": 15.0,
+      "total_refunds": 0.0,
+      "created_at": "2026-02-09T00:32:23.528264",
+      "last_updated": "2026-02-09T00:32:23.528397",
+      "is_frozen": false,
+      "credit_limit": 0.0
+    },
+    "user_005": {
+      "user_id": "user_005",
+      "balance": 416.68,
+      "total_earned": 386.68,
+      "total_spent": 0.0,
+      "total_transferred_in": 0.0,
+      "total_transferred_out": 0.0,
+      "total_commissions": 0.0,
+      "total_refunds": 30.0,
+      "created_at": "2026-02-09T00:32:23.528295",
+      "last_updated": "2026-02-09T00:32:23.528413",
+      "is_frozen": false,
+      "credit_limit": 0.0
+    }
+  },
+  "transactions": [
+    {
+      "transaction_id": "0a64b623-d76b-4bba-8d03-8251b91e44c5",
+      "timestamp": "2026-02-09T00:32:23.528146",
+      "user_id": "user_001",
+      "transaction_type": "top_up",
+      "amount": 296.68,
+      "balance_before": 0.0,
+      "balance_after": 296.68,
+      "status": "completed",
+      "description": "Initial balance",
+      "metadata": {
+        "source": "system_init"
+      },
+      "related_user_id": null,
+      "reference_id": null
+    },
+    {
+      "transaction_id": "80bac36b-995c-4d3d-8abf-2adc8134f06f",
+      "timestamp": "2026-02-09T00:32:23.528215",
+      "user_id": "user_002",
+      "transaction_type": "top_up",
+      "amount": 99.89,
+      "balance_before": 0.0,
+      "balance_after": 99.89,
+      "status": "completed",
+      "description": "Initial balance",
+      "metadata": {
+        "source": "system_init"
+      },
+      "related_user_id": null,
+      "reference_id": null
+    },
+    {
+      "transaction_id": "c6e1923f-fccc-4197-b632-3fb49e28e4b9",
+      "timestamp": "2026-02-09T00:32:23.528252",
+      "user_id": "user_003",
+      "transaction_type": "top_up",
+      "amount": 310.89,
+      "balance_before": 0.0,
+      "balance_after": 310.89,
+      "status": "completed",
+      "description": "Initial balance",
+      "metadata": {
+        "source": "system_init"
+      },
+      "related_user_id": null,
+      "reference_id": null
+    },
+    {
+      "transaction_id": "21072893-5b5a-49cd-9713-6ca622a4b026",
+      "timestamp": "2026-02-09T00:32:23.528282",
+      "user_id": "user_004",
+      "transaction_type": "top_up",
+      "amount": 174.95,
+      "balance_before": 0.0,
+      "balance_after": 174.95,
+      "status": "completed",
+      "description": "Initial balance",
+      "metadata": {
+        "source": "system_init"
+      },
+      "related_user_id": null,
+      "reference_id": null
+    },
+    {
+      "transaction_id": "5e1fbcc0-f164-4192-96b9-cec97c084932",
+      "timestamp": "2026-02-09T00:32:23.528305",
+      "user_id": "user_005",
+      "transaction_type": "top_up",
+      "amount": 386.68,
+      "balance_before": 0.0,
+      "balance_after": 386.68,
+      "status": "completed",
+      "description": "Initial balance",
+      "metadata": {
+        "source": "system_init"
+      },
+      "related_user_id": null,
+      "reference_id": null
+    },
+    {
+      "transaction_id": "024f10e2-7beb-4519-8b19-3a0366aec405",
+      "timestamp": "2026-02-09T00:32:23.528329",
+      "user_id": "user_001",
+      "transaction_type": "top_up",
+      "amount": 100.0,
+      "balance_before": 296.68,
+      "balance_after": 396.68,
+      "status": "completed",
+      "description": "Top up from credit_card",
+      "metadata": {
+        "source": "credit_card"
+      },
+      "related_user_id": null,
+      "reference_id": null
+    },
+    {
+      "transaction_id": "d0730968-01e1-4700-b5eb-94f4757ff801",
+      "timestamp": "2026-02-09T00:32:23.528346",
+      "user_id": "user_001",
+      "transaction_type": "spend",
+      "amount": 25.5,
+      "balance_before": 396.68,
+      "balance_after": 371.18,
+      "status": "completed",
+      "description": "Digital Course Purchase",
+      "metadata": {
+        "category": "purchase"
+      },
+      "related_user_id": null,
+      "reference_id": null
+    },
+    {
+      "transaction_id": "bb10a0f8-a08a-4cb5-9102-f68fd8971b4f",
+      "timestamp": "2026-02-09T00:32:23.528370",
+      "user_id": "user_002",
+      "transaction_type": "transfer",
+      "amount": 50.0,
+      "balance_before": 99.89,
+      "balance_after": 49.89,
+      "status": "completed",
+      "description": "Transfer to user_003: Payment for services",
+      "metadata": {
+        "transfer_type": "outgoing",
+        "transfer_ref": "84a44e30-de1d-4f89-b772-235a4444b329"
+      },
+      "related_user_id": "user_003",
+      "reference_id": null
+    },
+    {
+      "transaction_id": "803c974a-8585-4998-9b84-d1b47ee28c25",
+      "timestamp": "2026-02-09T00:32:23.528389",
+      "user_id": "user_003",
+      "transaction_type": "transfer",
+      "amount": 50.0,
+      "balance_before": 310.89,
+      "balance_after": 360.89,
+      "status": "completed",
+      "description": "Transfer from user_002: Payment for services",
+      "metadata": {
+        "transfer_type": "incoming",
+        "transfer_ref": "84a44e30-de1d-4f89-b772-235a4444b329"
+      },
+      "related_user_id": "user_002",
+      "reference_id": null
+    },
+    {
+      "transaction_id": "7d22a94e-3345-4aa1-8775-8f0a6f6e7ae7",
+      "timestamp": "2026-02-09T00:32:23.528406",
+      "user_id": "user_004",
+      "transaction_type": "commission",
+      "amount": 15.0,
+      "balance_before": 174.95,
+      "balance_after": 189.95,
+      "status": "completed",
+      "description": "Level 1 commission from Referral sale",
+      "metadata": {
+        "source": "Referral sale",
+        "level": 1,
+        "commission_type": "referral"
+      },
+      "related_user_id": null,
+      "reference_id": null
+    },
+    {
+      "transaction_id": "62c6ba3f-395a-4c33-9d4c-e9702989e88e",
+      "timestamp": "2026-02-09T00:32:23.528420",
+      "user_id": "user_005",
+      "transaction_type": "refund",
+      "amount": 30.0,
+      "balance_before": 386.68,
+      "balance_after": 416.68,
+      "status": "completed",
+      "description": "Refund: Product defect",
+      "metadata": {
+        "reason": "Product defect",
+        "refund_type": "purchase"
+      },
+      "related_user_id": null,
+      "reference_id": null
+    }
+  ],
+  "system_config": {
+    "max_balance": 100000.0,
+    "min_transaction": 0.01,
+    "total_credits_issued": 1414.0900000000001,
+    "total_credits_burned": 25.5
+  },
+  "system_report": {
+    "system_overview": {
+      "total_users": 5,
+      "active_users": 5,
+      "frozen_accounts": 0,
+      "total_circulation": 1388.59,
+      "credits_issued": 1414.09,
+      "credits_burned": 25.5
+    },
+    "financial_stats": {
+      "total_spent": 25.5,
+      "total_transferred": 50.0,
+      "total_commissions_paid": 15.0,
+      "total_refunds": 30.0,
+      "average_balance": 277.72
+    },
+    "transaction_stats": {
+      "total_transactions": 11,
+      "completed_transactions": 11,
+      "transactions_by_type": {
+        "top_up": 6,
+        "spend": 1,
+        "transfer": 2,
+        "commission": 1,
+        "refund": 1
+      }
+    },
+    "top_earners": [
+      {
+        "user_id": "user_001",
+        "total_earned": 396.68,
+        "current_balance": 371.18,
+        "total_commissions": 0.0
+      },
+      {
+        "user_id": "user_005",
+        "total_earned": 386.68,
+        "current_balance": 416.68,
+        "total_commissions": 0.0
+      },
+      {
+        "user_id": "user_003",
+        "total_earned": 310.89,
+        "current_balance": 360.89,
+        "total_commissions": 0.0
+      },
+      {
+        "user_id": "user_004",
+        "total_earned": 174.95,
+        "current_balance": 189.95,
+        "total_commissions": 15.0
+      },
+      {
+        "user_id": "user_002",
+        "total_earned": 99.89,
+        "current_balance": 49.89,
+        "total_commissions": 0.0
+      }
+    ],
+    "recent_volume": {
+      "period_days": 7,
+      "total_transactions": 11,
+      "total_volume": 1539.59,
+      "average_transaction_size": 139.96,
+      "volume_by_type": {
+        "top_up": {
+          "count": 6,
+          "volume": 1369.0900000000001
+        },
+        "spend": {
+          "count": 1,
+          "volume": 25.5
+        },
+        "transfer": {
+          "count": 2,
+          "volume": 100.0
+        },
+        "commission": {
+          "count": 1,
+          "volume": 15.0
+        },
+        "refund": {
+          "count": 1,
+          "volume": 30.0
+        }
+      }
+    },
+    "report_generated": "2026-02-09T00:32:23.528858"
+  },
+  "export_timestamp": "2026-02-09T00:32:23.528860"
+}

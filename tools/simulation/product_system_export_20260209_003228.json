@@ -1,0 +1,866 @@
+{
+  "products": {
+    "prod_dfaa8636bd9a": {
+      "product_id": "prod_dfaa8636bd9a",
+      "seller_id": "seller_001",
+      "title": "Innovative Electronics Collection",
+      "description": "A comprehensive collection designed for electronics enthusiasts and professionals.",
+      "product_type": "free",
+      "price": 0.0,
+      "status": "active",
+      "created_at": "2026-02-09T00:32:28.373146",
+      "updated_at": "2026-02-09T00:32:28.373202",
+      "category": "Electronics",
+      "tags": [
+        "electronics",
+        "free",
+        "beginner",
+        "latest"
+      ],
+      "view_count": 15,
+      "purchase_count": 1,
+      "rating_average": 0.0,
+      "rating_count": 0,
+      "total_revenue": 0.0,
+      "refund_count": 0,
+      "refund_amount": 0.0,
+      "is_featured": false,
+      "metadata": {
+        "generated": true,
+        "version": "1.0"
+      }
+    },
+    "prod_b46850b99310": {
+      "product_id": "prod_b46850b99310",
+      "seller_id": "seller_003",
+      "title": "Essential Courses Solution",
+      "description": "A comprehensive solution designed for courses enthusiasts and professionals.",
+      "product_type": "service",
+      "price": 15.92,
+      "status": "active",
+      "created_at": "2026-02-09T00:32:28.373363",
+      "updated_at": "2026-02-09T00:32:28.373387",
+      "category": "Courses",
+      "tags": [
+        "courses",
+        "service",
+        "beginner",
+        "latest"
+      ],
+      "view_count": 21,
+      "purchase_count": 1,
+      "rating_average": 3.0,
+      "rating_count": 1,
+      "total_revenue": 15.92,
+      "refund_count": 0,
+      "refund_amount": 0.0,
+      "is_featured": false,
+      "metadata": {
+        "generated": true,
+        "version": "1.0"
+      }
+    },
+    "prod_87ef4accc1f6": {
+      "product_id": "prod_87ef4accc1f6",
+      "seller_id": "seller_001",
+      "title": "Premium Videos Bundle",
+      "description": "A comprehensive bundle designed for videos enthusiasts and professionals.",
+      "product_type": "subscription",
+      "price": 33.13,
+      "status": "active",
+      "created_at": "2026-02-09T00:32:28.373569",
+      "updated_at": "2026-02-09T00:32:28.373588",
+      "category": "Videos",
+      "tags": [
+        "videos",
+        "subscription",
+        "intermediate",
+        "updated"
+      ],
+      "view_count": 62,
+      "purchase_count": 1,
+      "rating_average": 4.0,
+      "rating_count": 1,
+      "total_revenue": 33.13,
+      "refund_count": 0,
+      "refund_amount": 0.0,
+      "is_featured": false,
+      "metadata": {
+        "generated": true,
+        "version": "1.0"
+      }
+    },
+    "prod_8d3bdbd6b420": {
+      "product_id": "prod_8d3bdbd6b420",
+      "seller_id": "seller_003",
+      "title": "Comprehensive Graphics Guide",
+      "description": "A comprehensive guide designed for graphics enthusiasts and professionals.",
+      "product_type": "one_time",
+      "price": 424.17,
+      "status": "active",
+      "created_at": "2026-02-09T00:32:28.373841",
+      "updated_at": "2026-02-09T00:32:28.373858",
+      "category": "Graphics",
+      "tags": [
+        "graphics",
+        "one_time",
+        "advanced",
+        "latest"
+      ],
+      "view_count": 84,
+      "purchase_count": 1,
+      "rating_average": 0.0,
+      "rating_count": 0,
+      "total_revenue": 424.17,
+      "refund_count": 0,
+      "refund_amount": 0.0,
+      "is_featured": false,
+      "metadata": {
+        "generated": true,
+        "version": "1.0"
+      }
+    },
+    "prod_f3b323e99a68": {
+      "product_id": "prod_f3b323e99a68",
+      "seller_id": "seller_001",
+      "title": "Premium Services Course",
+      "description": "A comprehensive course designed for services enthusiasts and professionals.",
+      "product_type": "digital",
+      "price": 251.84,
+      "status": "active",
+      "created_at": "2026-02-09T00:32:28.374003",
+      "updated_at": "2026-02-09T00:32:28.374021",
+      "category": "Services",
+      "tags": [
+        "services",
+        "digital",
+        "beginner",
+        "updated"
+      ],
+      "view_count": 61,
+      "purchase_count": 1,
+      "rating_average": 4.0,
+      "rating_count": 1,
+      "total_revenue": 251.84,
+      "refund_count": 0,
+      "refund_amount": 0.0,
+      "is_featured": false,
+      "metadata": {
+        "generated": true,
+        "version": "1.0"
+      }
+    },
+    "prod_dbfc37227f5e": {
+      "product_id": "prod_dbfc37227f5e",
+      "seller_id": "seller_003",
+      "title": "Comprehensive Videos System",
+      "description": "A comprehensive system designed for videos enthusiasts and professionals.",
+      "product_type": "subscription",
+      "price": 67.88,
+      "status": "active",
+      "created_at": "2026-02-09T00:32:28.374169",
+      "updated_at": "2026-02-09T00:32:28.374185",
+      "category": "Videos",
+      "tags": [
+        "videos",
+        "subscription",
+        "beginner",
+        "latest"
+      ],
+      "view_count": 49,
+      "purchase_count": 1,
+      "rating_average": 5.0,
+      "rating_count": 1,
+      "total_revenue": 67.88,
+      "refund_count": 0,
+      "refund_amount": 0.0,
+      "is_featured": false,
+      "metadata": {
+        "generated": true,
+        "version": "1.0"
+      }
+    },
+    "prod_206b8b5363e1": {
+      "product_id": "prod_206b8b5363e1",
+      "seller_id": "seller_002",
+      "title": "Professional Music Toolkit",
+      "description": "A comprehensive toolkit designed for music enthusiasts and professionals.",
+      "product_type": "service",
+      "price": 176.66,
+      "status": "active",
+      "created_at": "2026-02-09T00:32:28.374374",
+      "updated_at": "2026-02-09T00:32:28.374384",
+      "category": "Music",
+      "tags": [
+        "music",
+        "service",
+        "beginner",
+        "latest"
+      ],
+      "view_count": 20,
+      "purchase_count": 1,
+      "rating_average": 5.0,
+      "rating_count": 1,
+      "total_revenue": 176.66,
+      "refund_count": 0,
+      "refund_amount": 0.0,
+      "is_featured": false,
+      "metadata": {
+        "generated": true,
+        "version": "1.0"
+      }
+    },
+    "prod_ebd9a48980d6": {
+      "product_id": "prod_ebd9a48980d6",
+      "seller_id": "seller_001",
+      "title": "Professional Electronics Collection",
+      "description": "A comprehensive collection designed for electronics enthusiasts and professionals.",
+      "product_type": "digital",
+      "price": 60.24,
+      "status": "active",
+      "created_at": "2026-02-09T00:32:28.374472",
+      "updated_at": "2026-02-09T00:32:28.374482",
+      "category": "Electronics",
+      "tags": [
+        "electronics",
+        "digital",
+        "advanced",
+        "latest"
+      ],
+      "view_count": 39,
+      "purchase_count": 1,
+      "rating_average": 5.0,
+      "rating_count": 1,
+      "total_revenue": 60.24,
+      "refund_count": 0,
+      "refund_amount": 0.0,
+      "is_featured": false,
+      "metadata": {
+        "generated": true,
+        "version": "1.0"
+      }
+    }
+  },
+  "orders": {
+    "order_cb29a99573f9": {
+      "order_id": "order_cb29a99573f9",
+      "buyer_id": "buyer_005",
+      "product_id": "prod_dfaa8636bd9a",
+      "seller_id": "seller_001",
+      "amount": 0.0,
+      "status": "delivered",
+      "created_at": "2026-02-09T00:32:28.373239",
+      "updated_at": "2026-02-09T00:32:28.373301",
+      "payment_intent_id": "pi_8e3bffcce1884769804f7965",
+      "stripe_charge_id": "ch_a5206a8d0fa142739f934ef2",
+      "shipping_address": null,
+      "delivery_date": "2026-02-09T00:32:28.373299",
+      "refund_reason": null,
+      "metadata": {
+        "product_type": "free"
+      }
+    },
+    "order_cdcbac1a8c00": {
+      "order_id": "order_cdcbac1a8c00",
+      "buyer_id": "buyer_002",
+      "product_id": "prod_b46850b99310",
+      "seller_id": "seller_003",
+      "amount": 15.92,
+      "status": "shipped",
+      "created_at": "2026-02-09T00:32:28.373411",
+      "updated_at": "2026-02-09T00:32:28.373467",
+      "payment_intent_id": "pi_7449b4e71f074afe8092aea1",
+      "stripe_charge_id": "ch_cd936d47d3654736a0bb5ce4",
+      "shipping_address": null,
+      "delivery_date": "2026-02-16T00:32:28.373455",
+      "refund_reason": null,
+      "metadata": {
+        "product_type": "service"
+      }
+    },
+    "order_647491572315": {
+      "order_id": "order_647491572315",
+      "buyer_id": "buyer_004",
+      "product_id": "prod_87ef4accc1f6",
+      "seller_id": "seller_001",
+      "amount": 33.13,
+      "status": "shipped",
+      "created_at": "2026-02-09T00:32:28.373642",
+      "updated_at": "2026-02-09T00:32:28.373697",
+      "payment_intent_id": "pi_1b395d077db94ef5842e93ca",
+      "stripe_charge_id": "ch_97bc4a18be0d497abef50a23",
+      "shipping_address": null,
+      "delivery_date": "2026-02-16T00:32:28.373690",
+      "refund_reason": null,
+      "metadata": {
+        "product_type": "subscription"
+      }
+    },
+    "order_384f78db816e": {
+      "order_id": "order_384f78db816e",
+      "buyer_id": "buyer_002",
+      "product_id": "prod_8d3bdbd6b420",
+      "seller_id": "seller_003",
+      "amount": 424.17,
+      "status": "shipped",
+      "created_at": "2026-02-09T00:32:28.373904",
+      "updated_at": "2026-02-09T00:32:28.373947",
+      "payment_intent_id": "pi_e9b403cef3504d17992f7083",
+      "stripe_charge_id": "ch_d99740ab764b4595bcb232be",
+      "shipping_address": null,
+      "delivery_date": "2026-02-15T00:32:28.373941",
+      "refund_reason": null,
+      "metadata": {
+        "product_type": "one_time"
+      }
+    },
+    "order_338ed7398c75": {
+      "order_id": "order_338ed7398c75",
+      "buyer_id": "buyer_001",
+      "product_id": "prod_f3b323e99a68",
+      "seller_id": "seller_001",
+      "amount": 251.84,
+      "status": "delivered",
+      "created_at": "2026-02-09T00:32:28.374056",
+      "updated_at": "2026-02-09T00:32:28.374096",
+      "payment_intent_id": "pi_bcb287ae8bb34aa08ad3f50c",
+      "stripe_charge_id": "ch_83d33546ea8f435d8fc6e3ce",
+      "shipping_address": null,
+      "delivery_date": "2026-02-09T00:32:28.374093",
+      "refund_reason": null,
+      "metadata": {
+        "product_type": "digital"
+      }
+    },
+    "order_9a552a394eca": {
+      "order_id": "order_9a552a394eca",
+      "buyer_id": "buyer_004",
+      "product_id": "prod_dbfc37227f5e",
+      "seller_id": "seller_003",
+      "amount": 67.88,
+      "status": "shipped",
+      "created_at": "2026-02-09T00:32:28.374215",
+      "updated_at": "2026-02-09T00:32:28.374256",
+      "payment_intent_id": "pi_0a6db74388b24a09b933e4a7",
+      "stripe_charge_id": "ch_cacd8a8291144102b6f513d0",
+      "shipping_address": null,
+      "delivery_date": "2026-02-12T00:32:28.374250",
+      "refund_reason": null,
+      "metadata": {
+        "product_type": "subscription"
+      }
+    },
+    "order_d00893dfb2df": {
+      "order_id": "order_d00893dfb2df",
+      "buyer_id": "buyer_004",
+      "product_id": "prod_206b8b5363e1",
+      "seller_id": "seller_002",
+      "amount": 176.66,
+      "status": "shipped",
+      "created_at": "2026-02-09T00:32:28.374397",
+      "updated_at": "2026-02-09T00:32:28.374423",
+      "payment_intent_id": "pi_d943a3b087394c97a7417789",
+      "stripe_charge_id": "ch_68a1b17334ea4236951b30f6",
+      "shipping_address": null,
+      "delivery_date": "2026-02-12T00:32:28.374419",
+      "refund_reason": null,
+      "metadata": {
+        "product_type": "service"
+      }
+    },
+    "order_500398a87dc8": {
+      "order_id": "order_500398a87dc8",
+      "buyer_id": "buyer_005",
+      "product_id": "prod_ebd9a48980d6",
+      "seller_id": "seller_001",
+      "amount": 60.24,
+      "status": "delivered",
+      "created_at": "2026-02-09T00:32:28.374498",
+      "updated_at": "2026-02-09T00:32:28.374529",
+      "payment_intent_id": "pi_dfaf2f76bc3b4847ae2aa26c",
+      "stripe_charge_id": "ch_17731b511adf4bb7903fb872",
+      "shipping_address": null,
+      "delivery_date": "2026-02-09T00:32:28.374525",
+      "refund_reason": null,
+      "metadata": {
+        "product_type": "digital"
+      }
+    }
+  },
+  "reviews": {
+    "rev_62109a8d4c4b": {
+      "review_id": "rev_62109a8d4c4b",
+      "product_id": "prod_b46850b99310",
+      "buyer_id": "buyer_002",
+      "order_id": "order_cdcbac1a8c00",
+      "rating": 3,
+      "title": "Average product",
+      "comment": "This product was okay.",
+      "status": "approved",
+      "created_at": "2026-02-09T00:32:28.373500",
+      "updated_at": "2026-02-09T00:32:28.373523",
+      "helpful_votes": 0,
+      "metadata": {
+        "order_amount": 15.92
+      }
+    },
+    "rev_2bb946f95203": {
+      "review_id": "rev_2bb946f95203",
+      "product_id": "prod_87ef4accc1f6",
+      "buyer_id": "buyer_004",
+      "order_id": "order_647491572315",
+      "rating": 4,
+      "title": "Good product",
+      "comment": "This product was good.",
+      "status": "approved",
+      "created_at": "2026-02-09T00:32:28.373720",
+      "updated_at": "2026-02-09T00:32:28.373741",
+      "helpful_votes": 0,
+      "metadata": {
+        "order_amount": 33.13
+      }
+    },
+    "rev_084228a7d6d3": {
+      "review_id": "rev_084228a7d6d3",
+      "product_id": "prod_f3b323e99a68",
+      "buyer_id": "buyer_001",
+      "order_id": "order_338ed7398c75",
+      "rating": 4,
+      "title": "Good product",
+      "comment": "This product was good.",
+      "status": "approved",
+      "created_at": "2026-02-09T00:32:28.374114",
+      "updated_at": "2026-02-09T00:32:28.374126",
+      "helpful_votes": 0,
+      "metadata": {
+        "order_amount": 251.84
+      }
+    },
+    "rev_3dc83456493c": {
+      "review_id": "rev_3dc83456493c",
+      "product_id": "prod_dbfc37227f5e",
+      "buyer_id": "buyer_004",
+      "order_id": "order_9a552a394eca",
+      "rating": 5,
+      "title": "Excellent!",
+      "comment": "This product was amazing.",
+      "status": "approved",
+      "created_at": "2026-02-09T00:32:28.374271",
+      "updated_at": "2026-02-09T00:32:28.374282",
+      "helpful_votes": 0,
+      "metadata": {
+        "order_amount": 67.88
+      }
+    },
+    "rev_24367c6674d2": {
+      "review_id": "rev_24367c6674d2",
+      "product_id": "prod_206b8b5363e1",
+      "buyer_id": "buyer_004",
+      "order_id": "order_d00893dfb2df",
+      "rating": 5,
+      "title": "Excellent!",
+      "comment": "This product was amazing.",
+      "status": "approved",
+      "created_at": "2026-02-09T00:32:28.374435",
+      "updated_at": "2026-02-09T00:32:28.374444",
+      "helpful_votes": 0,
+      "metadata": {
+        "order_amount": 176.66
+      }
+    },
+    "rev_33d70bfb5378": {
+      "review_id": "rev_33d70bfb5378",
+      "product_id": "prod_ebd9a48980d6",
+      "buyer_id": "buyer_005",
+      "order_id": "order_500398a87dc8",
+      "rating": 5,
+      "title": "Excellent!",
+      "comment": "This product was amazing.",
+      "status": "approved",
+      "created_at": "2026-02-09T00:32:28.374540",
+      "updated_at": "2026-02-09T00:32:28.374548",
+      "helpful_votes": 0,
+      "metadata": {
+        "order_amount": 60.24
+      }
+    }
+  },
+  "webhook_events": [
+    {
+      "event_id": "evt_0c90356baedf4590bc3c06e8",
+      "event_type": "payment_intent.succeeded",
+      "timestamp": "2026-02-09T00:32:28.373288",
+      "data": {
+        "id": "pi_8e3bffcce1884769804f7965",
+        "object": "payment_intent",
+        "amount": 0,
+        "currency": "usd",
+        "status": "succeeded",
+        "charges": {
+          "data": [
+            {
+              "id": "ch_a5206a8d0fa142739f934ef2",
+              "amount": 0,
+              "currency": "usd"
+            }
+          ]
+        },
+        "metadata": {
+          "order_id": "order_cb29a99573f9",
+          "product_id": "prod_dfaa8636bd9a",
+          "buyer_id": "buyer_005"
+        }
+      },
+      "processed": false,
+      "retry_count": 0
+    },
+    {
+      "event_id": "evt_7128e35c04d64771a04e87cf",
+      "event_type": "payment_intent.succeeded",
+      "timestamp": "2026-02-09T00:32:28.373448",
+      "data": {
+        "id": "pi_7449b4e71f074afe8092aea1",
+        "object": "payment_intent",
+        "amount": 1592,
+        "currency": "usd",
+        "status": "succeeded",
+        "charges": {
+          "data": [
+            {
+              "id": "ch_cd936d47d3654736a0bb5ce4",
+              "amount": 1592,
+              "currency": "usd"
+            }
+          ]
+        },
+        "metadata": {
+          "order_id": "order_cdcbac1a8c00",
+          "product_id": "prod_b46850b99310",
+          "buyer_id": "buyer_002"
+        }
+      },
+      "processed": false,
+      "retry_count": 0
+    },
+    {
+      "event_id": "evt_4254e01217184381bb848745",
+      "event_type": "payment_intent.succeeded",
+      "timestamp": "2026-02-09T00:32:28.373683",
+      "data": {
+        "id": "pi_1b395d077db94ef5842e93ca",
+        "object": "payment_intent",
+        "amount": 3313,
+        "currency": "usd",
+        "status": "succeeded",
+        "charges": {
+          "data": [
+            {
+              "id": "ch_97bc4a18be0d497abef50a23",
+              "amount": 3313,
+              "currency": "usd"
+            }
+          ]
+        },
+        "metadata": {
+          "order_id": "order_647491572315",
+          "product_id": "prod_87ef4accc1f6",
+          "buyer_id": "buyer_004"
+        }
+      },
+      "processed": false,
+      "retry_count": 0
+    },
+    {
+      "event_id": "evt_dd4a5852ab00405cabc33f9b",
+      "event_type": "customer.subscription.created",
+      "timestamp": "2026-02-09T00:32:28.373776",
+      "data": {
+        "id": "sub_520bc96f2e3e497ab8a711e4",
+        "object": "subscription",
+        "customer": "cus_58997d649c1c4c",
+        "status": "active",
+        "current_period_start": 1770597148,
+        "current_period_end": 1773189148,
+        "plan": {
+          "id": "plan_prod_87ef4accc1f6",
+          "amount": 3313,
+          "currency": "usd",
+          "interval": "month"
+        },
+        "metadata": {
+          "product_id": "prod_87ef4accc1f6",
+          "buyer_id": "buyer_004"
+        }
+      },
+      "processed": false,
+      "retry_count": 0
+    },
+    {
+      "event_id": "evt_47ef14d1d5334ee5be3f94a1",
+      "event_type": "invoice.paid",
+      "timestamp": "2026-02-09T00:32:28.373794",
+      "data": {
+        "id": "in_2c7ae521c47941ea8e78142c",
+        "object": "invoice",
+        "amount_paid": 3313,
+        "currency": "usd",
+        "customer": "cus_58997d649c1c4c",
+        "subscription": "sub_520bc96f2e3e497ab8a711e4",
+        "status": "paid",
+        "metadata": {
+          "product_id": "prod_87ef4accc1f6",
+          "buyer_id": "buyer_004"
+        }
+      },
+      "processed": false,
+      "retry_count": 0
+    },
+    {
+      "event_id": "evt_2e561facffd449879dad0f45",
+      "event_type": "payment_intent.succeeded",
+      "timestamp": "2026-02-09T00:32:28.373936",
+      "data": {
+        "id": "pi_e9b403cef3504d17992f7083",
+        "object": "payment_intent",
+        "amount": 42417,
+        "currency": "usd",
+        "status": "succeeded",
+        "charges": {
+          "data": [
+            {
+              "id": "ch_d99740ab764b4595bcb232be",
+              "amount": 42417,
+              "currency": "usd"
+            }
+          ]
+        },
+        "metadata": {
+          "order_id": "order_384f78db816e",
+          "product_id": "prod_8d3bdbd6b420",
+          "buyer_id": "buyer_002"
+        }
+      },
+      "processed": false,
+      "retry_count": 0
+    },
+    {
+      "event_id": "evt_48dfa3e77759481da8cc1451",
+      "event_type": "payment_intent.succeeded",
+      "timestamp": "2026-02-09T00:32:28.374088",
+      "data": {
+        "id": "pi_bcb287ae8bb34aa08ad3f50c",
+        "object": "payment_intent",
+        "amount": 25184,
+        "currency": "usd",
+        "status": "succeeded",
+        "charges": {
+          "data": [
+            {
+              "id": "ch_83d33546ea8f435d8fc6e3ce",
+              "amount": 25184,
+              "currency": "usd"
+            }
+          ]
+        },
+        "metadata": {
+          "order_id": "order_338ed7398c75",
+          "product_id": "prod_f3b323e99a68",
+          "buyer_id": "buyer_001"
+        }
+      },
+      "processed": false,
+      "retry_count": 0
+    },
+    {
+      "event_id": "evt_f78ab51b1bcf487693371d7e",
+      "event_type": "payment_intent.succeeded",
+      "timestamp": "2026-02-09T00:32:28.374245",
+      "data": {
+        "id": "pi_0a6db74388b24a09b933e4a7",
+        "object": "payment_intent",
+        "amount": 6788,
+        "currency": "usd",
+        "status": "succeeded",
+        "charges": {
+          "data": [
+            {
+              "id": "ch_cacd8a8291144102b6f513d0",
+              "amount": 6788,
+              "currency": "usd"
+            }
+          ]
+        },
+        "metadata": {
+          "order_id": "order_9a552a394eca",
+          "product_id": "prod_dbfc37227f5e",
+          "buyer_id": "buyer_004"
+        }
+      },
+      "processed": false,
+      "retry_count": 0
+    },
+    {
+      "event_id": "evt_24290d8f512047fd95ff408b",
+      "event_type": "customer.subscription.created",
+      "timestamp": "2026-02-09T00:32:28.374312",
+      "data": {
+        "id": "sub_b9f3a55fbd284f3a875cfefc",
+        "object": "subscription",
+        "customer": "cus_105db91044bd42",
+        "status": "active",
+        "current_period_start": 1770597148,
+        "current_period_end": 1773189148,
+        "plan": {
+          "id": "plan_prod_dbfc37227f5e",
+          "amount": 6788,
+          "currency": "usd",
+          "interval": "month"
+        },
+        "metadata": {
+          "product_id": "prod_dbfc37227f5e",
+          "buyer_id": "buyer_004"
+        }
+      },
+      "processed": false,
+      "retry_count": 0
+    },
+    {
+      "event_id": "evt_92b2d562904d40be8f7c5997",
+      "event_type": "invoice.paid",
+      "timestamp": "2026-02-09T00:32:28.374332",
+      "data": {
+        "id": "in_a6a0f3431bb94d1289e5b642",
+        "object": "invoice",
+        "amount_paid": 6788,
+        "currency": "usd",
+        "customer": "cus_105db91044bd42",
+        "subscription": "sub_b9f3a55fbd284f3a875cfefc",
+        "status": "paid",
+        "metadata": {
+          "product_id": "prod_dbfc37227f5e",
+          "buyer_id": "buyer_004"
+        }
+      },
+      "processed": false,
+      "retry_count": 0
+    },
+    {
+      "event_id": "evt_85da156ed06d42b8b3392669",
+      "event_type": "payment_intent.succeeded",
+      "timestamp": "2026-02-09T00:32:28.374416",
+      "data": {
+        "id": "pi_d943a3b087394c97a7417789",
+        "object": "payment_intent",
+        "amount": 17666,
+        "currency": "usd",
+        "status": "succeeded",
+        "charges": {
+          "data": [
+            {
+              "id": "ch_68a1b17334ea4236951b30f6",
+              "amount": 17666,
+              "currency": "usd"
+            }
+          ]
+        },
+        "metadata": {
+          "order_id": "order_d00893dfb2df",
+          "product_id": "prod_206b8b5363e1",
+          "buyer_id": "buyer_004"
+        }
+      },
+      "processed": false,
+      "retry_count": 0
+    },
+    {
+      "event_id": "evt_7518336c244e43bcb220297a",
+      "event_type": "payment_intent.succeeded",
+      "timestamp": "2026-02-09T00:32:28.374521",
+      "data": {
+        "id": "pi_dfaf2f76bc3b4847ae2aa26c",
+        "object": "payment_intent",
+        "amount": 6024,
+        "currency": "usd",
+        "status": "succeeded",
+        "charges": {
+          "data": [
+            {
+              "id": "ch_17731b511adf4bb7903fb872",
+              "amount": 6024,
+              "currency": "usd"
+            }
+          ]
+        },
+        "metadata": {
+          "order_id": "order_500398a87dc8",
+          "product_id": "prod_ebd9a48980d6",
+          "buyer_id": "buyer_005"
+        }
+      },
+      "processed": false,
+      "retry_count": 0
+    }
+  ],
+  "system_stats": {
+    "products": {
+      "total": 8,
+      "by_status": {
+        "draft": 0,
+        "pending_review": 0,
+        "approved": 0,
+        "rejected": 0,
+        "active": 8,
+        "inactive": 0,
+        "suspended": 0,
+        "deleted": 0
+      },
+      "by_type": {
+        "free": 1,
+        "one_time": 1,
+        "subscription": 2,
+        "digital": 2,
+        "physical": 0,
+        "service": 2
+      }
+    },
+    "orders": {
+      "total": 8,
+      "by_status": {
+        "pending": 0,
+        "confirmed": 0,
+        "processing": 0,
+        "shipped": 5,
+        "delivered": 3,
+        "cancelled": 0,
+        "refunded": 0
+      }
+    },
+    "reviews": {
+      "total": 6,
+      "by_status": {
+        "pending": 0,
+        "approved": 6,
+        "rejected": 0,
+        "flagged": 0
+      },
+      "average_rating": 4.33
+    },
+    "financial": {
+      "total_revenue": 1029.84,
+      "total_refunds": 0.0,
+      "net_revenue": 1029.84
+    },
+    "webhooks": {
+      "total_events": 12,
+      "by_type": {
+        "payment_intent.succeeded": 8,
+        "charge.refunded": 0,
+        "invoice.paid": 2,
+        "customer.subscription.created": 2,
+        "customer.subscription.deleted": 0,
+        "payment_method.payment_failed": 0
+      }
+    }
+  },
+  "export_timestamp": "2026-02-09T00:32:28.375294"
+}

@@ -1,0 +1,326 @@
+{
+  "referral_tree": {
+    "user_a": {
+      "user_id": "user_a",
+      "referrer_id": null,
+      "referral_code": "USERAA55D",
+      "level": 0,
+      "children": [
+        "user_b",
+        "user_c"
+      ],
+      "total_referrals": 7,
+      "direct_referrals": 2,
+      "total_commission_earned": 25.0,
+      "created_at": "2026-02-09T00:32:25.891909",
+      "is_active": true
+    },
+    "user_b": {
+      "user_id": "user_b",
+      "referrer_id": "user_a",
+      "referral_code": "USERBC7AF",
+      "level": 1,
+      "children": [
+        "user_d"
+      ],
+      "total_referrals": 4,
+      "direct_referrals": 1,
+      "total_commission_earned": 20.0,
+      "created_at": "2026-02-09T00:32:25.891964",
+      "is_active": true
+    },
+    "user_c": {
+      "user_id": "user_c",
+      "referrer_id": "user_a",
+      "referral_code": "USERCAA26",
+      "level": 1,
+      "children": [
+        "user_e"
+      ],
+      "total_referrals": 1,
+      "direct_referrals": 1,
+      "total_commission_earned": 0.0,
+      "created_at": "2026-02-09T00:32:25.892007",
+      "is_active": true
+    },
+    "user_d": {
+      "user_id": "user_d",
+      "referrer_id": "user_b",
+      "referral_code": "USERD38CC",
+      "level": 2,
+      "children": [
+        "user_f"
+      ],
+      "total_referrals": 3,
+      "direct_referrals": 1,
+      "total_commission_earned": 20.0,
+      "created_at": "2026-02-09T00:32:25.892028",
+      "is_active": true
+    },
+    "user_e": {
+      "user_id": "user_e",
+      "referrer_id": "user_c",
+      "referral_code": "USERE141C",
+      "level": 2,
+      "children": [],
+      "total_referrals": 0,
+      "direct_referrals": 0,
+      "total_commission_earned": 0.0,
+      "created_at": "2026-02-09T00:32:25.892045",
+      "is_active": true
+    },
+    "user_f": {
+      "user_id": "user_f",
+      "referrer_id": "user_d",
+      "referral_code": "USERF7ADC",
+      "level": 3,
+      "children": [
+        "user_g"
+      ],
+      "total_referrals": 2,
+      "direct_referrals": 1,
+      "total_commission_earned": 0.0,
+      "created_at": "2026-02-09T00:32:25.892064",
+      "is_active": true
+    },
+    "user_g": {
+      "user_id": "user_g",
+      "referrer_id": "user_f",
+      "referral_code": "USERG848A",
+      "level": 4,
+      "children": [
+        "user_h"
+      ],
+      "total_referrals": 1,
+      "direct_referrals": 1,
+      "total_commission_earned": 0.0,
+      "created_at": "2026-02-09T00:32:25.892084",
+      "is_active": true
+    },
+    "user_h": {
+      "user_id": "user_h",
+      "referrer_id": "user_g",
+      "referral_code": "USERH71B9",
+      "level": 5,
+      "children": [],
+      "total_referrals": 0,
+      "direct_referrals": 0,
+      "total_commission_earned": 0.0,
+      "created_at": "2026-02-09T00:32:25.892107",
+      "is_active": true
+    }
+  },
+  "commission_events": [
+    {
+      "event_id": "fa5dbc27-ee06-45d5-90ea-ddc444a441f8",
+      "timestamp": "2026-02-09T00:32:25.892145",
+      "sale_amount": 100.0,
+      "buyer_id": "user_f",
+      "product_id": "product_001",
+      "commission_tree": [
+        {
+          "user_id": "user_d",
+          "level": 1,
+          "commission_rate": 0.2,
+          "commission_amount": 20.0,
+          "sale_amount": 100.0,
+          "buyer_id": "user_f"
+        },
+        {
+          "user_id": "user_b",
+          "level": 2,
+          "commission_rate": 0.1,
+          "commission_amount": 10.0,
+          "sale_amount": 100.0,
+          "buyer_id": "user_f"
+        },
+        {
+          "user_id": "user_a",
+          "level": 3,
+          "commission_rate": 0.05,
+          "commission_amount": 5.0,
+          "sale_amount": 100.0,
+          "buyer_id": "user_f"
+        }
+      ],
+      "total_commission_paid": 35.0
+    },
+    {
+      "event_id": "202774f4-7305-411c-b114-828cb9ecebea",
+      "timestamp": "2026-02-09T00:32:25.892174",
+      "sale_amount": 50.0,
+      "buyer_id": "user_d",
+      "product_id": "product_002",
+      "commission_tree": [
+        {
+          "user_id": "user_b",
+          "level": 1,
+          "commission_rate": 0.2,
+          "commission_amount": 10.0,
+          "sale_amount": 50.0,
+          "buyer_id": "user_d"
+        },
+        {
+          "user_id": "user_a",
+          "level": 2,
+          "commission_rate": 0.1,
+          "commission_amount": 5.0,
+          "sale_amount": 50.0,
+          "buyer_id": "user_d"
+        }
+      ],
+      "total_commission_paid": 15.0
+    },
+    {
+      "event_id": "98f99c34-72f3-4a22-93a2-37171cd00f71",
+      "timestamp": "2026-02-09T00:32:25.892191",
+      "sale_amount": 75.0,
+      "buyer_id": "user_b",
+      "product_id": "product_003",
+      "commission_tree": [
+        {
+          "user_id": "user_a",
+          "level": 1,
+          "commission_rate": 0.2,
+          "commission_amount": 15.0,
+          "sale_amount": 75.0,
+          "buyer_id": "user_b"
+        }
+      ],
+      "total_commission_paid": 15.0
+    }
+  ],
+  "user_referral_codes": {
+    "USERAA55D": "user_a",
+    "USERBC7AF": "user_b",
+    "USERCAA26": "user_c",
+    "USERD38CC": "user_d",
+    "USERE141C": "user_e",
+    "USERF7ADC": "user_f",
+    "USERG848A": "user_g",
+    "USERH71B9": "user_h"
+  },
+  "configuration": {
+    "max_levels": 5,
+    "commission_rates": {
+      "1": 0.2,
+      "2": 0.1,
+      "3": 0.05,
+      "4": 0.02,
+      "5": 0.01
+    }
+  },
+  "mlm_report": {
+    "overview": {
+      "total_users": 8,
+      "total_commission_events": 3,
+      "total_commissions_paid": 65.0,
+      "total_sales_volume": 225.0,
+      "average_commission_rate": 28.89,
+      "commission_rates_by_level": {
+        "1": 0.2,
+        "2": 0.1,
+        "3": 0.05,
+        "4": 0.02,
+        "5": 0.01
+      }
+    },
+    "tree_structure": {
+      "level_distribution": {
+        "0": 1,
+        "1": 2,
+        "2": 2,
+        "3": 1,
+        "4": 1,
+        "5": 1
+      },
+      "max_depth": 5,
+      "tree_roots": [
+        "user_a"
+      ]
+    },
+    "performance": {
+      "top_performers": [
+        {
+          "user_id": "user_a",
+          "total_commission": 25.0,
+          "direct_referrals": 2,
+          "total_referrals": 7
+        },
+        {
+          "user_id": "user_b",
+          "total_commission": 20.0,
+          "direct_referrals": 1,
+          "total_referrals": 4
+        },
+        {
+          "user_id": "user_d",
+          "total_commission": 20.0,
+          "direct_referrals": 1,
+          "total_referrals": 3
+        },
+        {
+          "user_id": "user_c",
+          "total_commission": 0.0,
+          "direct_referrals": 1,
+          "total_referrals": 1
+        },
+        {
+          "user_id": "user_e",
+          "total_commission": 0.0,
+          "direct_referrals": 0,
+          "total_referrals": 0
+        },
+        {
+          "user_id": "user_f",
+          "total_commission": 0.0,
+          "direct_referrals": 1,
+          "total_referrals": 2
+        },
+        {
+          "user_id": "user_g",
+          "total_commission": 0.0,
+          "direct_referrals": 1,
+          "total_referrals": 1
+        },
+        {
+          "user_id": "user_h",
+          "total_commission": 0.0,
+          "direct_referrals": 0,
+          "total_referrals": 0
+        }
+      ],
+      "commission_by_level": {
+        "level_1": 45.0,
+        "level_2": 15.0,
+        "level_3": 5.0
+      }
+    },
+    "recent_activity": [
+      {
+        "timestamp": "2026-02-09T00:32:25.892145",
+        "buyer_id": "user_f",
+        "sale_amount": 100.0,
+        "total_commission": 35.0,
+        "recipients": 3
+      },
+      {
+        "timestamp": "2026-02-09T00:32:25.892174",
+        "buyer_id": "user_d",
+        "sale_amount": 50.0,
+        "total_commission": 15.0,
+        "recipients": 2
+      },
+      {
+        "timestamp": "2026-02-09T00:32:25.892191",
+        "buyer_id": "user_b",
+        "sale_amount": 75.0,
+        "total_commission": 15.0,
+        "recipients": 1
+      }
+    ],
+    "anomalies": [],
+    "report_generated": "2026-02-09T00:32:25.892681"
+  },
+  "export_timestamp": "2026-02-09T00:32:25.892690"
+}
