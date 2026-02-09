@@ -1,0 +1,152 @@
+{
+  "timestamp": "2026-02-09 18:49:15",
+  "batch": "Batch 3: Advanced & Edge Cases",
+  "scenarios": "21-30",
+  "summary": {
+    "total_tests": 10,
+    "passed": 7,
+    "failed": 3,
+    "errors": 0,
+    "success_rate": "70.0%"
+  },
+  "scores": {
+    "security_score": "7.0/10",
+    "usability_score": "7.9/10",
+    "overall_grade": "B"
+  },
+  "execution_time": {
+    "total": "12.55s",
+    "average": "1.26s"
+  },
+  "results": [
+    {
+      "scenario_id": "SIM21",
+      "scenario_name": "SQL Injection Security Test",
+      "status": "FAIL",
+      "execution_time": 2.9710450172424316,
+      "security_score": 2,
+      "usability_score": 8,
+      "details": {
+        "injection_tests": 6,
+        "all_safe": false
+      },
+      "error_message": null
+    },
+    {
+      "scenario_id": "SIM22",
+      "scenario_name": "Extremely Long Input Test",
+      "status": "PASS",
+      "execution_time": 0.8133542537689209,
+      "security_score": 8,
+      "usability_score": 9,
+      "details": {
+        "tests_run": 3,
+        "all_handled_gracefully": true
+      },
+      "error_message": null
+    },
+    {
+      "scenario_id": "SIM23",
+      "scenario_name": "Unicode/Emoji Handling Test",
+      "status": "PASS",
+      "execution_time": 0.9500834941864014,
+      "security_score": 7,
+      "usability_score": 9,
+      "details": {
+        "unicode_tests": 4,
+        "all_handled": true
+      },
+      "error_message": null
+    },
+    {
+      "scenario_id": "SIM24",
+      "scenario_name": "Concurrent Operations Test",
+      "status": "PASS",
+      "execution_time": 0.9435086250305176,
+      "security_score": 8,
+      "usability_score": 7,
+      "details": {
+        "race_conditions_detected": false
+      },
+      "error_message": null
+    },
+    {
+      "scenario_id": "SIM25",
+      "scenario_name": "Disk Full Error Handling",
+      "status": "FAIL",
+      "execution_time": 0.21702003479003906,
+      "security_score": 6,
+      "usability_score": 4,
+      "details": {
+        "handled_gracefully": false
+      },
+      "error_message": null
+    },
+    {
+      "scenario_id": "SIM26",
+      "scenario_name": "Permission Error Handling",
+      "status": "FAIL",
+      "execution_time": 0.25040125846862793,
+      "security_score": 9,
+      "usability_score": 5,
+      "details": {
+        "good_error_messages": false
+      },
+      "error_message": null
+    },
+    {
+      "scenario_id": "SIM27",
+      "scenario_name": "Data Corruption Recovery",
+      "status": "PASS",
+      "execution_time": 0.5044760704040527,
+      "security_score": 7,
+      "usability_score": 9,
+      "details": {
+        "recovery_success": true
+      },
+      "error_message": null
+    },
+    {
+      "scenario_id": "SIM28",
+      "scenario_name": "Network Failure Handling",
+      "status": "PASS",
+      "execution_time": 0.2376389503479004,
+      "security_score": 7,
+      "usability_score": 8,
+      "details": {
+        "timeout_handled": false
+      },
+      "error_message": null
+    },
+    {
+      "scenario_id": "SIM29",
+      "scenario_name": "Complete End-to-End Workflow",
+      "status": "PASS",
+      "execution_time": 1.4271674156188965,
+      "security_score": 8,
+      "usability_score": 10,
+      "details": {
+        "total_steps": 8,
+        "successful_steps": 8,
+        "workflow_score": 10.0
+      },
+      "error_message": null
+    },
+    {
+      "scenario_id": "SIM30",
+      "scenario_name": "Rapid-Fire Stress Test",
+      "status": "PASS",
+      "execution_time": 4.23856782913208,
+      "security_score": 8,
+      "usability_score": 10,
+      "details": {
+        "commands_run": 20,
+        "failures": 0,
+        "avg_time": 0.21192240715026855,
+        "max_time": 0.40654492378234863,
+        "stress_score": 10
+      },
+      "error_message": null
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-02-09 18:49:35",
+  "batch": "Batch 2: Intermediate Workflows",
+  "scenarios": "11-20",
+  "summary": {
+    "total_tests": 10,
+    "passed": 7,
+    "failed": 3,
+    "errors": 0,
+    "success_rate": "70.0%"
+  },
+  "scores": {
+    "security_score": "8.1/10",
+    "usability_score": "7.8/10",
+    "overall_grade": "B"
+  },
+  "execution_time": {
+    "total": "67.8s",
+    "average": "6.8s"
+  },
+  "results": [
+    {
+      "scenario_id": "SIM11",
+      "status": "PASS"
+    },
+    {
+      "scenario_id": "SIM12",
+      "status": "PASS"
+    },
+    {
+      "scenario_id": "SIM13",
+      "status": "PASS"
+    },
+    {
+      "scenario_id": "SIM14",
+      "status": "PASS"
+    },
+    {
+      "scenario_id": "SIM15",
+      "status": "PASS"
+    },
+    {
+      "scenario_id": "SIM16",
+      "status": "PASS"
+    },
+    {
+      "scenario_id": "SIM17",
+      "status": "PASS"
+    },
+    {
+      "scenario_id": "SIM18",
+      "status": "FAIL"
+    },
+    {
+      "scenario_id": "SIM19",
+      "status": "FAIL"
+    },
+    {
+      "scenario_id": "SIM20",
+      "status": "FAIL"
+    }
+  ]
+}
