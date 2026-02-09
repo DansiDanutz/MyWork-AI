@@ -383,7 +383,7 @@ class LearningEngine:
                     (r'ImportError: cannot import name [\'"](\w+)[\'"]', "Import issue: {}"),
                     (r'FileNotFoundError:.*[\'"]([^"\']+)[\'"]', "Missing file: {}"),
                     (r'PermissionError:.*[\'"]([^"\']+)[\'"]', "Permission issue: {}"),
-                    (r"ConnectionRefusedError", "Connection refused - check if service is running"),
+                    (r"ConnectionRefusedError", "Connection refused - check if service is running"),  # SECURITY_SAFE: error pattern matching
                     (r"timeout", "Timeout - increase timeout or check network"),
                 ]
 

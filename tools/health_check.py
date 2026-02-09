@@ -1149,8 +1149,19 @@ def auto_fix(results: List[CheckResult]):
                 if result.fix_command.startswith("/"):
                     print(f"   ℹ️  Run this command manually in Claude Code: {result.fix_command}")
                 elif result.fix_command.startswith("cd "):
-                    # Multi-part command
-                    subprocess.run(result.fix_command, shell=True)
+                    # Handle directory change commands securely
+                    # Parse "cd <dir> && <command>" pattern
+                    command_parts = result.fix_command.split(" && ")
+                    if len(command_parts) == 2:
+                        cd_part = command_parts[0]
+                        cmd_part = command_parts[1]
+                        # Extract directory from "cd <dir>"
+                        target_dir = cd_part.replace("cd ", "").strip()
+                        # Run command in target directory without shell=True
+                        subprocess.run(cmd_part.split(), cwd=target_dir, shell=False)
+                    else:
+                        # Simple cd command - just inform user
+                        print(f"   ℹ️  Please change directory manually: {result.fix_command}")
                     print("   ✅ Done")
                 else:
                     parts = result.fix_command.split()

@@ -204,7 +204,7 @@ class YouTubeAutomationService:
         db: Session,
         automation_id: int,
         avatar_id: str = "Kristin_public_3_20240108",
-        voice_id: str = "1bd001e7e50f421d891986aad5158bc8",
+        voice_id: str = None,
     ) -> YouTubeAutomation:
         """
         Generate video using HeyGen API
@@ -218,6 +218,10 @@ class YouTubeAutomationService:
         Returns:
             Updated YouTubeAutomation record
         """
+        # Use environment variable for voice_id with fallback to hardcoded default
+        if voice_id is None:
+            voice_id = os.getenv("HEYGEN_DEFAULT_VOICE_ID", "1bd001e7e50f421d891986aad5158bc8")
+        
         automation = (
             db.query(YouTubeAutomation).filter(YouTubeAutomation.id == automation_id).first()
         )

@@ -1,22 +1,22 @@
 # MyWork-AI Simulation Report
-Generated: 2026-02-09 00:33:53
+Generated: 2026-02-09 14:50:16
 
 ## Executive Summary
 
 - **Overall Status**: ✅ PASSED
 - **Scenarios Passed**: 5
 - **Scenarios Failed**: 0
-- **Total Revenue**: $2,192.43
-- **Total Commissions**: $253.31
-- **Commission Rate**: 11.55%
+- **Total Revenue**: $1,656.04
+- **Total Commissions**: $105.99
+- **Commission Rate**: 6.40%
 
 ## User System Statistics
 
 - **Total Users**: 20
-- **User Roles**: buyer: 6, seller: 8, affiliate: 6
-- **Total Credits in Circulation**: $5,902.97
+- **User Roles**: buyer: 9, seller: 4, affiliate: 7
+- **Total Credits in Circulation**: $6,047.96
 - **Total Purchase Volume**: $0.00
-- **Average Credits per User**: $295.15
+- **Average Credits per User**: $302.40
 
 ## Credit System Report
 
@@ -24,64 +24,64 @@ Generated: 2026-02-09 00:33:53
 - **Total Users**: 20
 - **Active Users**: 20
 - **Frozen Accounts**: 0
-- **Total Circulation**: 5902.97
-- **Credits Issued**: 8687.18
-- **Credits Burned**: 2784.21
+- **Total Circulation**: 6047.96
+- **Credits Issued**: 8079.5
+- **Credits Burned**: 2031.54
 
 ### Financial Statistics
-- **Total Spent**: $2,784.21
+- **Total Spent**: $2,031.54
 - **Total Transferred**: $0.00
-- **Total Commissions Paid**: $253.31
-- **Total Refunds**: $591.78
-- **Average Balance**: $295.15
+- **Total Commissions Paid**: $105.99
+- **Total Refunds**: $375.50
+- **Average Balance**: $302.40
 
 ## MLM/Referral System Report
 
 ### Overview
 - **Total Users**: 20
 - **Total Commission Events**: 13
-- **Total Commissions Paid**: $253.31
-- **Total Sales Volume**: $2,784.21
-- **Average Commission Rate**: 9.1%
+- **Total Commissions Paid**: $105.99
+- **Total Sales Volume**: $2,031.54
+- **Average Commission Rate**: 5.22%
 
 ### Tree Structure
 - **Max Depth**: 2 levels
 - **Tree Roots**: 12 root users
 
 ### Top Performers
-1. **user_0011**: $230.60 earned, 1 direct referrals
-2. **user_0006**: $158.41 earned, 1 direct referrals
-3. **user_0007**: $117.61 earned, 2 direct referrals
-4. **user_0001**: $0.00 earned, 0 direct referrals
-5. **user_0002**: $0.00 earned, 0 direct referrals
+1. **user_0006**: $172.44 earned, 2 direct referrals
+2. **user_0001**: $39.54 earned, 1 direct referrals
+3. **user_0002**: $0.00 earned, 0 direct referrals
+4. **user_0003**: $0.00 earned, 0 direct referrals
+5. **user_0004**: $0.00 earned, 0 direct referrals
 
 ## Product System Report
 
 ### Products
-- **Total Products**: 13
-- **Active Products**: 13
+- **Total Products**: 8
+- **Active Products**: 8
 - **Approved Products**: 0
 
 ### Orders
 - **Total Orders**: 15
 - **Confirmed Orders**: 0
-- **Delivered Orders**: 3
+- **Delivered Orders**: 2
 - **Refunded Orders**: 3
 
 ### Reviews
-- **Total Reviews**: 4
-- **Average Rating**: 4.5/5.0
-- **Approved Reviews**: 4
+- **Total Reviews**: 3
+- **Average Rating**: 4.0/5.0
+- **Approved Reviews**: 3
 
 ### Financial Performance
-- **Total Revenue**: $2,192.43
-- **Total Refunds**: $591.78
-- **Net Revenue**: $1,600.65
+- **Total Revenue**: $1,656.04
+- **Total Refunds**: $375.50
+- **Net Revenue**: $1,280.54
 
 ## Cross-System Integration
 
-- **Users with Active Commissions**: 3
-- **Average Commission per Sale**: $16.89
+- **Users with Active Commissions**: 2
+- **Average Commission per Sale**: $7.07
 - **Total Webhook Events**: 16
 
 ## Anomalies and Issues
@@ -92,9 +92,9 @@ Generated: 2026-02-09 00:33:53
 
 - ✅ **Generated 20 users with balances and referral relationships**
 - ✅ **Scenario 'User Registration & Referrals' completed successfully**
-- ✅ **Created and activated 13 products from 5 sellers**
+- ✅ **Created and activated 8 products from 5 sellers**
 - ✅ **Scenario 'Product Listings & Approval' completed successfully**
-- ✅ **Processed 13 purchases with 5 commission payments**
+- ✅ **Processed 13 purchases with 3 commission payments**
 - ✅ **Scenario 'Marketplace Activity & Commissions' completed successfully**
 - ✅ **Processed 3 refunds with credit returns**
 - ✅ **Scenario 'Refunds & Credit Returns' completed successfully**

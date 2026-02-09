@@ -1,6 +1,6 @@
 {
   "test_suite": "Brain E2E Full Lifecycle Tests",
-  "timestamp": "2026-02-09 00:31:28",
+  "timestamp": "2026-02-09 14:51:28",
   "summary": {
     "total_tests": 28,
     "passed": 23,
@@ -40,203 +40,203 @@
       "search_term": "webassembly wasm"
     }
   },
-  "backup_path": "brain_backup_20260209_003127.json",
+  "backup_path": "brain_backup_20260209_145127.json",
   "results": [
     {
       "test": "setup_brain.py",
       "status": "PASS",
       "message": "brain.py found",
       "output": "",
-      "timestamp": "2026-02-09 00:31:24"
+      "timestamp": "2026-02-09 14:51:25"
     },
     {
       "test": "setup_brain_search.py",
       "status": "PASS",
       "message": "brain_search.py found",
       "output": "",
-      "timestamp": "2026-02-09 00:31:24"
+      "timestamp": "2026-02-09 14:51:25"
     },
     {
       "test": "setup_brain_graph.py",
       "status": "PASS",
       "message": "brain_graph.py found",
       "output": "",
-      "timestamp": "2026-02-09 00:31:24"
+      "timestamp": "2026-02-09 14:51:25"
     },
     {
       "test": "setup_brain_learner.py",
       "status": "PASS",
       "message": "brain_learner.py found",
       "output": "",
-      "timestamp": "2026-02-09 00:31:24"
+      "timestamp": "2026-02-09 14:51:25"
     },
     {
       "test": "brain_stats_initial",
       "status": "PASS",
       "message": "Brain stats command works",
-      "output": "\n\ud83e\udde0 Brain Statistics\n==================================================\n\nTotal Entries: 7\n\nBy Type:\n   antipattern: 1\n   experiment: 1\n   insight: 1\n   lesson: 2\n   pattern: 1\n   tip: 1\n\nBy Status:\n   \u2705 TESTED: 7\n\nOldest entry: 2026-02-09\nNewest entry: 2026-02-09\n",
-      "timestamp": "2026-02-09 00:31:25"
+      "output": "\n\ud83e\udde0 Brain Statistics\n==================================================\n\nTotal Entries: 13\n\nBy Type:\n   antipattern: 2\n   experiment: 2\n   insight: 2\n   lesson: 3\n   pattern: 2\n   tip: 2\n\nBy Status:\n   \u2705 TESTED: 13\n\nOldest entry: 2026-02-09\nNewest entry: 2026-02-09\n",
+      "timestamp": "2026-02-09 14:51:25"
     },
     {
       "test": "add_lesson",
       "status": "PASS",
-      "message": "Added lesson as lesson-003",
-      "output": "\u2705 Added entry: lesson-003\n\n\u001b[96m\u256d\u2500 \u2705 \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-003]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mAlways backup before major deployments                      \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f TESTED                                   \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u251c\u2500 \u001b[94m\ud83d\udcdd Context:\u001b[0m                                               \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2502 \u001b[0mLearned from production outage on 2024-01-15                \u001b[96m \u2502\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n",
-      "timestamp": "2026-02-09 00:31:25"
+      "message": "Added lesson as lesson-004",
+      "output": "\u2705 Added entry: lesson-004\n\n\u001b[96m\u256d\u2500 \u2705 \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-004]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mAlways backup before major deployments                      \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f TESTED                                   \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u251c\u2500 \u001b[94m\ud83d\udcdd Context:\u001b[0m                                               \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2502 \u001b[0mLearned from production outage on 2024-01-15                \u001b[96m \u2502\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n",
+      "timestamp": "2026-02-09 14:51:25"
     },
     {
       "test": "add_pattern",
       "status": "PASS",
-      "message": "Added pattern as pattern-002",
-      "output": "\u2705 Added entry: pattern-002\n\n\u001b[96m\u256d\u2500 \u2705 \u001b[1mPATTERN\u001b[0m\u001b[96m [pattern-002]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mAPI Rate Limiting Pattern                                   \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f TESTED                                   \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n",
-      "timestamp": "2026-02-09 00:31:25"
+      "message": "Added pattern as pattern-003",
+      "output": "\u2705 Added entry: pattern-003\n\n\u001b[96m\u256d\u2500 \u2705 \u001b[1mPATTERN\u001b[0m\u001b[96m [pattern-003]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mAPI Rate Limiting Pattern                                   \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f TESTED                                   \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n",
+      "timestamp": "2026-02-09 14:51:25"
     },
     {
       "test": "add_antipattern",
       "status": "PASS",
-      "message": "Added antipattern as antipattern-002",
-      "output": "\u2705 Added entry: antipattern-002\n\n\u001b[96m\u256d\u2500 \u2705 \u001b[1mANTIPATTERN\u001b[0m\u001b[96m [antipattern-002]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mNever commit secrets to git                                 \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f TESTED                                   \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n",
-      "timestamp": "2026-02-09 00:31:26"
+      "message": "Added antipattern as antipattern-003",
+      "output": "\u2705 Added entry: antipattern-003\n\n\u001b[96m\u256d\u2500 \u2705 \u001b[1mANTIPATTERN\u001b[0m\u001b[96m [antipattern-003]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mNever commit secrets to git                                 \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f TESTED                                   \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n",
+      "timestamp": "2026-02-09 14:51:25"
     },
     {
       "test": "add_tip",
       "status": "PASS",
-      "message": "Added tip as tip-002",
-      "output": "\u2705 Added entry: tip-002\n\n\u001b[96m\u256d\u2500 \u2705 \u001b[1mTIP\u001b[0m\u001b[96m [tip-002]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mUse `git stash` to temporarily save uncommitted changes     \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f TESTED                                   \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n",
-      "timestamp": "2026-02-09 00:31:26"
+      "message": "Added tip as tip-003",
+      "output": "\u2705 Added entry: tip-003\n\n\u001b[96m\u256d\u2500 \u2705 \u001b[1mTIP\u001b[0m\u001b[96m [tip-003]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mUse `git stash` to temporarily save uncommitted changes     \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f TESTED                                   \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n",
+      "timestamp": "2026-02-09 14:51:26"
     },
     {
       "test": "add_insight",
       "status": "PASS",
-      "message": "Added insight as insight-002",
-      "output": "\u2705 Added entry: insight-002\n\n\u001b[96m\u256d\u2500 \u2705 \u001b[1mINSIGHT\u001b[0m\u001b[96m [insight-002]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mMicroservices work better with event-driven architecture    \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f TESTED                                   \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n",
-      "timestamp": "2026-02-09 00:31:26"
+      "message": "Added insight as insight-003",
+      "output": "\u2705 Added entry: insight-003\n\n\u001b[96m\u256d\u2500 \u2705 \u001b[1mINSIGHT\u001b[0m\u001b[96m [insight-003]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mMicroservices work better with event-driven architecture    \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f TESTED                                   \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n",
+      "timestamp": "2026-02-09 14:51:26"
     },
     {
       "test": "add_experiment",
       "status": "PASS",
-      "message": "Added experiment as experiment-002",
-      "output": "\u2705 Added entry: experiment-002\n\n\u001b[96m\u256d\u2500 \u2705 \u001b[1mEXPERIMENT\u001b[0m\u001b[96m [experiment-002]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mTry using WebAssembly for CPU-intensive frontend operations \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f TESTED                                   \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n",
-      "timestamp": "2026-02-09 00:31:26"
+      "message": "Added experiment as experiment-003",
+      "output": "\u2705 Added entry: experiment-003\n\n\u001b[96m\u256d\u2500 \u2705 \u001b[1mEXPERIMENT\u001b[0m\u001b[96m [experiment-003]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mTry using WebAssembly for CPU-intensive frontend operations \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f TESTED                                   \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n",
+      "timestamp": "2026-02-09 14:51:26"
     },
     {
       "test": "search_lesson",
       "status": "FAIL",
       "message": "Didn't find lesson in search results",
       "output": "",
-      "timestamp": "2026-02-09 00:31:26"
+      "timestamp": "2026-02-09 14:51:26"
     },
     {
       "test": "search_pattern",
       "status": "PASS",
       "message": "Found pattern with search 'rate limiting'",
       "output": "",
-      "timestamp": "2026-02-09 00:31:26"
+      "timestamp": "2026-02-09 14:51:26"
     },
     {
       "test": "search_antipattern",
       "status": "FAIL",
       "message": "Didn't find antipattern in search results",
       "output": "",
-      "timestamp": "2026-02-09 00:31:26"
+      "timestamp": "2026-02-09 14:51:26"
     },
     {
       "test": "search_tip",
       "status": "PASS",
       "message": "Found tip with search 'git stash'",
       "output": "",
-      "timestamp": "2026-02-09 00:31:27"
+      "timestamp": "2026-02-09 14:51:26"
     },
     {
       "test": "search_insight",
       "status": "FAIL",
       "message": "Didn't find insight in search results",
       "output": "",
-      "timestamp": "2026-02-09 00:31:27"
+      "timestamp": "2026-02-09 14:51:26"
     },
     {
       "test": "search_experiment",
       "status": "FAIL",
       "message": "Didn't find experiment in search results",
       "output": "",
-      "timestamp": "2026-02-09 00:31:27"
+      "timestamp": "2026-02-09 14:51:26"
     },
     {
       "test": "brain_search_script",
       "status": "WARN",
       "message": "brain_search.py test inconclusive",
       "output": "usage: brain_search.py [-h]\n                       [--type {lesson,pattern,antipattern,tip,insight,experiment}]\n                       [--status {TESTED,EXPERIMENTAL,DEPRECATED}]\n                       [--tags TAGS] [--since SINCE] [--until UNTIL] [--fuzzy]\n                       [--limit LIMIT] [--scores] [--interactive]\n                       [query]\nbrain_search.py: error: unrecognized arguments: backup\n",
-      "timestamp": "2026-02-09 00:31:27"
+      "timestamp": "2026-02-09 14:51:26"
     },
     {
       "test": "update_entry",
       "status": "PASS",
-      "message": "Updated lesson-003",
-      "output": "\u2705 Updated entry: lesson-003\n\n\u001b[96m\u256d\u2500 \u2705 \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-003]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mAlways backup AND test restore before major deployments     \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f TESTED                                   \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u251c\u2500 \u001b[94m\ud83d\udcdd Context:\u001b[0m                                               \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2502 \u001b[0mLearned from production outage on 2024-01-15                \u001b[96m \u2502\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n",
-      "timestamp": "2026-02-09 00:31:27"
+      "message": "Updated lesson-004",
+      "output": "\u2705 Updated entry: lesson-004\n\n\u001b[96m\u256d\u2500 \u2705 \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-004]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mAlways backup AND test restore before major deployments     \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f TESTED                                   \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u251c\u2500 \u001b[94m\ud83d\udcdd Context:\u001b[0m                                               \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2502 \u001b[0mLearned from production outage on 2024-01-15                \u001b[96m \u2502\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n",
+      "timestamp": "2026-02-09 14:51:27"
     },
     {
       "test": "update_verify",
       "status": "PASS",
       "message": "Update verified through search",
       "output": "",
-      "timestamp": "2026-02-09 00:31:27"
+      "timestamp": "2026-02-09 14:51:27"
     },
     {
       "test": "export_markdown",
       "status": "PASS",
       "message": "Export to markdown succeeded",
-      "output": "\u2705 Markdown exported to: /home/Memo1981/MyWork-AI/BRAIN_EXPORT_20260209_003127.md\n\ud83d\udcca Exported 13 entries across 6 types\n",
-      "timestamp": "2026-02-09 00:31:27"
+      "output": "\u2705 Markdown exported to: /home/Memo1981/MyWork-AI/BRAIN_EXPORT_20260209_145127.md\n\ud83d\udcca Exported 19 entries across 6 types\n",
+      "timestamp": "2026-02-09 14:51:27"
     },
     {
       "test": "export_json",
       "status": "PASS",
       "message": "Export to json succeeded",
       "output": "\u2705 JSON exported to: /home/Memo1981/MyWork-AI/.planning/brain_data.json\n",
-      "timestamp": "2026-02-09 00:31:27"
+      "timestamp": "2026-02-09 14:51:27"
     },
     {
       "test": "export_csv",
       "status": "PASS",
       "message": "Export to csv succeeded",
-      "output": "\u2705 CSV exported to: /home/Memo1981/MyWork-AI/BRAIN_EXPORT_20260209_003127.csv\n\ud83d\udcca Exported 13 entries\n",
-      "timestamp": "2026-02-09 00:31:27"
+      "output": "\u2705 CSV exported to: /home/Memo1981/MyWork-AI/BRAIN_EXPORT_20260209_145127.csv\n\ud83d\udcca Exported 19 entries\n",
+      "timestamp": "2026-02-09 14:51:27"
     },
     {
       "test": "backup_create",
       "status": "PASS",
-      "message": "Backup created: brain_backup_20260209_003127.json",
+      "message": "Backup created: brain_backup_20260209_145127.json",
       "output": "",
-      "timestamp": "2026-02-09 00:31:27"
+      "timestamp": "2026-02-09 14:51:27"
     },
     {
       "test": "restore_command",
       "status": "PASS",
       "message": "Restore command available",
       "output": "",
-      "timestamp": "2026-02-09 00:31:28"
+      "timestamp": "2026-02-09 14:51:27"
     },
     {
       "test": "brain_graph",
       "status": "PASS",
       "message": "brain_graph.py is functional",
       "output": "",
-      "timestamp": "2026-02-09 00:31:28"
+      "timestamp": "2026-02-09 14:51:27"
     },
     {
       "test": "brain_learner",
       "status": "PASS",
       "message": "brain_learner.py is functional",
       "output": "",
-      "timestamp": "2026-02-09 00:31:28"
+      "timestamp": "2026-02-09 14:51:27"
     },
     {
       "test": "data_integrity",
       "status": "PASS",
       "message": "Found 6/6 entry types in final stats",
       "output": "",
-      "timestamp": "2026-02-09 00:31:28"
+      "timestamp": "2026-02-09 14:51:28"
     }
   ]
 }

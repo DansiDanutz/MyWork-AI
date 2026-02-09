@@ -1,6 +1,6 @@
 {
   "test_suite": "GSD Workflow E2E Tests",
-  "timestamp": "2026-02-09 00:31:03",
+  "timestamp": "2026-02-09 14:51:25",
   "summary": {
     "total_tests": 10,
     "passed": 9,
@@ -14,70 +14,70 @@
       "status": "PASS",
       "message": "mw.py script found",
       "output": "",
-      "timestamp": "2026-02-09 00:31:00"
+      "timestamp": "2026-02-09 14:51:23"
     },
     {
       "test": "mw_help",
       "status": "PASS",
       "message": "Help command shows expected commands",
       "output": "\nMyWork Command Line Interface (mw)\n==================================\nUnified interface for all MyWork framework tools.\n\nUsage:\n    mw <command> [options]\n\nCommands:\n    dashboard       Interactive framework dashboard with metrics and status\n    status          Quick health check of all components\n    update          Check and apply updates (GSD, AutoForge, n8n)\n    search <query>  Search module registry for reusable code\n    new <name>      Create a new project (see: mw new --help)\n    scan   ",
-      "timestamp": "2026-02-09 00:31:00"
+      "timestamp": "2026-02-09 14:51:23"
     },
     {
       "test": "mw_status",
       "status": "FAIL",
       "message": "Missing sections: ['MyWork Framework Status', 'Component Health']",
-      "output": "\n============================================================\n\ud83c\udfe5 MyWork Framework Health Check\n============================================================\n   Time: 2026-02-09 00:31:00\n============================================================\n\n\u274c ERRORS\n----------------------------------------\n   \u274c GSD Installation\n      GSD not installed\n      Fix: /install gsd\n   \u274c AutoForge Installation\n      AutoForge not found at expected path\n   \u274c n8n-skills\n      n8n-skills not installed\n      Fix: git c",
-      "timestamp": "2026-02-09 00:31:00"
+      "output": "\n============================================================\n\ud83c\udfe5 MyWork Framework Health Check\n============================================================\n   Time: 2026-02-09 14:51:23\n============================================================\n\n\u274c ERRORS\n----------------------------------------\n   \u274c GSD Installation\n      GSD not installed\n      Fix: /install gsd\n   \u274c AutoForge Installation\n      AutoForge not found at expected path\n   \u274c n8n-skills\n      n8n-skills not installed\n      Fix: git c",
+      "timestamp": "2026-02-09 14:51:23"
     },
     {
       "test": "mw_dashboard_check",
       "status": "PASS",
       "message": "Dashboard command recognizes --version flag",
-      "output": "\n\u001b[1m\u001b[94m\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u001b[0m\n\u001b[1m\u001b[94m MyWork-AI Framework Dashboard \u001b[0m\n\u001b[1m\u001b[94m\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u001b[0m\n\u001b[96m Generated at: 2026-02-09 00:31:00\u001b[0m\n\n\u001b[94m\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[94m\u2502\u001b[1m  FRAMEWORK INFO  \u001b[0m\u001b[94m\u2502\u001b[0m\n\u001b[94m\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\u001b[0m\n\u001b[94m\u2502 MyWork-AI v1.0.0 \u2502\u001b[0m\n\u001b[94m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[92m\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[92m\u2502\u001b[1m     PROJECTS     \u001b[0m\u001b[92m\u2502\u001b[0m\n\u001b[92m\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500",
-      "timestamp": "2026-02-09 00:31:00"
+      "output": "\n\u001b[1m\u001b[94m\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u001b[0m\n\u001b[1m\u001b[94m MyWork-AI Framework Dashboard \u001b[0m\n\u001b[1m\u001b[94m\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u001b[0m\n\u001b[96m Generated at: 2026-02-09 14:51:23\u001b[0m\n\n\u001b[94m\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[94m\u2502\u001b[1m  FRAMEWORK INFO  \u001b[0m\u001b[94m\u2502\u001b[0m\n\u001b[94m\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2524\u001b[0m\n\u001b[94m\u2502 MyWork-AI v1.0.0 \u2502\u001b[0m\n\u001b[94m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[92m\u256d\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[92m\u2502\u001b[1m     PROJECTS     \u001b[0m\u001b[92m\u2502\u001b[0m\n\u001b[92m\u251c\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500",
+      "timestamp": "2026-02-09 14:51:23"
     },
     {
       "test": "mw_search",
       "status": "PASS",
       "message": "Search command executed successfully",
       "output": "\n\u274c No modules found matching 'test'\n",
-      "timestamp": "2026-02-09 00:31:01"
+      "timestamp": "2026-02-09 14:51:23"
     },
     {
       "test": "mw_projects",
       "status": "PASS",
       "message": "Projects command executed successfully",
       "output": "\n\u001b[1m\ud83d\udcc1 MyWork Projects\u001b[0m\n==================================================\n   \u2705 ai-dashboard \ud83d\ude80 (framework-tool, active) \ud83e\udde0\n   \u2705 task-tracker  (framework-tool, active) \ud83e\udde0\n\n   Total: 2 projects\n",
-      "timestamp": "2026-02-09 00:31:01"
+      "timestamp": "2026-02-09 14:51:23"
     },
     {
       "test": "mw_brain_stats",
       "status": "PASS",
       "message": "Brain stats command executed",
-      "output": "\n\ud83e\udde0 Brain Statistics\n==================================================\n\nTotal Entries: 7\n\nBy Type:\n   antipattern: 1\n   experiment: 1\n   insight: 1\n   lesson: 2\n   pattern: 1\n   tip: 1\n\nBy Status:\n   \u2705 TESTED: 7\n\nOldest entry: 2026-02-09\nNewest entry: 2026-02-09\n",
-      "timestamp": "2026-02-09 00:31:01"
+      "output": "\n\ud83e\udde0 Brain Statistics\n==================================================\n\nTotal Entries: 13\n\nBy Type:\n   antipattern: 2\n   experiment: 2\n   insight: 2\n   lesson: 3\n   pattern: 2\n   tip: 2\n\nBy Status:\n   \u2705 TESTED: 13\n\nOldest entry: 2026-02-09\nNewest entry: 2026-02-09\n",
+      "timestamp": "2026-02-09 14:51:24"
     },
     {
       "test": "af_status",
       "status": "PASS",
       "message": "AutoForge status command recognized",
       "output": "AutoForge server is NOT RUNNING\nStart with: python tools/autoforge_api.py server\n",
-      "timestamp": "2026-02-09 00:31:02"
+      "timestamp": "2026-02-09 14:51:24"
     },
     {
       "test": "ac_alias",
       "status": "PASS",
       "message": "Legacy ac alias working",
       "output": "AutoForge server is NOT RUNNING\nStart with: python tools/autoforge_api.py server\n",
-      "timestamp": "2026-02-09 00:31:02"
+      "timestamp": "2026-02-09 14:51:25"
     },
     {
       "test": "error_handling_bad_command",
       "status": "PASS",
       "message": "Command failed as expected",
       "output": "",
-      "timestamp": "2026-02-09 00:31:03"
+      "timestamp": "2026-02-09 14:51:25"
     }
   ]
 }

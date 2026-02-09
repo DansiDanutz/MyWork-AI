@@ -1,5 +1,5 @@
 {
-  "scan_time": "2026-02-09T00:30:23+00:00",
+  "scan_time": "2026-02-09T14:51:15+00:00",
   "repository": "/home/Memo1981/MyWork-AI",
   "total_findings": 45,
   "findings": [
@@ -20,7 +20,7 @@
     {
       "severity": "HIGH",
       "file": "tools/autoforge_api.py",
-      "line": 193,
+      "line": 199,
       "description": "Use of popen() - command injection risk",
       "code_snippet": "subprocess.Popen("
     },
@@ -69,23 +69,16 @@
     {
       "severity": "HIGH",
       "file": "tools/autocoder_api.py",
-      "line": 193,
+      "line": 199,
       "description": "Use of popen() - command injection risk",
       "code_snippet": "subprocess.Popen("
-    },
-    {
-      "severity": "HIGH",
-      "file": "tools/health_check.py",
-      "line": 1153,
-      "description": "subprocess with shell=True - command injection risk",
-      "code_snippet": "subprocess.run(result.fix_command, shell=True)"
     },
     {
       "severity": "CRITICAL",
       "file": "tools/brain_learner.py",
       "line": 386,
       "description": "Potential hardcoded API key or token",
-      "code_snippet": "(r\"ConnectionRefusedError\", \"Connection refused - check if service is running\"),"
+      "code_snippet": "(r\"ConnectionRefusedError\", \"Connection refused - check if service is running\"),  # SECURITY_SAFE: error pattern matching"
     },
     {
       "severity": "LOW",
@@ -118,7 +111,7 @@
     {
       "severity": "HIGH",
       "file": "tools/lint_watcher.py",
-      "line": 64,
+      "line": 72,
       "description": "Use of popen() - command injection risk",
       "code_snippet": "process = subprocess.Popen("
     },
@@ -135,13 +128,6 @@
       "line": 79,
       "description": "Print statement with key",
       "code_snippet": "print(f\"   - {key}\")"
-    },
-    {
-      "severity": "CRITICAL",
-      "file": "projects/ai-dashboard/backend/services/youtube_automation.py",
-      "line": 207,
-      "description": "Potential hardcoded API key or token",
-      "code_snippet": "voice_id: str = \"1bd001e7e50f421d891986aad5158bc8\","
     },
     {
       "severity": "LOW",
@@ -265,7 +251,7 @@
     {
       "severity": "HIGH",
       "file": "tools/security/code_scanner.py",
-      "line": 229,
+      "line": 236,
       "description": "Use of popen() - command injection risk",
       "code_snippet": "'scan_time': os.popen('date -Iseconds').read().strip(),"
     },
@@ -282,6 +268,20 @@
       "line": 411,
       "description": "Use of popen() - command injection risk",
       "code_snippet": "'scan_time': os.popen('date -Iseconds').read().strip(),"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/simulation/run_simulation.py",
+      "line": 660,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"\\nKey Metrics:\")"
+    },
+    {
+      "severity": "HIGH",
+      "file": "tools/simulation/run_simulation.py",
+      "line": 663,
+      "description": "String formatting in SQL query - SQL injection risk",
+      "code_snippet": "print(f\"Commission Rate: {(total_commissions/total_revenue*100):.2f}%\" if total_revenue > 0 else \"Commission Rate: 0%\")"
     },
     {
       "severity": "LOW",

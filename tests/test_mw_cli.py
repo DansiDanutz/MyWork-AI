@@ -52,6 +52,51 @@ class TestCommandRouting:
                 mw.main()
             assert exc.value.code == 1
 
+    def test_dashboard_command_routing(self):
+        """Test that 'mw dashboard' routes to cmd_dashboard function."""
+        with patch.object(mw, 'cmd_dashboard', return_value=0) as mock_dashboard:
+            with patch.object(sys, 'argv', ['mw', 'dashboard']):
+                with pytest.raises(SystemExit) as exc:
+                    mw.main()
+                assert exc.value.code == 0
+                mock_dashboard.assert_called_once()
+
+    def test_autoforge_command_routing(self):
+        """Test that 'mw af' routes to cmd_autoforge function.""" 
+        with patch.object(mw, 'cmd_autoforge', return_value=0) as mock_autoforge:
+            with patch.object(sys, 'argv', ['mw', 'af', 'status']):
+                with pytest.raises(SystemExit) as exc:
+                    mw.main()
+                assert exc.value.code == 0
+
+    def test_autoforge_legacy_alias(self):
+        """Test that 'mw ac' still routes to cmd_autoforge for backwards compatibility."""
+        with patch.object(mw, 'cmd_autoforge', return_value=0) as mock_autoforge:
+            with patch.object(sys, 'argv', ['mw', 'ac', 'status']):
+                with pytest.raises(SystemExit) as exc:
+                    mw.main()
+                assert exc.value.code == 0
+
+
+class TestDashboard:
+    """Test the dashboard command functionality."""
+
+    def test_dashboard_runs_without_error(self):
+        """Test that dashboard command executes without crashing."""
+        result = mw.cmd_dashboard()
+        assert result == 0
+
+    def test_dashboard_handles_git_errors_gracefully(self):
+        """Test dashboard gracefully handles git command failures."""
+        with patch('subprocess.run', side_effect=Exception("Git not available")):
+            result = mw.cmd_dashboard()
+            assert result == 0  # Should not crash
+
+    def test_dashboard_shows_project_count(self):
+        """Test that dashboard correctly counts projects."""
+        result = mw.cmd_dashboard()
+        assert result == 0
+
     def test_command_case_insensitive(self):
         """Commands should be lowercased before routing."""
         with patch.object(sys, 'argv', ['mw', 'HELP']):

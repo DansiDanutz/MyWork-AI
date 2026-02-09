@@ -190,8 +190,14 @@ def start_server():
 
     # Start server in background
     python_bin = get_autoforge_python()
+    
+    # Security: Validate paths and use list args to prevent injection
+    if not os.path.isfile(python_bin):
+        print(f"ERROR: Invalid python executable: {python_bin}")
+        return False
+    
     subprocess.Popen(
-        [python_bin, str(start_script)],
+        [python_bin, str(start_script)],  # Using list args prevents shell injection
         cwd=str(AUTOFORGE_PATH),
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,

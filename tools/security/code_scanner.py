@@ -126,7 +126,7 @@ class CodeSecurityScanner:
                 for pattern, description in config['patterns']:
                     if re.search(pattern, line, re.IGNORECASE):
                         # Filter out obvious false positives
-                        if self._is_false_positive(line, pattern, category):
+                        if self._is_false_positive(line, pattern, category, file_path):
                             continue
                             
                         finding = SecurityFinding(
@@ -140,9 +140,16 @@ class CodeSecurityScanner:
 
         return findings
 
-    def _is_false_positive(self, line: str, pattern: str, category: str) -> bool:
+    def _is_false_positive(self, line: str, pattern: str, category: str, file_path: Path = None) -> bool:
         """Filter out obvious false positives."""
         line_lower = line.lower()
+        
+        # Skip the scanner's own file to avoid false positives from pattern definitions
+        if file_path and file_path.name == 'code_scanner.py':
+            if category in ['code_injection', 'command_injection', 'insecure_http']:
+                # Skip patterns that are just definitions in the scanner itself
+                if any(word in line_lower for word in ['patterns', 'severity', 'description']):
+                    return True
         
         # Skip obvious examples, tests, and documentation
         if any(word in line_lower for word in ['example', 'test', 'demo', 'placeholder', 'xxx', 'yyy']):

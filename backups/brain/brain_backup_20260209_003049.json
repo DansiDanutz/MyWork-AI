@@ -1,0 +1,92 @@
+{
+  "backup_info": {
+    "created_at": "2026-02-09T00:30:49.801868",
+    "source": "/home/Memo1981/MyWork-AI/.planning/brain_data.json",
+    "entry_count": 7,
+    "brain_version": "1.0"
+  },
+  "brain_data": {
+    "version": "1.0",
+    "last_updated": "2026-02-09T00:30:49.801878",
+    "entry_count": 7,
+    "entries": [
+      {
+        "id": "lesson-001",
+        "type": "lesson",
+        "content": "Always test code changes before committing to avoid breaking production",
+        "context": "Learned from MyWork-AI framework overhaul",
+        "status": "TESTED",
+        "date_added": "2026-02-09",
+        "date_updated": "2026-02-09",
+        "tags": [],
+        "references": 0
+      },
+      {
+        "id": "lesson-002",
+        "type": "lesson",
+        "content": "Always backup AND test restore before major deployments",
+        "context": "Learned from production outage on 2024-01-15",
+        "status": "TESTED",
+        "date_added": "2026-02-09",
+        "date_updated": "2026-02-09",
+        "tags": [],
+        "references": 0
+      },
+      {
+        "id": "pattern-001",
+        "type": "pattern",
+        "content": "API Rate Limiting Pattern",
+        "context": "",
+        "status": "TESTED",
+        "date_added": "2026-02-09",
+        "date_updated": "2026-02-09",
+        "tags": [],
+        "references": 0
+      },
+      {
+        "id": "antipattern-001",
+        "type": "antipattern",
+        "content": "Never commit secrets to git",
+        "context": "",
+        "status": "TESTED",
+        "date_added": "2026-02-09",
+        "date_updated": "2026-02-09",
+        "tags": [],
+        "references": 0
+      },
+      {
+        "id": "tip-001",
+        "type": "tip",
+        "content": "Use `git stash` to temporarily save uncommitted changes",
+        "context": "",
+        "status": "TESTED",
+        "date_added": "2026-02-09",
+        "date_updated": "2026-02-09",
+        "tags": [],
+        "references": 0
+      },
+      {
+        "id": "insight-001",
+        "type": "insight",
+        "content": "Microservices work better with event-driven architecture",
+        "context": "",
+        "status": "TESTED",
+        "date_added": "2026-02-09",
+        "date_updated": "2026-02-09",
+        "tags": [],
+        "references": 0
+      },
+      {
+        "id": "experiment-001",
+        "type": "experiment",
+        "content": "Try using WebAssembly for CPU-intensive frontend operations",
+        "context": "",
+        "status": "TESTED",
+        "date_added": "2026-02-09",
+        "date_updated": "2026-02-09",
+        "tags": [],
+        "references": 0
+      }
+    ]
+  }
+}

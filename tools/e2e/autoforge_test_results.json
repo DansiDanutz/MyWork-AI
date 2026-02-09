@@ -1,6 +1,6 @@
 {
   "test_suite": "AutoForge Integration E2E Tests",
-  "timestamp": "2026-02-09 00:31:40",
+  "timestamp": "2026-02-09 14:51:32",
   "summary": {
     "total_tests": 14,
     "passed": 14,
@@ -21,98 +21,98 @@
       "status": "PASS",
       "message": "autoforge_api.py exists",
       "output": "",
-      "timestamp": "2026-02-09 00:31:36"
+      "timestamp": "2026-02-09 14:51:28"
     },
     {
       "test": "file_exists_autoforge_service",
       "status": "PASS",
       "message": "autoforge_service.py exists",
       "output": "",
-      "timestamp": "2026-02-09 00:31:36"
+      "timestamp": "2026-02-09 14:51:28"
     },
     {
       "test": "file_exists_autocoder_api",
       "status": "PASS",
       "message": "autocoder_api.py (symlink) exists -> autoforge_api.py",
       "output": "",
-      "timestamp": "2026-02-09 00:31:36"
+      "timestamp": "2026-02-09 14:51:28"
     },
     {
       "test": "file_exists_mw",
       "status": "PASS",
       "message": "mw.py exists",
       "output": "",
-      "timestamp": "2026-02-09 00:31:36"
+      "timestamp": "2026-02-09 14:51:28"
     },
     {
       "test": "autoforge_imports",
       "status": "PASS",
       "message": "Imported successfully, found: ['main']",
       "output": "",
-      "timestamp": "2026-02-09 00:31:36"
+      "timestamp": "2026-02-09 14:51:28"
     },
     {
       "test": "autoforge_api_status",
       "status": "PASS",
       "message": "Status command executed",
       "output": "AutoForge server is NOT RUNNING\nStart with: python tools/autoforge_api.py server\n",
-      "timestamp": "2026-02-09 00:31:37"
+      "timestamp": "2026-02-09 14:51:28"
     },
     {
       "test": "autoforge_api_help",
       "status": "PASS",
       "message": "Help shows AutoForge info",
       "output": "",
-      "timestamp": "2026-02-09 00:31:37"
+      "timestamp": "2026-02-09 14:51:29"
     },
     {
       "test": "backwards_compat_link",
       "status": "PASS",
       "message": "autocoder_api.py -> autoforge_api.py",
       "output": "",
-      "timestamp": "2026-02-09 00:31:37"
+      "timestamp": "2026-02-09 14:51:29"
     },
     {
       "test": "backwards_compat_run",
       "status": "PASS",
       "message": "autocoder_api.py works via symlink",
       "output": "",
-      "timestamp": "2026-02-09 00:31:37"
+      "timestamp": "2026-02-09 14:51:29"
     },
     {
       "test": "mw_af_status",
       "status": "PASS",
       "message": "mw af status works",
       "output": "AutoForge server is NOT RUNNING\nStart with: python tools/autoforge_api.py server\n",
-      "timestamp": "2026-02-09 00:31:38"
+      "timestamp": "2026-02-09 14:51:30"
     },
     {
       "test": "mw_af_help",
       "status": "PASS",
       "message": "mw af list works",
       "output": "",
-      "timestamp": "2026-02-09 00:31:39"
+      "timestamp": "2026-02-09 14:51:30"
     },
     {
       "test": "mw_ac_status",
       "status": "PASS",
       "message": "mw ac status (legacy) works",
       "output": "AutoForge server is NOT RUNNING\nStart with: python tools/autoforge_api.py server\n",
-      "timestamp": "2026-02-09 00:31:39"
+      "timestamp": "2026-02-09 14:51:31"
     },
     {
       "test": "autoforge_service",
       "status": "PASS",
       "message": "autoforge_service.py help works",
       "output": "",
-      "timestamp": "2026-02-09 00:31:39"
+      "timestamp": "2026-02-09 14:51:31"
     },
     {
       "test": "integration_workflow",
       "status": "PASS",
       "message": "Multiple AutoForge interfaces work (2/2)",
       "output": "",
-      "timestamp": "2026-02-09 00:31:40"
+      "timestamp": "2026-02-09 14:51:32"
     }
   ]
 }

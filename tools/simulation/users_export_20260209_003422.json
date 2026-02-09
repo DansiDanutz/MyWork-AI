@@ -1,0 +1,2295 @@
+{
+  "users": {
+    "user_0001": {
+      "user_id": "user_0001",
+      "name": "Joshua Lewis",
+      "email": "joshua.lewis@hotmail.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 3.34,
+      "referral_code": "JOS9841",
+      "referred_by": null,
+      "created_at": "2026-02-09T00:34:22.917440",
+      "last_activity": "2026-02-09T00:34:22.918070",
+      "total_purchases": 44.49,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 1
+    },
+    "user_0002": {
+      "user_id": "user_0002",
+      "name": "Logan Green",
+      "email": "logan.green@gmail.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 4.74,
+      "referral_code": "LOG3060",
+      "referred_by": null,
+      "created_at": "2026-02-09T00:34:22.917484",
+      "last_activity": "2026-02-09T00:34:22.918100",
+      "total_purchases": 16.84,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 1
+    },
+    "user_0003": {
+      "user_id": "user_0003",
+      "name": "Olivia Hall",
+      "email": "olivia.hall@fastmail.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 988.31,
+      "referral_code": "OLI5620",
+      "referred_by": null,
+      "created_at": "2026-02-09T00:34:22.917505",
+      "last_activity": "2026-02-09T00:34:22.918133",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 1
+    },
+    "user_0004": {
+      "user_id": "user_0004",
+      "name": "Victoria Green",
+      "email": "victoria.green834@duck.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 91.49,
+      "referral_code": "VIC4051",
+      "referred_by": null,
+      "created_at": "2026-02-09T00:34:22.917526",
+      "last_activity": "2026-02-09T00:34:22.918189",
+      "total_purchases": 173.08,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 2
+    },
+    "user_0005": {
+      "user_id": "user_0005",
+      "name": "Jack Lee",
+      "email": "jack.lee@zoho.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 776.04,
+      "referral_code": "JAC9681",
+      "referred_by": null,
+      "created_at": "2026-02-09T00:34:22.917541",
+      "last_activity": "2026-02-09T00:34:22.918256",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 4,
+      "referrals_made": 2
+    },
+    "user_0006": {
+      "user_id": "user_0006",
+      "name": "Lily Evans",
+      "email": "lily.evans@icloud.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 314.63,
+      "referral_code": "LIL3658",
+      "referred_by": null,
+      "created_at": "2026-02-09T00:34:22.917557",
+      "last_activity": "2026-02-09T00:34:22.918363",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 4
+    },
+    "user_0007": {
+      "user_id": "user_0007",
+      "name": "Lucas Roberts",
+      "email": "lucas.roberts@zoho.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 41.33,
+      "referral_code": "LUC2226",
+      "referred_by": null,
+      "created_at": "2026-02-09T00:34:22.917570",
+      "last_activity": "2026-02-09T00:34:22.918403",
+      "total_purchases": 26.54,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 1
+    },
+    "user_0008": {
+      "user_id": "user_0008",
+      "name": "Jacob Anderson",
+      "email": "jacob.anderson@duck.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 169.96,
+      "referral_code": "JAC7009",
+      "referred_by": null,
+      "created_at": "2026-02-09T00:34:22.917583",
+      "last_activity": "2026-02-09T00:34:22.918414",
+      "total_purchases": 121.21,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 1
+    },
+    "user_0009": {
+      "user_id": "user_0009",
+      "name": "Charlotte Nguyen",
+      "email": "charlotte.nguyen@outlook.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 179.2,
+      "referral_code": "CHA1752",
+      "referred_by": null,
+      "created_at": "2026-02-09T00:34:22.917608",
+      "last_activity": "2026-02-09T00:34:22.918464",
+      "total_purchases": 198.23,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 2
+    },
+    "user_0010": {
+      "user_id": "user_0010",
+      "name": "Grace Garcia",
+      "email": "grace.garcia@duck.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 96.4,
+      "referral_code": "GRA5986",
+      "referred_by": null,
+      "created_at": "2026-02-09T00:34:22.917629",
+      "last_activity": "2026-02-09T00:34:22.918550",
+      "total_purchases": 68.07,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 2
+    },
+    "user_0011": {
+      "user_id": "user_0011",
+      "name": "Scarlett Jones",
+      "email": "scarlett.jones104@zoho.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 92.19,
+      "referral_code": "SCA3555",
+      "referred_by": null,
+      "created_at": "2026-02-09T00:34:22.917670",
+      "last_activity": "2026-02-09T00:34:22.918607",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 2,
+      "referrals_made": 2
+    },
+    "user_0012": {
+      "user_id": "user_0012",
+      "name": "Casey Taylor",
+      "email": "casey.taylor@hotmail.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 179.25,
+      "referral_code": "CAS2061",
+      "referred_by": null,
+      "created_at": "2026-02-09T00:34:22.917692",
+      "last_activity": "2026-02-09T00:34:22.918705",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 3
+    },
+    "user_0013": {
+      "user_id": "user_0013",
+      "name": "Emma Torres",
+      "email": "emma.torres378@gmail.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 2.2,
+      "referral_code": "EMM4905",
+      "referred_by": null,
+      "created_at": "2026-02-09T00:34:22.917714",
+      "last_activity": "2026-02-09T00:34:22.918798",
+      "total_purchases": 33.01,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 2
+    },
+    "user_0014": {
+      "user_id": "user_0014",
+      "name": "Avery Johnson",
+      "email": "avery.johnson@fastmail.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 87.25,
+      "referral_code": "AVE4402",
+      "referred_by": null,
+      "created_at": "2026-02-09T00:34:22.917742",
+      "last_activity": "2026-02-09T00:34:22.918852",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 3
+    },
+    "user_0015": {
+      "user_id": "user_0015",
+      "name": "Zoe Carter",
+      "email": "zoe.carter@protonmail.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 146.33,
+      "referral_code": "ZOE2378",
+      "referred_by": null,
+      "created_at": "2026-02-09T00:34:22.917762",
+      "last_activity": "2026-02-09T00:34:22.918938",
+      "total_purchases": 85.1,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 4
+    },
+    "user_0016": {
+      "user_id": "user_0016",
+      "name": "Jacob Phillips",
+      "email": "jacob.phillips@fastmail.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 93.56,
+      "referral_code": "JAC2701",
+      "referred_by": "LOG3060",
+      "created_at": "2026-02-09T00:34:22.917787",
+      "last_activity": "2026-02-09T00:34:22.919052",
+      "total_purchases": 189.09,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 4
+    },
+    "user_0017": {
+      "user_id": "user_0017",
+      "name": "Chloe Miller",
+      "email": "chloe.miller@icloud.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 211.21,
+      "referral_code": "CHL7837",
+      "referred_by": "JAC7009",
+      "created_at": "2026-02-09T00:34:22.917811",
+      "last_activity": "2026-02-09T00:34:22.919075",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 2
+    },
+    "user_0018": {
+      "user_id": "user_0018",
+      "name": "Daniel Garcia",
+      "email": "daniel.garcia@duck.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 828.7,
+      "referral_code": "DAN1149",
+      "referred_by": "SCA3555",
+      "created_at": "2026-02-09T00:34:22.917833",
+      "last_activity": "2026-02-09T00:34:22.919101",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 1,
+      "referrals_made": 2
+    },
+    "user_0019": {
+      "user_id": "user_0019",
+      "name": "Emma Perez",
+      "email": "emma.perez@hotmail.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 178.73,
+      "referral_code": "EMM8912",
+      "referred_by": "LIL3658",
+      "created_at": "2026-02-09T00:34:22.917854",
+      "last_activity": "2026-02-09T00:34:22.919152",
+      "total_purchases": 75.74,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 2
+    },
+    "user_0020": {
+      "user_id": "user_0020",
+      "name": "Liam Miller",
+      "email": "liam.miller@duck.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 99.37,
+      "referral_code": "LIA8484",
+      "referred_by": "JAC9681",
+      "created_at": "2026-02-09T00:34:22.917874",
+      "last_activity": "2026-02-09T00:34:22.919187",
+      "total_purchases": 48.21,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 1
+    },
+    "user_0021": {
+      "user_id": "user_0021",
+      "name": "Logan Campbell",
+      "email": "logan.campbell534@outlook.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 23.81,
+      "referral_code": "LOG9651",
+      "referred_by": "AVE4402",
+      "created_at": "2026-02-09T00:34:22.917894",
+      "last_activity": "2026-02-09T00:34:22.919217",
+      "total_purchases": 266.68,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0022": {
+      "user_id": "user_0022",
+      "name": "Chloe Young",
+      "email": "chloe.young@duck.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 95.16,
+      "referral_code": "CHL5411",
+      "referred_by": "CHA1752",
+      "created_at": "2026-02-09T00:34:22.917907",
+      "last_activity": "2026-02-09T00:34:22.919250",
+      "total_purchases": 150.06,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 1
+    },
+    "user_0023": {
+      "user_id": "user_0023",
+      "name": "Emma Walker",
+      "email": "emma.walker@yahoo.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 155.33,
+      "referral_code": "EMM7986",
+      "referred_by": "DAN1149",
+      "created_at": "2026-02-09T00:34:22.917921",
+      "last_activity": "2026-02-09T00:34:22.919290",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 2
+    },
+    "user_0024": {
+      "user_id": "user_0024",
+      "name": "Logan Nelson",
+      "email": "logan.nelson@duck.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 309.62,
+      "referral_code": "LOG2237",
+      "referred_by": "CHL7837",
+      "created_at": "2026-02-09T00:34:22.917935",
+      "last_activity": "2026-02-09T00:34:22.919300",
+      "total_purchases": 49.9,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0025": {
+      "user_id": "user_0025",
+      "name": "Ethan White",
+      "email": "ethan.white106@duck.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 210.11,
+      "referral_code": "ETH2503",
+      "referred_by": "JOS9841",
+      "created_at": "2026-02-09T00:34:22.917963",
+      "last_activity": "2026-02-09T00:34:22.919328",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 1
+    },
+    "user_0026": {
+      "user_id": "user_0026",
+      "name": "Owen Perez",
+      "email": "owen.perez@protonmail.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 128.47,
+      "referral_code": "OWE8938",
+      "referred_by": "OLI5620",
+      "created_at": "2026-02-09T00:34:22.918124",
+      "last_activity": "2026-02-09T00:34:22.918129",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0027": {
+      "user_id": "user_0027",
+      "name": "Avery Young",
+      "email": "avery.young465@duck.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 439.28,
+      "referral_code": "AVE3865",
+      "referred_by": "VIC4051",
+      "created_at": "2026-02-09T00:34:22.918164",
+      "last_activity": "2026-02-09T00:34:22.918168",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0028": {
+      "user_id": "user_0028",
+      "name": "Chloe Harris",
+      "email": "chloe.harris@aol.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 251.13,
+      "referral_code": "CHL2437",
+      "referred_by": "VIC4051",
+      "created_at": "2026-02-09T00:34:22.918183",
+      "last_activity": "2026-02-09T00:34:22.918187",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0029": {
+      "user_id": "user_0029",
+      "name": "Mia Sanchez",
+      "email": "mia.sanchez@outlook.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 188.64,
+      "referral_code": "MIA7909",
+      "referred_by": "JAC9681",
+      "created_at": "2026-02-09T00:34:22.918224",
+      "last_activity": "2026-02-09T00:34:22.918229",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0030": {
+      "user_id": "user_0030",
+      "name": "Noah Davis",
+      "email": "noah.davis@gmail.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 308.38,
+      "referral_code": "NOA9124",
+      "referred_by": "LIL3658",
+      "created_at": "2026-02-09T00:34:22.918286",
+      "last_activity": "2026-02-09T00:34:22.918293",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0031": {
+      "user_id": "user_0031",
+      "name": "Chloe Rodriguez",
+      "email": "chloe.rodriguez622@zoho.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 655.59,
+      "referral_code": "CHL9945",
+      "referred_by": "LIL3658",
+      "created_at": "2026-02-09T00:34:22.918325",
+      "last_activity": "2026-02-09T00:34:22.918331",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0032": {
+      "user_id": "user_0032",
+      "name": "Riley Robinson",
+      "email": "riley.robinson219@yahoo.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 257.96,
+      "referral_code": "RIL1281",
+      "referred_by": "LIL3658",
+      "created_at": "2026-02-09T00:34:22.918352",
+      "last_activity": "2026-02-09T00:34:22.918360",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0033": {
+      "user_id": "user_0033",
+      "name": "Jamie Young",
+      "email": "jamie.young@hotmail.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 191.6,
+      "referral_code": "JAM6414",
+      "referred_by": "LUC2226",
+      "created_at": "2026-02-09T00:34:22.918384",
+      "last_activity": "2026-02-09T00:34:22.918387",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0034": {
+      "user_id": "user_0034",
+      "name": "Henry Nelson",
+      "email": "henry.nelson942@protonmail.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 296.45,
+      "referral_code": "HEN8711",
+      "referred_by": "CHA1752",
+      "created_at": "2026-02-09T00:34:22.918458",
+      "last_activity": "2026-02-09T00:34:22.918461",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0035": {
+      "user_id": "user_0035",
+      "name": "Wyatt Perez",
+      "email": "wyatt.perez@aol.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 874.52,
+      "referral_code": "WYA7077",
+      "referred_by": "GRA5986",
+      "created_at": "2026-02-09T00:34:22.918486",
+      "last_activity": "2026-02-09T00:34:22.918493",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0036": {
+      "user_id": "user_0036",
+      "name": "Amelia Hill",
+      "email": "amelia.hill@hotmail.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 794.08,
+      "referral_code": "AME8438",
+      "referred_by": "GRA5986",
+      "created_at": "2026-02-09T00:34:22.918527",
+      "last_activity": "2026-02-09T00:34:22.918536",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0037": {
+      "user_id": "user_0037",
+      "name": "Jordan Hill",
+      "email": "jordan.hill@zoho.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 355.35,
+      "referral_code": "JOR7897",
+      "referred_by": "SCA3555",
+      "created_at": "2026-02-09T00:34:22.918597",
+      "last_activity": "2026-02-09T00:34:22.918603",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0038": {
+      "user_id": "user_0038",
+      "name": "Ava Martin",
+      "email": "ava.martin@fastmail.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 406.76,
+      "referral_code": "AVA3946",
+      "referred_by": "CAS2061",
+      "created_at": "2026-02-09T00:34:22.918627",
+      "last_activity": "2026-02-09T00:34:22.918632",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0039": {
+      "user_id": "user_0039",
+      "name": "Sophia Gomez",
+      "email": "sophia.gomez15@outlook.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 147.97,
+      "referral_code": "SOP3309",
+      "referred_by": "CAS2061",
+      "created_at": "2026-02-09T00:34:22.918661",
+      "last_activity": "2026-02-09T00:34:22.918667",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0040": {
+      "user_id": "user_0040",
+      "name": "Sebastian Taylor",
+      "email": "sebastian.taylor@zoho.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 418.38,
+      "referral_code": "SEB9659",
+      "referred_by": "CAS2061",
+      "created_at": "2026-02-09T00:34:22.918689",
+      "last_activity": "2026-02-09T00:34:22.918695",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0041": {
+      "user_id": "user_0041",
+      "name": "Elizabeth Scott",
+      "email": "elizabeth.scott@outlook.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 24.61,
+      "referral_code": "ELI9416",
+      "referred_by": "EMM4905",
+      "created_at": "2026-02-09T00:34:22.918727",
+      "last_activity": "2026-02-09T00:34:22.918732",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0042": {
+      "user_id": "user_0042",
+      "name": "Michael Johnson",
+      "email": "michael.johnson@icloud.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 139.19,
+      "referral_code": "MIC4305",
+      "referred_by": "EMM4905",
+      "created_at": "2026-02-09T00:34:22.918787",
+      "last_activity": "2026-02-09T00:34:22.918794",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0043": {
+      "user_id": "user_0043",
+      "name": "Sebastian Lewis",
+      "email": "sebastian.lewis851@yahoo.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 986.98,
+      "referral_code": "SEB8930",
+      "referred_by": "AVE4402",
+      "created_at": "2026-02-09T00:34:22.918823",
+      "last_activity": "2026-02-09T00:34:22.918832",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0044": {
+      "user_id": "user_0044",
+      "name": "Lily Scott",
+      "email": "lily.scott@hotmail.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 183.82,
+      "referral_code": "LIL1986",
+      "referred_by": "AVE4402",
+      "created_at": "2026-02-09T00:34:22.918846",
+      "last_activity": "2026-02-09T00:34:22.918850",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0045": {
+      "user_id": "user_0045",
+      "name": "Jackson Martin",
+      "email": "jackson.martin@gmail.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 207.53,
+      "referral_code": "JAC2638",
+      "referred_by": "ZOE2378",
+      "created_at": "2026-02-09T00:34:22.918866",
+      "last_activity": "2026-02-09T00:34:22.918873",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0046": {
+      "user_id": "user_0046",
+      "name": "Alex Green",
+      "email": "alex.green535@icloud.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 177.1,
+      "referral_code": "ALE9409",
+      "referred_by": "ZOE2378",
+      "created_at": "2026-02-09T00:34:22.918888",
+      "last_activity": "2026-02-09T00:34:22.918892",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0047": {
+      "user_id": "user_0047",
+      "name": "Zoe Flores",
+      "email": "zoe.flores@duck.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 244.14,
+      "referral_code": "ZOE4942",
+      "referred_by": "ZOE2378",
+      "created_at": "2026-02-09T00:34:22.918907",
+      "last_activity": "2026-02-09T00:34:22.918911",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0048": {
+      "user_id": "user_0048",
+      "name": "Daniel Gonzalez",
+      "email": "daniel.gonzalez@fastmail.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 280.96,
+      "referral_code": "DAN4217",
+      "referred_by": "ZOE2378",
+      "created_at": "2026-02-09T00:34:22.918924",
+      "last_activity": "2026-02-09T00:34:22.918927",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0049": {
+      "user_id": "user_0049",
+      "name": "Evelyn Thompson",
+      "email": "evelyn.thompson@fastmail.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 180.45,
+      "referral_code": "EVE5325",
+      "referred_by": "JAC2701",
+      "created_at": "2026-02-09T00:34:22.918960",
+      "last_activity": "2026-02-09T00:34:22.918964",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0050": {
+      "user_id": "user_0050",
+      "name": "Aria Jones",
+      "email": "aria.jones@aol.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 153.08,
+      "referral_code": "ARI9458",
+      "referred_by": "JAC2701",
+      "created_at": "2026-02-09T00:34:22.919000",
+      "last_activity": "2026-02-09T00:34:22.919004",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0051": {
+      "user_id": "user_0051",
+      "name": "Scarlett Lewis",
+      "email": "scarlett.lewis754@duck.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 811.4,
+      "referral_code": "SCA8051",
+      "referred_by": "JAC2701",
+      "created_at": "2026-02-09T00:34:22.919018",
+      "last_activity": "2026-02-09T00:34:22.919021",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0052": {
+      "user_id": "user_0052",
+      "name": "Lucas Nguyen",
+      "email": "lucas.nguyen962@hotmail.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 152.65,
+      "referral_code": "LUC3516",
+      "referred_by": "JAC2701",
+      "created_at": "2026-02-09T00:34:22.919035",
+      "last_activity": "2026-02-09T00:34:22.919039",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0053": {
+      "user_id": "user_0053",
+      "name": "Olivia Gomez",
+      "email": "olivia.gomez590@fastmail.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 421.79,
+      "referral_code": "OLI1988",
+      "referred_by": "CHL7837",
+      "created_at": "2026-02-09T00:34:22.919068",
+      "last_activity": "2026-02-09T00:34:22.919072",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0054": {
+      "user_id": "user_0054",
+      "name": "Elizabeth Wright",
+      "email": "elizabeth.wright@aol.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 134.97,
+      "referral_code": "ELI2481",
+      "referred_by": "DAN1149",
+      "created_at": "2026-02-09T00:34:22.919095",
+      "last_activity": "2026-02-09T00:34:22.919099",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0055": {
+      "user_id": "user_0055",
+      "name": "Morgan Harris",
+      "email": "morgan.harris310@aol.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 624.34,
+      "referral_code": "MOR2155",
+      "referred_by": "EMM8912",
+      "created_at": "2026-02-09T00:34:22.919116",
+      "last_activity": "2026-02-09T00:34:22.919119",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0056": {
+      "user_id": "user_0056",
+      "name": "Olivia Flores",
+      "email": "olivia.flores248@zoho.com",
+      "role": "UserRole.AFFILIATE",
+      "credits_balance": 63.66,
+      "referral_code": "OLI2238",
+      "referred_by": "EMM8912",
+      "created_at": "2026-02-09T00:34:22.919134",
+      "last_activity": "2026-02-09T00:34:22.919137",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0057": {
+      "user_id": "user_0057",
+      "name": "Jacob Johnson",
+      "email": "jacob.johnson823@hotmail.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 280.08,
+      "referral_code": "JAC6341",
+      "referred_by": "LIA8484",
+      "created_at": "2026-02-09T00:34:22.919176",
+      "last_activity": "2026-02-09T00:34:22.919179",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0058": {
+      "user_id": "user_0058",
+      "name": "Sofia Brown",
+      "email": "sofia.brown@aol.com",
+      "role": "UserRole.BUYER",
+      "credits_balance": 119.47,
+      "referral_code": "SOF8893",
+      "referred_by": "CHL5411",
+      "created_at": "2026-02-09T00:34:22.919237",
+      "last_activity": "2026-02-09T00:34:22.919241",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0059": {
+      "user_id": "user_0059",
+      "name": "Elizabeth Williams",
+      "email": "elizabeth.williams@gmail.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 987.83,
+      "referral_code": "ELI6877",
+      "referred_by": "EMM7986",
+      "created_at": "2026-02-09T00:34:22.919268",
+      "last_activity": "2026-02-09T00:34:22.919272",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0060": {
+      "user_id": "user_0060",
+      "name": "Emily Sanchez",
+      "email": "emily.sanchez@yahoo.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 117.83,
+      "referral_code": "EMI2796",
+      "referred_by": "EMM7986",
+      "created_at": "2026-02-09T00:34:22.919285",
+      "last_activity": "2026-02-09T00:34:22.919288",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    },
+    "user_0061": {
+      "user_id": "user_0061",
+      "name": "Jaxon Hill",
+      "email": "jaxon.hill598@duck.com",
+      "role": "UserRole.SELLER",
+      "credits_balance": 787.33,
+      "referral_code": "JAX2691",
+      "referred_by": "ETH2503",
+      "created_at": "2026-02-09T00:34:22.919314",
+      "last_activity": "2026-02-09T00:34:22.919318",
+      "total_purchases": 0.0,
+      "total_sales": 0.0,
+      "total_commissions": 0.0,
+      "products_listed": 0,
+      "referrals_made": 0
+    }
+  },
+  "action_log": [
+    {
+      "timestamp": "2026-02-09T00:34:22.917458",
+      "user_id": "user_0001",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917489",
+      "user_id": "user_0002",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917510",
+      "user_id": "user_0003",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917529",
+      "user_id": "user_0004",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917546",
+      "user_id": "user_0005",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917561",
+      "user_id": "user_0006",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917574",
+      "user_id": "user_0007",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917589",
+      "user_id": "user_0008",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917614",
+      "user_id": "user_0009",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917651",
+      "user_id": "user_0010",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917676",
+      "user_id": "user_0011",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917697",
+      "user_id": "user_0012",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917720",
+      "user_id": "user_0013",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917748",
+      "user_id": "user_0014",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917768",
+      "user_id": "user_0015",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": null
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917793",
+      "user_id": "user_0016",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": "LOG3060"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917817",
+      "user_id": "user_0017",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "JAC7009"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917839",
+      "user_id": "user_0018",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": "SCA3555"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917860",
+      "user_id": "user_0019",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": "LIL3658"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917881",
+      "user_id": "user_0020",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "JAC9681"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917897",
+      "user_id": "user_0021",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "AVE4402"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917912",
+      "user_id": "user_0022",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "CHA1752"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917925",
+      "user_id": "user_0023",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": "DAN1149"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917941",
+      "user_id": "user_0024",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "CHL7837"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.917969",
+      "user_id": "user_0025",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": "JOS9841"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918027",
+      "user_id": "user_0001",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_2363",
+        "amount": 20.96,
+        "remaining_balance": 26.87
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918045",
+      "user_id": "user_0001",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_8542",
+        "amount": 23.53,
+        "remaining_balance": 3.34
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918054",
+      "user_id": "user_0001",
+      "action": "purchase_failed",
+      "details": {
+        "product_id": "prod_4223",
+        "amount": 3.41,
+        "reason": "insufficient_credits",
+        "balance": 3.34
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918060",
+      "user_id": "user_0001",
+      "action": "purchase_failed",
+      "details": {
+        "product_id": "prod_5226",
+        "amount": 4.34,
+        "reason": "insufficient_credits",
+        "balance": 3.34
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918070",
+      "user_id": "user_0001",
+      "action": "purchase_failed",
+      "details": {
+        "product_id": "prod_4857",
+        "amount": 3.82,
+        "reason": "insufficient_credits",
+        "balance": 3.34
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918086",
+      "user_id": "user_0002",
+      "action": "browse",
+      "details": {
+        "category": "courses",
+        "browse_time_seconds": 485
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918094",
+      "user_id": "user_0002",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_5285",
+        "amount": 16.84,
+        "remaining_balance": 4.74
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918100",
+      "user_id": "user_0002",
+      "action": "purchase_failed",
+      "details": {
+        "product_id": "prod_4214",
+        "amount": 4.89,
+        "reason": "insufficient_credits",
+        "balance": 4.74
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918129",
+      "user_id": "user_0026",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "OLI5620"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918133",
+      "user_id": "user_0003",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0026",
+        "referral_code": "OLI5620"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918146",
+      "user_id": "user_0004",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_2069",
+        "amount": 173.08,
+        "remaining_balance": 91.49
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918168",
+      "user_id": "user_0027",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "VIC4051"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918171",
+      "user_id": "user_0004",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0027",
+        "referral_code": "VIC4051"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918187",
+      "user_id": "user_0028",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "VIC4051"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918189",
+      "user_id": "user_0004",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0028",
+        "referral_code": "VIC4051"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918203",
+      "user_id": "user_0005",
+      "action": "list_product",
+      "details": {
+        "product_id": "prod_37677",
+        "product_name": "Digital Course",
+        "price": 80.24
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918212",
+      "user_id": "user_0005",
+      "action": "list_product",
+      "details": {
+        "product_id": "prod_55226",
+        "product_name": "Template",
+        "price": 343.81
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918229",
+      "user_id": "user_0029",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": "JAC9681"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918233",
+      "user_id": "user_0005",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0029",
+        "referral_code": "JAC9681"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918247",
+      "user_id": "user_0005",
+      "action": "list_product",
+      "details": {
+        "product_id": "prod_21517",
+        "product_name": "Digital Course",
+        "price": 15.23
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918256",
+      "user_id": "user_0005",
+      "action": "list_product",
+      "details": {
+        "product_id": "prod_24499",
+        "product_name": "Digital Course",
+        "price": 472.03
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918269",
+      "user_id": "user_0006",
+      "action": "browse",
+      "details": {
+        "category": "electronics",
+        "browse_time_seconds": 75
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918293",
+      "user_id": "user_0030",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": "LIL3658"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918297",
+      "user_id": "user_0006",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0030",
+        "referral_code": "LIL3658"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918306",
+      "user_id": "user_0006",
+      "action": "browse",
+      "details": {
+        "category": "clothing",
+        "browse_time_seconds": 35
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918331",
+      "user_id": "user_0031",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": "LIL3658"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918334",
+      "user_id": "user_0006",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0031",
+        "referral_code": "LIL3658"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918360",
+      "user_id": "user_0032",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "LIL3658"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918363",
+      "user_id": "user_0006",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0032",
+        "referral_code": "LIL3658"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918372",
+      "user_id": "user_0007",
+      "action": "browse",
+      "details": {
+        "category": "electronics",
+        "browse_time_seconds": 266
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918387",
+      "user_id": "user_0033",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": "LUC2226"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918389",
+      "user_id": "user_0007",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0033",
+        "referral_code": "LUC2226"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918394",
+      "user_id": "user_0007",
+      "action": "browse",
+      "details": {
+        "category": "software",
+        "browse_time_seconds": 287
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918403",
+      "user_id": "user_0007",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_3686",
+        "amount": 26.54,
+        "remaining_balance": 41.33
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918414",
+      "user_id": "user_0008",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_6943",
+        "amount": 121.21,
+        "remaining_balance": 169.96
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918429",
+      "user_id": "user_0009",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_8552",
+        "amount": 60.29,
+        "remaining_balance": 317.14
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918437",
+      "user_id": "user_0009",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_5606",
+        "amount": 99.66,
+        "remaining_balance": 217.48
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918444",
+      "user_id": "user_0009",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_3010",
+        "amount": 38.28,
+        "remaining_balance": 179.2
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918461",
+      "user_id": "user_0034",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": "CHA1752"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918464",
+      "user_id": "user_0009",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0034",
+        "referral_code": "CHA1752"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918493",
+      "user_id": "user_0035",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": "GRA5986"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918496",
+      "user_id": "user_0010",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0035",
+        "referral_code": "GRA5986"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918504",
+      "user_id": "user_0010",
+      "action": "browse",
+      "details": {
+        "category": "software",
+        "browse_time_seconds": 369
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918536",
+      "user_id": "user_0036",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": "GRA5986"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918539",
+      "user_id": "user_0010",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0036",
+        "referral_code": "GRA5986"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918550",
+      "user_id": "user_0010",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_8622",
+        "amount": 68.07,
+        "remaining_balance": 96.4
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918566",
+      "user_id": "user_0011",
+      "action": "list_product",
+      "details": {
+        "product_id": "prod_16111",
+        "product_name": "Digital Course",
+        "price": 310.17
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918575",
+      "user_id": "user_0011",
+      "action": "list_product",
+      "details": {
+        "product_id": "prod_66848",
+        "product_name": "Software Tool",
+        "price": 253.49
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918603",
+      "user_id": "user_0037",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": "SCA3555"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918607",
+      "user_id": "user_0011",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0037",
+        "referral_code": "SCA3555"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918632",
+      "user_id": "user_0038",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "CAS2061"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918639",
+      "user_id": "user_0012",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0038",
+        "referral_code": "CAS2061"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918667",
+      "user_id": "user_0039",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": "CAS2061"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918670",
+      "user_id": "user_0012",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0039",
+        "referral_code": "CAS2061"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918695",
+      "user_id": "user_0040",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "CAS2061"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918698",
+      "user_id": "user_0012",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0040",
+        "referral_code": "CAS2061"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918705",
+      "user_id": "user_0012",
+      "action": "browse",
+      "details": {
+        "category": "courses",
+        "browse_time_seconds": 189
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918732",
+      "user_id": "user_0041",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": "EMM4905"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918736",
+      "user_id": "user_0013",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0041",
+        "referral_code": "EMM4905"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918748",
+      "user_id": "user_0013",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_2659",
+        "amount": 24.62,
+        "remaining_balance": 10.59
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918761",
+      "user_id": "user_0013",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_9546",
+        "amount": 8.39,
+        "remaining_balance": 2.2
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918794",
+      "user_id": "user_0042",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": "EMM4905"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918798",
+      "user_id": "user_0013",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0042",
+        "referral_code": "EMM4905"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918832",
+      "user_id": "user_0043",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": "AVE4402"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918835",
+      "user_id": "user_0014",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0043",
+        "referral_code": "AVE4402"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918850",
+      "user_id": "user_0044",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "AVE4402"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918852",
+      "user_id": "user_0014",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0044",
+        "referral_code": "AVE4402"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918873",
+      "user_id": "user_0045",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": "ZOE2378"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918876",
+      "user_id": "user_0015",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0045",
+        "referral_code": "ZOE2378"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918892",
+      "user_id": "user_0046",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": "ZOE2378"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918894",
+      "user_id": "user_0015",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0046",
+        "referral_code": "ZOE2378"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918911",
+      "user_id": "user_0047",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": "ZOE2378"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918913",
+      "user_id": "user_0015",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0047",
+        "referral_code": "ZOE2378"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918927",
+      "user_id": "user_0048",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": "ZOE2378"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918929",
+      "user_id": "user_0015",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0048",
+        "referral_code": "ZOE2378"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918938",
+      "user_id": "user_0015",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_5132",
+        "amount": 85.1,
+        "remaining_balance": 146.33
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918964",
+      "user_id": "user_0049",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "JAC2701"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.918967",
+      "user_id": "user_0016",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0049",
+        "referral_code": "JAC2701"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919004",
+      "user_id": "user_0050",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": "JAC2701"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919006",
+      "user_id": "user_0016",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0050",
+        "referral_code": "JAC2701"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919021",
+      "user_id": "user_0051",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": "JAC2701"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919024",
+      "user_id": "user_0016",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0051",
+        "referral_code": "JAC2701"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919039",
+      "user_id": "user_0052",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "JAC2701"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919044",
+      "user_id": "user_0016",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0052",
+        "referral_code": "JAC2701"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919052",
+      "user_id": "user_0016",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_3559",
+        "amount": 189.09,
+        "remaining_balance": 93.56
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919072",
+      "user_id": "user_0053",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": "CHL7837"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919075",
+      "user_id": "user_0017",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0053",
+        "referral_code": "CHL7837"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919084",
+      "user_id": "user_0018",
+      "action": "list_product",
+      "details": {
+        "product_id": "prod_95655",
+        "product_name": "Digital Course",
+        "price": 211.45
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919099",
+      "user_id": "user_0054",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "DAN1149"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919101",
+      "user_id": "user_0018",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0054",
+        "referral_code": "DAN1149"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919119",
+      "user_id": "user_0055",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": "EMM8912"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919122",
+      "user_id": "user_0019",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0055",
+        "referral_code": "EMM8912"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919137",
+      "user_id": "user_0056",
+      "action": "user_registration",
+      "details": {
+        "role": "affiliate",
+        "referred_by": "EMM8912"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919139",
+      "user_id": "user_0019",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0056",
+        "referral_code": "EMM8912"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919144",
+      "user_id": "user_0019",
+      "action": "browse",
+      "details": {
+        "category": "electronics",
+        "browse_time_seconds": 37
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919152",
+      "user_id": "user_0019",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_7651",
+        "amount": 75.74,
+        "remaining_balance": 178.73
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919163",
+      "user_id": "user_0020",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_2351",
+        "amount": 48.21,
+        "remaining_balance": 99.37
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919179",
+      "user_id": "user_0057",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "LIA8484"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919187",
+      "user_id": "user_0020",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0057",
+        "referral_code": "LIA8484"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919196",
+      "user_id": "user_0021",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_6502",
+        "amount": 49.33,
+        "remaining_balance": 241.16
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919203",
+      "user_id": "user_0021",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_4093",
+        "amount": 94.35,
+        "remaining_balance": 146.81
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919210",
+      "user_id": "user_0021",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_3355",
+        "amount": 96.54,
+        "remaining_balance": 50.27
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919217",
+      "user_id": "user_0021",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_6029",
+        "amount": 26.46,
+        "remaining_balance": 23.81
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919224",
+      "user_id": "user_0022",
+      "action": "browse",
+      "details": {
+        "category": "clothing",
+        "browse_time_seconds": 260
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919241",
+      "user_id": "user_0058",
+      "action": "user_registration",
+      "details": {
+        "role": "buyer",
+        "referred_by": "CHL5411"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919243",
+      "user_id": "user_0022",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0058",
+        "referral_code": "CHL5411"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919250",
+      "user_id": "user_0022",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_6794",
+        "amount": 150.06,
+        "remaining_balance": 95.16
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919272",
+      "user_id": "user_0059",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": "EMM7986"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919274",
+      "user_id": "user_0023",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0059",
+        "referral_code": "EMM7986"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919288",
+      "user_id": "user_0060",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": "EMM7986"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919290",
+      "user_id": "user_0023",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0060",
+        "referral_code": "EMM7986"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919300",
+      "user_id": "user_0024",
+      "action": "purchase",
+      "details": {
+        "product_id": "prod_9922",
+        "amount": 49.9,
+        "remaining_balance": 309.62
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919318",
+      "user_id": "user_0061",
+      "action": "user_registration",
+      "details": {
+        "role": "seller",
+        "referred_by": "ETH2503"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919320",
+      "user_id": "user_0025",
+      "action": "refer_friend",
+      "details": {
+        "referred_user_id": "user_0061",
+        "referral_code": "ETH2503"
+      }
+    },
+    {
+      "timestamp": "2026-02-09T00:34:22.919328",
+      "user_id": "user_0025",
+      "action": "browse",
+      "details": {
+        "category": "books",
+        "browse_time_seconds": 552
+      }
+    }
+  ],
+  "stats": {
+    "total_users": 61,
+    "user_roles": {
+      "buyer": 22,
+      "seller": 17,
+      "affiliate": 22
+    },
+    "total_credits_in_circulation": 18172.03,
+    "total_purchase_volume": 1546.25,
+    "total_sales_volume": 0.0,
+    "total_commissions_paid": 0.0,
+    "total_referrals_made": 46,
+    "average_credits_per_user": 297.9,
+    "total_actions_logged": 140
+  },
+  "export_timestamp": "2026-02-09T00:34:22.920182"
+}

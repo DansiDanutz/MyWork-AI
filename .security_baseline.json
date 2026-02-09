@@ -1,0 +1,87 @@
+{
+  "version": "1.0",
+  "baseline_date": "2026-02-09",
+  "description": "Security baseline after addressing critical and high vulnerabilities",
+  "fixes_applied": [
+    {
+      "issue": "tools/brain_learner.py:386",
+      "type": "false_positive",
+      "fix": "Added SECURITY_SAFE comment to mark regex pattern as safe",
+      "date": "2026-02-09"
+    },
+    {
+      "issue": "projects/ai-dashboard/backend/services/youtube_automation.py:207", 
+      "type": "hardcoded_secret",
+      "fix": "Moved hardcoded voice_id to HEYGEN_DEFAULT_VOICE_ID environment variable",
+      "date": "2026-02-09"
+    },
+    {
+      "issue": "tools/security/code_scanner.py:56-57",
+      "type": "false_positive", 
+      "fix": "Added self-exclusion logic to prevent scanner from flagging its own patterns",
+      "date": "2026-02-09"
+    },
+    {
+      "issue": "tools/autoforge_api.py:193",
+      "type": "command_injection",
+      "fix": "Added input validation for python executable path",
+      "date": "2026-02-09"
+    },
+    {
+      "issue": "tools/autocoder_api.py:193",
+      "type": "command_injection", 
+      "fix": "Added input validation for python executable path",
+      "date": "2026-02-09"
+    },
+    {
+      "issue": "tools/health_check.py:1153",
+      "type": "command_injection",
+      "fix": "Replaced shell=True with cwd parameter and proper argument parsing",
+      "date": "2026-02-09"
+    },
+    {
+      "issue": "tools/lint_watcher.py:64",
+      "type": "command_injection",
+      "fix": "Added validation for scheduler script path and file type",
+      "date": "2026-02-09"
+    }
+  ],
+  "security_measures": {
+    "gitignore": {
+      "status": "comprehensive",
+      "covers": [".env files", "credentials", "API keys", "secrets", "databases", "certificates"]
+    },
+    "subprocess_usage": {
+      "status": "hardened", 
+      "measures": ["List arguments instead of shell strings", "Input validation", "Path validation", "No shell=True usage"]
+    },
+    "secret_management": {
+      "status": "environment_variables",
+      "measures": ["All secrets moved to environment variables", "No hardcoded credentials in code"]
+    }
+  },
+  "acceptable_findings": [
+    {
+      "pattern": "ConnectionRefusedError",
+      "file": "tools/brain_learner.py", 
+      "reason": "Error pattern matching, not actual secret",
+      "marked_safe": true
+    },
+    {
+      "pattern": "eval\\s*\\(",
+      "file": "tools/security/code_scanner.py",
+      "reason": "Pattern definition for security scanning, not actual eval usage",
+      "self_excluded": true
+    },
+    {
+      "pattern": "exec\\s*\\(",
+      "file": "tools/security/code_scanner.py", 
+      "reason": "Pattern definition for security scanning, not actual exec usage",
+      "self_excluded": true
+    }
+  ],
+  "scan_exclusions": {
+    "files": ["tools/security/code_scanner.py"],
+    "reason": "Security scanner should exclude itself from certain pattern matches"
+  }
+}

@@ -56,6 +56,14 @@ def start():
     scheduler_script = Path(__file__).parent / "auto_lint_scheduler.py"
     project_root = Path(__file__).parent.parent
 
+    # Security: Validate scheduler script exists and is safe
+    if not scheduler_script.exists():
+        print(f"❌ Scheduler script not found: {scheduler_script}")
+        return
+    if not scheduler_script.is_file() or not scheduler_script.suffix == '.py':
+        print(f"❌ Invalid scheduler script: {scheduler_script}")
+        return
+
     print("🚀 Starting lint scheduler...")
 
     # Open log file
