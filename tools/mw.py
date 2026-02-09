@@ -1549,8 +1549,43 @@ def main():
     if command in commands:
         sys.exit(commands[command]() or 0)
     else:
+        # Try to find similar commands (fuzzy matching)
+        def levenshtein_distance(s1, s2):
+            """Calculate edit distance between two strings."""
+            if len(s1) < len(s2):
+                return levenshtein_distance(s2, s1)
+            if len(s2) == 0:
+                return len(s1)
+            previous_row = list(range(len(s2) + 1))
+            for i, c1 in enumerate(s1):
+                current_row = [i + 1]
+                for j, c2 in enumerate(s2):
+                    insertions = previous_row[j + 1] + 1
+                    deletions = current_row[j] + 1
+                    substitutions = previous_row[j] + (c1 != c2)
+                    current_row.append(min(insertions, deletions, substitutions))
+                previous_row = current_row
+            return previous_row[-1]
+        
+        # Find similar commands
+        similar_commands = []
+        for cmd in commands.keys():
+            if cmd.startswith('-'):  # Skip help flags
+                continue
+            distance = levenshtein_distance(command, cmd)
+            if distance <= 2:  # Allow up to 2 character differences
+                similar_commands.append((cmd, distance))
+        
+        # Sort by similarity and take top 3
+        similar_commands.sort(key=lambda x: x[1])
+        suggestions = [cmd for cmd, _ in similar_commands[:3]]
+        
         print(f"{Colors.RED}Unknown command: {command}{Colors.ENDC}")
-        print("Run 'mw help' for usage information")
+        if suggestions:
+            print(f"{Colors.YELLOW}Did you mean:{Colors.ENDC}")
+            for suggestion in suggestions:
+                print(f"   {Colors.GREEN}mw {suggestion}{Colors.ENDC}")
+        print(f"\nRun '{Colors.BLUE}mw help{Colors.ENDC}' for all available commands")
         sys.exit(1)
 
 

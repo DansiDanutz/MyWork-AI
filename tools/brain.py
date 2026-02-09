@@ -379,6 +379,19 @@ def cmd_add(args: List[str]):
 
     entry_type = args[0]
     content = args[1]
+    
+    # Validate entry type
+    if entry_type not in ENTRY_TYPES:
+        print(f"❌ Invalid entry type: '{entry_type}'")
+        print(f"   Valid types: {', '.join(ENTRY_TYPES.keys())}")
+        sys.exit(1)
+    
+    # Validate content is not empty
+    if not content or content.strip() == "":
+        print("❌ Content cannot be empty")
+        print("   Usage: python brain.py add <type> <content>")
+        print("   Example: python brain.py add lesson 'Always test before deploying'")
+        sys.exit(1)
     context = ""
     status = "TESTED"
     tags = []

@@ -418,10 +418,22 @@ def create_project(name: str, template: str = "basic") -> bool:
         print(f"   Available: {', '.join(TEMPLATES.keys())}")
         return False
 
-    # Validate name
+    # Validate project name
+    import re
+    if not re.match(r'^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$', name):
+        print(f"❌ Invalid project name: '{name}'")
+        print("   Project names must:")
+        print("   • Be lowercase letters, numbers, and hyphens only")
+        print("   • Start and end with a letter or number")
+        print("   • Not contain spaces or special characters")
+        print(f"   Examples: my-app, api-server, todo-list")
+        return False
+
+    # Check for existing project
     project_path = PROJECTS_DIR / name
     if project_path.exists():
         print(f"❌ Project already exists: {project_path}")
+        print(f"   Choose a different name or delete the existing project")
         return False
 
     # Prepare context
@@ -500,7 +512,9 @@ def main():
 
         name = sys.argv[2]
         template = sys.argv[3] if len(sys.argv) > 3 else "basic"
-        create_project(name, template)
+        success = create_project(name, template)
+        if not success:
+            sys.exit(1)
 
     elif command == "list":
         list_templates()
