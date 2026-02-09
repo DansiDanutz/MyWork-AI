@@ -12,6 +12,7 @@ Usage:
     python brain.py review                  # Show entries needing attention
     python brain.py cleanup                 # Remove deprecated entries
     python brain.py stats                   # Show brain statistics
+    python brain.py analytics              # Comprehensive analytics dashboard
     python brain.py export [markdown|json] # Export to markdown or JSON
 
 Types:
@@ -585,6 +586,303 @@ def cmd_stats(args: List[str]):
         print(f"Newest entry: {stats['newest']}")
 
 
+def cmd_analytics(args: List[str]):
+    """Show comprehensive brain analytics."""
+    brain = BrainManager()
+    
+    # Color codes
+    BOLD = '\033[1m'
+    CYAN = '\033[96m'
+    YELLOW = '\033[93m'
+    GREEN = '\033[92m'
+    BLUE = '\033[94m'
+    RED = '\033[91m'
+    RESET = '\033[0m'
+    
+    print(f"\n{BOLD}{CYAN}{'═' * 80}{RESET}")
+    print(f"{BOLD}{CYAN}📊 BRAIN ANALYTICS DASHBOARD{RESET}")
+    print(f"{BOLD}{CYAN}{'═' * 80}{RESET}")
+    
+    entries = list(brain.entries.values())
+    if not entries:
+        print(f"{RED}❌ No entries found in brain{RESET}")
+        return
+    
+    # 1. Knowledge Growth Over Time
+    print(f"\n{BOLD}{GREEN}📈 Knowledge Growth Analysis{RESET}")
+    print(f"{CYAN}{'─' * 50}{RESET}")
+    
+    # Group entries by week/month
+    from collections import defaultdict
+    import calendar
+    
+    weekly_counts = defaultdict(int)
+    monthly_counts = defaultdict(int)
+    
+    for entry in entries:
+        try:
+            date_obj = datetime.strptime(entry.date_added, '%Y-%m-%d')
+            # Week calculation (ISO week)
+            year, week, _ = date_obj.isocalendar()
+            week_key = f"{year}-W{week:02d}"
+            weekly_counts[week_key] += 1
+            
+            # Month calculation
+            month_key = f"{year}-{date_obj.month:02d}"
+            monthly_counts[month_key] += 1
+        except ValueError:
+            continue
+    
+    # Show recent weeks
+    sorted_weeks = sorted(weekly_counts.items())[-8:]  # Last 8 weeks
+    print(f"{BLUE}Recent Weekly Growth:{RESET}")
+    for week, count in sorted_weeks:
+        bar = '█' * count + '░' * max(0, 10 - count)
+        print(f"  {week}: {bar} ({count} entries)")
+    
+    # Show monthly trend
+    sorted_months = sorted(monthly_counts.items())[-6:]  # Last 6 months
+    print(f"\n{BLUE}Monthly Trend:{RESET}")
+    for month, count in sorted_months:
+        try:
+            year_str, month_str = month.split('-')
+            month_name = calendar.month_abbr[int(month_str)]
+            bar = '█' * min(count, 20) + '░' * max(0, 20 - count)
+            print(f"  {year_str}-{month_name}: {bar} ({count} entries)")
+        except:
+            print(f"  {month}: {count} entries")
+    
+    # 2. Most Referenced/Active Entries
+    print(f"\n{BOLD}{GREEN}🔗 Most Referenced Knowledge{RESET}")
+    print(f"{CYAN}{'─' * 50}{RESET}")
+    
+    # Since we don't have actual reference tracking yet, we'll rank by:
+    # - Recency (newer = more likely to be referenced)
+    # - Type popularity  
+    # - Tag count (more tags = more discoverable)
+    
+    scored_entries = []
+    for entry in entries:
+        score = 0
+        
+        # Recency score (0-10)
+        try:
+            days_old = (datetime.now() - datetime.strptime(entry.date_added, '%Y-%m-%d')).days
+            recency_score = max(0, 10 - (days_old / 30))  # Decay over months
+            score += recency_score
+        except:
+            pass
+        
+        # Tag score (more tags = more discoverable)
+        score += len(entry.tags) * 2
+        
+        # Type bonus (patterns and insights are typically more referenced)
+        type_bonus = {'pattern': 5, 'insight': 4, 'lesson': 3, 'tip': 2, 'experiment': 1, 'antipattern': 2}
+        score += type_bonus.get(entry.type, 0)
+        
+        # Status bonus
+        status_bonus = {'TESTED': 3, 'EXPERIMENTAL': 1, 'DEPRECATED': -5}
+        score += status_bonus.get(entry.status, 0)
+        
+        scored_entries.append((score, entry))
+    
+    # Show top 5 most likely to be referenced
+    top_entries = sorted(scored_entries, key=lambda x: x[0], reverse=True)[:5]
+    for i, (score, entry) in enumerate(top_entries, 1):
+        status_icon = {"TESTED": "✅", "EXPERIMENTAL": "🧪", "DEPRECATED": "❌"}.get(entry.status, "❓")
+        content_preview = entry.content[:50] + '...' if len(entry.content) > 50 else entry.content
+        print(f"  {YELLOW}{i}.{RESET} {status_icon} {BLUE}{entry.id}{RESET} - {content_preview}")
+        print(f"      📊 Score: {score:.1f} | 📅 {entry.date_added} | 🏷️ {len(entry.tags)} tags")
+    
+    # 3. Tag Cloud / Most Common Tags
+    print(f"\n{BOLD}{GREEN}🏷️  Tag Cloud Analysis{RESET}")
+    print(f"{CYAN}{'─' * 50}{RESET}")
+    
+    all_tags = []
+    for entry in entries:
+        all_tags.extend([tag.lower() for tag in entry.tags])
+    
+    if all_tags:
+        from collections import Counter
+        tag_counts = Counter(all_tags)
+        top_tags = tag_counts.most_common(15)
+        
+        print(f"{BLUE}Most Popular Tags:{RESET}")
+        for i, (tag, count) in enumerate(top_tags):
+            # Visual size based on frequency
+            if count >= 3:
+                size = "████"
+            elif count == 2:
+                size = "███░"
+            else:
+                size = "██░░"
+            
+            print(f"  {size} {YELLOW}{tag}{RESET} ({count})")
+    else:
+        print(f"{BLUE}No tags found - consider adding tags to entries for better organization{RESET}")
+    
+    # 4. Knowledge Gaps Analysis
+    print(f"\n{BOLD}{GREEN}🕳️  Knowledge Gap Analysis{RESET}")
+    print(f"{CYAN}{'─' * 50}{RESET}")
+    
+    type_counts = defaultdict(int)
+    for entry in entries:
+        type_counts[entry.type] += 1
+    
+    print(f"{BLUE}Entry Type Distribution:{RESET}")
+    total_entries = len(entries)
+    gap_threshold = max(1, total_entries // 10)  # Consider <10% as a gap
+    
+    gaps_found = []
+    for entry_type, display_name in ENTRY_TYPES.items():
+        count = type_counts[entry_type]
+        percentage = (count / total_entries * 100) if total_entries > 0 else 0
+        
+        # Visual bar
+        bar_length = min(20, count)
+        bar = '█' * bar_length + '░' * max(0, 20 - bar_length)
+        
+        status = ""
+        if count == 0:
+            status = f" {RED}[EMPTY!]{RESET}"
+            gaps_found.append(f"No {entry_type} entries")
+        elif count < gap_threshold:
+            status = f" {YELLOW}[LOW]{RESET}"
+            gaps_found.append(f"Only {count} {entry_type} entries")
+        
+        print(f"  {bar} {BLUE}{entry_type}{RESET}: {count} ({percentage:.1f}%){status}")
+    
+    if gaps_found:
+        print(f"\n{YELLOW}💡 Suggestions to fill gaps:{RESET}")
+        for gap in gaps_found[:3]:  # Show top 3 gaps
+            print(f"  • {gap}")
+    
+    # 5. Staleness Report
+    print(f"\n{BOLD}{GREEN}⏰ Staleness Report{RESET}")
+    print(f"{CYAN}{'─' * 50}{RESET}")
+    
+    now = datetime.now()
+    stale_entries = []
+    recent_entries = []
+    
+    for entry in entries:
+        try:
+            last_updated = datetime.strptime(entry.date_updated, '%Y-%m-%d')
+            days_old = (now - last_updated).days
+            
+            if days_old >= 30:
+                stale_entries.append((days_old, entry))
+            elif days_old <= 7:
+                recent_entries.append((days_old, entry))
+        except:
+            continue
+    
+    stale_entries.sort(reverse=True)  # Oldest first
+    recent_entries.sort()  # Newest first
+    
+    if stale_entries:
+        print(f"{YELLOW}🕒 Stale Entries (30+ days old):{RESET}")
+        for days_old, entry in stale_entries[:5]:  # Show 5 oldest
+            content_preview = entry.content[:40] + '...' if len(entry.content) > 40 else entry.content
+            months_old = days_old // 30
+            print(f"  {RED}•{RESET} {BLUE}{entry.id}{RESET} - {content_preview}")
+            print(f"    📅 Last updated {days_old} days ago ({months_old} months)")
+    
+    if recent_entries:
+        print(f"\n{GREEN}🆕 Recently Updated:{RESET}")
+        for days_old, entry in recent_entries[:3]:
+            content_preview = entry.content[:40] + '...' if len(entry.content) > 40 else entry.content
+            time_text = "today" if days_old == 0 else f"{days_old} days ago"
+            print(f"  {GREEN}•{RESET} {BLUE}{entry.id}{RESET} - {content_preview} ({time_text})")
+    
+    # 6. Entry Quality Scores
+    print(f"\n{BOLD}{GREEN}⭐ Entry Quality Analysis{RESET}")
+    print(f"{CYAN}{'─' * 50}{RESET}")
+    
+    quality_scores = []
+    for entry in entries:
+        score = 0
+        
+        # Content length (good detail)
+        if len(entry.content) >= 50:
+            score += 2
+        elif len(entry.content) >= 20:
+            score += 1
+        
+        # Has context
+        if entry.context and len(entry.context) > 10:
+            score += 2
+        
+        # Has tags
+        score += min(len(entry.tags), 3)  # Max 3 points for tags
+        
+        # Status bonus
+        if entry.status == 'TESTED':
+            score += 2
+        elif entry.status == 'EXPERIMENTAL':
+            score += 1
+        
+        # Recent updates (shows maintenance)
+        try:
+            days_since_update = (now - datetime.strptime(entry.date_updated, '%Y-%m-%d')).days
+            if days_since_update <= 30:
+                score += 1
+        except:
+            pass
+        
+        quality_scores.append((score, entry))
+    
+    # Show distribution
+    quality_ranges = {'High (7+)': 0, 'Medium (4-6)': 0, 'Low (0-3)': 0}
+    for score, _ in quality_scores:
+        if score >= 7:
+            quality_ranges['High (7+)'] += 1
+        elif score >= 4:
+            quality_ranges['Medium (4-6)'] += 1
+        else:
+            quality_ranges['Low (0-3)'] += 1
+    
+    print(f"{BLUE}Quality Distribution:{RESET}")
+    for range_name, count in quality_ranges.items():
+        percentage = (count / total_entries * 100) if total_entries > 0 else 0
+        bar = '█' * min(15, count) + '░' * max(0, 15 - count)
+        print(f"  {bar} {range_name}: {count} ({percentage:.1f}%)")
+    
+    # Show highest quality entries
+    top_quality = sorted(quality_scores, key=lambda x: x[0], reverse=True)[:3]
+    if top_quality:
+        print(f"\n{YELLOW}🏆 Highest Quality Entries:{RESET}")
+        for score, entry in top_quality:
+            content_preview = entry.content[:40] + '...' if len(entry.content) > 40 else entry.content
+            print(f"  ⭐ {BLUE}{entry.id}{RESET} (score: {score}) - {content_preview}")
+    
+    # Summary and Recommendations
+    print(f"\n{BOLD}{GREEN}📋 Summary & Recommendations{RESET}")
+    print(f"{CYAN}{'─' * 50}{RESET}")
+    
+    recommendations = []
+    
+    if len(stale_entries) > 5:
+        recommendations.append("Review and update old entries")
+    if len([e for e in entries if not e.tags]) > len(entries) // 2:
+        recommendations.append("Add more tags for better discoverability")
+    if type_counts.get('pattern', 0) < 3:
+        recommendations.append("Document more patterns from your work")
+    if len(entries) < 20:
+        recommendations.append("Continue growing your knowledge base")
+    
+    if recommendations:
+        print(f"{YELLOW}💡 Action Items:{RESET}")
+        for i, rec in enumerate(recommendations, 1):
+            print(f"  {i}. {rec}")
+    else:
+        print(f"{GREEN}✅ Your brain is in excellent shape!{RESET}")
+    
+    print(f"\n{BOLD}{CYAN}{'═' * 80}{RESET}")
+    print(f"{CYAN}📊 Use 'brain search' for semantic queries • 'brain review' for maintenance{RESET}")
+    print(f"{BOLD}{CYAN}{'═' * 80}{RESET}")
+
+
 def cmd_export(args: List[str]):
     """Export brain to markdown or JSON."""
     format_type = args[0] if args else "markdown"
@@ -711,6 +1009,7 @@ def main():
         "review": cmd_review,
         "cleanup": cmd_cleanup,
         "stats": cmd_stats,
+        "analytics": cmd_analytics,
         "export": cmd_export,
         "list": cmd_list,
         "remember": cmd_remember,
