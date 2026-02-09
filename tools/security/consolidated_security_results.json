@@ -1,10 +1,10 @@
 {
-  "audit_time": "2026-02-09T00:30:38.539110",
+  "audit_time": "2026-02-09T18:02:41.907387",
   "repository": "/home/Memo1981/MyWork-AI",
   "api_url": "https://mywork-ai-production.up.railway.app",
-  "risk_score": 3.38,
+  "risk_score": 3.22,
   "risk_level": "MEDIUM",
-  "total_findings": 87,
+  "total_findings": 89,
   "findings_by_category": {
     "code": [
       {
@@ -24,7 +24,7 @@
       {
         "severity": "HIGH",
         "file": "tools/autoforge_api.py",
-        "line": 193,
+        "line": 199,
         "description": "Use of popen() - command injection risk",
         "code_snippet": "subprocess.Popen("
       },
@@ -66,30 +66,23 @@
       {
         "severity": "LOW",
         "file": "tools/scaffold.py",
-        "line": 414,
+        "line": 418,
         "description": "Print statement with key",
         "code_snippet": "print(f\"   Available: {', '.join(TEMPLATES.keys())}\")"
       },
       {
         "severity": "HIGH",
         "file": "tools/autocoder_api.py",
-        "line": 193,
+        "line": 199,
         "description": "Use of popen() - command injection risk",
         "code_snippet": "subprocess.Popen("
-      },
-      {
-        "severity": "HIGH",
-        "file": "tools/health_check.py",
-        "line": 1153,
-        "description": "subprocess with shell=True - command injection risk",
-        "code_snippet": "subprocess.run(result.fix_command, shell=True)"
       },
       {
         "severity": "CRITICAL",
         "file": "tools/brain_learner.py",
         "line": 386,
         "description": "Potential hardcoded API key or token",
-        "code_snippet": "(r\"ConnectionRefusedError\", \"Connection refused - check if service is running\"),"
+        "code_snippet": "(r\"ConnectionRefusedError\", \"Connection refused - check if service is running\"),  # SECURITY_SAFE: error pattern matching"
       },
       {
         "severity": "LOW",
@@ -122,7 +115,7 @@
       {
         "severity": "HIGH",
         "file": "tools/lint_watcher.py",
-        "line": 64,
+        "line": 72,
         "description": "Use of popen() - command injection risk",
         "code_snippet": "process = subprocess.Popen("
       },
@@ -139,13 +132,6 @@
         "line": 79,
         "description": "Print statement with key",
         "code_snippet": "print(f\"   - {key}\")"
-      },
-      {
-        "severity": "CRITICAL",
-        "file": "projects/ai-dashboard/backend/services/youtube_automation.py",
-        "line": 207,
-        "description": "Potential hardcoded API key or token",
-        "code_snippet": "voice_id: str = \"1bd001e7e50f421d891986aad5158bc8\","
       },
       {
         "severity": "LOW",
@@ -269,7 +255,7 @@
       {
         "severity": "HIGH",
         "file": "tools/security/code_scanner.py",
-        "line": 229,
+        "line": 236,
         "description": "Use of popen() - command injection risk",
         "code_snippet": "'scan_time': os.popen('date -Iseconds').read().strip(),"
       },
@@ -286,6 +272,20 @@
         "line": 411,
         "description": "Use of popen() - command injection risk",
         "code_snippet": "'scan_time': os.popen('date -Iseconds').read().strip(),"
+      },
+      {
+        "severity": "LOW",
+        "file": "tools/simulation/run_simulation.py",
+        "line": 660,
+        "description": "Print statement with key",
+        "code_snippet": "print(f\"\\nKey Metrics:\")"
+      },
+      {
+        "severity": "HIGH",
+        "file": "tools/simulation/run_simulation.py",
+        "line": 663,
+        "description": "String formatting in SQL query - SQL injection risk",
+        "code_snippet": "print(f\"Commission Rate: {(total_commissions/total_revenue*100):.2f}%\" if total_revenue > 0 else \"Commission Rate: 0%\")"
       },
       {
         "severity": "LOW",
@@ -325,53 +325,11 @@
     ],
     "dependencies": [
       {
-        "package": "fastapi",
-        "version": "0.109.0",
-        "severity": "LOW",
-        "issue": "Outdated version (latest: 0.128.5)",
-        "recommendation": "Consider updating to 0.128.5"
-      },
-      {
-        "package": "apscheduler",
-        "version": "3.10.4",
-        "severity": "LOW",
-        "issue": "Outdated version (latest: 3.11.2)",
-        "recommendation": "Consider updating to 3.11.2"
-      },
-      {
-        "package": "httpx",
-        "version": "0.25.1",
-        "severity": "LOW",
-        "issue": "Outdated version (latest: 0.28.1)",
-        "recommendation": "Consider updating to 0.28.1"
-      },
-      {
-        "package": "google-auth-oauthlib",
-        "version": "1.2.0",
-        "severity": "LOW",
-        "issue": "Outdated version (latest: 1.2.4)",
-        "recommendation": "Consider updating to 1.2.4"
-      },
-      {
-        "package": "httpx",
-        "version": "0.25.0",
-        "severity": "LOW",
-        "issue": "Outdated version (latest: 0.28.1)",
-        "recommendation": "Consider updating to 0.28.1"
-      },
-      {
         "package": "requests",
         "version": "2.31.0",
         "severity": "LOW",
         "issue": "Outdated version (latest: 2.32.5)",
         "recommendation": "Consider updating to 2.32.5"
-      },
-      {
-        "package": "pyyaml",
-        "version": "6.0.0",
-        "severity": "LOW",
-        "issue": "Outdated version (latest: 6.0.3)",
-        "recommendation": "Consider updating to 6.0.3"
       },
       {
         "package": "google-api-python-client",
@@ -381,6 +339,13 @@
         "recommendation": "Consider updating to 2.189.0"
       },
       {
+        "package": "click",
+        "version": "8.1.0",
+        "severity": "LOW",
+        "issue": "Outdated version (latest: 8.3.1)",
+        "recommendation": "Consider updating to 8.3.1"
+      },
+      {
         "package": "rich",
         "version": "13.0.0",
         "severity": "LOW",
@@ -388,11 +353,25 @@
         "recommendation": "Consider updating to 14.3.2"
       },
       {
-        "package": "dspy-ai",
-        "version": "2.4.0",
+        "package": "httpx",
+        "version": "0.25.0",
         "severity": "LOW",
-        "issue": "Outdated version (latest: 3.1.3)",
-        "recommendation": "Consider updating to 3.1.3"
+        "issue": "Outdated version (latest: 0.28.1)",
+        "recommendation": "Consider updating to 0.28.1"
+      },
+      {
+        "package": "sqlalchemy",
+        "version": "2.0.0",
+        "severity": "LOW",
+        "issue": "Outdated version (latest: 2.0.46)",
+        "recommendation": "Consider updating to 2.0.46"
+      },
+      {
+        "package": "apscheduler",
+        "version": "3.10.4",
+        "severity": "LOW",
+        "issue": "Outdated version (latest: 3.11.2)",
+        "recommendation": "Consider updating to 3.11.2"
       },
       {
         "package": "aiosqlite",
@@ -409,6 +388,13 @@
         "recommendation": "Consider updating to 0.79.0"
       },
       {
+        "package": "dspy-ai",
+        "version": "2.4.0",
+        "severity": "LOW",
+        "issue": "Outdated version (latest: 3.1.3)",
+        "recommendation": "Consider updating to 3.1.3"
+      },
+      {
         "package": "python-dateutil",
         "version": "2.8.2",
         "severity": "LOW",
@@ -416,11 +402,11 @@
         "recommendation": "Consider updating to 2.9.0.post0"
       },
       {
-        "package": "feedparser",
-        "version": "6.0.10",
+        "package": "httpx",
+        "version": "0.25.1",
         "severity": "LOW",
-        "issue": "Outdated version (latest: 6.0.12)",
-        "recommendation": "Consider updating to 6.0.12"
+        "issue": "Outdated version (latest: 0.28.1)",
+        "recommendation": "Consider updating to 0.28.1"
       },
       {
         "package": "sqlalchemy",
@@ -430,6 +416,20 @@
         "recommendation": "Consider updating to 2.0.46"
       },
       {
+        "package": "feedparser",
+        "version": "6.0.10",
+        "severity": "LOW",
+        "issue": "Outdated version (latest: 6.0.12)",
+        "recommendation": "Consider updating to 6.0.12"
+      },
+      {
+        "package": "google-auth-oauthlib",
+        "version": "1.2.0",
+        "severity": "LOW",
+        "issue": "Outdated version (latest: 1.2.4)",
+        "recommendation": "Consider updating to 1.2.4"
+      },
+      {
         "package": "python-dotenv",
         "version": "1.0.0",
         "severity": "LOW",
@@ -437,11 +437,11 @@
         "recommendation": "Consider updating to 1.2.1"
       },
       {
-        "package": "click",
-        "version": "8.1.0",
+        "package": "pydantic",
+        "version": "2.5.0",
         "severity": "LOW",
-        "issue": "Outdated version (latest: 8.3.1)",
-        "recommendation": "Consider updating to 8.3.1"
+        "issue": "Outdated version (latest: 2.12.5)",
+        "recommendation": "Consider updating to 2.12.5"
       },
       {
         "package": "apify-client",
@@ -449,6 +449,20 @@
         "severity": "LOW",
         "issue": "Outdated version (latest: 2.4.1)",
         "recommendation": "Consider updating to 2.4.1"
+      },
+      {
+        "package": "pyyaml",
+        "version": "6.0.0",
+        "severity": "LOW",
+        "issue": "Outdated version (latest: 6.0.3)",
+        "recommendation": "Consider updating to 6.0.3"
+      },
+      {
+        "package": "fastapi",
+        "version": "0.109.0",
+        "severity": "LOW",
+        "issue": "Outdated version (latest: 0.128.6)",
+        "recommendation": "Consider updating to 0.128.6"
       }
     ],
     "api": [
@@ -527,7 +541,7 @@
         "method": "GET",
         "severity": "MEDIUM",
         "issue": "No rate limiting detected",
-        "details": "Made 20 requests in 4.62s with no rate limiting"
+        "details": "Made 20 requests in 4.74s with no rate limiting"
       },
       {
         "endpoint": "/",

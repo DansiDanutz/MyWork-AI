@@ -10,14 +10,14 @@
       "date": "2026-02-09"
     },
     {
-      "issue": "projects/ai-dashboard/backend/services/youtube_automation.py:207", 
+      "issue": "projects/ai-dashboard/backend/services/youtube_automation.py:207",
       "type": "hardcoded_secret",
       "fix": "Moved hardcoded voice_id to HEYGEN_DEFAULT_VOICE_ID environment variable",
       "date": "2026-02-09"
     },
     {
       "issue": "tools/security/code_scanner.py:56-57",
-      "type": "false_positive", 
+      "type": "false_positive",
       "fix": "Added self-exclusion logic to prevent scanner from flagging its own patterns",
       "date": "2026-02-09"
     },
@@ -29,7 +29,7 @@
     },
     {
       "issue": "tools/autocoder_api.py:193",
-      "type": "command_injection", 
+      "type": "command_injection",
       "fix": "Added input validation for python executable path",
       "date": "2026-02-09"
     },
@@ -49,21 +49,36 @@
   "security_measures": {
     "gitignore": {
       "status": "comprehensive",
-      "covers": [".env files", "credentials", "API keys", "secrets", "databases", "certificates"]
+      "covers": [
+        ".env files",
+        "credentials",
+        "API keys",
+        "secrets",
+        "databases",
+        "certificates"
+      ]
     },
     "subprocess_usage": {
-      "status": "hardened", 
-      "measures": ["List arguments instead of shell strings", "Input validation", "Path validation", "No shell=True usage"]
+      "status": "hardened",
+      "measures": [
+        "List arguments instead of shell strings",
+        "Input validation",
+        "Path validation",
+        "No shell=True usage"
+      ]
     },
     "secret_management": {
       "status": "environment_variables",
-      "measures": ["All secrets moved to environment variables", "No hardcoded credentials in code"]
+      "measures": [
+        "All secrets moved to environment variables",
+        "No hardcoded credentials in code"
+      ]
     }
   },
   "acceptable_findings": [
     {
       "pattern": "ConnectionRefusedError",
-      "file": "tools/brain_learner.py", 
+      "file": "tools/brain_learner.py",
       "reason": "Error pattern matching, not actual secret",
       "marked_safe": true
     },
@@ -75,7 +90,7 @@
     },
     {
       "pattern": "exec\\s*\\(",
-      "file": "tools/security/code_scanner.py", 
+      "file": "tools/security/code_scanner.py",
       "reason": "Pattern definition for security scanning, not actual exec usage",
       "self_excluded": true
     }

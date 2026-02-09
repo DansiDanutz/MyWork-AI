@@ -1,22 +1,22 @@
 # MyWork-AI Simulation Report
-Generated: 2026-02-09 14:50:16
+Generated: 2026-02-09 18:03:01
 
 ## Executive Summary
 
 - **Overall Status**: ✅ PASSED
-- **Scenarios Passed**: 5
-- **Scenarios Failed**: 0
-- **Total Revenue**: $1,656.04
-- **Total Commissions**: $105.99
-- **Commission Rate**: 6.40%
+- **Scenarios Passed**: 4
+- **Scenarios Failed**: 1
+- **Total Revenue**: $1,777.59
+- **Total Commissions**: $310.94
+- **Commission Rate**: 17.49%
 
 ## User System Statistics
 
 - **Total Users**: 20
-- **User Roles**: buyer: 9, seller: 4, affiliate: 7
-- **Total Credits in Circulation**: $6,047.96
+- **User Roles**: buyer: 9, seller: 6, affiliate: 5
+- **Total Credits in Circulation**: $7,523.07
 - **Total Purchase Volume**: $0.00
-- **Average Credits per User**: $302.40
+- **Average Credits per User**: $376.15
 
 ## Credit System Report
 
@@ -24,65 +24,65 @@ Generated: 2026-02-09 14:50:16
 - **Total Users**: 20
 - **Active Users**: 20
 - **Frozen Accounts**: 0
-- **Total Circulation**: 6047.96
-- **Credits Issued**: 8079.5
-- **Credits Burned**: 2031.54
+- **Total Circulation**: 7523.07
+- **Credits Issued**: 10096.33
+- **Credits Burned**: 2573.26
 
 ### Financial Statistics
-- **Total Spent**: $2,031.54
+- **Total Spent**: $2,573.26
 - **Total Transferred**: $0.00
-- **Total Commissions Paid**: $105.99
-- **Total Refunds**: $375.50
-- **Average Balance**: $302.40
+- **Total Commissions Paid**: $310.94
+- **Total Refunds**: $795.67
+- **Average Balance**: $376.15
 
 ## MLM/Referral System Report
 
 ### Overview
 - **Total Users**: 20
-- **Total Commission Events**: 13
-- **Total Commissions Paid**: $105.99
-- **Total Sales Volume**: $2,031.54
-- **Average Commission Rate**: 5.22%
+- **Total Commission Events**: 11
+- **Total Commissions Paid**: $310.94
+- **Total Sales Volume**: $2,573.26
+- **Average Commission Rate**: 12.08%
 
 ### Tree Structure
 - **Max Depth**: 2 levels
 - **Tree Roots**: 12 root users
 
 ### Top Performers
-1. **user_0006**: $172.44 earned, 2 direct referrals
-2. **user_0001**: $39.54 earned, 1 direct referrals
-3. **user_0002**: $0.00 earned, 0 direct referrals
-4. **user_0003**: $0.00 earned, 0 direct referrals
-5. **user_0004**: $0.00 earned, 0 direct referrals
+1. **user_0004**: $233.53 earned, 2 direct referrals
+2. **user_0016**: $208.38 earned, 1 direct referrals
+3. **user_0006**: $179.96 earned, 1 direct referrals
+4. **user_0001**: $0.00 earned, 0 direct referrals
+5. **user_0002**: $0.00 earned, 0 direct referrals
 
 ## Product System Report
 
 ### Products
-- **Total Products**: 8
-- **Active Products**: 8
+- **Total Products**: 13
+- **Active Products**: 13
 - **Approved Products**: 0
 
 ### Orders
 - **Total Orders**: 15
 - **Confirmed Orders**: 0
-- **Delivered Orders**: 2
+- **Delivered Orders**: 4
 - **Refunded Orders**: 3
 
 ### Reviews
-- **Total Reviews**: 3
-- **Average Rating**: 4.0/5.0
-- **Approved Reviews**: 3
+- **Total Reviews**: 2
+- **Average Rating**: 3.5/5.0
+- **Approved Reviews**: 2
 
 ### Financial Performance
-- **Total Revenue**: $1,656.04
-- **Total Refunds**: $375.50
-- **Net Revenue**: $1,280.54
+- **Total Revenue**: $1,777.59
+- **Total Refunds**: $795.67
+- **Net Revenue**: $981.92
 
 ## Cross-System Integration
 
-- **Users with Active Commissions**: 2
-- **Average Commission per Sale**: $7.07
-- **Total Webhook Events**: 16
+- **Users with Active Commissions**: 3
+- **Average Commission per Sale**: $20.73
+- **Total Webhook Events**: 14
 
 ## Anomalies and Issues
 
@@ -92,10 +92,10 @@ Generated: 2026-02-09 14:50:16
 
 - ✅ **Generated 20 users with balances and referral relationships**
 - ✅ **Scenario 'User Registration & Referrals' completed successfully**
-- ✅ **Created and activated 8 products from 5 sellers**
+- ✅ **Created and activated 13 products from 5 sellers**
 - ✅ **Scenario 'Product Listings & Approval' completed successfully**
-- ✅ **Processed 13 purchases with 3 commission payments**
-- ✅ **Scenario 'Marketplace Activity & Commissions' completed successfully**
+- ✅ **Processed 11 purchases with 7 commission payments**
+- ❌ **Scenario 'Marketplace Activity & Commissions' failed**
 - ✅ **Processed 3 refunds with credit returns**
 - ✅ **Scenario 'Refunds & Credit Returns' completed successfully**
 - ✅ **System integrity check passed - no anomalies detected**

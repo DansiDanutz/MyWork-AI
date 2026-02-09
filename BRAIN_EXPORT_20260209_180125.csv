@@ -1,0 +1,21 @@
+id,type,content,context,status,date_added,date_updated,tags,references
+lesson-001,lesson,Always test code changes before committing to avoid breaking production,Learned from MyWork-AI framework overhaul,TESTED,2026-02-09,2026-02-09,,0
+lesson-002,lesson,Always backup AND test restore before major deployments,Learned from production outage on 2024-01-15,TESTED,2026-02-09,2026-02-09,,0
+pattern-001,pattern,API Rate Limiting Pattern,,TESTED,2026-02-09,2026-02-09,,0
+antipattern-001,antipattern,Never commit secrets to git,,TESTED,2026-02-09,2026-02-09,,0
+tip-001,tip,Use `git stash` to temporarily save uncommitted changes,,TESTED,2026-02-09,2026-02-09,,0
+insight-001,insight,Microservices work better with event-driven architecture,,TESTED,2026-02-09,2026-02-09,,0
+experiment-001,experiment,Try using WebAssembly for CPU-intensive frontend operations,,TESTED,2026-02-09,2026-02-09,,0
+lesson-003,lesson,Always backup AND test restore before major deployments,Learned from production outage on 2024-01-15,TESTED,2026-02-09,2026-02-09,,0
+pattern-002,pattern,API Rate Limiting Pattern,,TESTED,2026-02-09,2026-02-09,,0
+antipattern-002,antipattern,Never commit secrets to git,,TESTED,2026-02-09,2026-02-09,,0
+tip-002,tip,Use `git stash` to temporarily save uncommitted changes,,TESTED,2026-02-09,2026-02-09,,0
+insight-002,insight,Microservices work better with event-driven architecture,,TESTED,2026-02-09,2026-02-09,,0
+experiment-002,experiment,Try using WebAssembly for CPU-intensive frontend operations,,TESTED,2026-02-09,2026-02-09,,0
+lesson-004,lesson,Always backup AND test restore before major deployments,Learned from production outage on 2024-01-15,TESTED,2026-02-09,2026-02-09,,0
+pattern-003,pattern,API Rate Limiting Pattern,,TESTED,2026-02-09,2026-02-09,,0
+antipattern-003,antipattern,Never commit secrets to git,,TESTED,2026-02-09,2026-02-09,,0
+tip-003,tip,Use `git stash` to temporarily save uncommitted changes,,TESTED,2026-02-09,2026-02-09,,0
+insight-003,insight,Microservices work better with event-driven architecture,,TESTED,2026-02-09,2026-02-09,,0
+experiment-003,experiment,Try using WebAssembly for CPU-intensive frontend operations,,TESTED,2026-02-09,2026-02-09,,0
+lesson-005,lesson,Test entry for simulation,Framework validation,TESTED,2026-02-09,2026-02-09,,0

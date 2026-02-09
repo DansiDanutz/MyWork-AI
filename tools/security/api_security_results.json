@@ -1,5 +1,5 @@
 {
-  "test_time": "2026-02-09T00:30:38+00:00",
+  "test_time": "2026-02-09T18:02:41+00:00",
   "base_url": "https://mywork-ai-production.up.railway.app",
   "total_findings": 12,
   "findings": [
@@ -78,7 +78,7 @@
       "method": "GET",
       "severity": "MEDIUM",
       "issue": "No rate limiting detected",
-      "details": "Made 20 requests in 4.62s with no rate limiting"
+      "details": "Made 20 requests in 4.74s with no rate limiting"
     },
     {
       "endpoint": "/",

@@ -258,6 +258,7 @@ text
 ## Changelog
 
 | Date | Change | Category |
+| 2026-02-09 | Auto-learning: 19 entries | Learning |
 | 2026-01-28 | Auto-learning: 15 entries | Learning |
 
 | 2026-01-27 | Auto-learning: 14 entries | Learning |

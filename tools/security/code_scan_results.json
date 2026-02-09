@@ -1,5 +1,5 @@
 {
-  "scan_time": "2026-02-09T14:51:15+00:00",
+  "scan_time": "2026-02-09T18:02:25+00:00",
   "repository": "/home/Memo1981/MyWork-AI",
   "total_findings": 45,
   "findings": [
@@ -62,7 +62,7 @@
     {
       "severity": "LOW",
       "file": "tools/scaffold.py",
-      "line": 414,
+      "line": 418,
       "description": "Print statement with key",
       "code_snippet": "print(f\"   Available: {', '.join(TEMPLATES.keys())}\")"
     },

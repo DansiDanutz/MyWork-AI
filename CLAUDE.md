@@ -15,13 +15,17 @@ Before starting any task, determine which layer handles it:
 
 ```text
 
+```text
+
 ```
-                      │
-                      ▼
+                  │
+                  ▼
 
 ```
 
 ```
+
+```python
 ┌─────────────────────────────────────────────────────────────────┐
 │  1. Is this a NEW PROJECT from scratch?                         │
 │     YES → /gsd:new-project (full planning, requirements, roadmap)│
@@ -30,10 +34,14 @@ Before starting any task, determine which layer handles it:
 ```text
 
 ```
-                      │ NO
-                      ▼
 
 ```
+                  │ NO
+                  ▼
+
+```
+
+```text
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -43,13 +51,17 @@ Before starting any task, determine which layer handles it:
 
 ```text
 
+```text
+
 ```
-                      │ NO
-                      ▼
+                  │ NO
+                  ▼
 
 ```
 
 ```
+
+```yaml
 ┌─────────────────────────────────────────────────────────────────┐
 │  3. Is this a QUICK task (bug fix, config change, small feature)?│
 │     YES → /gsd:quick OR WAT workflow                            │
@@ -58,10 +70,14 @@ Before starting any task, determine which layer handles it:
 ```text
 
 ```
-                      │ NO
-                      ▼
 
 ```
+                  │ NO
+                  ▼
+
+```
+
+```text
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -71,13 +87,17 @@ Before starting any task, determine which layer handles it:
 
 ```text
 
+```text
+
 ```
-                      │ NO
-                      ▼
+                  │ NO
+                  ▼
 
 ```
 
 ```
+
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │  5. Is this VISUAL AUTOMATION (webhooks, APIs, integrations)?   │
 │     YES → n8n workflow via create_n8n_workflow.md               │
@@ -86,10 +106,14 @@ Before starting any task, determine which layer handles it:
 ```text
 
 ```
-                      │ NO
-                      ▼
 
 ```
+                  │ NO
+                  ▼
+
+```
+
+```text
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -196,7 +220,7 @@ execution, verification, and context management across sessions.
 ├── todos/              # Captured ideas for later
 └── quick/              # Ad-hoc task tracking
 
-```
+```markdown
 
 ### GSD Workflow Cycle
 
@@ -322,7 +346,9 @@ MyWork/                         # Master Framework Root (CLEAN)
 
 ## Active Projects Reference
 
-The MyWork framework has several active projects. When a user mentions working on a specific project, always check that project's `CLAUDE.md` for project-specific instructions.
+The MyWork framework has several active projects. When a user mentions working
+on a specific project, always check that project's `CLAUDE.md` for
+project-specific instructions.
 
 ### AI Dashboard
 
@@ -333,11 +359,19 @@ The MyWork framework has several active projects. When a user mentions working o
   - `projects/ai-dashboard/CLAUDE.md` - Project-specific AI instructions
   - `projects/ai-dashboard/.planning/STATE.md` - Current status
   - `projects/ai-dashboard/backend/scrapers/` - Scrapers (GitHub, YouTube, News)
-  - `projects/ai-dashboard/backend/services/youtube_automation.py` - YouTube upload automation
+  - `projects/ai-dashboard/backend/services/youtube_automation.py` - YouTube
+
+```
+upload automation
+
+```
   - `projects/ai-dashboard/frontend/app/` - Next.js 14 frontend
-- **When to use**: When working on YouTube scraping, news aggregation, or automation
-- **Important**: This is a personal tool (not multi-user SaaS), MVP is complete (focus on polish, not new features)
-- **Start**: `cd projects/ai-dashboard && ./start.sh` (Mac/Linux) or `start.bat` (Windows)
+- **When to use**: When working on YouTube scraping, news aggregation, or
+  automation
+- **Important**: This is a personal tool (not multi-user SaaS), MVP is complete
+  (focus on polish, not new features)
+- **Start**: `cd projects/ai-dashboard && ./start.sh` (Mac/Linux) or `start.bat`
+  (Windows)
 
 ### Task Tracker
 
@@ -347,11 +381,27 @@ The MyWork framework has several active projects. When a user mentions working o
 - **Key Files**:
   - `projects/task-tracker/CLAUDE.md` - Project-specific AI instructions
   - `projects/task-tracker/.planning/STATE.md` - Current status
-  - `projects/task-tracker/.planning/research/ARCHITECTURE.md` - Comprehensive architecture (30,534 bytes!)
-  - `projects/task-tracker/.planning/research/FEATURES.md` - Complete feature inventory (14,023 bytes!)
-  - `projects/task-tracker/.planning/research/PITFALLS.md` - Common mistakes to avoid (20,252 bytes!)
+  - `projects/task-tracker/.planning/research/ARCHITECTURE.md` - Comprehensive
+
+```
+architecture (30,534 bytes!)
+
+```
+  - `projects/task-tracker/.planning/research/FEATURES.md` - Complete feature
+
+```
+inventory (14,023 bytes!)
+
+```
+  - `projects/task-tracker/.planning/research/PITFALLS.md` - Common mistakes to
+
+```
+avoid (20,252 bytes!)
+
+```
 - **When to use**: When validating framework patterns or task management features
-- **Important**: GitHub OAuth is mandatory, all code must meet reusability standards
+- **Important**: GitHub OAuth is mandatory, all code must meet reusability
+  standards
 - **Start**: `cd projects/task-tracker && npm run dev`
 
 ### Marketplace
@@ -364,33 +414,39 @@ The MyWork framework has several active projects. When a user mentions working o
   - `tools/marketplace_upload_previews.py` - Upload module previews
   - `.github/workflows/smoke-marketplace.yml` - Marketplace smoke tests
 - **When to use**: N/A (not yet implemented)
-- **Current Focus**: Build reusable patterns in task-tracker and ai-dashboard first
+- **Current Focus**: Build reusable patterns in task-tracker and ai-dashboard
+  first
 
 ---
 
 ## Symlinked/External Projects
 
-The following projects are symlinked from external locations (outside the framework):
+The following projects are symlinked from external locations (outside the
+framework):
 
 ### sports-ai
+
 - **Target**: `/Users/dansidanutz/Desktop/SportsAi`
 - **Purpose**: Sports betting platform
 - **Status**: Live
 - **Note**: Has own `.planning/` directory, GSD commands work
 
 ### games
+
 - **Target**: `/Users/dansidanutz/Desktop/Games`
 - **Purpose**: Gaming platform
 - **Status**: 326 features, Live
 - **Note**: Legacy project, may not follow all framework conventions
 
 ### my-games
+
 - **Target**: `/Users/dansidanutz/Desktop/GamesAI`
 - **Purpose**: Games AI platform
 - **Status**: Active development
 - **Note**: Has autonomous agent (agent.py)
 
 **Working with Symlinked Projects**:
+
 - Symlinks work like regular directories for most operations
 - GSD commands work if symlinked project has `.planning/` directory
 - Be aware that symlinked projects may have different structure
@@ -416,7 +472,8 @@ The marketplace is a **future platform** (Phase 10) where users can:
 
 The marketplace will integrate with:
 
-1. **Brain Knowledge Vault** (`/Users/dansidanutz/Desktop/MyWork/.planning/BRAIN.md`)
+1. **Brain Knowledge Vault**
+(`/Users/dansidanutz/Desktop/MyWork/.planning/BRAIN.md`)
    - Modules captured from completed work
    - Tested patterns and components
    - Proven architectures and workflows
@@ -436,21 +493,25 @@ The marketplace will integrate with:
 The framework includes tools for future marketplace integration:
 
 **`tools/smoke_test_marketplace.py`**:
+
 - Purpose: Test marketplace contributions for quality
 - Validates: Code quality, documentation, reusability
 - Status: Ready for Phase 10 implementation
 
 **`tools/marketplace_upload_previews.py`**:
+
 - Purpose: Upload module screenshots and previews
 - Generates: Automated previews from code examples
 - Status: Ready for Phase 10 implementation
 
 **`workflows/marketplace_smoke_cron.yml`**:
+
 - Purpose: Scheduled smoke tests for marketplace modules
 - Runs: Quality checks on published modules
 - Status: Ready for Phase 10 implementation
 
 **`workflows/marketplace_ci_template.yml`**:
+
 - Purpose: CI/CD template for marketplace contributors
 - Ensures: All modules meet quality standards
 - Status: Ready for Phase 10 implementation
@@ -468,6 +529,7 @@ Before implementing the marketplace, the framework focuses on:
 ### When Marketplace is Implemented
 
 **For Contributors**:
+
 1. Run `mw brain learn` to extract patterns from completed work
 2. Run `python tools/smoke_test_marketplace.py` to validate quality
 3. Run `python tools/marketplace_upload_previews.py` to generate previews
@@ -475,6 +537,7 @@ Before implementing the marketplace, the framework focuses on:
 5. Community reviews and approves contributions
 
 **For Consumers**:
+
 1. Search marketplace via `mw search` or web interface
 2. Browse by category, rating, or popularity
 3. Download modules with automatic dependency resolution
@@ -484,12 +547,14 @@ Before implementing the marketplace, the framework focuses on:
 ### Marketplace vs Module Registry
 
 **Module Registry** (`tools/module_registry.py`):
+
 - ✅ **Internal** - Scans your local projects
 - ✅ **Automatic** - Runs `mw scan` to update
 - ✅ **Private** - Only your patterns
 - ✅ **Current** - Available now
 
 **Marketplace** (Phase 10):
+
 - ⚠️ **External** - Community contributions
 - ⚠️ **Manual** - Submit and review process
 - ⚠️ **Public** - Shared with community
@@ -498,6 +563,7 @@ Before implementing the marketplace, the framework focuses on:
 ### How to Prepare for Marketplace
 
 **Now** (while marketplace is being built):
+
 1. ✅ Document patterns in project CLAUDE.md files
 2. ✅ Run `mw brain learn` after completing work
 3. ✅ Use reusable patterns in multiple projects
@@ -505,6 +571,7 @@ Before implementing the marketplace, the framework focuses on:
 5. ✅ Build quality, tested, documented code
 
 **Later** (when marketplace is implemented):
+
 1. Submit patterns to marketplace
 2. Contribute to community modules
 3. Monetize expertise through premium content
@@ -519,6 +586,7 @@ Before implementing the marketplace, the framework focuses on:
 ### Framework-Level Tasks (Work in `/Users/dansidanutz/Desktop/MyWork/`)
 
 Work at the framework level when:
+
 - ✅ Modifying framework tools (`tools/`)
 - ✅ Updating documentation (`CLAUDE.md`, `README.md`)
 - ✅ Managing the brain (`.planning/BRAIN.md`)
@@ -528,16 +596,19 @@ Work at the framework level when:
 - ✅ Working on GSD/AutoForge/n8n integrations
 
 **Commands**:
+
 ```bash
 cd /Users/dansidanutz/Desktop/MyWork
 /gsd:progress              # Check framework status
 mw doctor                  # Framework diagnostics
 mw brain search "keyword"  # Search knowledge vault
-```
+
+```markdown
 
 ### Project-Level Tasks (Work in `projects/[project-name]/`)
 
 Work at the project level when:
+
 - ✅ Adding features to a specific project
 - ✅ Fixing bugs in a specific project
 - ✅ Modifying project-specific code
@@ -546,14 +617,17 @@ Work at the project level when:
 - ✅ Working on project documentation
 
 **Commands**:
+
 ```bash
 cd /Users/dansidanutz/Desktop/MyWork/projects/[project-name]
 /gsd:progress              # Check project status
 cat CLAUDE.md              # Read project-specific instructions
 npm run dev                # Start development server
+
 ```
 
 **When in doubt**:
+
 1. Check if the user mentioned a specific project name
 2. Check if the work affects framework tools or a specific project
 3. Check if there's a project-specific `CLAUDE.md`
@@ -568,36 +642,49 @@ When switching between projects, follow this workflow:
 ### Step 1: Save Current Context
 
 ```bash
+
 # If working on a project, save context
+
 /gsd:pause-work           # Creates handoff document
-```
+
+```markdown
 
 ### Step 2: Navigate to New Project
 
 ```bash
+
 # Navigate to project directory
+
 cd /Users/dansidanutz/Desktop/MyWork/projects/[project-name]
 
 # Or use mw command
+
 mw open [project-name]    # Opens project in VS Code
+
 ```
 
 ### Step 3: Restore Project Context
 
 ```bash
+
 # Check project status
+
 /gsd:progress             # Shows current state and what's next
 
 # Read project-specific instructions
+
 cat CLAUDE.md             # Project-specific AI instructions
 
 # If paused, restore context
+
 /gsd:resume-work          # Restores full context from last session
-```
+
+```markdown
 
 ### Step 4: Verify Context
 
 Before starting work:
+
 1. ✅ Read `STATE.md` to understand current status
 2. ✅ Check `ROADMAP.md` to see what phase is active
 3. ✅ Read project `CLAUDE.md` for specific instructions
@@ -610,40 +697,53 @@ Before starting work:
 ### Option 1: Copy Template
 
 ```bash
+
 # 1. Copy template
+
 cp -r projects/_template projects/my-new-project
 
 # 2. Navigate to new project
+
 cd projects/my-new-project
 
 # 3. Initialize GSD
+
 /gsd:new-project
 
 # 4. Follow the prompts to set up:
+
 #    - PROJECT.md (vision, scope, success criteria)
+
 #    - REQUIREMENTS.md (v1, v2, out-of-scope)
+
 #    - ROADMAP.md (phases with completion tracking)
+
 ```
 
 ### Option 2: Use AutoForge
 
 ```bash
+
 # 1. Navigate to framework root
+
 cd /Users/dansidanutz/Desktop/MyWork
 
 # 2. Use mw CLI
+
 mw new my-app fastapi      # Create FastAPI project
 mw new my-app nextjs       # Create Next.js project
 mw new my-app fullstack    # Create fullstack project
 
 # 3. Follow prompts to set up AutoForge
-```
+
+```markdown
 
 ---
 
 ## Project-Specific Documentation
 
 **Every project should have**:
+
 1. ✅ `CLAUDE.md` - Project-specific AI agent instructions (CRITICAL!)
 2. ✅ `README.md` - Project overview and setup
 3. ✅ `.planning/PROJECT.md` - Vision, scope, success criteria
@@ -652,7 +752,8 @@ mw new my-app fullstack    # Create fullstack project
 6. ✅ `.planning/STATE.md` - Current state, decisions, blockers
 7. ✅ `.planning/research/` - Codebase analysis (optional but recommended)
 
-**If a project is missing `CLAUDE.md`**, create it! This is the most critical file for AI agents to understand how to work on the project.
+**If a project is missing `CLAUDE.md`**, create it! This is the most critical
+file for AI agents to understand how to work on the project.
 
 ---
 
@@ -666,7 +767,8 @@ mw new my-app fullstack    # Create fullstack project
 4. **Start development**: `./start.sh` (Mac/Linux) or `start.bat` (Windows)
 5. **For scraper work**: Focus on `backend/scrapers/`
 6. **For frontend work**: Focus on `frontend/app/`
-7. **For YouTube automation**: Focus on `backend/services/youtube_automation.py` (be careful!)
+7. **For YouTube automation**: Focus on `backend/services/youtube_automation.py`
+(be careful!)
 
 ### Working on Task Tracker
 
@@ -676,14 +778,17 @@ mw new my-app fullstack    # Create fullstack project
 4. **Navigate to project**: `cd projects/task-tracker`
 5. **Start development**: `npm run dev`
 6. **For authentication**: Check `src/app/api/auth/[...nextauth]/route.ts`
-7. **For tasks**: Check `src/app/api/tasks/` and `src/shared/components/TaskList.tsx`
-8. **For files**: Check `src/app/api/files/` and `src/shared/components/FileDropzone.tsx`
+7. **For tasks**: Check `src/app/api/tasks/` and
+`src/shared/components/TaskList.tsx`
+8. **For files**: Check `src/app/api/files/` and
+`src/shared/components/FileDropzone.tsx`
 
 ---
 
 ## Project Documentation Standards
 
 **Every project CLAUDE.md must include**:
+
 1. ✅ Project Overview (purpose, status, tech stack)
 2. ✅ Quick Start for AI Agents
 3. ✅ Common Workflows (how to do X, how to do Y)
@@ -695,7 +800,8 @@ mw new my-app fullstack    # Create fullstack project
 9. ✅ Testing Instructions
 10. ✅ Common Issues
 
-**When creating a new project**, always copy the CLAUDE.md template from `_template/` and customize it for the project.
+**When creating a new project**, always copy the CLAUDE.md template from
+`_template/` and customize it for the project.
 
 ---
 
@@ -747,17 +853,18 @@ cp -r n8n-skills/skills/* ~/.claude/skills/
   "args": ["n8n-mcp"],
   "env": {
 
-```
+```yaml
 "MCP_MODE": "stdio",
 "LOG_LEVEL": "error",
 "N8N_API_URL": "<https://seme.app.n8n.cloud",>
 "N8N_API_KEY": "your-api-key-here"
 
 ```
+
   }
 }
 
-```
+```yaml
   }
 }
 
@@ -1029,7 +1136,7 @@ When a GSD phase has 20+ features, hand off to AutoForge:
 3. Choose mode:
    - **Automatic:** `python tools/autoforge_api.py start {project} --concurrency
 
-```
+```bash
  3`
 
 ```bash
@@ -1116,7 +1223,7 @@ projects/
 
 ```text
 
-```
+```yaml
 
 **Switching between projects:**
 
@@ -1369,7 +1476,7 @@ The brain automatically discovers knowledge from:
 ```bash
 python tools/mw.py brain search "what you're about to build"
 
-```
+```markdown
 
 #### Manual Commands
 

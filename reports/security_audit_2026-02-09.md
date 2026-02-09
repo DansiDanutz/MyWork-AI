@@ -1,25 +1,25 @@
 # 🔒 Security Audit Executive Summary
 
-**Audit Date:** 2026-02-09 00:30:38 UTC
+**Audit Date:** 2026-02-09 18:02:41 UTC
 **Repository:** /home/Memo1981/MyWork-AI
 **API Endpoint:** https://mywork-ai-production.up.railway.app
 
 ## 📊 Overall Risk Assessment
-**Risk Score:** 3.38/10
+**Risk Score:** 3.22/10
 **Risk Level:** MEDIUM
-**Total Findings:** 87
+**Total Findings:** 89
 
 ## 📈 Findings Breakdown
 
-🚨 **CRITICAL:** 4 issues - Immediate attention required
+🚨 **CRITICAL:** 3 issues - Immediate attention required
 ⚠️ **HIGH:** 19 issues - Should be addressed soon
 🔶 **MEDIUM:** 19 issues - Address when possible
-ℹ️ **LOW:** 45 issues - Best practice improvements
+ℹ️ **LOW:** 48 issues - Best practice improvements
 
 ## 🎯 Issues by Category
 
 **Code Security:** 45 issues
-**Dependencies:** 18 issues
+**Dependencies:** 20 issues
 **API Security:** 12 issues
 **Infrastructure:** 12 issues
 
@@ -37,78 +37,74 @@
 
 **Total Issues:** 45
 
-**CRITICAL:** 4 issues
+**CRITICAL:** 3 issues
 **HIGH:** 12 issues
 **MEDIUM:** 9 issues
-**LOW:** 20 issues
+**LOW:** 21 issues
 
 ## CRITICAL Severity Issues
 
 ### 1. tools/brain_learner.py:386
 **Issue:** Potential hardcoded API key or token
-**Code:** `(r"ConnectionRefusedError", "Connection refused - check if service is running"),`
+**Code:** `(r"ConnectionRefusedError", "Connection refused - check if service is running"),  # SECURITY_SAFE: error pattern matching`
 
-### 2. projects/ai-dashboard/backend/services/youtube_automation.py:207
-**Issue:** Potential hardcoded API key or token
-**Code:** `voice_id: str = "1bd001e7e50f421d891986aad5158bc8",`
-
-### 3. tools/security/code_scanner.py:56
+### 2. tools/security/code_scanner.py:56
 **Issue:** Use of eval() function - code injection risk
 **Code:** `(r'\beval\s*\(', 'Use of eval() function - code injection risk'),`
 
-### 4. tools/security/code_scanner.py:57
+### 3. tools/security/code_scanner.py:57
 **Issue:** Use of exec() function - code injection risk
 **Code:** `(r'\bexec\s*\(', 'Use of exec() function - code injection risk'),`
 
 ## HIGH Severity Issues
 
-### 1. tools/autoforge_api.py:193
+### 1. tools/autoforge_api.py:199
 **Issue:** Use of popen() - command injection risk
 **Code:** `subprocess.Popen(`
 
-### 2. tools/autocoder_api.py:193
+### 2. tools/autocoder_api.py:199
 **Issue:** Use of popen() - command injection risk
 **Code:** `subprocess.Popen(`
 
-### 3. tools/health_check.py:1153
-**Issue:** subprocess with shell=True - command injection risk
-**Code:** `subprocess.run(result.fix_command, shell=True)`
-
-### 4. tools/lint_watcher.py:64
+### 3. tools/lint_watcher.py:72
 **Issue:** Use of popen() - command injection risk
 **Code:** `process = subprocess.Popen(`
 
-### 5. tools/security/code_scanner.py:64
+### 4. tools/security/code_scanner.py:64
 **Issue:** Use of os.system() - command injection risk
 **Code:** `(r'os\.system\s*\(', 'Use of os.system() - command injection risk'),`
 
-### 6. tools/security/code_scanner.py:65
+### 5. tools/security/code_scanner.py:65
 **Issue:** subprocess with shell=True - command injection risk
 **Code:** `(r'subprocess.*shell\s*=\s*True', 'subprocess with shell=True - command injection risk'),`
 
-### 7. tools/security/code_scanner.py:66
+### 6. tools/security/code_scanner.py:66
 **Issue:** Use of popen() - command injection risk
 **Code:** `(r'popen\s*\(', 'Use of popen() - command injection risk'),`
 
-### 8. tools/security/code_scanner.py:72
+### 7. tools/security/code_scanner.py:72
 **Issue:** String formatting in SQL query - SQL injection risk
 **Code:** `(r'["\'].*%.*["\'].*%', 'String formatting in SQL query - SQL injection risk'),`
 
-### 9. tools/security/code_scanner.py:73
+### 8. tools/security/code_scanner.py:73
 **Issue:** String concatenation in SQL query
 **Code:** `(r'["\'].*\+.*["\'].*cursor', 'String concatenation in SQL query'),`
 
-### 10. tools/security/code_scanner.py:229
+### 9. tools/security/code_scanner.py:236
 **Issue:** Use of popen() - command injection risk
 **Code:** `'scan_time': os.popen('date -Iseconds').read().strip(),`
 
-### 11. tools/security/dep_audit.py:311
+### 10. tools/security/dep_audit.py:311
 **Issue:** Use of popen() - command injection risk
 **Code:** `'audit_time': os.popen('date -Iseconds').read().strip(),`
 
-### 12. tools/security/infra_scanner.py:411
+### 11. tools/security/infra_scanner.py:411
 **Issue:** Use of popen() - command injection risk
 **Code:** `'scan_time': os.popen('date -Iseconds').read().strip(),`
+
+### 12. tools/simulation/run_simulation.py:663
+**Issue:** String formatting in SQL query - SQL injection risk
+**Code:** `print(f"Commission Rate: {(total_commissions/total_revenue*100):.2f}%" if total_revenue > 0 else "Commission Rate: 0%")`
 
 ## MEDIUM Severity Issues
 
@@ -170,7 +166,7 @@
 **Issue:** Print statement with key
 **Code:** `print(f"  {status} {key:12} - {info['name']}")`
 
-### 6. tools/scaffold.py:414
+### 6. tools/scaffold.py:418
 **Issue:** Print statement with key
 **Code:** `print(f"   Available: {', '.join(TEMPLATES.keys())}")`
 
@@ -210,23 +206,27 @@
 **Issue:** Logger statement with secret
 **Code:** `(r'logger.*secret', 'Logger statement with secret'),`
 
-### 16. tools/simulation/mlm_simulator.py:598
+### 16. tools/simulation/run_simulation.py:660
+**Issue:** Print statement with key
+**Code:** `print(f"\nKey Metrics:")`
+
+### 17. tools/simulation/mlm_simulator.py:598
 **Issue:** Print statement with key
 **Code:** `print(f"   {key.replace('_', ' ').title()}: {value}")`
 
-### 17. tools/simulation/mlm_simulator.py:602
+### 18. tools/simulation/mlm_simulator.py:602
 **Issue:** Print statement with key
 **Code:** `print(f"   {key.replace('_', ' ').title()}: {value}")`
 
-### 18. tools/simulation/credit_engine.py:612
+### 19. tools/simulation/credit_engine.py:612
 **Issue:** Print statement with key
 **Code:** `print(f"   {key.replace('_', ' ').title()}: {value}")`
 
-### 19. tools/simulation/credit_engine.py:616
+### 20. tools/simulation/credit_engine.py:616
 **Issue:** Print statement with key
 **Code:** `print(f"   {key.replace('_', ' ').title()}: {value}")`
 
-### 20. tools/simulation/credit_engine.py:620
+### 21. tools/simulation/credit_engine.py:620
 **Issue:** Print statement with key
 **Code:** `print(f"   {key.replace('_', ' ').title()}: {value}")`
 
@@ -234,83 +234,91 @@
 # Dependency Audit Results
 ============================================================
 
-**Total Issues:** 18
+**Total Issues:** 20
 
-**LOW:** 18 issues
+**LOW:** 20 issues
 
 ## LOW Severity Issues
 
-### 1. fastapi v0.109.0
-**Issue:** Outdated version (latest: 0.128.5)
-**Recommendation:** Consider updating to 0.128.5
+### 1. requests v2.31.0
+**Issue:** Outdated version (latest: 2.32.5)
+**Recommendation:** Consider updating to 2.32.5
 
-### 2. apscheduler v3.10.4
-**Issue:** Outdated version (latest: 3.11.2)
-**Recommendation:** Consider updating to 3.11.2
+### 2. google-api-python-client v2.118.0
+**Issue:** Outdated version (latest: 2.189.0)
+**Recommendation:** Consider updating to 2.189.0
 
-### 3. httpx v0.25.1
-**Issue:** Outdated version (latest: 0.28.1)
-**Recommendation:** Consider updating to 0.28.1
+### 3. click v8.1.0
+**Issue:** Outdated version (latest: 8.3.1)
+**Recommendation:** Consider updating to 8.3.1
 
-### 4. google-auth-oauthlib v1.2.0
-**Issue:** Outdated version (latest: 1.2.4)
-**Recommendation:** Consider updating to 1.2.4
+### 4. rich v13.0.0
+**Issue:** Outdated version (latest: 14.3.2)
+**Recommendation:** Consider updating to 14.3.2
 
 ### 5. httpx v0.25.0
 **Issue:** Outdated version (latest: 0.28.1)
 **Recommendation:** Consider updating to 0.28.1
 
-### 6. requests v2.31.0
-**Issue:** Outdated version (latest: 2.32.5)
-**Recommendation:** Consider updating to 2.32.5
+### 6. sqlalchemy v2.0.0
+**Issue:** Outdated version (latest: 2.0.46)
+**Recommendation:** Consider updating to 2.0.46
 
-### 7. pyyaml v6.0.0
-**Issue:** Outdated version (latest: 6.0.3)
-**Recommendation:** Consider updating to 6.0.3
+### 7. apscheduler v3.10.4
+**Issue:** Outdated version (latest: 3.11.2)
+**Recommendation:** Consider updating to 3.11.2
 
-### 8. google-api-python-client v2.118.0
-**Issue:** Outdated version (latest: 2.189.0)
-**Recommendation:** Consider updating to 2.189.0
+### 8. aiosqlite v0.19.0
+**Issue:** Outdated version (latest: 0.22.1)
+**Recommendation:** Consider updating to 0.22.1
 
-### 9. rich v13.0.0
-**Issue:** Outdated version (latest: 14.3.2)
-**Recommendation:** Consider updating to 14.3.2
+### 9. anthropic v0.18.1
+**Issue:** Outdated version (latest: 0.79.0)
+**Recommendation:** Consider updating to 0.79.0
 
 ### 10. dspy-ai v2.4.0
 **Issue:** Outdated version (latest: 3.1.3)
 **Recommendation:** Consider updating to 3.1.3
 
-### 11. aiosqlite v0.19.0
-**Issue:** Outdated version (latest: 0.22.1)
-**Recommendation:** Consider updating to 0.22.1
-
-### 12. anthropic v0.18.1
-**Issue:** Outdated version (latest: 0.79.0)
-**Recommendation:** Consider updating to 0.79.0
-
-### 13. python-dateutil v2.8.2
+### 11. python-dateutil v2.8.2
 **Issue:** Outdated version (latest: 2.9.0.post0)
 **Recommendation:** Consider updating to 2.9.0.post0
+
+### 12. httpx v0.25.1
+**Issue:** Outdated version (latest: 0.28.1)
+**Recommendation:** Consider updating to 0.28.1
+
+### 13. sqlalchemy v2.0.25
+**Issue:** Outdated version (latest: 2.0.46)
+**Recommendation:** Consider updating to 2.0.46
 
 ### 14. feedparser v6.0.10
 **Issue:** Outdated version (latest: 6.0.12)
 **Recommendation:** Consider updating to 6.0.12
 
-### 15. sqlalchemy v2.0.25
-**Issue:** Outdated version (latest: 2.0.46)
-**Recommendation:** Consider updating to 2.0.46
+### 15. google-auth-oauthlib v1.2.0
+**Issue:** Outdated version (latest: 1.2.4)
+**Recommendation:** Consider updating to 1.2.4
 
 ### 16. python-dotenv v1.0.0
 **Issue:** Outdated version (latest: 1.2.1)
 **Recommendation:** Consider updating to 1.2.1
 
-### 17. click v8.1.0
-**Issue:** Outdated version (latest: 8.3.1)
-**Recommendation:** Consider updating to 8.3.1
+### 17. pydantic v2.5.0
+**Issue:** Outdated version (latest: 2.12.5)
+**Recommendation:** Consider updating to 2.12.5
 
 ### 18. apify-client v1.6.0
 **Issue:** Outdated version (latest: 2.4.1)
 **Recommendation:** Consider updating to 2.4.1
+
+### 19. pyyaml v6.0.0
+**Issue:** Outdated version (latest: 6.0.3)
+**Recommendation:** Consider updating to 6.0.3
+
+### 20. fastapi v0.109.0
+**Issue:** Outdated version (latest: 0.128.6)
+**Recommendation:** Consider updating to 0.128.6
 
 ============================================================
 # API Security Test Results
@@ -364,7 +372,7 @@
 
 ### 8. / (GET)
 **Issue:** No rate limiting detected
-**Details:** Made 20 requests in 4.62s with no rate limiting
+**Details:** Made 20 requests in 4.74s with no rate limiting
 
 ### 9. / (GET)
 **Issue:** HTTP endpoint does not redirect to HTTPS

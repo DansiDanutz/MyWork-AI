@@ -1,56 +1,14 @@
 {
-  "audit_time": "2026-02-09T00:30:25+00:00",
+  "audit_time": "2026-02-09T18:02:27+00:00",
   "repository": "/home/Memo1981/MyWork-AI",
-  "total_findings": 18,
+  "total_findings": 20,
   "findings": [
-    {
-      "package": "fastapi",
-      "version": "0.109.0",
-      "severity": "LOW",
-      "issue": "Outdated version (latest: 0.128.5)",
-      "recommendation": "Consider updating to 0.128.5"
-    },
-    {
-      "package": "apscheduler",
-      "version": "3.10.4",
-      "severity": "LOW",
-      "issue": "Outdated version (latest: 3.11.2)",
-      "recommendation": "Consider updating to 3.11.2"
-    },
-    {
-      "package": "httpx",
-      "version": "0.25.1",
-      "severity": "LOW",
-      "issue": "Outdated version (latest: 0.28.1)",
-      "recommendation": "Consider updating to 0.28.1"
-    },
-    {
-      "package": "google-auth-oauthlib",
-      "version": "1.2.0",
-      "severity": "LOW",
-      "issue": "Outdated version (latest: 1.2.4)",
-      "recommendation": "Consider updating to 1.2.4"
-    },
-    {
-      "package": "httpx",
-      "version": "0.25.0",
-      "severity": "LOW",
-      "issue": "Outdated version (latest: 0.28.1)",
-      "recommendation": "Consider updating to 0.28.1"
-    },
     {
       "package": "requests",
       "version": "2.31.0",
       "severity": "LOW",
       "issue": "Outdated version (latest: 2.32.5)",
       "recommendation": "Consider updating to 2.32.5"
-    },
-    {
-      "package": "pyyaml",
-      "version": "6.0.0",
-      "severity": "LOW",
-      "issue": "Outdated version (latest: 6.0.3)",
-      "recommendation": "Consider updating to 6.0.3"
     },
     {
       "package": "google-api-python-client",
@@ -60,6 +18,13 @@
       "recommendation": "Consider updating to 2.189.0"
     },
     {
+      "package": "click",
+      "version": "8.1.0",
+      "severity": "LOW",
+      "issue": "Outdated version (latest: 8.3.1)",
+      "recommendation": "Consider updating to 8.3.1"
+    },
+    {
       "package": "rich",
       "version": "13.0.0",
       "severity": "LOW",
@@ -67,11 +32,25 @@
       "recommendation": "Consider updating to 14.3.2"
     },
     {
-      "package": "dspy-ai",
-      "version": "2.4.0",
+      "package": "httpx",
+      "version": "0.25.0",
       "severity": "LOW",
-      "issue": "Outdated version (latest: 3.1.3)",
-      "recommendation": "Consider updating to 3.1.3"
+      "issue": "Outdated version (latest: 0.28.1)",
+      "recommendation": "Consider updating to 0.28.1"
+    },
+    {
+      "package": "sqlalchemy",
+      "version": "2.0.0",
+      "severity": "LOW",
+      "issue": "Outdated version (latest: 2.0.46)",
+      "recommendation": "Consider updating to 2.0.46"
+    },
+    {
+      "package": "apscheduler",
+      "version": "3.10.4",
+      "severity": "LOW",
+      "issue": "Outdated version (latest: 3.11.2)",
+      "recommendation": "Consider updating to 3.11.2"
     },
     {
       "package": "aiosqlite",
@@ -88,6 +67,13 @@
       "recommendation": "Consider updating to 0.79.0"
     },
     {
+      "package": "dspy-ai",
+      "version": "2.4.0",
+      "severity": "LOW",
+      "issue": "Outdated version (latest: 3.1.3)",
+      "recommendation": "Consider updating to 3.1.3"
+    },
+    {
       "package": "python-dateutil",
       "version": "2.8.2",
       "severity": "LOW",
@@ -95,11 +81,11 @@
       "recommendation": "Consider updating to 2.9.0.post0"
     },
     {
-      "package": "feedparser",
-      "version": "6.0.10",
+      "package": "httpx",
+      "version": "0.25.1",
       "severity": "LOW",
-      "issue": "Outdated version (latest: 6.0.12)",
-      "recommendation": "Consider updating to 6.0.12"
+      "issue": "Outdated version (latest: 0.28.1)",
+      "recommendation": "Consider updating to 0.28.1"
     },
     {
       "package": "sqlalchemy",
@@ -109,6 +95,20 @@
       "recommendation": "Consider updating to 2.0.46"
     },
     {
+      "package": "feedparser",
+      "version": "6.0.10",
+      "severity": "LOW",
+      "issue": "Outdated version (latest: 6.0.12)",
+      "recommendation": "Consider updating to 6.0.12"
+    },
+    {
+      "package": "google-auth-oauthlib",
+      "version": "1.2.0",
+      "severity": "LOW",
+      "issue": "Outdated version (latest: 1.2.4)",
+      "recommendation": "Consider updating to 1.2.4"
+    },
+    {
       "package": "python-dotenv",
       "version": "1.0.0",
       "severity": "LOW",
@@ -116,11 +116,11 @@
       "recommendation": "Consider updating to 1.2.1"
     },
     {
-      "package": "click",
-      "version": "8.1.0",
+      "package": "pydantic",
+      "version": "2.5.0",
       "severity": "LOW",
-      "issue": "Outdated version (latest: 8.3.1)",
-      "recommendation": "Consider updating to 8.3.1"
+      "issue": "Outdated version (latest: 2.12.5)",
+      "recommendation": "Consider updating to 2.12.5"
     },
     {
       "package": "apify-client",
@@ -128,6 +128,20 @@
       "severity": "LOW",
       "issue": "Outdated version (latest: 2.4.1)",
       "recommendation": "Consider updating to 2.4.1"
+    },
+    {
+      "package": "pyyaml",
+      "version": "6.0.0",
+      "severity": "LOW",
+      "issue": "Outdated version (latest: 6.0.3)",
+      "recommendation": "Consider updating to 6.0.3"
+    },
+    {
+      "package": "fastapi",
+      "version": "0.109.0",
+      "severity": "LOW",
+      "issue": "Outdated version (latest: 0.128.6)",
+      "recommendation": "Consider updating to 0.128.6"
     }
   ]
 }
