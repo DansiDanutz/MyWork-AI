@@ -12,7 +12,7 @@ Usage:
     python brain.py review                  # Show entries needing attention
     python brain.py cleanup                 # Remove deprecated entries
     python brain.py stats                   # Show brain statistics
-    python brain.py export                  # Export to JSON for backup
+    python brain.py export [markdown|json] # Export to markdown or JSON
 
 Types:
     lesson      - Something learned from experience
@@ -292,19 +292,76 @@ class BrainManager:
 
 
 def print_entry(entry: BrainEntry, verbose: bool = False):
-    """Print a formatted entry."""
+    """Print a formatted entry with improved styling."""
     status_icons = {"TESTED": "✅", "EXPERIMENTAL": "🧪", "DEPRECATED": "❌"}
     icon = status_icons.get(entry.status, "❓")
-
-    print(f"\n{icon} [{entry.id}] {entry.content[:60]}{'...' if len(entry.content) > 60 else ''}")
-    print(f"   Type: {entry.type} | Status: {entry.status}")
-    print(f"   Added: {entry.date_added} | Updated: {entry.date_updated}")
-
+    
+    # Color codes
+    BOLD = '\033[1m'
+    CYAN = '\033[96m'
+    YELLOW = '\033[93m'
+    GREEN = '\033[92m'
+    BLUE = '\033[94m'
+    RESET = '\033[0m'
+    
+    # Create a nice box for each entry
+    content_preview = entry.content[:80] + '...' if len(entry.content) > 80 else entry.content
+    
+    print(f"\n{CYAN}╭─ {icon} {BOLD}{entry.type.upper()}{RESET}{CYAN} [{entry.id}]{'─' * max(0, 60 - len(entry.id) - len(entry.type))}╮{RESET}")
+    
+    # Split content into multiple lines if needed
+    words = content_preview.split()
+    lines = []
+    current_line = []
+    current_length = 0
+    
+    for word in words:
+        if current_length + len(word) + 1 <= 60:
+            current_line.append(word)
+            current_length += len(word) + 1
+        else:
+            lines.append(' '.join(current_line))
+            current_line = [word]
+            current_length = len(word)
+    
+    if current_line:
+        lines.append(' '.join(current_line))
+    
+    for line in lines:
+        print(f"{CYAN}│ {RESET}{line:<60}{CYAN} │{RESET}")
+    
+    # Metadata line
+    metadata = f"📅 {entry.date_added.split()[0]} • 🏷️ {entry.status}"
+    print(f"{CYAN}├─{YELLOW} {metadata:<58} {CYAN}─┤{RESET}")
+    
     if verbose:
         if entry.context:
-            print(f"   Context: {entry.context}")
+            context_words = entry.context.split()
+            context_lines = []
+            current_line = []
+            current_length = 0
+            
+            for word in context_words:
+                if current_length + len(word) + 1 <= 58:
+                    current_line.append(word)
+                    current_length += len(word) + 1
+                else:
+                    context_lines.append(' '.join(current_line))
+                    current_line = [word]
+                    current_length = len(word)
+            
+            if current_line:
+                context_lines.append(' '.join(current_line))
+            
+            print(f"{CYAN}├─ {BLUE}📝 Context:{RESET}{' ' * 47}{CYAN}─┤{RESET}")
+            for line in context_lines:
+                print(f"{CYAN}│ {RESET}{line:<60}{CYAN} │{RESET}")
+        
         if entry.tags:
-            print(f"   Tags: {', '.join(entry.tags)}")
+            tags_str = ', '.join(entry.tags)
+            print(f"{CYAN}├─ {GREEN}🏷️  Tags: {tags_str:<51}{CYAN}─┤{RESET}")
+    
+    print(f"{CYAN}╰{'─' * 62}╯{RESET}")
 
 
 def cmd_add(args: List[str]):
@@ -402,7 +459,7 @@ def cmd_deprecate(args: List[str]):
 
 
 def cmd_search(args: List[str]):
-    """Search the brain."""
+    """Search the brain with improved formatting."""
     if not args:
         print("Usage: python brain.py search <query>")
         return
@@ -411,13 +468,51 @@ def cmd_search(args: List[str]):
     brain = BrainManager()
     results = brain.search(query)
 
+    # Color codes
+    BOLD = '\033[1m'
+    CYAN = '\033[96m'
+    YELLOW = '\033[93m'
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    RESET = '\033[0m'
+
     if not results:
-        print(f"❌ No entries found matching '{query}'")
+        print(f"\n{RED}❌ No entries found matching '{YELLOW}{query}{RESET}{RED}'{RESET}")
+        print(f"{CYAN}💡 Try searching for broader terms or check `brain stats` for available categories.{RESET}")
         return
 
-    print(f"\n🔍 Found {len(results)} entries matching '{query}':")
-    for entry in results[:10]:
-        print_entry(entry)
+    # Search results header
+    print(f"\n{BOLD}{CYAN}{'═' * 70}{RESET}")
+    print(f"{BOLD}{CYAN}🔍 BRAIN SEARCH RESULTS{RESET}")
+    print(f"{BOLD}{CYAN}{'═' * 70}{RESET}")
+    print(f"{GREEN}Query:{RESET} '{YELLOW}{query}{RESET}' • {GREEN}Found:{RESET} {BOLD}{len(results)}{RESET} entries")
+    
+    # Group results by type for better organization
+    by_type = {}
+    for entry in results:
+        if entry.type not in by_type:
+            by_type[entry.type] = []
+        by_type[entry.type].append(entry)
+    
+    # Show summary by type
+    print(f"\n{CYAN}📊 Results by type:{RESET}")
+    for entry_type, entries in sorted(by_type.items()):
+        print(f"  • {entry_type}: {len(entries)} matches")
+    
+    print(f"\n{BOLD}{CYAN}{'─' * 70}{RESET}")
+    
+    # Show top results (limit to 10 for readability)
+    shown_results = results[:10]
+    for i, entry in enumerate(shown_results, 1):
+        print(f"\n{BOLD}{YELLOW}[{i}/{len(results)}]{RESET}")
+        print_entry(entry, verbose=True)
+    
+    # Show pagination info if there are more results
+    if len(results) > 10:
+        print(f"\n{CYAN}📄 Showing first 10 of {len(results)} results. Use more specific terms to narrow down.{RESET}")
+    
+    print(f"\n{BOLD}{CYAN}{'═' * 70}{RESET}")
+    print(f"{CYAN}💡 Use 'brain review' to see experimental entries or 'brain stats' for overview.{RESET}")
 
 
 def cmd_review(args: List[str]):
@@ -491,10 +586,81 @@ def cmd_stats(args: List[str]):
 
 
 def cmd_export(args: List[str]):
-    """Export brain to JSON."""
+    """Export brain to markdown or JSON."""
+    format_type = args[0] if args else "markdown"
+    
+    if format_type not in ["markdown", "json"]:
+        print("Usage: python brain.py export [markdown|json]")
+        return
+    
     brain = BrainManager()
-    brain.save()
-    print(f"✅ Exported to: {brain.brain_json}")
+    
+    if format_type == "json":
+        brain.save()
+        print(f"✅ JSON exported to: {brain.brain_json}")
+        return
+    
+    # Markdown export
+    mywork_root = get_mywork_root()
+    export_file = mywork_root / f"BRAIN_EXPORT_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+    
+    entries = list(brain.entries.values())
+    
+    # Group entries by type
+    by_type = {}
+    for entry in entries:
+        if entry.type not in by_type:
+            by_type[entry.type] = []
+        by_type[entry.type].append(entry)
+    
+    with open(export_file, 'w') as f:
+        f.write("# MyWork-AI Brain Export\n\n")
+        f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
+        
+        # Summary stats
+        stats = brain.get_stats()
+        f.write("## Summary\n\n")
+        f.write(f"- **Total Entries:** {stats['total_entries']}\n")
+        f.write(f"- **Types:** {', '.join(stats['by_type'].keys())}\n")
+        f.write(f"- **Status Distribution:** ")
+        status_summary = [f"{status}: {count}" for status, count in stats['by_status'].items()]
+        f.write(", ".join(status_summary) + "\n\n")
+        
+        # Table of contents
+        f.write("## Table of Contents\n\n")
+        for entry_type in sorted(by_type.keys()):
+            count = len(by_type[entry_type])
+            f.write(f"- [{entry_type.title()}](#user-content-{entry_type.lower()}) ({count} entries)\n")
+        f.write("\n")
+        
+        # Export each type
+        for entry_type in sorted(by_type.keys()):
+            entries_of_type = sorted(by_type[entry_type], key=lambda x: x.date_added, reverse=True)
+            
+            f.write(f"## {entry_type.title()}\n\n")
+            
+            for entry in entries_of_type:
+                status_emoji = {"TESTED": "✅", "EXPERIMENTAL": "🧪", "DEPRECATED": "❌"}.get(entry.status, "❓")
+                
+                f.write(f"### {status_emoji} {entry.id}\n\n")
+                f.write(f"**Content:** {entry.content}\n\n")
+                
+                if entry.context:
+                    f.write(f"**Context:** {entry.context}\n\n")
+                
+                metadata = []
+                metadata.append(f"**Added:** {entry.date_added}")
+                metadata.append(f"**Updated:** {entry.date_updated}")
+                metadata.append(f"**Status:** {entry.status}")
+                
+                if entry.tags:
+                    metadata.append(f"**Tags:** {', '.join(entry.tags)}")
+                
+                f.write(" | ".join(metadata) + "\n\n")
+                f.write("---\n\n")
+    
+    print(f"✅ Markdown exported to: {export_file}")
+    print(f"📊 Exported {stats['total_entries']} entries across {len(by_type)} types")
 
 
 def cmd_list(args: List[str]):
