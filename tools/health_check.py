@@ -12,9 +12,10 @@ Usage:
 
 Checks:
     - GSD installation and version
-    - Autocoder server status
+    - AutoForge server status
     - n8n connection and workflows
     - Project structure integrity
+    - Git repository integrity
     - API key validity
     - Dependency versions
     - Disk space
@@ -198,7 +199,8 @@ class HealthChecker:
     def run_all(self) -> List[CheckResult]:
         """Run all health checks."""
         self.check_gsd()
-        self.check_autocoder()
+        self.check_autoforge()
+        self.check_git_integrity()
         self.check_n8n()
         self.check_projects()
         self.check_api_keys()
@@ -210,7 +212,7 @@ class HealthChecker:
     def run_quick(self) -> List[CheckResult]:
         """Run quick status checks only."""
         self.check_gsd(quick=True)
-        self.check_autocoder(quick=True)
+        self.check_autoforge(quick=True)
         self.check_n8n(quick=True)
         return self.results
 
@@ -315,16 +317,16 @@ class HealthChecker:
                 )
             )
 
-    def check_autocoder(self, quick: bool = False):
-        """Check Autocoder installation and server status."""
+    def check_autoforge(self, quick: bool = False):
+        """Check AutoForge installation and server status."""
         try:
-            # Check installation
+            # Check installation  
             if not AUTOCODER_PATH.exists():
                 self.add_result(
                     CheckResult(
-                        name="Autocoder Installation",
+                        name="AutoForge Installation",
                         status=Status.ERROR,
-                        message="Autocoder not found at expected path",
+                        message="AutoForge not found at expected path",
                         details={"expected_path": str(AUTOCODER_PATH)},
                     )
                 )
@@ -336,7 +338,7 @@ class HealthChecker:
             if server_running:
                 self.add_result(
                     CheckResult(
-                        name="Autocoder Server",
+                        name="AutoForge Server",
                         status=Status.OK,
                         message="Server running on port 8888",
                         details={"port": 8888, "running": True},
@@ -345,11 +347,11 @@ class HealthChecker:
             else:
                 self.add_result(
                     CheckResult(
-                        name="Autocoder Server",
+                        name="AutoForge Server",
                         status=Status.WARNING,
                         message="Server not running",
                         details={"port": 8888, "running": False},
-                        fix_command="python tools/autocoder_api.py server",
+                        fix_command="python tools/autoforge_api.py server",
                     )
                 )
 
@@ -382,17 +384,17 @@ class HealthChecker:
             if pending_updates > 0:
                 self.add_result(
                     CheckResult(
-                        name="Autocoder Version",
+                        name="AutoForge Version",
                         status=Status.WARNING,
                         message=f"Commit {commit}, {pending_updates} updates available",
                         details={"commit": commit, "pending": pending_updates},
-                        fix_command="python tools/auto_update.py update autocoder",
+                        fix_command="python tools/auto_update.py update autoforge",
                     )
                 )
             else:
                 self.add_result(
                     CheckResult(
-                        name="Autocoder Version",
+                        name="AutoForge Version",
                         status=Status.OK,
                         message=f"Commit {commit}, up to date",
                         details={"commit": commit},
@@ -404,7 +406,7 @@ class HealthChecker:
             if venv_path.exists():
                 self.add_result(
                     CheckResult(
-                        name="Autocoder Environment",
+                        name="AutoForge Environment",
                         status=Status.OK,
                         message="Python venv configured",
                     )
@@ -412,7 +414,7 @@ class HealthChecker:
             else:
                 self.add_result(
                     CheckResult(
-                        name="Autocoder Environment",
+                        name="AutoForge Environment",
                         status=Status.ERROR,
                         message="Python venv missing",
                         fix_command=f"cd {AUTOCODER_PATH} && python -m venv venv && pip install -r requirements.txt",
@@ -422,9 +424,9 @@ class HealthChecker:
         except Exception as e:
             self.add_result(
                 CheckResult(
-                    name="Autocoder Check",
+                    name="AutoForge Check",
                     status=Status.ERROR,
-                    message=f"Error checking Autocoder: {str(e)}",
+                    message=f"Error checking AutoForge: {str(e)}",
                 )
             )
 
@@ -743,8 +745,98 @@ class HealthChecker:
             # Check git
             result = subprocess.run(["git", "--version"], capture_output=True, text=True)
             if result.returncode == 0:
+                git_version = result.stdout.strip()
                 self.add_result(
-                    CheckResult(name="Git", status=Status.OK, message=result.stdout.strip())
+                    CheckResult(name="Git", status=Status.OK, message=git_version)
+                )
+
+            # Check pip packages for MyWork framework
+            pip_requirements = [
+                ("httpx", "0.24.0"),
+                ("websockets", "10.0"),
+                ("pydantic", "2.0"),
+                ("python-dotenv", "0.19.0")
+            ]
+            
+            for package, min_version in pip_requirements:
+                try:
+                    result = subprocess.run(
+                        ["pip", "show", package], 
+                        capture_output=True, 
+                        text=True
+                    )
+                    if result.returncode == 0:
+                        # Extract version from pip show output
+                        for line in result.stdout.split('\n'):
+                            if line.startswith('Version:'):
+                                version = line.split(':', 1)[1].strip()
+                                # Simple version comparison (works for basic semver)
+                                if version >= min_version:
+                                    status = Status.OK
+                                    message = f"v{version} (>= {min_version})"
+                                else:
+                                    status = Status.WARNING
+                                    message = f"v{version} (requires >= {min_version})"
+                                
+                                self.add_result(
+                                    CheckResult(
+                                        name=f"Python Package: {package}",
+                                        status=status,
+                                        message=message,
+                                        details={"installed_version": version, "required": min_version}
+                                    )
+                                )
+                                break
+                    else:
+                        self.add_result(
+                            CheckResult(
+                                name=f"Python Package: {package}",
+                                status=Status.ERROR,
+                                message="Not installed",
+                                fix_command=f"pip install {package}>={min_version}"
+                            )
+                        )
+                except Exception as pkg_e:
+                    self.add_result(
+                        CheckResult(
+                            name=f"Python Package: {package}",
+                            status=Status.ERROR,
+                            message=f"Check failed: {str(pkg_e)}"
+                        )
+                    )
+
+            # Check framework-specific files
+            framework_files = [
+                ("pyproject.toml", "Framework configuration"),
+                ("requirements.txt", "Python dependencies"),
+                (".gitignore", "Git ignore rules"),
+                ("tools/mw.py", "MyWork CLI"),
+                ("tools/brain.py", "Brain knowledge system"),
+                ("tools/autoforge_api.py", "AutoForge integration")
+            ]
+            
+            missing_files = []
+            for file_path, description in framework_files:
+                full_path = MYWORK_ROOT / file_path
+                if not full_path.exists():
+                    missing_files.append(f"{file_path} ({description})")
+            
+            if missing_files:
+                self.add_result(
+                    CheckResult(
+                        name="Framework Files",
+                        status=Status.WARNING,
+                        message=f"{len(missing_files)} files missing",
+                        details={"missing": missing_files}
+                    )
+                )
+            else:
+                self.add_result(
+                    CheckResult(
+                        name="Framework Files",
+                        status=Status.OK,
+                        message="All required files present"
+                    )
                 )
 
         except Exception as e:
@@ -864,6 +956,124 @@ class HealthChecker:
                     name="Disk Space Check",
                     status=Status.ERROR,
                     message=f"Error checking disk space: {str(e)}",
+                )
+            )
+
+    def check_git_integrity(self):
+        """Check git repository integrity."""
+        try:
+            # Check if this is a git repository
+            result = subprocess.run(
+                ["git", "rev-parse", "--is-inside-work-tree"],
+                cwd=MYWORK_ROOT,
+                capture_output=True,
+                text=True
+            )
+            
+            if result.returncode != 0:
+                self.add_result(
+                    CheckResult(
+                        name="Git Repository",
+                        status=Status.ERROR,
+                        message="Not a git repository",
+                        details={"path": str(MYWORK_ROOT)},
+                        fix_command="cd " + str(MYWORK_ROOT) + " && git init"
+                    )
+                )
+                return
+
+            # Check repository status
+            result = subprocess.run(
+                ["git", "status", "--porcelain"],
+                cwd=MYWORK_ROOT,
+                capture_output=True,
+                text=True
+            )
+            
+            if result.returncode == 0:
+                modified_files = len([line for line in result.stdout.strip().split('\n') if line.strip()])
+                
+                if result.stdout.strip():
+                    self.add_result(
+                        CheckResult(
+                            name="Git Working Directory",
+                            status=Status.WARNING,
+                            message=f"{modified_files} uncommitted changes",
+                            details={"modified_files": modified_files},
+                            fix_command="git add . && git commit -m 'WIP: Uncommitted changes'"
+                        )
+                    )
+                else:
+                    self.add_result(
+                        CheckResult(
+                            name="Git Working Directory",
+                            status=Status.OK,
+                            message="Clean working directory"
+                        )
+                    )
+
+            # Check for unpushed commits
+            result = subprocess.run(
+                ["git", "log", "--oneline", "@{u}..HEAD"],
+                cwd=MYWORK_ROOT,
+                capture_output=True,
+                text=True
+            )
+            
+            if result.returncode == 0 and result.stdout.strip():
+                unpushed_commits = len(result.stdout.strip().split('\n'))
+                self.add_result(
+                    CheckResult(
+                        name="Git Remote Sync",
+                        status=Status.WARNING,
+                        message=f"{unpushed_commits} unpushed commits",
+                        details={"unpushed_commits": unpushed_commits},
+                        fix_command="git push"
+                    )
+                )
+            else:
+                self.add_result(
+                    CheckResult(
+                        name="Git Remote Sync",
+                        status=Status.OK,
+                        message="Repository in sync with remote"
+                    )
+                )
+
+            # Check git configuration
+            result = subprocess.run(
+                ["git", "config", "user.email"],
+                cwd=MYWORK_ROOT,
+                capture_output=True,
+                text=True
+            )
+            
+            if result.returncode == 0 and result.stdout.strip():
+                email = result.stdout.strip()
+                self.add_result(
+                    CheckResult(
+                        name="Git Configuration",
+                        status=Status.OK,
+                        message=f"User configured: {email}",
+                        details={"user_email": email}
+                    )
+                )
+            else:
+                self.add_result(
+                    CheckResult(
+                        name="Git Configuration",
+                        status=Status.WARNING,
+                        message="Git user not configured",
+                        fix_command="git config user.email 'memo@openclaw.ai' && git config user.name 'Memo'"
+                    )
+                )
+
+        except Exception as e:
+            self.add_result(
+                CheckResult(
+                    name="Git Integrity Check",
+                    status=Status.ERROR,
+                    message=f"Error checking git repository: {str(e)}",
                 )
             )
 
