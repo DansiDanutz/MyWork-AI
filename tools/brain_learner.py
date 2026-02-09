@@ -14,6 +14,11 @@ Usage:
     python brain_learner.py discover           # Discover new learnings from recent work
     python brain_learner.py analyze-errors     # Learn from error patterns
     python brain_learner.py analyze-modules    # Learn from module registry patterns
+    python brain_learner.py analyze-tracebacks # Learn from Python tracebacks in logs
+    python brain_learner.py analyze-deployments # Learn from successful deployments
+    python brain_learner.py analyze-reviews    # Learn from code review patterns
+    python brain_learner.py auto-tag           # Auto-tag entries based on content
+    python brain_learner.py confidence-score   # Update confidence scores for entries
     python brain_learner.py promote            # Promote validated EXPERIMENTAL entries
     python brain_learner.py cleanup-smart      # Intelligent cleanup based on usage
     python brain_learner.py daily              # Run daily learning routine
@@ -462,6 +467,345 @@ class LearningEngine:
 
         return count
 
+    def discover_from_python_tracebacks(self) -> int:
+        """Learn from Python tracebacks in recent logs."""
+        count = 0
+
+        # Check various log sources
+        log_sources = [
+            MYWORK_ROOT / "logs",
+            MYWORK_ROOT / ".tmp",
+            Path("/var/log"),
+        ]
+
+        for source in log_sources:
+            if source.exists():
+                if source.is_file():
+                    count += self._analyze_traceback_file(source)
+                else:
+                    count += self._scan_directory_for_tracebacks(source)
+
+        return count
+
+    def _analyze_traceback_file(self, file_path: Path) -> int:
+        """Analyze a single file for Python tracebacks."""
+        count = 0
+        
+        try:
+            # Skip very large files
+            if file_path.stat().st_size > 10 * 1024 * 1024:  # 10MB
+                return 0
+            
+            # Only analyze recent files
+            if file_path.stat().st_mtime < (datetime.now() - timedelta(days=7)).timestamp():
+                return 0
+
+            content = file_path.read_text(errors='ignore')
+            count += self._analyze_traceback_content(content, str(file_path))
+            
+        except Exception:
+            pass  # Skip files we can't read
+
+        return count
+
+    def _scan_directory_for_tracebacks(self, directory: Path) -> int:
+        """Scan directory for files containing Python tracebacks."""
+        count = 0
+        
+        # Look for relevant file types
+        patterns = ["*.log", "*.txt", "*.out", "*.err"]
+        
+        for pattern in patterns:
+            for file_path in directory.glob(pattern):
+                count += self._analyze_traceback_file(file_path)
+        
+        return count
+
+    def _analyze_traceback_content(self, content: str, source: str) -> int:
+        """Analyze content for Python tracebacks and extract learnings."""
+        count = 0
+
+        # Pattern to match Python tracebacks
+        traceback_pattern = r'Traceback \(most recent call last\):(.*?)(?=\n\S|\n*$)'
+        
+        tracebacks = re.findall(traceback_pattern, content, re.DOTALL)
+        
+        for traceback in tracebacks:
+            # Extract the error type and message
+            error_match = re.search(r'(\w+Error): (.+)', traceback)
+            if not error_match:
+                continue
+                
+            error_type = error_match.group(1)
+            error_message = error_match.group(2).strip()
+            
+            # Create meaningful learning from the error
+            if error_type and error_message:
+                lesson = self._extract_error_lesson(error_type, error_message)
+                confidence_score = self._calculate_error_confidence(error_type, error_message)
+                
+                if lesson and self.add_discovery(
+                    "antipattern",
+                    lesson,
+                    f"Python error pattern (Source: {source})",
+                    confidence_score,
+                    f"traceback:{error_type}"
+                ):
+                    count += 1
+
+        return count
+
+    def _extract_error_lesson(self, error_type: str, error_message: str) -> str:
+        """Extract specific lesson from error pattern."""
+        error_lessons = {
+            'ModuleNotFoundError': "Always verify module installation before importing",
+            'KeyError': "Always check if dictionary keys exist before accessing",
+            'AttributeError': "Verify object attributes exist before accessing", 
+            'TypeError': "Validate argument types before function calls",
+            'FileNotFoundError': "Always verify file existence before operations",
+            'ImportError': "Check import paths and module availability",
+            'IndentationError': "Maintain consistent indentation in Python code",
+            'SyntaxError': "Validate code syntax before execution"
+        }
+        
+        return error_lessons.get(error_type, f"Handle {error_type} properly in your code")
+
+    def _calculate_error_confidence(self, error_type: str, error_message: str) -> str:
+        """Calculate confidence level for error-based learnings."""
+        # High confidence errors - very common and well-understood
+        high_confidence_errors = {'ModuleNotFoundError', 'ImportError', 'SyntaxError', 'IndentationError'}
+        
+        if error_type in high_confidence_errors:
+            return "TESTED"
+        else:
+            return "EXPERIMENTAL"
+
+    def discover_from_deployments(self) -> int:
+        """Learn from successful deployment patterns."""
+        count = 0
+
+        # Look for deployment-related files and configs
+        deployment_files = [
+            (MYWORK_ROOT.glob("**/Dockerfile"), "Docker deployment patterns"),
+            (MYWORK_ROOT.glob("**/docker-compose.yml"), "Docker Compose patterns"),
+            (MYWORK_ROOT.glob("**/.github/workflows/*.yml"), "GitHub Actions CI/CD"),
+            (MYWORK_ROOT.glob("**/deploy.sh"), "Deployment scripts"),
+            (MYWORK_ROOT.glob("**/vercel.json"), "Vercel deployment config"),
+        ]
+
+        for glob_pattern, context in deployment_files:
+            try:
+                for file_path in glob_pattern:
+                    if file_path.is_file() and self._is_recent_file(file_path, days=30):
+                        count += self._analyze_deployment_file(file_path, context)
+            except Exception:
+                continue  # Skip if glob fails
+
+        return count
+
+    def _is_recent_file(self, file_path: Path, days: int = 7) -> bool:
+        """Check if file was modified recently."""
+        try:
+            return file_path.stat().st_mtime > (datetime.now() - timedelta(days=days)).timestamp()
+        except:
+            return False
+
+    def _analyze_deployment_file(self, file_path: Path, context: str) -> int:
+        """Extract deployment patterns from files."""
+        count = 0
+        
+        try:
+            content = file_path.read_text()
+            
+            # Common deployment patterns to look for
+            patterns = {
+                'Dockerfile': [
+                    (r'FROM (\w+:[^\s]+)', "Use {} as base image for consistent deployments"),
+                    (r'COPY requirements\.txt', "Copy dependency files before source code for better Docker layer caching"),
+                    (r'USER (\w+)', "Run containers as non-root user for security"),
+                ],
+                'docker-compose': [
+                    (r'depends_on:', "Use depends_on to manage service startup order"),
+                    (r'env_file:', "Use env_file for managing environment variables"),
+                ],
+                'github': [
+                    (r'uses: actions/cache@', "Use GitHub Actions cache to speed up builds"),
+                    (r'strategy:\s*matrix:', "Use matrix builds to test across environments"),
+                ],
+                'deploy': [
+                    (r'set -e', "Use 'set -e' in bash scripts to exit on any error"),
+                    (r'git pull', "Always pull latest changes before deployment"),
+                ],
+                'vercel': [
+                    (r'"buildCommand"', "Use custom build commands in Vercel deployments"),
+                ]
+            }
+            
+            # Determine file type and apply appropriate patterns
+            file_type = None
+            if 'Dockerfile' in file_path.name:
+                file_type = 'Dockerfile'
+            elif 'docker-compose' in file_path.name:
+                file_type = 'docker-compose'
+            elif '.github' in str(file_path):
+                file_type = 'github'
+            elif 'deploy' in file_path.name:
+                file_type = 'deploy'
+            elif 'vercel.json' in file_path.name:
+                file_type = 'vercel'
+            
+            if file_type in patterns:
+                for pattern, lesson_template in patterns[file_type]:
+                    matches = re.findall(pattern, content, re.MULTILINE | re.IGNORECASE)
+                    for match in matches[:2]:  # Limit to avoid spam
+                        if isinstance(match, tuple):
+                            match = match[0]
+                        
+                        lesson = lesson_template.format(match) if '{}' in lesson_template else lesson_template
+                        if self.add_discovery(
+                            "pattern",
+                            lesson,
+                            f"{context} from {file_path.parent.name}",
+                            "TESTED",
+                            "deployment"
+                        ):
+                            count += 1
+        
+        except Exception:
+            pass
+        
+        return count
+
+    def discover_from_code_reviews(self) -> int:
+        """Learn from code review patterns in git history."""
+        count = 0
+        
+        try:
+            # Get recent commits with review-related messages
+            result = subprocess.run(
+                ["git", "log", "--since=30 days ago", "--grep=review", "--grep=PR", 
+                 "--grep=fix", "--grep=refactor", "--oneline"],
+                cwd=MYWORK_ROOT, capture_output=True, text=True
+            )
+            
+            if result.returncode == 0:
+                commits = result.stdout.strip().split('\n')
+                count += self._analyze_review_commits(commits)
+        
+        except Exception:
+            pass
+        
+        return count
+
+    def _analyze_review_commits(self, commits: List[str]) -> int:
+        """Analyze commit messages for review-driven improvements."""
+        count = 0
+        
+        review_patterns = [
+            (r'fix\s+(?:code\s+)?review', "Address code review feedback promptly"),
+            (r'refactor.*?review', "Apply refactoring suggestions from code reviews"),
+            (r'improve.*?review', "Make improvements based on peer reviews"),
+        ]
+        
+        for commit in commits:
+            if not commit.strip():
+                continue
+                
+            for pattern, lesson in review_patterns:
+                if re.search(pattern, commit, re.IGNORECASE):
+                    if self.add_discovery(
+                        "pattern",
+                        lesson,
+                        f"Code review practice from recent commits",
+                        "TESTED",
+                        "codereview"
+                    ):
+                        count += 1
+                        break  # One lesson per commit
+        
+        return count
+
+    def auto_tag_entries(self) -> int:
+        """Automatically tag entries based on content analysis."""
+        count = 0
+        
+        # Tag mapping based on content keywords
+        tag_keywords = {
+            'python': ['python', 'pip', 'virtualenv', 'pytest'],
+            'javascript': ['javascript', 'node', 'npm', 'react', 'typescript'],
+            'docker': ['docker', 'container', 'dockerfile', 'compose'],
+            'git': ['git', 'commit', 'branch', 'merge', 'pull', 'push'],
+            'deployment': ['deploy', 'production', 'staging', 'release'],
+            'testing': ['test', 'pytest', 'coverage', 'mock'],
+            'database': ['sql', 'postgres', 'mysql', 'database'],
+            'api': ['api', 'rest', 'graphql', 'endpoint'],
+            'error-handling': ['error', 'exception', 'try', 'catch'],
+        }
+        
+        for entry in self.brain.entries.values():
+            original_tags = set(tag.lower() for tag in entry.tags)
+            content_lower = (entry.content + ' ' + (entry.context or '')).lower()
+            
+            # Find matching tags
+            suggested_tags = set()
+            for tag, keywords in tag_keywords.items():
+                for keyword in keywords:
+                    if keyword in content_lower:
+                        suggested_tags.add(tag)
+                        break
+            
+            # Add new tags
+            new_tags = suggested_tags - original_tags
+            
+            if new_tags:
+                entry.tags.extend(list(new_tags))
+                count += 1
+        
+        if count > 0:
+            self.brain.save()
+        
+        return count
+
+    def calculate_confidence_scores(self) -> int:
+        """Calculate and update confidence scores for auto-learned entries."""
+        count = 0
+        
+        for entry in self.brain.entries.values():
+            if entry.status != "EXPERIMENTAL":
+                continue  # Only update experimental entries
+            
+            # Calculate confidence based on multiple factors
+            confidence_score = 0
+            
+            # Age factor
+            try:
+                days_old = (datetime.now() - datetime.strptime(entry.date_added, '%Y-%m-%d')).days
+                if days_old >= 30:
+                    confidence_score += 2
+                elif days_old >= 14:
+                    confidence_score += 1
+            except:
+                pass
+            
+            # Content quality factors
+            if len(entry.content) >= 50:
+                confidence_score += 1
+            if entry.context and len(entry.context) > 20:
+                confidence_score += 1
+            if len(entry.tags) >= 2:
+                confidence_score += 1
+            
+            # Update status based on score
+            if confidence_score >= 4:
+                entry.status = "TESTED"
+                entry.date_updated = datetime.now().strftime('%Y-%m-%d')
+                count += 1
+        
+        if count > 0:
+            self.brain.save()
+        
+        return count
+
     def commit_discoveries(self) -> int:
         """Commit all discoveries to the brain."""
         count = 0
@@ -573,9 +917,32 @@ def run_weekly_learning():
     print(f"   Found {count} patterns from errors")
     total += count
 
+    print("\n📊 Analyzing Python tracebacks...")
+    count = engine.discover_from_python_tracebacks()
+    print(f"   Found {count} patterns from tracebacks")
+    total += count
+
+    print("\n📊 Analyzing deployment patterns...")
+    count = engine.discover_from_deployments()
+    print(f"   Found {count} deployment patterns")
+    total += count
+
+    print("\n📊 Analyzing code review patterns...")
+    count = engine.discover_from_code_reviews()
+    print(f"   Found {count} code review patterns")
+    total += count
+
     print("\n📝 Committing discoveries...")
     committed = engine.commit_discoveries()
     print(f"   Committed {committed} new learnings")
+
+    print("\n🏷️ Auto-tagging entries...")
+    tagged = engine.auto_tag_entries()
+    print(f"   Auto-tagged {tagged} entries")
+
+    print("\n📊 Updating confidence scores...")
+    scored = engine.calculate_confidence_scores()
+    print(f"   Updated confidence for {scored} entries")
 
     print("\n✨ Promoting validated entries...")
     promoted = engine.promote_validated_entries()
@@ -633,6 +1000,11 @@ def main():
         "discover": run_discover,
         "analyze-errors": lambda: LearningEngine().discover_from_error_patterns(),
         "analyze-modules": lambda: LearningEngine().discover_from_module_patterns(),
+        "analyze-tracebacks": lambda: print(f"Found {LearningEngine().discover_from_python_tracebacks()} traceback learnings"),
+        "analyze-deployments": lambda: print(f"Found {LearningEngine().discover_from_deployments()} deployment patterns"),
+        "analyze-reviews": lambda: print(f"Found {LearningEngine().discover_from_code_reviews()} code review patterns"),
+        "auto-tag": lambda: print(f"Auto-tagged {LearningEngine().auto_tag_entries()} entries"),
+        "confidence-score": lambda: print(f"Updated confidence for {LearningEngine().calculate_confidence_scores()} entries"),
         "promote": lambda: LearningEngine().promote_validated_entries(),
         "cleanup-smart": lambda: LearningEngine().smart_cleanup(),
         "daily": run_daily_learning,
