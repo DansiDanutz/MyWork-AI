@@ -66,7 +66,7 @@ Before starting any task, determine which layer handles it:
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │  4. Is this LONG-RUNNING coding (20+ features, multi-hour)?     │
-│     YES → Autocoder (with GSD tracking via /gsd-to-autocoder-spec)│
+│     YES → AutoForge (with GSD tracking via /gsd-to-autoforge-spec)│
 └─────────────────────────────────────────────────────────────────┘
 
 ```text
@@ -106,13 +106,13 @@ Before starting any task, determine which layer handles it:
 | New project from s... | `/gsd:new-project`... | Full planning, req... |
 | Add features to ex... | `/gsd:plan-phase` ... | Structured phased ... |
   | Quick bug fix or c... | `/gsd:quick` or WA... | Fast, minimal over... |  
-| Build complete app... | Autocoder | Multi-session auto... |
+| Build complete app... | AutoForge | Multi-session auto... |
   | Visual automation ... | n8n workflow | 2,709 templates av... |  
 | Deterministic tasks | WAT tools | Reliable, testable Python scripts |
   | Check project status | `/gsd:progress` OR... | See current state ... |  
 | Pause/resume work | `/gsd:pause-work` ... | Context preservation |
 | **Find reusable code** | `mw search <query>` | Module registry search |
-| **Update dependencies** | `mw update` | Keep GSD, Autocoder, n8n current |
+| **Update dependencies** | `mw update` | Keep GSD, AutoForge, n8n current |
 | **System diagnostics** | `mw doctor` | Full health check |
   | **Create project f... | `mw new <name> <te... | Scaffolding with t... |  
 | **Remember something** | `mw remember "lesson"` | Add to knowledge vault |
@@ -278,9 +278,9 @@ MyWork/                         # Master Framework Root (CLEAN)
 │   └── codebase/               # Codebase analysis docs
 ├── workflows/                  # WAT: Framework workflows
 │   ├── _template.md
-│   ├── use_autocoder.md
+│   ├── use_autoforge.md
 │   ├── create_n8n_workflow.md
-│   ├── gsd_to_autocoder.md
+│   ├── gsd_to_autoforge.md
 │   ├── gsd_with_n8n.md
 │   └── session_handoff.md
 ├── tools/                      # WAT: Framework tools
@@ -288,12 +288,12 @@ MyWork/                         # Master Framework Root (CLEAN)
 │   ├── mw.py                   # Unified CLI for all tools
 │   ├── brain.py                # Knowledge vault manager
 │   ├── brain_learner.py        # Automatic learning engine
-│   ├── auto_update.py          # Auto-update GSD, Autocoder, n8n
+│   ├── auto_update.py          # Auto-update GSD, AutoForge, n8n
 │   ├── module_registry.py      # Auto-learning module index
 │   ├── health_check.py         # System diagnostics
 │   ├── scaffold.py             # Project scaffolding
-│   ├── autocoder_api.py        # Autocoder control
-│   ├── autocoder_service.py    # Autocoder service wrapper
+│   ├── autoforge_api.py        # AutoForge control
+│   ├── autoforge_service.py    # AutoForge service wrapper
 │   ├── n8n_api.py              # n8n REST API
 │   └── switch_llm_provider.py  # LLM provider switcher
 ├── projects/                   # ALL PROJECTS LIVE HERE
@@ -429,7 +429,7 @@ The marketplace will integrate with:
 3. **Project Templates** (`projects/_template/`)
    - Starter templates for common project types
    - Pre-configured with best practices
-   - Integrated with GSD and Autocoder
+   - Integrated with GSD and AutoForge
 
 ### Marketplace Tools
 
@@ -478,7 +478,7 @@ Before implementing the marketplace, the framework focuses on:
 1. Search marketplace via `mw search` or web interface
 2. Browse by category, rating, or popularity
 3. Download modules with automatic dependency resolution
-4. Integrate into projects via Autocoder or manual import
+4. Integrate into projects via AutoForge or manual import
 5. Provide feedback and ratings
 
 ### Marketplace vs Module Registry
@@ -525,7 +525,7 @@ Work at the framework level when:
 - ✅ Creating new projects from `_template/`
 - ✅ Running framework diagnostics (`mw doctor`)
 - ✅ Updating framework dependencies
-- ✅ Working on GSD/Autocoder/n8n integrations
+- ✅ Working on GSD/AutoForge/n8n integrations
 
 **Commands**:
 ```bash
@@ -625,7 +625,7 @@ cd projects/my-new-project
 #    - ROADMAP.md (phases with completion tracking)
 ```
 
-### Option 2: Use Autocoder
+### Option 2: Use AutoForge
 
 ```bash
 # 1. Navigate to framework root
@@ -636,7 +636,7 @@ mw new my-app fastapi      # Create FastAPI project
 mw new my-app nextjs       # Create Next.js project
 mw new my-app fullstack    # Create fullstack project
 
-# 3. Follow prompts to set up Autocoder
+# 3. Follow prompts to set up AutoForge
 ```
 
 ---
@@ -925,18 +925,18 @@ $env.VAR_NAME   // Environment variable
 - Export backups of important workflows
 - Validate changes before deploying to production
 
-### Autocoder Integration
+### AutoForge Integration
 
-Autocoder is a long-running autonomous coding agent for building complete
+AutoForge is a long-running autonomous coding agent for building complete
 applications across multiple sessions.
 
-**Location:** `/Users/dansidanutz/Desktop/GamesAI/autocoder`
+**Location:** `/Users/dansidanutz/Desktop/GamesAI/autoforge`
 **Projects:** `/Users/dansidanutz/Desktop/MyWork/projects/`
 **Server:** `http://127.0.0.1:8888`
 
-**When to use Autocoder:**
+**When to use AutoForge:**
 
-| Scenario | Use Autocoder |
+| Scenario | Use AutoForge |
 | ---------- | --------------- |
 | Complete app from scratch | ✅ |
 | 20+ features to implement | ✅ |
@@ -949,7 +949,7 @@ applications across multiple sessions.
 | Mode | When to Use | Command |
 | ------ | ------------- | --------- |
 | **Automatic** | Hands-off, API-tri... | `python tools/auto... |
-| **Manual** | Want UI control | `python tools/autocoder_api.py ui` |
+| **Manual** | Want UI control | `python tools/autoforge_api.py ui` |
 
 #### Automatic Mode Commands
 
@@ -957,29 +957,29 @@ applications across multiple sessions.
 
 # Check if server is running
 
-python tools/autocoder_api.py status
+python tools/autoforge_api.py status
 
 # Start server (if needed)
 
-python tools/autocoder_api.py server
+python tools/autoforge_api.py server
 
 # Start agent (automatic mode)
 
-python tools/autocoder_api.py start my-project --concurrency 3
+python tools/autoforge_api.py start my-project --concurrency 3
 
 # Check progress
 
-python tools/autocoder_api.py progress my-project
+python tools/autoforge_api.py progress my-project
 
 # Control agent
 
-python tools/autocoder_api.py pause my-project
-python tools/autocoder_api.py resume my-project
-python tools/autocoder_api.py stop my-project
+python tools/autoforge_api.py pause my-project
+python tools/autoforge_api.py resume my-project
+python tools/autoforge_api.py stop my-project
 
 # Open UI for visual monitoring
 
-python tools/autocoder_api.py ui
+python tools/autoforge_api.py ui
 
 ```markdown
 
@@ -998,47 +998,47 @@ python tools/autocoder_api.py ui
 
 # Conservative: Full testing, 1 agent
 
-python tools/autocoder_api.py start my-app
+python tools/autoforge_api.py start my-app
 
 # Balanced: 3 parallel agents
 
-python tools/autocoder_api.py start my-app --concurrency 3
+python tools/autoforge_api.py start my-app --concurrency 3
 
 # Fast: Skip testing, 3 agents
 
-python tools/autocoder_api.py start my-app --concurrency 3 --yolo
+python tools/autoforge_api.py start my-app --concurrency 3 --yolo
 
 # Maximum: Skip testing, 5 agents
 
-python tools/autocoder_api.py start my-app --concurrency 5 --yolo
+python tools/autoforge_api.py start my-app --concurrency 5 --yolo
 
 ```markdown
 
-**See `workflows/gsd_to_autocoder.md` for full SOP.**
+**See `workflows/gsd_to_autoforge.md` for full SOP.**
 
 ---
 
 ## Integration Workflows
 
-### GSD → Autocoder Handoff
+### GSD → AutoForge Handoff
 
-When a GSD phase has 20+ features, hand off to Autocoder:
+When a GSD phase has 20+ features, hand off to AutoForge:
 
 1. Complete `/gsd:plan-phase` to get feature breakdown
-2. Run `/gsd-to-autocoder-spec` to convert to app_spec.txt
+2. Run `/gsd-to-autoforge-spec` to convert to app_spec.txt
 3. Choose mode:
-   - **Automatic:** `python tools/autocoder_api.py start {project} --concurrency
+   - **Automatic:** `python tools/autoforge_api.py start {project} --concurrency
 
 ```
  3`
 
 ```bash
 
-   - **Manual:** `python tools/autocoder_api.py ui`
-4. Monitor: `python tools/autocoder_api.py progress {project}`
+   - **Manual:** `python tools/autoforge_api.py ui`
+4. Monitor: `python tools/autoforge_api.py progress {project}`
 5. Track in GSD STATE.md
 
-**See `workflows/gsd_to_autocoder.md` for full process.**
+**See `workflows/gsd_to_autoforge.md` for full process.**
 
 ### GSD + n8n Integration
 
@@ -1085,7 +1085,7 @@ All API keys consolidated in root `.env`:
 | Project GSD | `/Users/dansidanutz/Desktop/MyWork/projects/[name]/.planning/` |
 | WAT Workflows | `/Users/dansidanutz/Desktop/MyWork/workflows/` |
 | WAT Tools | `/Users/dansidanutz/Desktop/MyWork/tools/` |
-| Autocoder Tool | `/Users/dansidanutz/Desktop/GamesAI/autocoder` |
+| AutoForge Tool | `/Users/dansidanutz/Desktop/GamesAI/autoforge` |
 | Temp Files | `/Users/dansidanutz/Desktop/MyWork/.tmp/` |
 
 ### Multi-Project Management
@@ -1175,7 +1175,7 @@ python tools/mw.py open ai-dashboard
 
 ### Auto-Update System
 
-Keeps GSD, Autocoder, n8n-skills, and n8n-mcp up to date without breaking your
+Keeps GSD, AutoForge, n8n-skills, and n8n-mcp up to date without breaking your
 system:
 
 ```bash
@@ -1191,7 +1191,7 @@ python tools/auto_update.py update
 # Update specific component
 
 python tools/auto_update.py update gsd
-python tools/auto_update.py update autocoder
+python tools/auto_update.py update autoforge
 python tools/auto_update.py update n8n-skills
 
 # Show current versions
@@ -1200,15 +1200,15 @@ python tools/auto_update.py status
 
 # Rollback if something breaks
 
-python tools/auto_update.py rollback autocoder
+python tools/auto_update.py rollback autoforge
 
 ```yaml
 
 **Safety features:**
 
 - Creates backup markers before updating
-- Checks for running Autocoder server before update
-- Rebuilds Autocoder UI after update
+- Checks for running AutoForge server before update
+- Rebuilds AutoForge UI after update
 - Won't update if local changes detected
 
 ### Module Registry (Auto-Learning)
@@ -1292,7 +1292,7 @@ python tools/health_check.py report
 **Checks performed:**
 
 - GSD installation and version
-- Autocoder server status
+- AutoForge server status
 - n8n connection and skills
 - Project structure integrity
 - API key configuration
@@ -1447,7 +1447,7 @@ You are the Master Orchestrator. Your job is to:
 2. **Maintain context** - Check and update .planning/STATE.md
 3. **Stay organized** - Everything in its place per the directory structure
 4. **Recover gracefully** - Use the self-improvement loop when things fail
-5. **Hand off appropriately** - Autocoder for big builds, n8n for automation
+5. **Hand off appropriately** - AutoForge for big builds, n8n for automation
 6. **Learn continuously** - Run `mw brain learn` after completing work
 7. **Search before building** - Check brain and registry first
 7. **Stay updated** - Run `mw update` weekly to keep dependencies current

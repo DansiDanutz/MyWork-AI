@@ -212,7 +212,7 @@ future projects benefit from lessons learned.
 │                                                                                  │
 │   • New project?        → GSD Layer                                              │
 │   • Quick fix?          → GSD Quick                                              │
-│   • 20+ features?       → Autocoder                                              │
+│   • 20+ features?       → AutoForge                                              │
 │   • Webhooks/APIs?      → n8n                                                    │
 └─────────────────────────────────────────────────────────────────────────────────┘
 
@@ -271,7 +271,7 @@ future projects benefit from lessons learned.
 ├─────────────────────────┤   ├─────────────────────────┤   ├─────────────────────────┤
 │                         │   │                         │   │                         │
 │  /gsd:new-project       │   │  workflows/             │   │  ┌─────────────────┐   │
-│         │               │   │  (Markdown SOPs)        │   │  │   AUTOCODER     │   │
+│         │               │   │  (Markdown SOPs)        │   │  │   AUTOFORGE     │   │
 │         ▼               │   │         │               │   │  │  Autonomous     │   │
 │  /gsd:plan-phase        │   │         ▼               │   │  │  multi-hour     │   │
 │         │               │   │  tools/                 │   │  │  coding         │   │
@@ -402,7 +402,7 @@ end
 subgraph "Layer 3: Automation Engines"
 
 ```text
-AUTOCODER[Autocoder<br/>Autonomous coding]
+AUTOFORGE[AutoForge<br/>Autonomous coding]
 N8N[n8n<br/>2,709 templates]
 
 ```text
@@ -422,7 +422,7 @@ end
 MO --> GSD_NEW
 MO --> GSD_PLAN
 MO --> WORKFLOWS
-MO --> AUTOCODER
+MO --> AUTOFORGE
 MO --> N8N
 
 GSD_NEW --> GSD_PLAN
@@ -435,7 +435,7 @@ TOOLS --> REGISTRY
 
 style MO fill:#4A90D9,stroke:#333,color:#fff
 style BRAIN fill:#34A853,stroke:#333,color:#fff
-style AUTOCODER fill:#EA4335,stroke:#333,color:#fff
+style AUTOFORGE fill:#EA4335,stroke:#333,color:#fff
 style N8N fill:#EA4B71,stroke:#333,color:#fff
 
 ```markdown
@@ -457,7 +457,7 @@ D -->|Yes| E["/gsd:plan-phase N"]
 D -->|No| F{Quick Task?}
 F -->|Yes| G["/gsd:quick"]
 F -->|No| H{20+ Features?}
-H -->|Yes| I[Autocoder]
+H -->|Yes| I[AutoForge]
 H -->|No| J{Visual Automation?}
 J -->|Yes| K[n8n Workflow]
 J -->|No| L[WAT Tools]
@@ -554,10 +554,10 @@ N8N_API_KEY=your-n8n-api-key
 
 GITHUB_TOKEN=ghp_xxxxx               # For GitHub OAuth features
 
-# Autocoder (if using external instance)
+# AutoForge (if using external instance)
 
-AUTOCODER_ROOT=/path/to/autocoder    # Default: .autocoder/
-AUTOCODER_PORT=8889                  # Default: 8889
+AUTOFORGE_ROOT=/path/to/autoforge    # Default: .autoforge/
+AUTOFORGE_PORT=8889                  # Default: 8889
 
 ```markdown
 
@@ -642,12 +642,12 @@ MyWork-AI/
 │   ├── brain.py                 # Knowledge vault manager
 │   ├── module_registry.py       # Code pattern indexer
 │   ├── health_check.py          # System diagnostics
-│   ├── autocoder_api.py         # Autocoder control
+│   ├── autoforge_api.py         # AutoForge control
 │   └── scaffold.py              # Project templates
 │
 ├── workflows/                   # WAT workflow definitions
 │   ├── create_n8n_workflow.md   # n8n workflow SOP
-│   ├── gsd_to_autocoder.md      # GSD → Autocoder handoff
+│   ├── gsd_to_autoforge.md      # GSD → AutoForge handoff
 │   └── session_handoff.md       # Context preservation
 │
 ├── docs/                        # Documentation
@@ -676,6 +676,7 @@ MyWork-AI/
 
 # Status & Health
 
+mw dashboard                 # Interactive framework dashboard with metrics  
 mw status                    # Quick health check
 mw doctor                    # Full diagnostics with auto-fix
 
@@ -695,7 +696,7 @@ mw scan                      # Re-index all modules
 # Updates
 
 mw update check              # Check for updates
-mw update <component>        # Update gsd|autocoder|n8n-skills
+mw update <component>        # Update gsd|autoforge|n8n-skills
 
 ```markdown
 
@@ -712,7 +713,7 @@ mw update <component>        # Update gsd|autocoder|n8n-skills
 | `/gsd:pause-work` | Save context when stopping |
 | `/gsd:resume-work` | Restore context next session |
 
-### Autocoder Commands
+### AutoForge Commands
 
 ```bash
 
