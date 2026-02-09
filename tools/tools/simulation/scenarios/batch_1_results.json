@@ -31,11 +31,11 @@
     "category": "error_handling",
     "user_action": "mw new my-app fastapi (no .env file)",
     "expected_behavior": "Warning: No .env file found. Run 'mw setup' to configure API keys",
-    "actual_behavior": "Exit code: 0, Output: \ud83d\udcc1 Creating project: my-app\n\u2705 Project created at: /home/Memo1981/MyWork-AI/projects/my-app\n\n   Next steps:\n   1. cd projects/my-app\n   2. Review .planning/PROJECT.md\n   3. Run /gsd:plan-phase 1\n, Error: ",
+    "actual_behavior": "Exit code: 2, Output: , Error: /usr/bin/python3: can't open file '/home/Memo1981/MyWork-AI/tools/tools/mw.py': [Errno 2] No such file or directory\n",
     "error_message_quality": "missing",
     "step_by_step_guidance": false,
     "is_safe": true,
-    "grade": "C",
+    "grade": "D",
     "fix_applied": "Add .env validation to scaffold.py"
   },
   {
@@ -44,12 +44,12 @@
     "category": "error_handling",
     "user_action": "mw biuld (typo for build)",
     "expected_behavior": "Error: Unknown command 'biuld'. Did you mean 'build' or 'brain'?",
-    "actual_behavior": "Tested typos ['biuld', 'barin', 'stauts', 'hlep']. Suggestions detected: True",
-    "error_message_quality": "excellent",
-    "step_by_step_guidance": true,
+    "actual_behavior": "Tested typos ['biuld', 'barin', 'stauts', 'hlep']. Suggestions detected: False",
+    "error_message_quality": "poor",
+    "step_by_step_guidance": false,
     "is_safe": true,
-    "grade": "A",
-    "fix_applied": "Already has fuzzy command matching"
+    "grade": "D",
+    "fix_applied": "Need to implement fuzzy command matching in mw.py"
   },
   {
     "sim_id": 5,
@@ -57,12 +57,12 @@
     "category": "error_handling",
     "user_action": "mw new \"My App!!!\" fastapi",
     "expected_behavior": "Error: Project name must be lowercase, alphanumeric, hyphens only",
-    "actual_behavior": "Exit code: 1, Output: \u274c Invalid project name: 'My App!!!'\n   Project names must:\n   \u2022 Be lowercase letters, numbers, and hyphens only\n   \u2022 Start and end with a letter or number\n   \u2022 Not contain spaces or special characters\n   Examples: my-app, api-server, todo-list\n, Error: ",
-    "error_message_quality": "excellent",
-    "step_by_step_guidance": true,
+    "actual_behavior": "Tested invalid names. Validation detected: False",
+    "error_message_quality": "missing",
+    "step_by_step_guidance": false,
     "is_safe": true,
-    "grade": "A",
-    "fix_applied": "Project name validation working perfectly"
+    "grade": "F",
+    "fix_applied": "Need to add project name validation to scaffold.py"
   },
   {
     "sim_id": 6,
@@ -70,12 +70,12 @@
     "category": "error_handling",
     "user_action": "mw new api-hub fastapi (already exists)",
     "expected_behavior": "Error: Project 'test-duplicate' already exists. Use a different name or delete first.",
-    "actual_behavior": "First creation: 0, Second: 1, Output: \u274c Project already exists: /home/Memo1981/MyWork-AI/projects/test-duplicate\n   Choose a different name or delete the existing project\n",
-    "error_message_quality": "excellent",
-    "step_by_step_guidance": true,
-    "is_safe": true,
-    "grade": "A",
-    "fix_applied": "Already prevents overwriting existing projects"
+    "actual_behavior": "First creation: 2, Second: 2, Output: ",
+    "error_message_quality": "missing",
+    "step_by_step_guidance": false,
+    "is_safe": false,
+    "grade": "F",
+    "fix_applied": "Need to add duplicate project name check to scaffold.py"
   },
   {
     "sim_id": 7,
@@ -83,7 +83,7 @@
     "category": "error_handling",
     "user_action": "mw af start my-project (no planning)",
     "expected_behavior": "Error: No .planning/ROADMAP.md found. Run GSD planning first: mw guide",
-    "actual_behavior": "Exit code: 1, Output: Server not running. Starting...\nStarting AutoForge server...\nERROR: AutoForge not found at /home/Memo1981/GamesAI/autoforge\n, Error: ",
+    "actual_behavior": "Exit code: 2, Output: , Error: /usr/bin/python3: can't open file '/home/Memo1981/MyWork-AI/tools/tools/mw.py': [Errno 2] No such file or directory\n",
     "error_message_quality": "good",
     "step_by_step_guidance": true,
     "is_safe": true,
@@ -96,12 +96,12 @@
     "category": "error_handling",
     "user_action": "python3 tools/brain.py add lesson \"\"",
     "expected_behavior": "Error: Content cannot be empty. Usage: mw brain add <type> <content>",
-    "actual_behavior": "Exit code: 1, Output: \u274c Content cannot be empty\n   Usage: python brain.py add <type> <content>\n   Example: python brain.py add lesson 'Always test before deploying'\n, Error: ",
-    "error_message_quality": "excellent",
-    "step_by_step_guidance": true,
+    "actual_behavior": "Tested cases: ['empty string', 'no arguments', 'invalid type']. Validation: False",
+    "error_message_quality": "missing",
+    "step_by_step_guidance": false,
     "is_safe": true,
-    "grade": "A",
-    "fix_applied": "Brain input validation working perfectly"
+    "grade": "D",
+    "fix_applied": "Need to add input validation to brain.py"
   },
   {
     "sim_id": 9,
@@ -109,12 +109,12 @@
     "category": "edge_case",
     "user_action": "mw brain search \"anything\"",
     "expected_behavior": "No entries yet. Add knowledge with: mw brain add lesson 'your learning'",
-    "actual_behavior": "Exit code: 0, Output: \n\u001b[91m\u274c No entries found matching '\u001b[93manything\u001b[0m\u001b[91m'\u001b[0m\n\u001b[96m\ud83d\udca1 Try searching for broader terms or check `brain stats` for available categories.\u001b[0m\n, Error: ",
-    "error_message_quality": "excellent",
-    "step_by_step_guidance": true,
+    "actual_behavior": "Exit code: 2, Output: , Error: /usr/bin/python3: can't open file '/home/Memo1981/MyWork-AI/tools/tools/mw.py': [Errno 2] No such file or directory\n",
+    "error_message_quality": "poor",
+    "step_by_step_guidance": false,
     "is_safe": true,
-    "grade": "A",
-    "fix_applied": "Brain provides helpful guidance for empty searches"
+    "grade": "D",
+    "fix_applied": "Need to improve empty search messaging in brain.py"
   },
   {
     "sim_id": 10,
@@ -122,11 +122,11 @@
     "category": "edge_case",
     "user_action": "mw status (from /tmp directory)",
     "expected_behavior": "Error: Not in MyWork directory. Navigate to your MyWork root or set MYWORK_ROOT",
-    "actual_behavior": "Exit code: 0, Output: \n============================================================\n\ud83c\udfe5 MyWork Framework Health Check\n============================================================\n   Time: 2026-02-09 18:52:05\n============================================================\n\n\u274c ERRORS\n----------------------------------------\n   \u274c, Error: ",
-    "error_message_quality": "excellent",
+    "actual_behavior": "Exit code: 2, Output: , Error: /usr/bin/python3: can't open file '/home/Memo1981/MyWork-AI/tools/tools/mw.py': [Errno 2] No such file or directory\n",
+    "error_message_quality": "good",
     "step_by_step_guidance": true,
     "is_safe": true,
-    "grade": "A",
-    "fix_applied": "mw works from any directory by finding MYWORK_ROOT"
+    "grade": "B",
+    "fix_applied": "Has directory error handling"
   }
 ]

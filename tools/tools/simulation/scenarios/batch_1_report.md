@@ -7,20 +7,20 @@ Python Version: 3.12.3 (main, Jan 22 2026, 20:57:42) [GCC 13.3.0]
 ## Executive Summary
 
 Total Simulations: 10
-Overall Safety: 10/10 simulations passed safety check
+Overall Safety: 9/10 simulations passed safety check
 
 ### Grade Distribution
-- A: 8
-- B: 1
-- C: 1
-- D: 0
-- F: 0
+- A: 2
+- B: 2
+- C: 0
+- D: 4
+- F: 2
 
 ### Error Handling Quality
-- Excellent: 8
-- Good: 1
-- Poor: 0
-- Missing: 1
+- Excellent: 2
+- Good: 2
+- Poor: 2
+- Missing: 4
 
 ## Detailed Results
 
@@ -76,7 +76,7 @@ No fix needed - current Python is compatible
 ### SIM 3: Fresh install — missing .env file
 
 **Category:** error_handling  
-**Grade:** C  
+**Grade:** D  
 **Safety:** ✅ Safe  
 **Error Quality:** missing  
 **Step-by-step Guidance:** ❌ No
@@ -90,14 +90,8 @@ mw new my-app fastapi (no .env file)
 Warning: No .env file found. Run 'mw setup' to configure API keys
 
 **Actual Behavior:**  
-Exit code: 0, Output: 📁 Creating project: my-app
-✅ Project created at: /home/Memo1981/MyWork-AI/projects/my-app
+Exit code: 2, Output: , Error: /usr/bin/python3: can't open file '/home/Memo1981/MyWork-AI/tools/tools/mw.py': [Errno 2] No such file or directory
 
-   Next steps:
-   1. cd projects/my-app
-   2. Review .planning/PROJECT.md
-   3. Run /gsd:plan-phase 1
-, Error: 
 
 **Fix Applied:**  
 Add .env validation to scaffold.py
@@ -107,10 +101,10 @@ Add .env validation to scaffold.py
 ### SIM 4: User types wrong command
 
 **Category:** error_handling  
-**Grade:** A  
+**Grade:** D  
 **Safety:** ✅ Safe  
-**Error Quality:** excellent  
-**Step-by-step Guidance:** ✅ Yes
+**Error Quality:** poor  
+**Step-by-step Guidance:** ❌ No
 
 **User Action:**  
 ```
@@ -121,20 +115,20 @@ mw biuld (typo for build)
 Error: Unknown command 'biuld'. Did you mean 'build' or 'brain'?
 
 **Actual Behavior:**  
-Tested typos ['biuld', 'barin', 'stauts', 'hlep']. Suggestions detected: True
+Tested typos ['biuld', 'barin', 'stauts', 'hlep']. Suggestions detected: False
 
 **Fix Applied:**  
-Already has fuzzy command matching
+Need to implement fuzzy command matching in mw.py
 
 ---
 
 ### SIM 5: User creates project with invalid name
 
 **Category:** error_handling  
-**Grade:** A  
+**Grade:** F  
 **Safety:** ✅ Safe  
-**Error Quality:** excellent  
-**Step-by-step Guidance:** ✅ Yes
+**Error Quality:** missing  
+**Step-by-step Guidance:** ❌ No
 
 **User Action:**  
 ```
@@ -145,26 +139,20 @@ mw new "My App!!!" fastapi
 Error: Project name must be lowercase, alphanumeric, hyphens only
 
 **Actual Behavior:**  
-Exit code: 1, Output: ❌ Invalid project name: 'My App!!!'
-   Project names must:
-   • Be lowercase letters, numbers, and hyphens only
-   • Start and end with a letter or number
-   • Not contain spaces or special characters
-   Examples: my-app, api-server, todo-list
-, Error: 
+Tested invalid names. Validation detected: False
 
 **Fix Applied:**  
-Project name validation working perfectly
+Need to add project name validation to scaffold.py
 
 ---
 
 ### SIM 6: User creates project with existing name
 
 **Category:** error_handling  
-**Grade:** A  
-**Safety:** ✅ Safe  
-**Error Quality:** excellent  
-**Step-by-step Guidance:** ✅ Yes
+**Grade:** F  
+**Safety:** ❌ Unsafe  
+**Error Quality:** missing  
+**Step-by-step Guidance:** ❌ No
 
 **User Action:**  
 ```
@@ -175,12 +163,10 @@ mw new api-hub fastapi (already exists)
 Error: Project 'test-duplicate' already exists. Use a different name or delete first.
 
 **Actual Behavior:**  
-First creation: 0, Second: 1, Output: ❌ Project already exists: /home/Memo1981/MyWork-AI/projects/test-duplicate
-   Choose a different name or delete the existing project
-
+First creation: 2, Second: 2, Output: 
 
 **Fix Applied:**  
-Already prevents overwriting existing projects
+Need to add duplicate project name check to scaffold.py
 
 ---
 
@@ -201,10 +187,8 @@ mw af start my-project (no planning)
 Error: No .planning/ROADMAP.md found. Run GSD planning first: mw guide
 
 **Actual Behavior:**  
-Exit code: 1, Output: Server not running. Starting...
-Starting AutoForge server...
-ERROR: AutoForge not found at /home/Memo1981/GamesAI/autoforge
-, Error: 
+Exit code: 2, Output: , Error: /usr/bin/python3: can't open file '/home/Memo1981/MyWork-AI/tools/tools/mw.py': [Errno 2] No such file or directory
+
 
 **Fix Applied:**  
 AutoForge checks for planning files
@@ -214,10 +198,10 @@ AutoForge checks for planning files
 ### SIM 8: User adds empty brain entry
 
 **Category:** error_handling  
-**Grade:** A  
+**Grade:** D  
 **Safety:** ✅ Safe  
-**Error Quality:** excellent  
-**Step-by-step Guidance:** ✅ Yes
+**Error Quality:** missing  
+**Step-by-step Guidance:** ❌ No
 
 **User Action:**  
 ```
@@ -228,23 +212,20 @@ python3 tools/brain.py add lesson ""
 Error: Content cannot be empty. Usage: mw brain add <type> <content>
 
 **Actual Behavior:**  
-Exit code: 1, Output: ❌ Content cannot be empty
-   Usage: python brain.py add <type> <content>
-   Example: python brain.py add lesson 'Always test before deploying'
-, Error: 
+Tested cases: ['empty string', 'no arguments', 'invalid type']. Validation: False
 
 **Fix Applied:**  
-Brain input validation working perfectly
+Need to add input validation to brain.py
 
 ---
 
 ### SIM 9: User searches brain with no entries
 
 **Category:** edge_case  
-**Grade:** A  
+**Grade:** D  
 **Safety:** ✅ Safe  
-**Error Quality:** excellent  
-**Step-by-step Guidance:** ✅ Yes
+**Error Quality:** poor  
+**Step-by-step Guidance:** ❌ No
 
 **User Action:**  
 ```
@@ -255,22 +236,20 @@ mw brain search "anything"
 No entries yet. Add knowledge with: mw brain add lesson 'your learning'
 
 **Actual Behavior:**  
-Exit code: 0, Output: 
-[91m❌ No entries found matching '[93manything[0m[91m'[0m
-[96m💡 Try searching for broader terms or check `brain stats` for available categories.[0m
-, Error: 
+Exit code: 2, Output: , Error: /usr/bin/python3: can't open file '/home/Memo1981/MyWork-AI/tools/tools/mw.py': [Errno 2] No such file or directory
+
 
 **Fix Applied:**  
-Brain provides helpful guidance for empty searches
+Need to improve empty search messaging in brain.py
 
 ---
 
 ### SIM 10: User runs commands from wrong directory
 
 **Category:** edge_case  
-**Grade:** A  
+**Grade:** B  
 **Safety:** ✅ Safe  
-**Error Quality:** excellent  
+**Error Quality:** good  
 **Step-by-step Guidance:** ✅ Yes
 
 **User Action:**  
@@ -282,28 +261,25 @@ mw status (from /tmp directory)
 Error: Not in MyWork directory. Navigate to your MyWork root or set MYWORK_ROOT
 
 **Actual Behavior:**  
-Exit code: 0, Output: 
-============================================================
-🏥 MyWork Framework Health Check
-============================================================
-   Time: 2026-02-09 18:52:05
-============================================================
+Exit code: 2, Output: , Error: /usr/bin/python3: can't open file '/home/Memo1981/MyWork-AI/tools/tools/mw.py': [Errno 2] No such file or directory
 
-❌ ERRORS
-----------------------------------------
-   ❌, Error: 
 
 **Fix Applied:**  
-mw works from any directory by finding MYWORK_ROOT
+Has directory error handling
 
 ---
 
 ## Recommendations
 
 ### High Priority Fixes
+- **SIM 3**: Add .env validation to scaffold.py
+- **SIM 4**: Need to implement fuzzy command matching in mw.py
+- **SIM 5**: Need to add project name validation to scaffold.py
+- **SIM 6**: Need to add duplicate project name check to scaffold.py
+- **SIM 8**: Need to add input validation to brain.py
+- **SIM 9**: Need to improve empty search messaging in brain.py
 
 ### Medium Priority Improvements
-- **SIM 3**: Add .env validation to scaffold.py
 
 ## Safety Analysis
 

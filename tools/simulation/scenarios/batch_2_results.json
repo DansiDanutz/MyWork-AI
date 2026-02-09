@@ -1,0 +1,377 @@
+[
+  {
+    "sim_id": "SIM11",
+    "title": "User creates fullstack project and follows workflow",
+    "status": "PASS",
+    "score": 10.0,
+    "details": {
+      "project_name": "ecommerce-test-sim11",
+      "files_created": [],
+      "guidance_quality": 3
+    },
+    "output_log": [
+      "=== SIM 11: Creating fullstack project 'ecommerce-test-sim11' ===",
+      "Step 1: Creating fullstack project...",
+      "Command: mw new ecommerce-test-sim11 fullstack",
+      "Return code: 0",
+      "STDOUT: \ud83d\udcc1 Creating project: ecommerce-test-sim11\n\u2705 Project created at: /home/Memo1981/MyWork-AI/projects/ecommerce-test-sim11\n\n   Next steps:\n   1. cd projects/ecommerce-test-sim11\n   2. Review .planning/PROJECT.md\n   3. Run /gsd:plan-phase 1\n",
+      "Step 2: Verifying project structure...",
+      "\u2713 Project directory created: /home/Memo1981/MyWork-AI/projects/ecommerce-test-sim11",
+      "\u2713 PROJECT.md exists and has content (210 chars)",
+      "\u2713 ROADMAP.md exists and has content (163 chars)",
+      "\u2713 STATE.md exists and has content (69 chars)",
+      "Step 3: Checking project registry...",
+      "Command: mw projects",
+      "Return code: 0",
+      "STDOUT: \n\u001b[1m\ud83d\udcc1 MyWork Projects\u001b[0m\n==================================================\n   \u2705 ai-dashboard \ud83d\ude80 (framework-tool, active) \ud83e\udde0\n   \u2705 api-hub \ud83d\ude80 (unknown, unknown) \n   \u2705 big-project \ud83d\ude80 (unknown, unknown) \n   \u2705 blog-platform \ud83d\ude80 (unknown, unknown) \n   \u2705 ecommerce-test-sim11 \ud83d\ude80 (unknown, unknown) \u26a0\ufe0f\n   \u2705 task-tracker  (framework-tool, active) \ud83e\udde0\n\n   Total: 6 projects\n",
+      "\u2713 Project appears in registry",
+      "Step 4: Evaluating step-by-step guidance...",
+      "\u2713 Help includes examples",
+      "\u2713 Help lists available templates",
+      "\u2713 Help shows usage format",
+      "Guidance quality score: 3/3",
+      "Cleaned up test project"
+    ],
+    "errors_found": [],
+    "fixes_applied": [],
+    "runtime_seconds": 0.3256864547729492,
+    "timestamp": "2026-02-09T18:52:34.330637"
+  },
+  {
+    "sim_id": "SIM12",
+    "title": "User tries to enhance a vague prompt",
+    "status": "PASS",
+    "score": 10.0,
+    "details": {
+      "prompts_tested": [
+        "make me an app",
+        "app",
+        "website",
+        "tool",
+        "build something"
+      ],
+      "command_exists": true
+    },
+    "output_log": [
+      "=== SIM 12: Testing prompt enhancement with vague prompts ===",
+      "\nTesting prompt: 'make me an app'",
+      "Command: mw prompt-enhance 'make me an app'",
+      "Return code: 0",
+      "STDOUT: \n\u001b[1m\ud83d\udd27 Enhancing your prompt...\u001b[0m\nOriginal: \u001b[94mmake me an app\u001b[0m\n\n\u001b[92m\u2705 Enhanced prompt saved to: /home/Memo1981/MyWork-AI/.planning/ENHANCED_PROMPT.md\u001b[0m\n\u001b[94m\ud83d\udcdd Review and customize the enhanced requirements\u001b[0m\n\u001b[94m\ud83d\ude80 Ready to create your project with: mw new <name> <template>\u001b[0m\n\n\u001b[1mPreview of enhancement:\u001b[0m\n--------------------------------------------------\n# Enhanced Project Prompt\n\n## Original Request\nmake me an app\n\n## Enhanced Requirements\n\n### Core Functionality\n- **Primary Purpose**: [Define the main goal and user needs]\n- **Key Features**: \n  - Feature 1: [Detailed description]\n  - Feature 2: [Detailed description]  \n  - Feature 3: [Detailed description]\n- **User Stories**:\n  - As a [user type], I want to [action] so that [benefit]\n  - As a [user type], I want to [action] so that [benefit]\n\n### Technical Specifications\n\n#### Recommended Tech Stack\n... 84 more lines in /home/Memo1981/MyWork-AI/.planning/ENHANCED_PROMPT.md\n",
+      "\u2713 Provided substantial enhancement for 'make me an app'",
+      "\nTesting prompt: 'app'",
+      "Command: mw prompt-enhance 'app'",
+      "Return code: 0",
+      "STDOUT: \n\u001b[1m\ud83d\udd27 Enhancing your prompt...\u001b[0m\nOriginal: \u001b[94mapp\u001b[0m\n\n\u001b[92m\u2705 Enhanced prompt saved to: /home/Memo1981/MyWork-AI/.planning/ENHANCED_PROMPT.md\u001b[0m\n\u001b[94m\ud83d\udcdd Review and customize the enhanced requirements\u001b[0m\n\u001b[94m\ud83d\ude80 Ready to create your project with: mw new <name> <template>\u001b[0m\n\n\u001b[1mPreview of enhancement:\u001b[0m\n--------------------------------------------------\n# Enhanced Project Prompt\n\n## Original Request\napp\n\n## Enhanced Requirements\n\n### Core Functionality\n- **Primary Purpose**: [Define the main goal and user needs]\n- **Key Features**: \n  - Feature 1: [Detailed description]\n  - Feature 2: [Detailed description]  \n  - Feature 3: [Detailed description]\n- **User Stories**:\n  - As a [user type], I want to [action] so that [benefit]\n  - As a [user type], I want to [action] so that [benefit]\n\n### Technical Specifications\n\n#### Recommended Tech Stack\n... 84 more lines in /home/Memo1981/MyWork-AI/.planning/ENHANCED_PROMPT.md\n",
+      "\u2713 Provided substantial enhancement for 'app'",
+      "\nTesting prompt: 'website'",
+      "Command: mw prompt-enhance 'website'",
+      "Return code: 0",
+      "STDOUT: \n\u001b[1m\ud83d\udd27 Enhancing your prompt...\u001b[0m\nOriginal: \u001b[94mwebsite\u001b[0m\n\n\u001b[92m\u2705 Enhanced prompt saved to: /home/Memo1981/MyWork-AI/.planning/ENHANCED_PROMPT.md\u001b[0m\n\u001b[94m\ud83d\udcdd Review and customize the enhanced requirements\u001b[0m\n\u001b[94m\ud83d\ude80 Ready to create your project with: mw new <name> <template>\u001b[0m\n\n\u001b[1mPreview of enhancement:\u001b[0m\n--------------------------------------------------\n# Enhanced Project Prompt\n\n## Original Request\nwebsite\n\n## Enhanced Requirements\n\n### Core Functionality\n- **Primary Purpose**: [Define the main goal and user needs]\n- **Key Features**: \n  - Feature 1: [Detailed description]\n  - Feature 2: [Detailed description]  \n  - Feature 3: [Detailed description]\n- **User Stories**:\n  - As a [user type], I want to [action] so that [benefit]\n  - As a [user type], I want to [action] so that [benefit]\n\n### Technical Specifications\n\n#### Recommended Tech Stack\n... 84 more lines in /home/Memo1981/MyWork-AI/.planning/ENHANCED_PROMPT.md\n",
+      "\u2713 Provided substantial enhancement for 'website'",
+      "\nTesting prompt: 'tool'",
+      "Command: mw prompt-enhance 'tool'",
+      "Return code: 0",
+      "STDOUT: \n\u001b[1m\ud83d\udd27 Enhancing your prompt...\u001b[0m\nOriginal: \u001b[94mtool\u001b[0m\n\n\u001b[92m\u2705 Enhanced prompt saved to: /home/Memo1981/MyWork-AI/.planning/ENHANCED_PROMPT.md\u001b[0m\n\u001b[94m\ud83d\udcdd Review and customize the enhanced requirements\u001b[0m\n\u001b[94m\ud83d\ude80 Ready to create your project with: mw new <name> <template>\u001b[0m\n\n\u001b[1mPreview of enhancement:\u001b[0m\n--------------------------------------------------\n# Enhanced Project Prompt\n\n## Original Request\ntool\n\n## Enhanced Requirements\n\n### Core Functionality\n- **Primary Purpose**: [Define the main goal and user needs]\n- **Key Features**: \n  - Feature 1: [Detailed description]\n  - Feature 2: [Detailed description]  \n  - Feature 3: [Detailed description]\n- **User Stories**:\n  - As a [user type], I want to [action] so that [benefit]\n  - As a [user type], I want to [action] so that [benefit]\n\n### Technical Specifications\n\n#### Recommended Tech Stack\n... 84 more lines in /home/Memo1981/MyWork-AI/.planning/ENHANCED_PROMPT.md\n",
+      "\u2713 Provided substantial enhancement for 'tool'",
+      "\nTesting prompt: 'build something'",
+      "Command: mw prompt-enhance 'build something'",
+      "Return code: 0",
+      "STDOUT: \n\u001b[1m\ud83d\udd27 Enhancing your prompt...\u001b[0m\nOriginal: \u001b[94mbuild something\u001b[0m\n\n\u001b[92m\u2705 Enhanced prompt saved to: /home/Memo1981/MyWork-AI/.planning/ENHANCED_PROMPT.md\u001b[0m\n\u001b[94m\ud83d\udcdd Review and customize the enhanced requirements\u001b[0m\n\u001b[94m\ud83d\ude80 Ready to create your project with: mw new <name> <template>\u001b[0m\n\n\u001b[1mPreview of enhancement:\u001b[0m\n--------------------------------------------------\n# Enhanced Project Prompt\n\n## Original Request\nbuild something\n\n## Enhanced Requirements\n\n### Core Functionality\n- **Primary Purpose**: [Define the main goal and user needs]\n- **Key Features**: \n  - Feature 1: [Detailed description]\n  - Feature 2: [Detailed description]  \n  - Feature 3: [Detailed description]\n- **User Stories**:\n  - As a [user type], I want to [action] so that [benefit]\n  - As a [user type], I want to [action] so that [benefit]\n\n### Technical Specifications\n\n#### Recommended Tech Stack\n... 84 more lines in /home/Memo1981/MyWork-AI/.planning/ENHANCED_PROMPT.md\n",
+      "\u2713 Provided substantial enhancement for 'build something'"
+    ],
+    "errors_found": [],
+    "fixes_applied": [],
+    "runtime_seconds": 0.5078685283660889,
+    "timestamp": "2026-02-09T18:52:34.838569"
+  },
+  {
+    "sim_id": "SIM13",
+    "title": "User tries prompt-enhance with detailed input",
+    "status": "PASS",
+    "score": 8.5,
+    "details": {
+      "input_length": 169,
+      "output_length": 1267,
+      "preservation_score": 1.0,
+      "enhancement_ratio": 0.0
+    },
+    "output_log": [
+      "=== SIM 13: Testing prompt enhancement with detailed input ===",
+      "Input prompt: Build a real-time collaborative whiteboard with WebSocket support, user authentication via OAuth2, persistent storage in PostgreSQL, and a React frontend with TypeScript",
+      "Command: mw prompt-enhance 'Build a real-time collaborative whiteboard with We...'",
+      "Return code: 0",
+      "STDOUT: \n\u001b[1m\ud83d\udd27 Enhancing your prompt...\u001b[0m\nOriginal: \u001b[94mBuild a real-time collaborative whiteboard with WebSocket support, user authentication via OAuth2, persistent storage in PostgreSQL, and a React frontend with TypeScript\u001b[0m\n\n\u001b[92m\u2705 Enhanced prompt saved to: /home/Memo1981/MyWork-AI/.planning/ENHANCED_PROMPT.md\u001b[0m\n\u001b[94m\ud83d\udcdd Review and customize the enhanced requirements\u001b[0m\n\u001b[94m\ud83d\ude80 Ready to create your project with: mw new <name> <template>\u001b[0m\n\n\u001b[1mPreview of enhancement:\u001b[0m\n--------------------------------------------------\n# Enhanced Project Prompt\n\n## Original Request\nBuild a real-time collaborative whiteboard with WebSocket support, user authentication via OAuth2, persistent storage in PostgreSQL, and a React frontend with TypeScript\n\n## Enhanced Requirements\n\n### Core Functionality\n- **Primary Purpose**: [Define the main goal and user needs]\n- **Key Features**: \n  - Feature 1: [Detailed description]\n  - Feature 2: [Detailed description]  \n  - Feature 3: [Detailed description]\n- **User Stories**:\n  - As a [user type], I want to [action] so that [benefit]\n  - As a [user type], I want to [action] so that [benefit]\n\n### Technical Specifications\n\n#### Recommended Tech Stack\n... 84 more lines in /home/Memo1981/MyWork-AI/.planning/ENHANCED_PROMPT.md\n",
+      "Keywords preserved: 9/9 (100.0%)",
+      "Enhancement keywords added: 0/10 (0.0%)"
+    ],
+    "errors_found": [
+      "Minimal enhancement of detailed prompt"
+    ],
+    "fixes_applied": [],
+    "runtime_seconds": 0.10422873497009277,
+    "timestamp": "2026-02-09T18:52:34.942866"
+  },
+  {
+    "sim_id": "SIM14",
+    "title": "User runs brain commands in sequence",
+    "status": "PASS",
+    "score": 8.5,
+    "details": {
+      "test_entries": [
+        "lesson:Always validate user input",
+        "pattern:Input Validation Pattern",
+        "antipattern:Never trust client-side validation alone"
+      ],
+      "workflow_steps": 8
+    },
+    "output_log": [
+      "=== SIM 14: Testing full brain workflow ===",
+      "Step a: Adding lesson...",
+      "Command: brain add lesson 'Always validate user input'",
+      "Return code: 0",
+      "STDOUT: \u2705 Added entry: lesson-038\n\n\u001b[96m\u256d\u2500 \u2705 \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-038]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mAlways validate user input                                  \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f TESTED                                   \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n",
+      "\u2713 Added brain lesson",
+      "Step b: Adding pattern...",
+      "Command: mw brain add pattern 'Input Validation Pattern' --context 'Security'",
+      "Return code: 0",
+      "\u2713 Added brain pattern",
+      "Step c: Searching for 'validation'...",
+      "Command: mw brain search 'validation'",
+      "Return code: 0",
+      "Search results: \n\u001b[1m\u001b[96m\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u001b[0m\n\u001b[1m\u001b[96m\ud83d\udd0d BRAIN SEARCH RESULTS\u001b[0m\n\u001b[1m\u001b[96m\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u001b[0m\n\u001b[92mQuery:\u001b[0m '\u001b[93mvalidation\u001b[0m' \u2022 \u001b[92mFound:\u001b[0m \u001b[1m10\u001b[0m entries\n\n\u001b[96m\ud83d\udcca Results by type:\u001b[0m\n  \u2022 lesson: 10 matches\n\n\u001b[1m\u001b[96m\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u001b[0m\n\n\u001b[1m\u001b[93m[1/10]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-027]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mpattern Input Validation Pattern --context Security         \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[2/10]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-028]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mantipattern Never trust client-side validation alone        \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[3/10]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-030]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mpattern Input Validation Pattern --context Security         \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[4/10]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-031]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mantipattern Never trust client-side validation alone        \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[5/10]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-033]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mpattern Input Validation Pattern --context Security         \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[6/10]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-034]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mantipattern Never trust client-side validation alone        \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[7/10]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-036]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mpattern Input Validation Pattern --context Security         \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[8/10]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-037]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mantipattern Never trust client-side validation alone        \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[9/10]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-039]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mpattern Input Validation Pattern --context Security         \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[10/10]\u001b[0m\n\n\u001b[96m\u256d\u2500 \u274c \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-005]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mTest entry for simulation                                   \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f DEPRECATED                               \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u251c\u2500 \u001b[94m\ud83d\udcdd Context:\u001b[0m                                               \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2502 \u001b[0mFramework validation                                        \u001b[96m \u2502\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[96m\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u001b[0m\n\u001b[96m\ud83d\udca1 Use 'brain review' to see experimental entries or 'brain stats' for overview.\u001b[0m\n",
+      "\u26a0 Lesson not found in search",
+      "Step d: Getting brain stats...",
+      "Command: mw brain stats",
+      "Return code: 0",
+      "Stats: \n\ud83e\udde0 Brain Statistics\n==================================================\n\nTotal Entries: 60\n\nBy Type:\n   antipattern: 3\n   experiment: 3\n   insight: 6\n   lesson: 39\n   pattern: 6\n   tip: 3\n\nBy Status:\n   \u274c DEPRECATED: 1\n   \ud83e\uddea EXPERIMENTAL: 28\n   \u2705 TESTED: 31\n\nOldest entry: 2026-02-09\nNewest entry: 2026-02-09\n",
+      "Step e: Exporting brain...",
+      "Command: mw brain export /home/Memo1981/MyWork-AI/simulation_workspace/brain_export_test.json",
+      "Return code: 1",
+      "Step f: Adding antipattern...",
+      "Command: mw brain add antipattern",
+      "Return code: 0",
+      "\u2713 Added antipattern",
+      "Step g: Searching again for all entries...",
+      "Final search results: \n\u001b[1m\u001b[96m\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u001b[0m\n\u001b[1m\u001b[96m\ud83d\udd0d BRAIN SEARCH RESULTS\u001b[0m\n\u001b[1m\u001b[96m\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u001b[0m\n\u001b[92mQuery:\u001b[0m '\u001b[93mvalidation\u001b[0m' \u2022 \u001b[92mFound:\u001b[0m \u001b[1m11\u001b[0m entries\n\n\u001b[96m\ud83d\udcca Results by type:\u001b[0m\n  \u2022 lesson: 11 matches\n\n\u001b[1m\u001b[96m\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u001b[0m\n\n\u001b[1m\u001b[93m[1/11]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-027]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mpattern Input Validation Pattern --context Security         \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[2/11]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-028]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mantipattern Never trust client-side validation alone        \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[3/11]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-030]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mpattern Input Validation Pattern --context Security         \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[4/11]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-031]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mantipattern Never trust client-side validation alone        \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[5/11]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-033]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mpattern Input Validation Pattern --context Security         \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[6/11]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-034]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mantipattern Never trust client-side validation alone        \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[7/11]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-036]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mpattern Input Validation Pattern --context Security         \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[8/11]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-037]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mantipattern Never trust client-side validation alone        \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[9/11]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-039]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mpattern Input Validation Pattern --context Security         \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[1m\u001b[93m[10/11]\u001b[0m\n\n\u001b[96m\u256d\u2500 \ud83e\uddea \u001b[1mLESSON\u001b[0m\u001b[96m [lesson-040]\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\u001b[0m\n\u001b[96m\u2502 \u001b[0mantipattern Never trust client-side validation alone        \u001b[96m \u2502\u001b[0m\n\u001b[96m\u251c\u2500\u001b[93m \ud83d\udcc5 2026-02-09 \u2022 \ud83c\udff7\ufe0f EXPERIMENTAL                             \u001b[96m\u2500\u2524\u001b[0m\n\u001b[96m\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\u001b[0m\n\n\u001b[96m\ud83d\udcc4 Showing first 10 of 11 results. Use more specific terms to narrow down.\u001b[0m\n\n\u001b[1m\u001b[96m\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u001b[0m\n\u001b[96m\ud83d\udca1 Use 'brain review' to see experimental entries or 'brain stats' for overview.\u001b[0m\n",
+      "Found entry types: ['lesson', 'pattern', 'antipattern']",
+      "Step h: Cleaning up test entries...",
+      "(Cleanup functionality test - would need brain remove command)"
+    ],
+    "errors_found": [
+      "Brain export failed"
+    ],
+    "fixes_applied": [],
+    "runtime_seconds": 1.3805413246154785,
+    "timestamp": "2026-02-09T18:52:36.323443"
+  },
+  {
+    "sim_id": "SIM15",
+    "title": "User runs health check and follows fix suggestions",
+    "status": "FAIL",
+    "score": 0.0,
+    "details": {
+      "issue": "Command hangs during execution",
+      "skipped": true
+    },
+    "output_log": [
+      "Simulation skipped due to hanging health check commands"
+    ],
+    "errors_found": [
+      "Health check command causes hang"
+    ],
+    "fixes_applied": [
+      "Identified issue with health check timeout"
+    ],
+    "runtime_seconds": 0.0,
+    "timestamp": "2026-02-09T18:52:42.161784"
+  },
+  {
+    "sim_id": "SIM16",
+    "title": "User tries to use non-existent template",
+    "status": "PASS",
+    "score": 9.0,
+    "details": {
+      "command_failed": false,
+      "templates_mentioned": [
+        "basic",
+        "fastapi",
+        "nextjs",
+        "fullstack",
+        "cli",
+        "automation"
+      ],
+      "error_quality": "good"
+    },
+    "output_log": [
+      "=== SIM 16: Testing non-existent template error handling ===",
+      "Command: mw new myapp django",
+      "Return code: 1",
+      "STDOUT: \u274c Unknown template: django\n   Available: basic, fastapi, nextjs, fullstack, cli, automation\n",
+      "\u2713 Command failed as expected",
+      "\u2713 Error mentions template not found",
+      "Templates mentioned in error: ['basic', 'fastapi', 'nextjs', 'fullstack', 'cli', 'automation']",
+      "\u2713 Error lists available templates",
+      "Checking template documentation in help...",
+      "\u2713 Help documents available templates"
+    ],
+    "errors_found": [
+      "Error format doesn't match expected pattern"
+    ],
+    "fixes_applied": [],
+    "runtime_seconds": 0.2829873561859131,
+    "timestamp": "2026-02-09T18:52:36.606486"
+  },
+  {
+    "sim_id": "SIM17",
+    "title": "User scans projects and exports",
+    "status": "PASS",
+    "score": 8.0,
+    "details": {
+      "scan_successful": true,
+      "project_count": 8,
+      "export_created": false,
+      "export_size": 0
+    },
+    "output_log": [
+      "=== SIM 17: Testing projects scan and export workflow ===",
+      "Step 1: Scanning projects...",
+      "Command: mw projects scan",
+      "Return code: 0",
+      "STDOUT: \u001b[92m\u2705 Project registry updated: /home/Memo1981/MyWork-AI/.planning/project_registry.json\u001b[0m\n",
+      "\u2713 Projects scan completed",
+      "Step 2: Listing projects...",
+      "Command: mw projects",
+      "Return code: 0",
+      "Projects list: \n\u001b[1m\ud83d\udcc1 MyWork Projects\u001b[0m\n==================================================\n   \u2705 ai-dashboard \ud83d\ude80 (framework-tool, active) \ud83e\udde0\n   \u2705 api-hub \ud83d\ude80 (unknown, unknown) \n   \u2705 big-project \ud83d\ude80 (unknown, unknown) \n   \u2705 blog-platform \ud83d\ude80 (unknown, unknown) \n   \u2705 task-tracker  (framework-tool, active) \ud83e\udde0\n\n   Total: 5 projects\n",
+      "Project count: 8",
+      "Step 3: Exporting projects...",
+      "Command: mw projects export /home/Memo1981/MyWork-AI/simulation_workspace/projects_export.md",
+      "Return code: 0",
+      "STDOUT: \u001b[92m\u2705 Exported registry: /home/Memo1981/MyWork-AI/.planning/PROJECT_REGISTRY.md\u001b[0m\n",
+      "Step 4: Testing with empty projects directory...",
+      "(Note: Testing empty directory scenario conceptually)",
+      "Commands should handle empty project directories gracefully"
+    ],
+    "errors_found": [
+      "Export file was not created"
+    ],
+    "fixes_applied": [],
+    "runtime_seconds": 0.48305225372314453,
+    "timestamp": "2026-02-09T18:52:37.089616"
+  },
+  {
+    "sim_id": "SIM18",
+    "title": "User tries lint commands",
+    "status": "PARTIAL",
+    "score": 5.0,
+    "details": {
+      "stats_works": false,
+      "file_scan_works": false,
+      "error_handling": false
+    },
+    "output_log": [
+      "=== SIM 18: Testing lint commands ===",
+      "Step 1: Testing lint stats...",
+      "Command: mw lint stats",
+      "Return code: 1",
+      "STDOUT: ",
+      "STDERR: Traceback (most recent call last):\n  File \"/home/Memo1981/MyWork-AI/tools/auto_linting_agent.py\", line 25, in <module>\n    from watchdog.observers import Observer\nModuleNotFoundError: No module named 'watchdog'\n",
+      "Step 2: Testing lint scan with specific file...",
+      "Command: mw lint scan --file tools/mw.py",
+      "Return code: 1",
+      "STDOUT: ",
+      "Step 3: Testing lint scan with non-existent file...",
+      "Command: mw lint scan --file nonexistent.py",
+      "Return code: 1",
+      "STDOUT: ",
+      "STDERR: Traceback (most recent call last):\n  File \"/home/Memo1981/MyWork-AI/tools/auto_linting_agent.py\", line 25, in <module>\n    from watchdog.observers import Observer\nModuleNotFoundError: No module named 'watchdog'\n",
+      "\u2713 Command failed as expected for non-existent file",
+      "Step 4: Testing additional lint commands...",
+      "\u2713 Lint help is available",
+      "\u2713 Help lists available lint subcommands"
+    ],
+    "errors_found": [
+      "lint stats failed",
+      "lint scan with file failed",
+      "Poor error message for non-existent file"
+    ],
+    "fixes_applied": [],
+    "runtime_seconds": 1.0535316467285156,
+    "timestamp": "2026-02-09T18:52:38.143213"
+  },
+  {
+    "sim_id": "SIM19",
+    "title": "User hits Ctrl+C during long operation",
+    "status": "PASS",
+    "score": 8.5,
+    "details": {
+      "interrupt_handled": false,
+      "no_corruption": false,
+      "cleanup_good": false,
+      "system_functional": true
+    },
+    "output_log": [
+      "=== SIM 19: Testing Ctrl+C interrupt handling ===",
+      "Test 1: Simulating interrupt during scan...",
+      "Interrupted scan - Return code: 0",
+      "STDOUT: \n\ud83d\udd0d Scanning projects for modules...\n  \ud83d\udce6 big-project: 3 modules found\n  \ud83d\udce6 blog-platform: 5 modules found\n  \ud83d\udce6 api-hub: 21 modules found\n  \ud83d\udce6 ai-dashboard: 110 modules found\n  \ud83d\udce6 task-tracker: 153 modules found\n\n\u2705 Scan complete! 292 modules indexed.\n   Registry saved to: /home/Memo1981/MyWork-AI/.planning/module_registry.json\n\n\u001b[1m\ud83d\udd0d Scanning projects for modules...\u001b[0m\n",
+      "\u26a0 Interrupt handling unclear",
+      "Test 2: Checking for file corruption...",
+      "\u2713 project_registry.json appears intact",
+      "\u2713 mw.py appears intact",
+      "\u2713 STATE.md appears intact",
+      "\u2713 No file corruption detected",
+      "Test 3: Testing interrupt during brain operation...",
+      "Interrupted brain command - Return code: 0",
+      "Test 4: Testing cleanup behavior...",
+      "\u26a0 Temporary files found: ['.tmp', 'health_check.lock']",
+      "Test 5: Verifying system functionality after interrupts...",
+      "\u2713 System remains functional after interrupts"
+    ],
+    "errors_found": [],
+    "fixes_applied": [],
+    "runtime_seconds": 3.2335829734802246,
+    "timestamp": "2026-02-09T18:52:41.376893"
+  },
+  {
+    "sim_id": "SIM20",
+    "title": "User provides conflicting options",
+    "status": "PASS",
+    "score": 10.0,
+    "details": {
+      "help_available": 3,
+      "error_handling_quality": true
+    },
+    "output_log": [
+      "=== SIM 20: Testing conflicting options handling ===",
+      "Test 1: mw new my-app (no template)",
+      "Command: mw new my-app",
+      "Return code: 0",
+      "STDOUT: \ud83d\udcc1 Creating project: my-app\n\u2705 Project created at: /home/Memo1981/MyWork-AI/projects/my-app\n\n   Next steps:\n   1. cd projects/my-app\n   2. Review .planning/PROJECT.md\n   3. Run /gsd:plan-phase 1\n",
+      "\u2713 Command succeeded (uses default template)",
+      "Cleaned up test project",
+      "Test 2: brain add (no type, no content)",
+      "Command: mw brain add",
+      "Return code: 1",
+      "STDOUT: Usage: mw brain add <what you learned>\n",
+      "\u2713 Helpful error for missing arguments",
+      "Test 3: mw search (no query)",
+      "Command: mw search",
+      "Return code: 0",
+      "STDOUT: \nSearch Commands \u2014 Module Registry Search  \n========================================\nUsage:\n    mw search <query>               Search module registry for reusable code\n    mw search --help                Show this help message\n\nDescription:\n    Search through the module registry to find reusable code components,\n    functions, and patterns from existing projects. Helps avoid reinventing\n    the wheel by finding code you or others have already written.\n\nExamples:\n    mw search \"auth\"                # Find authentication modules\n    mw search \"database\"            # Find database-related code\n    mw search \"api client\"          # Find API client implementations\n    mw search \"validation\"          # Find validation functions\n\n",
+      "Test 4: mw af start (no project)",
+      "Command: mw af start",
+      "Return code: 1",
+      "STDOUT: Usage: mw af start <project-name>\n",
+      "\u2713 Helpful error for missing project name",
+      "Test 5: Checking help availability for commands",
+      "Help available for 3/3 commands",
+      "\u2713 Most commands have help available"
+    ],
+    "errors_found": [],
+    "fixes_applied": [],
+    "runtime_seconds": 0.7847826480865479,
+    "timestamp": "2026-02-09T18:52:42.161744"
+  }
+]
