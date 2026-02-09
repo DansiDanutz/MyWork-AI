@@ -1,0 +1,322 @@
+{
+  "scan_time": "2026-02-09T00:30:23+00:00",
+  "repository": "/home/Memo1981/MyWork-AI",
+  "total_findings": 45,
+  "findings": [
+    {
+      "severity": "MEDIUM",
+      "file": "tools/auto_lint_fixer.py",
+      "line": 744,
+      "description": "Insecure HTTP URL - should use HTTPS",
+      "code_snippet": "fixes_applied[\"MD034\"] = content.count(\"http://\") + content.count(\"https://\")"
+    },
+    {
+      "severity": "MEDIUM",
+      "file": "tools/auto_lint_fixer.py",
+      "line": 744,
+      "description": "Hardcoded HTTP URL",
+      "code_snippet": "fixes_applied[\"MD034\"] = content.count(\"http://\") + content.count(\"https://\")"
+    },
+    {
+      "severity": "HIGH",
+      "file": "tools/autoforge_api.py",
+      "line": 193,
+      "description": "Use of popen() - command injection risk",
+      "code_snippet": "subprocess.Popen("
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/auto_update.py",
+      "line": 522,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"Available: {', '.join(COMPONENTS.keys())}, all\")"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/switch_llm_provider.py",
+      "line": 160,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"\u26a0\ufe0f  Warning: {env_key} not found in environment\")"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/switch_llm_provider.py",
+      "line": 173,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"Available: {', '.join(PROVIDERS.keys())}\")"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/switch_llm_provider.py",
+      "line": 188,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"\u274c Cannot switch - missing API key\")"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/switch_llm_provider.py",
+      "line": 242,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"  {status} {key:12} - {info['name']}\")"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/scaffold.py",
+      "line": 414,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"   Available: {', '.join(TEMPLATES.keys())}\")"
+    },
+    {
+      "severity": "HIGH",
+      "file": "tools/autocoder_api.py",
+      "line": 193,
+      "description": "Use of popen() - command injection risk",
+      "code_snippet": "subprocess.Popen("
+    },
+    {
+      "severity": "HIGH",
+      "file": "tools/health_check.py",
+      "line": 1153,
+      "description": "subprocess with shell=True - command injection risk",
+      "code_snippet": "subprocess.run(result.fix_command, shell=True)"
+    },
+    {
+      "severity": "CRITICAL",
+      "file": "tools/brain_learner.py",
+      "line": 386,
+      "description": "Potential hardcoded API key or token",
+      "code_snippet": "(r\"ConnectionRefusedError\", \"Connection refused - check if service is running\"),"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/marketplace_upload_previews.py",
+      "line": 105,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"Uploaded {image.name} -> {file_key}\")"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/brain_search.py",
+      "line": 372,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"\u274c Invalid type. Valid: {', '.join(ENTRY_TYPES.keys())}\")"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/project_registry.py",
+      "line": 269,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"  - {key}: {by_type[key]}\")"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/project_registry.py",
+      "line": 272,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"  - {key}: {by_status[key]}\")"
+    },
+    {
+      "severity": "HIGH",
+      "file": "tools/lint_watcher.py",
+      "line": 64,
+      "description": "Use of popen() - command injection risk",
+      "code_snippet": "process = subprocess.Popen("
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/brain.py",
+      "line": 377,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"Types: {', '.join(ENTRY_TYPES.keys())}\")"
+    },
+    {
+      "severity": "LOW",
+      "file": "projects/ai-dashboard/backend/scripts/youtube_upload_smoke.py",
+      "line": 79,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"   - {key}\")"
+    },
+    {
+      "severity": "CRITICAL",
+      "file": "projects/ai-dashboard/backend/services/youtube_automation.py",
+      "line": 207,
+      "description": "Potential hardcoded API key or token",
+      "code_snippet": "voice_id: str = \"1bd001e7e50f421d891986aad5158bc8\","
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/e2e/test_marketplace_e2e.py",
+      "line": 70,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"  {key}: {value}\")"
+    },
+    {
+      "severity": "MEDIUM",
+      "file": "tools/security/api_tester.py",
+      "line": 193,
+      "description": "Insecure HTTP URL - should use HTTPS",
+      "code_snippet": "'http://evil.com',"
+    },
+    {
+      "severity": "MEDIUM",
+      "file": "tools/security/api_tester.py",
+      "line": 193,
+      "description": "Hardcoded HTTP URL",
+      "code_snippet": "'http://evil.com',"
+    },
+    {
+      "severity": "MEDIUM",
+      "file": "tools/security/api_tester.py",
+      "line": 337,
+      "description": "Insecure HTTP URL - should use HTTPS",
+      "code_snippet": "http_url = self.base_url.replace('https://', 'http://')"
+    },
+    {
+      "severity": "MEDIUM",
+      "file": "tools/security/api_tester.py",
+      "line": 337,
+      "description": "Hardcoded HTTP URL",
+      "code_snippet": "http_url = self.base_url.replace('https://', 'http://')"
+    },
+    {
+      "severity": "CRITICAL",
+      "file": "tools/security/code_scanner.py",
+      "line": 56,
+      "description": "Use of eval() function - code injection risk",
+      "code_snippet": "(r'\\beval\\s*\\(', 'Use of eval() function - code injection risk'),"
+    },
+    {
+      "severity": "CRITICAL",
+      "file": "tools/security/code_scanner.py",
+      "line": 57,
+      "description": "Use of exec() function - code injection risk",
+      "code_snippet": "(r'\\bexec\\s*\\(', 'Use of exec() function - code injection risk'),"
+    },
+    {
+      "severity": "HIGH",
+      "file": "tools/security/code_scanner.py",
+      "line": 64,
+      "description": "Use of os.system() - command injection risk",
+      "code_snippet": "(r'os\\.system\\s*\\(', 'Use of os.system() - command injection risk'),"
+    },
+    {
+      "severity": "HIGH",
+      "file": "tools/security/code_scanner.py",
+      "line": 65,
+      "description": "subprocess with shell=True - command injection risk",
+      "code_snippet": "(r'subprocess.*shell\\s*=\\s*True', 'subprocess with shell=True - command injection risk'),"
+    },
+    {
+      "severity": "HIGH",
+      "file": "tools/security/code_scanner.py",
+      "line": 66,
+      "description": "Use of popen() - command injection risk",
+      "code_snippet": "(r'popen\\s*\\(', 'Use of popen() - command injection risk'),"
+    },
+    {
+      "severity": "HIGH",
+      "file": "tools/security/code_scanner.py",
+      "line": 72,
+      "description": "String formatting in SQL query - SQL injection risk",
+      "code_snippet": "(r'[\"\\'].*%.*[\"\\'].*%', 'String formatting in SQL query - SQL injection risk'),"
+    },
+    {
+      "severity": "HIGH",
+      "file": "tools/security/code_scanner.py",
+      "line": 73,
+      "description": "String concatenation in SQL query",
+      "code_snippet": "(r'[\"\\'].*\\+.*[\"\\'].*cursor', 'String concatenation in SQL query'),"
+    },
+    {
+      "severity": "MEDIUM",
+      "file": "tools/security/code_scanner.py",
+      "line": 89,
+      "description": "Insecure HTTP URL - should use HTTPS",
+      "code_snippet": "(r'http://[^/\\s]+', 'Insecure HTTP URL - should use HTTPS'),"
+    },
+    {
+      "severity": "MEDIUM",
+      "file": "tools/security/code_scanner.py",
+      "line": 89,
+      "description": "Hardcoded HTTP URL",
+      "code_snippet": "(r'http://[^/\\s]+', 'Insecure HTTP URL - should use HTTPS'),"
+    },
+    {
+      "severity": "MEDIUM",
+      "file": "tools/security/code_scanner.py",
+      "line": 90,
+      "description": "Insecure HTTP URL - should use HTTPS",
+      "code_snippet": "(r'[\"\\']http://.*[\"\\']', 'Hardcoded HTTP URL'),"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/security/code_scanner.py",
+      "line": 100,
+      "description": "Logger statement with password",
+      "code_snippet": "(r'logger.*password', 'Logger statement with password'),"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/security/code_scanner.py",
+      "line": 101,
+      "description": "Logger statement with secret",
+      "code_snippet": "(r'logger.*secret', 'Logger statement with secret'),"
+    },
+    {
+      "severity": "HIGH",
+      "file": "tools/security/code_scanner.py",
+      "line": 229,
+      "description": "Use of popen() - command injection risk",
+      "code_snippet": "'scan_time': os.popen('date -Iseconds').read().strip(),"
+    },
+    {
+      "severity": "HIGH",
+      "file": "tools/security/dep_audit.py",
+      "line": 311,
+      "description": "Use of popen() - command injection risk",
+      "code_snippet": "'audit_time': os.popen('date -Iseconds').read().strip(),"
+    },
+    {
+      "severity": "HIGH",
+      "file": "tools/security/infra_scanner.py",
+      "line": 411,
+      "description": "Use of popen() - command injection risk",
+      "code_snippet": "'scan_time': os.popen('date -Iseconds').read().strip(),"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/simulation/mlm_simulator.py",
+      "line": 598,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"   {key.replace('_', ' ').title()}: {value}\")"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/simulation/mlm_simulator.py",
+      "line": 602,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"   {key.replace('_', ' ').title()}: {value}\")"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/simulation/credit_engine.py",
+      "line": 612,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"   {key.replace('_', ' ').title()}: {value}\")"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/simulation/credit_engine.py",
+      "line": 616,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"   {key.replace('_', ' ').title()}: {value}\")"
+    },
+    {
+      "severity": "LOW",
+      "file": "tools/simulation/credit_engine.py",
+      "line": 620,
+      "description": "Print statement with key",
+      "code_snippet": "print(f\"   {key.replace('_', ' ').title()}: {value}\")"
+    }
+  ]
+}

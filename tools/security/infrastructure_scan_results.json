@@ -1,0 +1,91 @@
+{
+  "scan_time": "2026-02-09T00:30:38+00:00",
+  "repository": "/home/Memo1981/MyWork-AI",
+  "total_findings": 12,
+  "findings": [
+    {
+      "category": "Network",
+      "severity": "MEDIUM",
+      "issue": "Port 22: SSH exposed to all interfaces",
+      "details": "Port 22 is listening and may pose a security risk",
+      "recommendation": "Review if this port needs to be publicly accessible"
+    },
+    {
+      "category": "File Permissions",
+      "severity": "HIGH",
+      "issue": "Sensitive file is world-readable: .env.example",
+      "details": "File permissions: 664",
+      "recommendation": "Remove world-read permissions (chmod o-r)"
+    },
+    {
+      "category": "File Permissions",
+      "severity": "HIGH",
+      "issue": "Sensitive file is world-readable: projects/ai-dashboard/backend/.env.example",
+      "details": "File permissions: 664",
+      "recommendation": "Remove world-read permissions (chmod o-r)"
+    },
+    {
+      "category": "File Permissions",
+      "severity": "HIGH",
+      "issue": "Sensitive file is world-readable: projects/ai-dashboard/frontend/.env.production",
+      "details": "File permissions: 664",
+      "recommendation": "Remove world-read permissions (chmod o-r)"
+    },
+    {
+      "category": "File Permissions",
+      "severity": "HIGH",
+      "issue": "Sensitive file is world-readable: projects/ai-dashboard/frontend/.env.example",
+      "details": "File permissions: 664",
+      "recommendation": "Remove world-read permissions (chmod o-r)"
+    },
+    {
+      "category": "SSH Configuration",
+      "severity": "HIGH",
+      "issue": "Root login permitted",
+      "details": "Found in /etc/ssh/sshd_config",
+      "recommendation": "Review SSH configuration for security best practices"
+    },
+    {
+      "category": "SSH Configuration",
+      "severity": "LOW",
+      "issue": "X11 forwarding enabled",
+      "details": "Found in /etc/ssh/sshd_config",
+      "recommendation": "Review SSH configuration for security best practices"
+    },
+    {
+      "category": "Environment Variables",
+      "severity": "LOW",
+      "issue": "Sensitive environment variable detected: ANTHROPIC_API_KEY",
+      "details": "Environment variable name suggests sensitive content",
+      "recommendation": "Ensure sensitive env vars are properly secured"
+    },
+    {
+      "category": "Environment Variables",
+      "severity": "LOW",
+      "issue": "Sensitive environment variable detected: SUPABASE_SERVICE_ROLE_KEY",
+      "details": "Environment variable name suggests sensitive content",
+      "recommendation": "Ensure sensitive env vars are properly secured"
+    },
+    {
+      "category": "Environment Variables",
+      "severity": "LOW",
+      "issue": "Sensitive environment variable detected: ZAI_API_KEY",
+      "details": "Environment variable name suggests sensitive content",
+      "recommendation": "Ensure sensitive env vars are properly secured"
+    },
+    {
+      "category": "Environment Variables",
+      "severity": "LOW",
+      "issue": "Sensitive environment variable detected: GOOGLE_API_KEY",
+      "details": "Environment variable name suggests sensitive content",
+      "recommendation": "Ensure sensitive env vars are properly secured"
+    },
+    {
+      "category": "Environment Variables",
+      "severity": "LOW",
+      "issue": "Sensitive environment variable detected: OPENROUTER_API_KEY",
+      "details": "Environment variable name suggests sensitive content",
+      "recommendation": "Ensure sensitive env vars are properly secured"
+    }
+  ]
+}

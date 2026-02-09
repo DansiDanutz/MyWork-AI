@@ -1,0 +1,91 @@
+{
+  "test_time": "2026-02-09T00:30:38+00:00",
+  "base_url": "https://mywork-ai-production.up.railway.app",
+  "total_findings": 12,
+  "findings": [
+    {
+      "endpoint": "/api/products",
+      "method": "GET",
+      "severity": "HIGH",
+      "issue": "Information disclosure - sensitive data in response",
+      "details": "Response contains sensitive keywords: https://mywork-ai-production.up.railway.app/api/products"
+    },
+    {
+      "endpoint": "/openapi.json",
+      "method": "GET",
+      "severity": "HIGH",
+      "issue": "Information disclosure - sensitive data in response",
+      "details": "Response contains sensitive keywords: https://mywork-ai-production.up.railway.app/openapi.json"
+    },
+    {
+      "endpoint": "/openapi.json",
+      "method": "GET",
+      "severity": "MEDIUM",
+      "issue": "Information disclosure - debug information in response",
+      "details": "Response contains debug information: https://mywork-ai-production.up.railway.app/openapi.json"
+    },
+    {
+      "endpoint": "/",
+      "method": "GET",
+      "severity": "MEDIUM",
+      "issue": "Missing X-Frame-Options header - clickjacking vulnerability",
+      "details": "Header 'X-Frame-Options' not found in response"
+    },
+    {
+      "endpoint": "/",
+      "method": "GET",
+      "severity": "MEDIUM",
+      "issue": "Missing X-Content-Type-Options header - MIME sniffing vulnerability",
+      "details": "Header 'X-Content-Type-Options' not found in response"
+    },
+    {
+      "endpoint": "/",
+      "method": "GET",
+      "severity": "MEDIUM",
+      "issue": "Missing Content-Security-Policy header - XSS vulnerability",
+      "details": "Header 'Content-Security-Policy' not found in response"
+    },
+    {
+      "endpoint": "/",
+      "method": "GET",
+      "severity": "MEDIUM",
+      "issue": "Missing HSTS header - insecure transport",
+      "details": "Header 'Strict-Transport-Security' not found in response"
+    },
+    {
+      "endpoint": "/",
+      "method": "GET",
+      "severity": "MEDIUM",
+      "issue": "Missing X-XSS-Protection header - XSS vulnerability",
+      "details": "Header 'X-XSS-Protection' not found in response"
+    },
+    {
+      "endpoint": "/",
+      "method": "GET",
+      "severity": "MEDIUM",
+      "issue": "Missing Referrer-Policy header - information disclosure",
+      "details": "Header 'Referrer-Policy' not found in response"
+    },
+    {
+      "endpoint": "/",
+      "method": "GET",
+      "severity": "LOW",
+      "issue": "Information disclosure in Server header",
+      "details": "Header 'Server' reveals server information: railway-edge"
+    },
+    {
+      "endpoint": "/",
+      "method": "GET",
+      "severity": "MEDIUM",
+      "issue": "No rate limiting detected",
+      "details": "Made 20 requests in 4.62s with no rate limiting"
+    },
+    {
+      "endpoint": "/",
+      "method": "GET",
+      "severity": "MEDIUM",
+      "issue": "HTTP endpoint does not redirect to HTTPS",
+      "details": "HTTP version accessible at: http://mywork-ai-production.up.railway.app"
+    }
+  ]
+}
