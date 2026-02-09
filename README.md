@@ -583,20 +583,33 @@ python tools/mw.py doctor    # Shows what's configured and what's missing
 
 ## Quick Start
 
+### First-Time Setup
+
+```bash
+
+# Run the setup wizard (NEW!)
+python tools/mw.py setup
+
+# Learn the workflow (NEW!)  
+python tools/mw.py guide
+
+```
+
 ### Create Your First Project
 
 ```bash
 
-# Create from template
+# Option 1: Enhanced prompting (NEW!)
+python tools/mw.py prompt-enhance "build me a todo app"
+# Creates detailed requirements in .planning/ENHANCED_PROMPT.md
 
+# Option 2: Direct creation
 python tools/mw.py new my-app fastapi
 
 # Navigate to project
-
 cd projects/my-app
 
 # In Claude Code CLI:
-
 /gsd:new-project          # Initialize with discovery
 /gsd:plan-phase 1         # Plan first phase
 /gsd:execute-phase 1      # Build it
@@ -674,29 +687,58 @@ MyWork-AI/
 
 ```bash
 
+# Getting Started
+
+mw setup                     # First-time setup wizard (NEW!)
+mw guide                     # Interactive workflow guide (NEW!)
+
 # Status & Health
 
 mw dashboard                 # Interactive framework dashboard with metrics  
-mw status                    # Quick health check
+mw status                    # Quick health check (now supports --help)
 mw doctor                    # Full diagnostics with auto-fix
 
 # Projects
 
-mw new <name> [template]     # Create project (basic|fastapi|nextjs|fullstack|cli)
+mw new <name> [template]     # Create project (now supports --help)
+mw prompt-enhance <prompt>   # Enhance prompts for GSD (NEW!)
 mw projects                  # List all projects
 mw open <name>               # Open in VS Code
+mw cd <name>                 # Print cd command for project
 
-# Knowledge
+# Knowledge Management
 
-mw brain search <query>      # Search knowledge vault
+mw brain search <query>      # Search knowledge vault (enhanced help)
+mw brain add <lesson>        # Add new lesson/insight  
+mw brain review              # Show entries needing review
+mw brain stats               # Knowledge statistics
 mw brain learn               # Run daily learning
+mw brain learn-deep          # Weekly deep analysis
 mw search <query>            # Search module registry (1,300+ modules)
 mw scan                      # Re-index all modules
+
+# Code Quality
+
+mw lint scan                 # Scan for linting issues (enhanced help)
+mw lint fix                  # Auto-fix all issues
+mw lint watch                # Watch and auto-lint
+mw lint start                # Start lint scheduler
+mw lint install-hooks        # Install git hooks
+
+# Workflow Automation
+
+mw n8n status                # Check n8n connection (enhanced help)
+mw n8n list                  # List workflows
 
 # Updates
 
 mw update check              # Check for updates
 mw update <component>        # Update gsd|autoforge|n8n-skills
+
+# Help & Documentation
+
+mw help                      # Show all commands
+mw <command> --help          # Detailed help for any command (NEW!)
 
 ```markdown
 
