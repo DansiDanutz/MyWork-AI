@@ -1,0 +1,68 @@
+{
+  "start_time": "2026-02-09T18:25:49.714161",
+  "system_info": {
+    "platform": "Linux-6.8.0-71-generic-x86_64-with-glibc2.39",
+    "python_version": "3.12.3 (main, Jan 22 2026, 20:57:42) [GCC 13.3.0]",
+    "architecture": [
+      "64bit",
+      "ELF"
+    ],
+    "processor": "x86_64",
+    "node": "memo-s-2vcpu-4gb-fra1-01"
+  },
+  "checks": {
+    "Python Version": {
+      "status": "PASS",
+      "details": "Python 3.12.3 exceeds minimum requirement",
+      "grade": "A",
+      "timestamp": "2026-02-09T18:25:49.741767"
+    },
+    "pip Availability": {
+      "status": "PASS",
+      "details": "pip is available: pip 24.0 from /usr/lib/python3/dist-packages/pip (python 3.12)",
+      "grade": "A",
+      "timestamp": "2026-02-09T18:25:50.199455"
+    },
+    "Dependency Specification": {
+      "status": "PASS",
+      "details": "Dependencies specified in: pyproject.toml, setup.py",
+      "grade": "A",
+      "timestamp": "2026-02-09T18:25:50.199821"
+    },
+    "Setup Wizard": {
+      "status": "PARTIAL",
+      "details": "Setup functionality references found in mw.py",
+      "grade": "C",
+      "timestamp": "2026-02-09T18:25:50.202014"
+    },
+    "Directory Structure": {
+      "status": "PASS",
+      "details": "All required directories exist: projects, tools, docs, tests, .planning",
+      "grade": "A",
+      "timestamp": "2026-02-09T18:25:50.202231"
+    },
+    "Configuration Files": {
+      "status": "PASS",
+      "details": "All essential configuration files present",
+      "grade": "A",
+      "timestamp": "2026-02-09T18:25:50.202332"
+    },
+    "CLI Accessibility": {
+      "status": "PASS",
+      "details": "CLI tool is accessible and shows help",
+      "grade": "A",
+      "timestamp": "2026-02-09T18:25:50.286708"
+    },
+    "Installation Scripts": {
+      "status": "PASS",
+      "details": "Both installation scripts present (quality: A)",
+      "grade": "A",
+      "timestamp": "2026-02-09T18:25:50.287346"
+    }
+  },
+  "issues": [],
+  "recommendations": [
+    "Verify setup wizard is fully implemented"
+  ],
+  "overall_grade": "A"
+}

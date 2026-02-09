@@ -108,12 +108,9 @@ class UserJourneySimulator:
                 cmd, 
                 cwd=cwd or self.mywork_root,
                 capture_output=capture_output,
-                text=True,
-                timeout=30
+                text=True
             )
             return result.returncode, result.stdout, result.stderr
-        except subprocess.TimeoutExpired:
-            return -1, "", "Command timed out"
         except Exception as e:
             return -1, "", str(e)
             
