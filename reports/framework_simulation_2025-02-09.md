@@ -83,8 +83,18 @@
   - TestMwCli (13 tests)
 
 ## PHASE G: Fix & Enhancement
-- Issues Found: TBD
-- Fixes Applied: TBD
+- Status: IN PROGRESS
+
+### Issues Found:
+1. ❌ **CRITICAL**: mw.py report/doctor/fix commands hang indefinitely (health_check.py lock issue)
+2. ❌ **HIGH**: brain.py analytics command has TypeError in BrainEntry sorting
+3. ❌ **HIGH**: mw.py lint scan command hangs after dependency fix
+4. ❌ **MEDIUM**: Simulation engine has 1 failing scenario "Marketplace Activity & Commissions"
+5. ✅ **FIXED**: Missing dependencies python-dotenv and watchdog for af/lint commands
+
+### Fixes Applied:
+1. ✅ Fixed missing dependencies (python-dotenv, watchdog)
+2. 🔄 Working on health_check.py hanging issue...
 
 ---
 

@@ -780,8 +780,8 @@ def cmd_analytics(args: List[str]):
         except:
             continue
     
-    stale_entries.sort(reverse=True)  # Oldest first
-    recent_entries.sort()  # Newest first
+    stale_entries.sort(key=lambda x: x[0], reverse=True)  # Oldest first (by days_old)
+    recent_entries.sort(key=lambda x: x[0])  # Newest first (by days_old)
     
     if stale_entries:
         print(f"{YELLOW}🕒 Stale Entries (30+ days old):{RESET}")
