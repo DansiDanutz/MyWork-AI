@@ -402,7 +402,11 @@ def create_structure(path: Path, structure: Dict[str, Any], context: Dict[str, s
         else:
             # It's a file
             item_path.parent.mkdir(parents=True, exist_ok=True)
-            formatted_content = content.format(**context)
+            try:
+                formatted_content = content.format(**context)
+            except (KeyError, ValueError):
+                # Template contains literal braces (e.g. dicts in code), skip formatting
+                formatted_content = content
             item_path.write_text(formatted_content)
 
 
