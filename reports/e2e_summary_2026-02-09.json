@@ -1,0 +1,52 @@
+{
+  "timestamp": "2026-02-09 00:32:41",
+  "overall_summary": {
+    "total_tests": 63,
+    "passed": 57,
+    "failed": 5,
+    "success_rate": 90.48
+  },
+  "test_suites": {
+    "autoforge_test": {
+      "name": "AutoForge Integration E2E Tests",
+      "summary": {
+        "total_tests": 14,
+        "passed": 14,
+        "failed": 0,
+        "skipped": 0,
+        "success_rate": 100.0
+      }
+    },
+    "gsd_test": {
+      "name": "GSD Workflow E2E Tests",
+      "summary": {
+        "total_tests": 10,
+        "passed": 9,
+        "failed": 1,
+        "skipped": 0,
+        "success_rate": 90.0
+      }
+    },
+    "marketplace_test": {
+      "name": "Marketplace E2E Smoke Tests",
+      "summary": {
+        "total_tests": 11,
+        "passed": 11,
+        "failed": 0,
+        "skipped": 0,
+        "success_rate": 100.0
+      }
+    },
+    "brain_e2e": {
+      "name": "Brain E2E Full Lifecycle Tests",
+      "summary": {
+        "total_tests": 28,
+        "passed": 23,
+        "failed": 4,
+        "skipped": 0,
+        "success_rate": 82.14
+      }
+    }
+  },
+  "health_check_note": "Health check shows 4 expected configuration issues (GSD, AutoForge path, n8n-skills, n8n-mcp config) - these are environmental setup items, not code issues."
+}

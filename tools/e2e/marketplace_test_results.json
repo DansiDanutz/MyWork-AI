@@ -1,0 +1,168 @@
+{
+  "test_suite": "Marketplace E2E Smoke Tests",
+  "timestamp": "2026-02-09 00:31:57",
+  "endpoints_tested": {
+    "frontend": {
+      "base_url": "https://frontend-hazel-ten-17.vercel.app",
+      "endpoints": [
+        "/",
+        "/products",
+        "/pricing",
+        "/status"
+      ],
+      "availability": "4/4"
+    },
+    "backend": {
+      "base_url": "https://mywork-ai-production.up.railway.app",
+      "endpoints": [
+        "/health",
+        "/api/products"
+      ],
+      "availability": "2/2"
+    }
+  },
+  "summary": {
+    "total_tests": 11,
+    "passed": 11,
+    "failed": 0,
+    "skipped": 0,
+    "success_rate": 100.0
+  },
+  "results": [
+    {
+      "test": "frontend_home",
+      "status": "PASS",
+      "message": "OK (260.95ms)",
+      "details": {
+        "url": "https://frontend-hazel-ten-17.vercel.app/",
+        "status_code": 200,
+        "response_time_ms": 260.95,
+        "content_type": "text/html; charset=utf-8",
+        "content_length": 21379,
+        "html_structure": "valid"
+      },
+      "timestamp": "2026-02-09 00:31:48"
+    },
+    {
+      "test": "frontend_products",
+      "status": "PASS",
+      "message": "OK (270.37ms)",
+      "details": {
+        "url": "https://frontend-hazel-ten-17.vercel.app/products",
+        "status_code": 200,
+        "response_time_ms": 270.37,
+        "content_type": "text/html; charset=utf-8",
+        "content_length": 19409,
+        "html_structure": "valid"
+      },
+      "timestamp": "2026-02-09 00:31:48"
+    },
+    {
+      "test": "frontend_pricing",
+      "status": "PASS",
+      "message": "OK (224.05ms)",
+      "details": {
+        "url": "https://frontend-hazel-ten-17.vercel.app/pricing",
+        "status_code": 200,
+        "response_time_ms": 224.05,
+        "content_type": "text/html; charset=utf-8",
+        "content_length": 25320,
+        "html_structure": "valid"
+      },
+      "timestamp": "2026-02-09 00:31:48"
+    },
+    {
+      "test": "frontend_status",
+      "status": "PASS",
+      "message": "OK (436.65ms)",
+      "details": {
+        "url": "https://frontend-hazel-ten-17.vercel.app/status",
+        "status_code": 200,
+        "response_time_ms": 436.65,
+        "content_type": "text/html; charset=utf-8",
+        "content_length": 19428,
+        "html_structure": "valid"
+      },
+      "timestamp": "2026-02-09 00:31:49"
+    },
+    {
+      "test": "backend_health",
+      "status": "PASS",
+      "message": "OK (255.7ms)",
+      "details": {
+        "url": "https://mywork-ai-production.up.railway.app/health",
+        "status_code": 200,
+        "response_time_ms": 255.7,
+        "content_type": "application/json",
+        "content_length": 93,
+        "health_response": "valid"
+      },
+      "timestamp": "2026-02-09 00:31:49"
+    },
+    {
+      "test": "backend_api_products",
+      "status": "PASS",
+      "message": "OK (381.86ms)",
+      "details": {
+        "url": "https://mywork-ai-production.up.railway.app/api/products",
+        "status_code": 200,
+        "response_time_ms": 381.86,
+        "content_type": "application/json",
+        "content_length": 3226,
+        "json_valid": false
+      },
+      "timestamp": "2026-02-09 00:31:49"
+    },
+    {
+      "test": "performance_frontend_home",
+      "status": "PASS",
+      "message": "Good performance (avg: 215.3ms)",
+      "details": {
+        "average_ms": 215.3,
+        "min_ms": 204.4,
+        "max_ms": 226.0,
+        "requests": 3
+      },
+      "timestamp": "2026-02-09 00:31:53"
+    },
+    {
+      "test": "performance_backend_health",
+      "status": "PASS",
+      "message": "Good performance (avg: 246.8ms)",
+      "details": {
+        "average_ms": 246.8,
+        "min_ms": 237.2,
+        "max_ms": 263.3,
+        "requests": 3
+      },
+      "timestamp": "2026-02-09 00:31:57"
+    },
+    {
+      "test": "broken_links",
+      "status": "PASS",
+      "message": "No broken links found (tested 2)",
+      "details": {},
+      "timestamp": "2026-02-09 00:31:57"
+    },
+    {
+      "test": "ssl_cert_frontend-hazel-ten-17_vercel_app",
+      "status": "PASS",
+      "message": "SSL certificate valid until Mar 26 17:44:00 2026 GMT",
+      "details": {
+        "subject": "*.vercel.app",
+        "expires": "Mar 26 17:44:00 2026 GMT"
+      },
+      "timestamp": "2026-02-09 00:31:57"
+    },
+    {
+      "test": "ssl_cert_mywork-ai-production_up_railway_app",
+      "status": "PASS",
+      "message": "SSL certificate valid until May  5 14:01:40 2026 GMT",
+      "details": {
+        "subject": "*.up.railway.app",
+        "expires": "May  5 14:01:40 2026 GMT"
+      },
+      "timestamp": "2026-02-09 00:31:57"
+    }
+  ]
+}
