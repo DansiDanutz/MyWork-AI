@@ -13,7 +13,10 @@ Usage:
     python brain.py cleanup                 # Remove deprecated entries
     python brain.py stats                   # Show brain statistics
     python brain.py analytics              # Comprehensive analytics dashboard
-    python brain.py export [markdown|json] # Export to markdown or JSON
+    python brain.py export [markdown|json|csv] # Export to markdown, JSON, or CSV
+    python brain.py import <file>           # Import from JSON/markdown/CSV
+    python brain.py backup                  # Create timestamped backup
+    python brain.py restore <backup>        # Restore from backup
 
 Types:
     lesson      - Something learned from experience
@@ -884,11 +887,11 @@ def cmd_analytics(args: List[str]):
 
 
 def cmd_export(args: List[str]):
-    """Export brain to markdown or JSON."""
+    """Export brain to markdown, JSON, or CSV."""
     format_type = args[0] if args else "markdown"
     
-    if format_type not in ["markdown", "json"]:
-        print("Usage: python brain.py export [markdown|json]")
+    if format_type not in ["markdown", "json", "csv"]:
+        print("Usage: python brain.py export [markdown|json|csv]")
         return
     
     brain = BrainManager()
@@ -898,9 +901,41 @@ def cmd_export(args: List[str]):
         print(f"✅ JSON exported to: {brain.brain_json}")
         return
     
-    # Markdown export
     mywork_root = get_mywork_root()
-    export_file = mywork_root / f"BRAIN_EXPORT_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    
+    if format_type == "csv":
+        import csv
+        
+        export_file = mywork_root / f"BRAIN_EXPORT_{timestamp}.csv"
+        
+        with open(export_file, 'w', newline='', encoding='utf-8') as f:
+            writer = csv.writer(f)
+            
+            # Header
+            writer.writerow(['id', 'type', 'content', 'context', 'status', 'date_added', 
+                           'date_updated', 'tags', 'references'])
+            
+            # Data rows
+            for entry in brain.entries.values():
+                writer.writerow([
+                    entry.id,
+                    entry.type,
+                    entry.content,
+                    entry.context,
+                    entry.status,
+                    entry.date_added,
+                    entry.date_updated,
+                    ', '.join(entry.tags),
+                    entry.references
+                ])
+        
+        print(f"✅ CSV exported to: {export_file}")
+        print(f"📊 Exported {len(brain.entries)} entries")
+        return
+    
+    # Markdown export
+    export_file = mywork_root / f"BRAIN_EXPORT_{timestamp}.md"
     
     entries = list(brain.entries.values())
     
@@ -961,6 +996,363 @@ def cmd_export(args: List[str]):
     print(f"📊 Exported {stats['total_entries']} entries across {len(by_type)} types")
 
 
+def cmd_import(args: List[str]):
+    """Import brain entries from JSON, CSV, or Markdown."""
+    if not args:
+        print("Usage: python brain.py import <file_path>")
+        return
+    
+    file_path = Path(args[0])
+    
+    if not file_path.exists():
+        print(f"❌ File not found: {file_path}")
+        return
+    
+    brain = BrainManager()
+    
+    # Color codes
+    BOLD = '\033[1m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BLUE = '\033[94m'
+    RESET = '\033[0m'
+    
+    print(f"{BLUE}📥 Importing from: {file_path}{RESET}")
+    
+    imported_count = 0
+    skipped_count = 0
+    error_count = 0
+    
+    try:
+        if file_path.suffix.lower() == '.json':
+            # Import from JSON
+            with open(file_path) as f:
+                data = json.load(f)
+            
+            # Handle different JSON formats
+            entries_data = data.get('entries', [])
+            if not entries_data and isinstance(data, list):
+                entries_data = data  # Direct array format
+            
+            for entry_data in entries_data:
+                try:
+                    # Check if entry already exists
+                    entry_id = entry_data.get('id')
+                    if entry_id and entry_id in brain.entries:
+                        print(f"{YELLOW}⚠️  Skipping existing entry: {entry_id}{RESET}")
+                        skipped_count += 1
+                        continue
+                    
+                    # Create new entry
+                    entry = BrainEntry.from_dict(entry_data)
+                    
+                    # Generate new ID if missing or conflicting
+                    if not entry.id or entry.id in brain.entries:
+                        entry.id = brain.generate_id(entry.type)
+                    
+                    brain.entries[entry.id] = entry
+                    imported_count += 1
+                    print(f"{GREEN}✅ Imported: {entry.id} - {entry.content[:50]}...{RESET}")
+                    
+                except Exception as e:
+                    error_count += 1
+                    print(f"{RED}❌ Error importing entry: {e}{RESET}")
+        
+        elif file_path.suffix.lower() == '.csv':
+            # Import from CSV
+            import csv
+            
+            with open(file_path, newline='', encoding='utf-8') as f:
+                reader = csv.DictReader(f)
+                
+                for row in reader:
+                    try:
+                        # Check if entry already exists
+                        entry_id = row.get('id')
+                        if entry_id and entry_id in brain.entries:
+                            print(f"{YELLOW}⚠️  Skipping existing entry: {entry_id}{RESET}")
+                            skipped_count += 1
+                            continue
+                        
+                        # Parse tags
+                        tags = []
+                        if row.get('tags'):
+                            tags = [tag.strip() for tag in row['tags'].split(',') if tag.strip()]
+                        
+                        # Create entry
+                        entry = BrainEntry(
+                            id=entry_id or brain.generate_id(row.get('type', 'lesson')),
+                            type=row.get('type', 'lesson'),
+                            content=row.get('content', ''),
+                            context=row.get('context', ''),
+                            status=row.get('status', 'TESTED'),
+                            date_added=row.get('date_added', datetime.now().strftime('%Y-%m-%d')),
+                            date_updated=row.get('date_updated', datetime.now().strftime('%Y-%m-%d')),
+                            tags=tags,
+                            references=int(row.get('references', 0))
+                        )
+                        
+                        brain.entries[entry.id] = entry
+                        imported_count += 1
+                        print(f"{GREEN}✅ Imported: {entry.id} - {entry.content[:50]}...{RESET}")
+                        
+                    except Exception as e:
+                        error_count += 1
+                        print(f"{RED}❌ Error importing row: {e}{RESET}")
+        
+        elif file_path.suffix.lower() in ['.md', '.markdown']:
+            # Import from Markdown (basic parsing)
+            with open(file_path) as f:
+                content = f.read()
+            
+            # Parse markdown entries (look for patterns like "### ✅ lesson-001")
+            import re
+            
+            # Pattern to match entry headers
+            entry_pattern = r'###\s*([✅🧪❌❓])\s*(\w+-\d+)'
+            content_pattern = r'\*\*Content:\*\*\s*([^\n]+)'
+            context_pattern = r'\*\*Context:\*\*\s*([^\n]+)'
+            status_pattern = r'\*\*Status:\*\*\s*([^\n|]+)'
+            tags_pattern = r'\*\*Tags:\*\*\s*([^\n|]+)'
+            
+            matches = list(re.finditer(entry_pattern, content))
+            
+            for i, match in enumerate(matches):
+                try:
+                    status_icon = match.group(1)
+                    entry_id = match.group(2)
+                    
+                    # Extract entry type from ID
+                    entry_type = entry_id.split('-')[0]
+                    
+                    # Get content between this match and next match
+                    start_pos = match.end()
+                    end_pos = matches[i+1].start() if i+1 < len(matches) else len(content)
+                    section_content = content[start_pos:end_pos]
+                    
+                    # Extract fields
+                    content_match = re.search(content_pattern, section_content)
+                    context_match = re.search(context_pattern, section_content)
+                    status_match = re.search(status_pattern, section_content)
+                    tags_match = re.search(tags_pattern, section_content)
+                    
+                    # Determine status from icon
+                    status_map = {"✅": "TESTED", "🧪": "EXPERIMENTAL", "❌": "DEPRECATED", "❓": "TESTED"}
+                    status = status_map.get(status_icon, "TESTED")
+                    if status_match:
+                        status = status_match.group(1).strip()
+                    
+                    # Check if entry already exists
+                    if entry_id in brain.entries:
+                        print(f"{YELLOW}⚠️  Skipping existing entry: {entry_id}{RESET}")
+                        skipped_count += 1
+                        continue
+                    
+                    # Parse tags
+                    tags = []
+                    if tags_match:
+                        tags = [tag.strip() for tag in tags_match.group(1).split(',') if tag.strip()]
+                    
+                    # Create entry
+                    entry = BrainEntry(
+                        id=entry_id,
+                        type=entry_type,
+                        content=content_match.group(1).strip() if content_match else "",
+                        context=context_match.group(1).strip() if context_match else "",
+                        status=status,
+                        tags=tags
+                    )
+                    
+                    brain.entries[entry.id] = entry
+                    imported_count += 1
+                    print(f"{GREEN}✅ Imported: {entry.id} - {entry.content[:50]}...{RESET}")
+                    
+                except Exception as e:
+                    error_count += 1
+                    print(f"{RED}❌ Error parsing entry: {e}{RESET}")
+        
+        else:
+            print(f"{RED}❌ Unsupported file format: {file_path.suffix}{RESET}")
+            return
+        
+        # Save changes
+        if imported_count > 0:
+            brain.save()
+            brain._update_brain_md()
+        
+        # Summary
+        print(f"\n{BOLD}📊 Import Summary:{RESET}")
+        print(f"  {GREEN}✅ Imported: {imported_count}{RESET}")
+        print(f"  {YELLOW}⚠️  Skipped: {skipped_count}{RESET}")
+        print(f"  {RED}❌ Errors: {error_count}{RESET}")
+        
+        if imported_count > 0:
+            print(f"\n{GREEN}🧠 Brain updated successfully!{RESET}")
+    
+    except Exception as e:
+        print(f"{RED}❌ Import failed: {e}{RESET}")
+
+
+def cmd_backup(args: List[str]):
+    """Create a timestamped backup of the brain."""
+    brain = BrainManager()
+    
+    # Create backup directory
+    mywork_root = get_mywork_root()
+    backup_dir = mywork_root / "backups" / "brain"
+    backup_dir.mkdir(parents=True, exist_ok=True)
+    
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    backup_file = backup_dir / f"brain_backup_{timestamp}.json"
+    
+    # Create backup with metadata
+    backup_data = {
+        "backup_info": {
+            "created_at": datetime.now().isoformat(),
+            "source": str(brain.brain_json),
+            "entry_count": len(brain.entries),
+            "brain_version": "1.0"
+        },
+        "brain_data": {
+            "version": "1.0",
+            "last_updated": datetime.now().isoformat(),
+            "entry_count": len(brain.entries),
+            "entries": [e.to_dict() for e in brain.entries.values()]
+        }
+    }
+    
+    with open(backup_file, 'w') as f:
+        json.dump(backup_data, f, indent=2)
+    
+    print(f"✅ Brain backup created: {backup_file}")
+    print(f"📊 Backed up {len(brain.entries)} entries")
+    
+    # Also backup the original brain_data.json if it exists
+    if brain.brain_json.exists():
+        backup_original = backup_dir / f"brain_data_{timestamp}.json"
+        import shutil
+        shutil.copy2(brain.brain_json, backup_original)
+        print(f"📁 Original data file backed up: {backup_original}")
+
+
+def cmd_restore(args: List[str]):
+    """Restore brain from a backup file."""
+    if not args:
+        # List available backups
+        mywork_root = get_mywork_root()
+        backup_dir = mywork_root / "backups" / "brain"
+        
+        if not backup_dir.exists():
+            print("❌ No backups directory found")
+            return
+        
+        backup_files = list(backup_dir.glob("brain_backup_*.json"))
+        if not backup_files:
+            print("❌ No backup files found")
+            return
+        
+        print("📁 Available backups:")
+        backup_files.sort(reverse=True)  # Latest first
+        
+        for i, backup_file in enumerate(backup_files[:10], 1):  # Show last 10
+            try:
+                with open(backup_file) as f:
+                    backup_data = json.load(f)
+                
+                backup_info = backup_data.get("backup_info", {})
+                created_at = backup_info.get("created_at", "Unknown")
+                entry_count = backup_info.get("entry_count", 0)
+                
+                # Parse datetime for display
+                try:
+                    dt = datetime.fromisoformat(created_at.replace('Z', '+00:00'))
+                    time_str = dt.strftime('%Y-%m-%d %H:%M:%S')
+                except:
+                    time_str = created_at
+                
+                print(f"  {i:2}. {backup_file.name}")
+                print(f"      📅 {time_str} • 📊 {entry_count} entries")
+                
+            except Exception as e:
+                print(f"  ❌ {backup_file.name} (corrupted: {e})")
+        
+        print(f"\nUsage: python brain.py restore <backup_filename>")
+        return
+    
+    backup_filename = args[0]
+    
+    # Find backup file
+    mywork_root = get_mywork_root()
+    backup_dir = mywork_root / "backups" / "brain"
+    backup_file = backup_dir / backup_filename
+    
+    if not backup_file.exists():
+        # Try with full pattern
+        pattern_file = backup_dir / f"brain_backup_{backup_filename}.json"
+        if pattern_file.exists():
+            backup_file = pattern_file
+        else:
+            print(f"❌ Backup file not found: {backup_filename}")
+            return
+    
+    # Confirm restore
+    print(f"⚠️  This will replace your current brain with the backup:")
+    print(f"   📁 {backup_file}")
+    
+    response = input("\nProceed with restore? [y/N]: ").strip().lower()
+    if response != 'y':
+        print("Restore cancelled")
+        return
+    
+    try:
+        # Load backup
+        with open(backup_file) as f:
+            backup_data = json.load(f)
+        
+        brain_data = backup_data.get("brain_data", backup_data)  # Handle old format
+        
+        # Create current backup before restore
+        brain = BrainManager()
+        current_backup_file = backup_dir / f"brain_backup_before_restore_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
+        
+        current_backup = {
+            "backup_info": {
+                "created_at": datetime.now().isoformat(),
+                "source": "pre_restore_backup",
+                "entry_count": len(brain.entries),
+                "brain_version": "1.0"
+            },
+            "brain_data": {
+                "version": "1.0",
+                "last_updated": datetime.now().isoformat(),
+                "entry_count": len(brain.entries),
+                "entries": [e.to_dict() for e in brain.entries.values()]
+            }
+        }
+        
+        with open(current_backup_file, 'w') as f:
+            json.dump(current_backup, f, indent=2)
+        
+        print(f"💾 Current brain backed up to: {current_backup_file}")
+        
+        # Restore from backup
+        with open(brain.brain_json, 'w') as f:
+            json.dump(brain_data, f, indent=2)
+        
+        # Reload brain
+        brain.load()
+        
+        print(f"✅ Brain restored successfully!")
+        print(f"📊 Restored {len(brain.entries)} entries")
+        
+        # Update BRAIN.md
+        brain._update_brain_md()
+        
+    except Exception as e:
+        print(f"❌ Restore failed: {e}")
+
+
 def cmd_list(args: List[str]):
     """List all entries or by type."""
     brain = BrainManager()
@@ -1011,6 +1403,9 @@ def main():
         "stats": cmd_stats,
         "analytics": cmd_analytics,
         "export": cmd_export,
+        "import": cmd_import,
+        "backup": cmd_backup,
+        "restore": cmd_restore,
         "list": cmd_list,
         "remember": cmd_remember,
         "help": lambda a: print(__doc__),
