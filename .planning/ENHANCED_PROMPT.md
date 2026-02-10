@@ -1,7 +1,7 @@
 # Enhanced Project Prompt
 
 ## Original Request
-Build a real-time collaborative whiteboard with WebSocket support, user authentication via OAuth2, persistent storage in PostgreSQL, and a React frontend with TypeScript
+build a saas invoice tool
 
 ## Enhanced Requirements
 

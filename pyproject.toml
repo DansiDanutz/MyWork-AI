@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mywork-ai"
-version = "1.0.0"
+version = "2.0.0"
 description = "AI-powered development framework with tools, workflows, and brain (knowledge vault)"
 readme = "README.md"
 license = "MIT"
@@ -27,11 +27,7 @@ classifiers = [
     "Topic :: Software Development :: Build Tools",
 ]
 dependencies = [
-    "click>=8.1.0",
-    "rich>=13.0.0",
     "python-dotenv>=1.0.0",
-    "httpx>=0.25.0",
-    "pyyaml>=6.0.0",
 ]
 
 [project.optional-dependencies]
@@ -61,11 +57,6 @@ all = [
 [project.scripts]
 mw = "mw:main"
 mywork = "mw:main"
-mywork-brain = "brain:main"
-mywork-health = "health_check:main"
-mywork-registry = "module_registry:main"
-mywork-scaffold = "scaffold:main"
-mywork-update = "auto_update:main"
 
 [project.urls]
 Homepage = "https://github.com/dansidanutz/MyWork-AI"

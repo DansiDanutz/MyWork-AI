@@ -431,6 +431,12 @@ def cmd_projects():
 
     if args and args[0] in {"scan", "export", "stats", "list"}:
         return run_tool("project_registry", args)
+    
+    if args and args[0] == "health":
+        if len(args) < 2:
+            print("Usage: mw projects health <project-name>")
+            return 1
+        return cmd_project_health(args[1])
 
     print(f"\n{Colors.BOLD}📁 MyWork Projects{Colors.ENDC}")
     print("=" * 50)
@@ -556,6 +562,78 @@ def cmd_projects():
 
     print(f"\n   Total: {len(projects)} projects")
     return 0
+
+
+def cmd_project_health(project_name: str) -> int:
+    """Check health of a specific project."""
+    project_path = PROJECTS_DIR / project_name
+    
+    if not project_path.exists() or not project_path.is_dir():
+        print(f"{Colors.RED}Project '{project_name}' not found{Colors.ENDC}")
+        return 1
+    
+    print(f"{Colors.BOLD}🔍 Health Check for Project: {project_name}{Colors.ENDC}")
+    print(f"{Colors.BLUE}{'=' * 60}{Colors.ENDC}")
+    
+    # Initialize metrics
+    metrics = {
+        "tests_exists": False,
+        "ci_configured": False,
+        "docs_complete": False,
+        "gitignore_proper": False,
+        "dependencies_up_to_date": False
+    }
+    
+    # Check for tests directory
+    tests_dirs = ["tests", "spec", "__tests__", "test"]
+    metrics["tests_exists"] = any((project_path / t).exists() for t in tests_dirs)
+    
+    # Check for CI configuration
+    ci_files = [".github/workflows", "bitbucket-pipelines.yml", ".gitlab-ci.yml", "Jenkinsfile"]
+    metrics["ci_configured"] = any((project_path / f).exists() for f in ci_files)
+    
+    # Check for documentation
+    docs_files = ["README.md", "docs/", "DOCS.md", "API.md"]
+    metrics["docs_complete"] = any((project_path / f).exists() for f in docs_files)
+    
+    # Check .gitignore
+    gitignore_path = project_path / ".gitignore"
+    metrics["gitignore_proper"] = gitignore_path.exists() and "node_modules" in gitignore_path.read_text()
+    
+    # Check dependencies (simplified check)
+    lock_files = ["package-lock.json", "yarn.lock", "poetry.lock", "requirements.lock"]
+    metrics["dependencies_up_to_date"] = any((project_path / f).exists() for f in lock_files)
+    
+    # Calculate score (20 points per metric)
+    score = sum(20 for value in metrics.values() if value)
+    
+    # Print report
+    print(f"{Colors.BOLD}➤ Tests Exist:          {tick_cross(metrics['tests_exists'])}{Colors.ENDC}")
+    print(f"{Colors.BOLD}➤ CI Configured:        {tick_cross(metrics['ci_configured'])}{Colors.ENDC}")
+    print(f"{Colors.BOLD}➤ Docs Complete:        {tick_cross(metrics['docs_complete'])}{Colors.ENDC}")
+    print(f"{Colors.BOLD}➤ .gitignore Proper:    {tick_cross(metrics['gitignore_proper'])}{Colors.ENDC}")
+    print(f"{Colors.BOLD}➤ Dependencies Updated: {tick_cross(metrics['dependencies_up_to_date'])}{Colors.ENDC}")
+    
+    print(f"\n{Colors.BOLD}{Colors.YELLOW}🏆 Health Score: {score}/100{Colors.ENDC}")
+    
+    # Recommendations
+    print(f"\n{Colors.BOLD}📌 Recommendations:{Colors.ENDC}")
+    if not metrics["tests_exists"]:
+        print(f"  • Add tests in /tests directory")
+    if not metrics["ci_configured"]:
+        print(f"  • Configure CI in .github/workflows/")
+    if not metrics["docs_complete"]:
+        print(f"  • Improve documentation in README.md")
+    if not metrics["gitignore_proper"]:
+        print(f"  • Update .gitignore to exclude node_modules/ and other build artifacts")
+    if not metrics["dependencies_up_to_date"]:
+        print(f"  • Run 'npm install' or 'pip freeze > requirements.txt' to update dependencies")
+    
+    return 0
+
+def tick_cross(condition: bool) -> str:
+    """Return colored tick or cross based on condition."""
+    return f"{Colors.GREEN}✓{Colors.ENDC}" if condition else f"{Colors.RED}✗{Colors.ENDC}"
 
 
 def cmd_open(args: List[str]):
