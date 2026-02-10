@@ -28,11 +28,15 @@ Date: 2026-02-10
 - `mw search` — Module registry
 
 ### Testing
-- **75/75 unit tests passing** (1.1s)
+- **84/84 unit tests passing** (1.2s)
 - **30 user simulations completed** (A- average)
 - **Marketplace smoke tests**: 4/4 green
 - **Simulation engine**: 5/5 scenarios pass
 - **Security audit**: 0 critical, 5 low-risk remaining
+
+### Recent Changes (2026-02-10)
+- Added 9 brain tests (deprecate, delete, cleanup, filtering, validation) → 84 total
+- Test coverage for brain module now includes all CRUD + lifecycle operations
 
 ### Recent Changes (2026-02-09 → 2026-02-10)
 - Rebranded Autocoder → AutoForge
