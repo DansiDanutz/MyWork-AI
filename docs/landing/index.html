@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyWork-AI | AI-Powered Development Framework</title>
+    <meta name="description" content="Build complete applications from idea to marketplace in minutes, not months. The AI-powered development framework trusted by 1000+ developers.">
+    <link rel="canonical" href="https://mywork-ai.dev">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom Styles -->
+    <style>
+        .gradient-text {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .glow-box {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+        }
+        
+        .typing-animation {
+            border-right: 2px solid #3b82f6;
+            animation: typing 3s steps(30) infinite;
+        }
+        
+        @keyframes typing {
+            0%, 50% { border-color: transparent; }
+            51%, 100% { border-color: #3b82f6; }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white font-sans">
+    <!-- Navigation -->
+    <nav class="fixed w-full top-0 bg-gray-900/95 backdrop-blur-sm border-b border-gray-800 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-rocket text-2xl text-primary-500"></i>
+                    <span class="text-2xl font-bold gradient-text">MyWork-AI</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#features" class="hover:text-primary-500 transition-colors">Features</a>
+                    <a href="#ecosystem" class="hover:text-primary-500 transition-colors">Ecosystem</a>
+                    <a href="#showcase" class="hover:text-primary-500 transition-colors">Showcase</a>
+                    <a href="#pricing" class="hover:text-primary-500 transition-colors">Pricing</a>
+                </div>
+                <div class="flex space-x-4">
+                    <a href="https://frontend-hazel-ten-17.vercel.app" class="px-4 py-2 border border-primary-500 text-primary-500 rounded-lg hover:bg-primary-500 hover:text-white transition-all">
+                        Marketplace
+                    </a>
+                    <button class="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all glow-box">
+                        Get Started
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-16 px-6">
+        <div class="container mx-auto text-center">
+            <div class="max-w-4xl mx-auto">
+                <h1 class="text-5xl md:text-7xl font-bold mb-8 leading-tight">
+                    Build Apps
+                    <span class="gradient-text typing-animation">10x Faster</span>
+                </h1>
+                <p class="text-xl md:text-2xl text-gray-300 mb-12 leading-relaxed">
+                    From idea to marketplace in <strong>60 seconds</strong>. 
+                    The AI-powered development framework trusted by <strong>1000+ developers</strong>.
+                </p>
+                
+                <!-- CTA Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+                    <button class="px-8 py-4 bg-primary-500 text-white text-lg font-semibold rounded-lg hover:bg-primary-600 transition-all glow-box">
+                        <i class="fas fa-rocket mr-2"></i>
+                        Start Building Now
+                    </button>
+                    <a href="#demo" class="px-8 py-4 border border-gray-600 text-white text-lg font-semibold rounded-lg hover:border-primary-500 hover:text-primary-500 transition-all">
+                        <i class="fas fa-play mr-2"></i>
+                        Watch Demo
+                    </a>
+                </div>
+
+                <!-- Quick Install -->
+                <div class="bg-gray-800 rounded-lg p-6 max-w-2xl mx-auto">
+                    <p class="text-gray-400 mb-2">Quick Install:</p>
+                    <div class="flex items-center justify-center space-x-2 bg-black rounded-lg p-4">
+                        <code class="text-green-400 font-mono">pip install mywork-ai && mw setup</code>
+                        <button class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Apps Section -->
+    <section class="py-16 px-6 bg-gray-800/50">
+        <div class="container mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-bold mb-4">🌐 Live Ecosystem</h2>
+                <p class="text-xl text-gray-300">Experience MyWork-AI in action with our live applications</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Marketplace -->
+                <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-all hover:scale-105">
+                    <div class="text-center">
+                        <i class="fas fa-store text-3xl text-green-400 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Marketplace</h3>
+                        <p class="text-gray-400 mb-4">Buy/sell complete projects</p>
+                        <a href="https://frontend-hazel-ten-17.vercel.app" class="inline-block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
+                            Visit <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Dashboard -->
+                <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-all hover:scale-105">
+                    <div class="text-center">
+                        <i class="fas fa-chart-bar text-3xl text-blue-400 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Dashboard</h3>
+                        <p class="text-gray-400 mb-4">Project analytics</p>
+                        <a href="https://dashboard-sage-rho.vercel.app" class="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+                            Visit <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Task Tracker -->
+                <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-all hover:scale-105">
+                    <div class="text-center">
+                        <i class="fas fa-tasks text-3xl text-purple-400 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">Task Tracker</h3>
+                        <p class="text-gray-400 mb-4">Project management</p>
+                        <a href="https://task-tracker-weld-delta.vercel.app" class="inline-block px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors">
+                            Visit <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- SportsAI -->
+                <div class="bg-gray-800 rounded-lg p-6 hover:bg-gray-700 transition-all hover:scale-105">
+                    <div class="text-center">
+                        <i class="fas fa-futbol text-3xl text-orange-400 mb-4"></i>
+                        <h3 class="text-xl font-semibold mb-2">SportsAI</h3>
+                        <p class="text-gray-400 mb-4">AI sports analytics</p>
+                        <a href="https://sports-ai-one.vercel.app" class="inline-block px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors">
+                            Visit <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 px-6">
+        <div class="container mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4">⚡ Why Developers Choose MyWork-AI</h2>
+                <p class="text-xl text-gray-300">Four powerful systems that revolutionize how you build</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- GSD Feature -->
+                <div class="bg-gray-800 rounded-xl p-8 hover:bg-gray-700 transition-all">
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-green-500 rounded-lg p-3">
+                            <i class="fas fa-target text-2xl text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-3">🎯 GSD - Get Shit Done</h3>
+                            <p class="text-gray-300 mb-4">
+                                Structured project orchestration that breaks complex projects into manageable phases with realistic timelines.
+                            </p>
+                            <ul class="text-sm text-gray-400 space-y-1">
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>5-phase automated roadmaps</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>Technical specifications generation</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>Security checklists included</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AutoForge Feature -->
+                <div class="bg-gray-800 rounded-xl p-8 hover:bg-gray-700 transition-all">
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-blue-500 rounded-lg p-3">
+                            <i class="fas fa-robot text-2xl text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-3">🤖 AutoForge - Autonomous Coding</h3>
+                            <p class="text-gray-300 mb-4">
+                                Long-running AI agent that writes boilerplate, implements patterns, and handles repetitive tasks.
+                            </p>
+                            <ul class="text-sm text-gray-400 space-y-1">
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>80% less manual coding</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>Battle-tested patterns</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>Continuous quality assurance</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Brain Feature -->
+                <div class="bg-gray-800 rounded-xl p-8 hover:bg-gray-700 transition-all">
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-purple-500 rounded-lg p-3">
+                            <i class="fas fa-brain text-2xl text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-3">🧠 Brain - Knowledge Persistence</h3>
+                            <p class="text-gray-300 mb-4">
+                                Your personal development knowledge vault that learns from your work and grows with you.
+                            </p>
+                            <ul class="text-sm text-gray-400 space-y-1">
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>Never forget solutions again</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>Semantic search & knowledge graph</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>Auto-learns from git commits</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Marketplace Feature -->
+                <div class="bg-gray-800 rounded-xl p-8 hover:bg-gray-700 transition-all">
+                    <div class="flex items-start space-x-4">
+                        <div class="bg-orange-500 rounded-lg p-3">
+                            <i class="fas fa-store text-2xl text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold mb-3">🛒 Marketplace - Buy & Sell</h3>
+                            <p class="text-gray-300 mb-4">
+                                Complete applications marketplace with credit system, MLM referrals, and quality verification.
+                            </p>
+                            <ul class="text-sm text-gray-400 space-y-1">
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>Ready-to-deploy projects</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>5-level referral commissions</li>
+                                <li><i class="fas fa-check text-green-400 mr-2"></i>Quality-verified sellers</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section class="py-20 px-6 bg-gray-800/30">
+        <div class="container mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">🏆 MyWork-AI vs Traditional Development</h2>
+                <p class="text-xl text-gray-300">See why 1000+ developers made the switch</p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="overflow-x-auto">
+                    <table class="w-full bg-gray-800 rounded-lg">
+                        <thead>
+                            <tr class="border-b border-gray-700">
+                                <th class="px-6 py-4 text-left">Aspect</th>
+                                <th class="px-6 py-4 text-center text-red-400">Traditional</th>
+                                <th class="px-6 py-4 text-center text-green-400">MyWork-AI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-gray-700">
+                                <td class="px-6 py-4 font-semibold">Project Setup</td>
+                                <td class="px-6 py-4 text-center text-red-400">2-5 days</td>
+                                <td class="px-6 py-4 text-center text-green-400">✅ 60 seconds</td>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <td class="px-6 py-4 font-semibold">Documentation</td>
+                                <td class="px-6 py-4 text-center text-red-400">Often skipped</td>
+                                <td class="px-6 py-4 text-center text-green-400">✅ Auto-generated</td>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <td class="px-6 py-4 font-semibold">Knowledge Management</td>
+                                <td class="px-6 py-4 text-center text-red-400">Lost in Slack</td>
+                                <td class="px-6 py-4 text-center text-green-400">✅ Persistent Brain</td>
+                            </tr>
+                            <tr class="border-b border-gray-700">
+                                <td class="px-6 py-4 font-semibold">Security</td>
+                                <td class="px-6 py-4 text-center text-red-400">Afterthought</td>
+                                <td class="px-6 py-4 text-center text-green-400">✅ Built-in from day 1</td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 font-semibold">Time to Market</td>
+                                <td class="px-6 py-4 text-center text-red-400">Months</td>
+                                <td class="px-6 py-4 text-center text-green-400">✅ <strong>10x faster</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Built with MyWork-AI Showcase -->
+    <section id="showcase" class="py-20 px-6">
+        <div class="container mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">🏗️ Built with MyWork-AI</h2>
+                <p class="text-xl text-gray-300">Real projects built by the community</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="bg-gray-800 rounded-lg overflow-hidden hover:scale-105 transition-all">
+                    <div class="h-48 bg-gradient-to-r from-blue-500 to-purple-600 relative">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-chart-line text-6xl text-white/80"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">SportsAI</h3>
+                        <p class="text-gray-400 mb-4">AI-powered sports analytics platform with real-time data processing and predictive modeling.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="px-2 py-1 bg-blue-500/20 text-blue-400 text-sm rounded">fullstack</span>
+                            <a href="https://sports-ai-one.vercel.app" class="text-primary-500 hover:text-primary-400">
+                                View Live <i class="fas fa-external-link-alt ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg overflow-hidden hover:scale-105 transition-all">
+                    <div class="h-48 bg-gradient-to-r from-green-500 to-teal-600 relative">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-tasks text-6xl text-white/80"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Task Tracker</h3>
+                        <p class="text-gray-400 mb-4">Modern project management tool with Kanban boards, team collaboration, and progress analytics.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="px-2 py-1 bg-green-500/20 text-green-400 text-sm rounded">nextjs</span>
+                            <a href="https://task-tracker-weld-delta.vercel.app" class="text-primary-500 hover:text-primary-400">
+                                View Live <i class="fas fa-external-link-alt ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gray-800 rounded-lg overflow-hidden hover:scale-105 transition-all">
+                    <div class="h-48 bg-gradient-to-r from-orange-500 to-red-600 relative">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-store text-6xl text-white/80"></i>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Marketplace</h3>
+                        <p class="text-gray-400 mb-4">Complete buy/sell platform with credit system, seller verification, and MLM referrals.</p>
+                        <div class="flex justify-between items-center">
+                            <span class="px-2 py-1 bg-orange-500/20 text-orange-400 text-sm rounded">fullstack</span>
+                            <a href="https://frontend-hazel-ten-17.vercel.app" class="text-primary-500 hover:text-primary-400">
+                                View Live <i class="fas fa-external-link-alt ml-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 px-6 bg-gray-800/30">
+        <div class="container mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold mb-4">💰 Simple, Transparent Pricing</h2>
+                <p class="text-xl text-gray-300">Start free, scale as you grow</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <!-- Free Plan -->
+                <div class="bg-gray-800 rounded-lg p-8 border border-gray-700">
+                    <h3 class="text-2xl font-bold mb-4">Free</h3>
+                    <div class="text-4xl font-bold mb-6">$0<span class="text-lg text-gray-400">/month</span></div>
+                    <ul class="space-y-3 mb-8">
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>3 projects</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>Basic templates</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>Personal Brain</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>Community support</li>
+                    </ul>
+                    <button class="w-full py-3 border border-gray-600 rounded-lg hover:border-primary-500 hover:text-primary-500 transition-all">
+                        Get Started
+                    </button>
+                </div>
+
+                <!-- Pro Plan -->
+                <div class="bg-gray-800 rounded-lg p-8 border-2 border-primary-500 relative">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 px-4 py-1 bg-primary-500 text-white text-sm rounded-full">
+                        Most Popular
+                    </div>
+                    <h3 class="text-2xl font-bold mb-4">Pro</h3>
+                    <div class="text-4xl font-bold mb-6">$29<span class="text-lg text-gray-400">/month</span></div>
+                    <ul class="space-y-3 mb-8">
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>Unlimited projects</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>All templates</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>AutoForge included</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>Marketplace access</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>Priority support</li>
+                    </ul>
+                    <button class="w-full py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all">
+                        Start Free Trial
+                    </button>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="bg-gray-800 rounded-lg p-8 border border-gray-700">
+                    <h3 class="text-2xl font-bold mb-4">Enterprise</h3>
+                    <div class="text-4xl font-bold mb-6">Custom</div>
+                    <ul class="space-y-3 mb-8">
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>Everything in Pro</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>Team collaboration</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>Custom integrations</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>Dedicated support</li>
+                        <li><i class="fas fa-check text-green-400 mr-2"></i>On-premise deployment</li>
+                    </ul>
+                    <button class="w-full py-3 border border-gray-600 rounded-lg hover:border-primary-500 hover:text-primary-500 transition-all">
+                        Contact Sales
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 px-6">
+        <div class="container mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-bold mb-8">🚀 Ready to 10x Your Development Speed?</h2>
+            <p class="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
+                Join 1000+ developers who've already transformed their workflow with MyWork-AI.
+                Start building faster today.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <button class="px-8 py-4 bg-primary-500 text-white text-lg font-semibold rounded-lg hover:bg-primary-600 transition-all glow-box">
+                    <i class="fas fa-download mr-2"></i>
+                    Install MyWork-AI Now
+                </button>
+                <a href="https://frontend-hazel-ten-17.vercel.app" class="px-8 py-4 border border-gray-600 text-white text-lg font-semibold rounded-lg hover:border-primary-500 hover:text-primary-500 transition-all">
+                    <i class="fas fa-store mr-2"></i>
+                    Browse Marketplace
+                </a>
+            </div>
+
+            <div class="bg-black rounded-lg p-6 max-w-2xl mx-auto">
+                <p class="text-gray-400 mb-2">Quick Install:</p>
+                <code class="text-green-400 font-mono text-lg">pip install mywork-ai && mw setup</code>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 bg-gray-800/50 border-t border-gray-700">
+        <div class="container mx-auto">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <i class="fas fa-rocket text-2xl text-primary-500"></i>
+                        <span class="text-2xl font-bold gradient-text">MyWork-AI</span>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        The AI-powered development framework that helps you build complete applications 10x faster.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold mb-4">Product</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
+                        <li><a href="#pricing" class="hover:text-white transition-colors">Pricing</a></li>
+                        <li><a href="https://frontend-hazel-ten-17.vercel.app" class="hover:text-white transition-colors">Marketplace</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Documentation</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold mb-4">Live Apps</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="https://dashboard-sage-rho.vercel.app" class="hover:text-white transition-colors">Dashboard</a></li>
+                        <li><a href="https://task-tracker-weld-delta.vercel.app" class="hover:text-white transition-colors">Task Tracker</a></li>
+                        <li><a href="https://mywork-admin.vercel.app" class="hover:text-white transition-colors">Admin Panel</a></li>
+                        <li><a href="https://ai-dashboard-frontend-rust.vercel.app" class="hover:text-white transition-colors">AI Dashboard</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold mb-4">Support</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Documentation</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Community</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-700 pt-8 mt-8 text-center text-gray-400">
+                <p>&copy; 2026 MyWork-AI. Built with ❤️ by the MyWork-AI team.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Copy install command
+        document.querySelector('.fa-copy').addEventListener('click', function() {
+            navigator.clipboard.writeText('pip install mywork-ai && mw setup');
+            this.className = 'fas fa-check';
+            setTimeout(() => {
+                this.className = 'fas fa-copy';
+            }, 2000);
+        });
+
+        // Typing animation
+        let typeIndex = 0;
+        const typeTexts = ['10x Faster', 'Smarter', 'Better', 'Easier'];
+        const typeElement = document.querySelector('.typing-animation');
+        
+        function typeEffect() {
+            typeElement.textContent = typeTexts[typeIndex];
+            typeIndex = (typeIndex + 1) % typeTexts.length;
+        }
+        
+        setInterval(typeEffect, 3000);
+    </script>
+</body>
+</html>

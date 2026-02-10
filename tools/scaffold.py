@@ -2864,6 +2864,1864 @@ retry_delay: 1.0
             ".gitignore": "venv/\n__pycache__/\n*.pyc\n.env\n.env.local\npipeline_metrics.json\noutput/\n*.log\n",
         },
     },
+    "saas": {
+        "description": "SaaS starter: auth, billing (Stripe), dashboard, admin, landing page",
+        "structure": {
+            ".planning": {
+                "PROJECT.md": "# {name} SaaS\n\n## Vision\nModern SaaS application with authentication, billing, and admin dashboard.\n\n## Tech Stack\n- Next.js 14 (Frontend)\n- FastAPI (Backend API)\n- Stripe (Billing)\n- Tailwind CSS (Styling)\n- PostgreSQL (Database)\n\n## Goals\n- [ ] User authentication\n- [ ] Subscription billing\n- [ ] Admin dashboard\n- [ ] Landing page\n- [ ] User dashboard\n",
+                "ROADMAP.md": "# {name} SaaS Roadmap\n\n## Phase 1: Foundation\n- [ ] Authentication system\n- [ ] Database setup\n- [ ] Basic API endpoints\n\n## Phase 2: Billing\n- [ ] Stripe integration\n- [ ] Subscription plans\n- [ ] Payment flows\n\n## Phase 3: Dashboard\n- [ ] User dashboard\n- [ ] Admin panel\n- [ ] Analytics\n\n## Phase 4: Marketing\n- [ ] Landing page\n- [ ] Pricing page\n- [ ] Email campaigns\n",
+                "STATE.md": "# {name} SaaS State\n\n## Current Phase\nPhase 1: Foundation\n\n## Last Updated\n{date}\n\n## Tech Decisions\n- Auth: NextAuth.js\n- Payments: Stripe\n- Database: PostgreSQL\n- Deployment: Vercel + Railway\n",
+            },
+            "backend": {
+                "main.py": '''"""
+{name} SaaS API
+FastAPI backend with authentication and Stripe billing.
+"""
+from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.middleware.cors import CORSMiddleware
+import stripe
+import os
+from datetime import datetime, timedelta
+import jwt
+
+app = FastAPI(
+    title="{name} SaaS API",
+    description="SaaS backend with auth and billing",
+    version="1.0.0"
+)
+
+# Environment variables
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "sk_test_...")
+JWT_SECRET = os.getenv("JWT_SECRET", "your-secret-key")
+stripe.api_key = STRIPE_SECRET_KEY
+
+security = HTTPBearer()
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    try:
+        payload = jwt.decode(credentials.credentials, JWT_SECRET, algorithms=["HS256"])
+        return payload
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Token expired")
+    except jwt.InvalidTokenError:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, detail="Invalid token")
+
+
+@app.get("/")
+async def root():
+    return {{"message": "Welcome to {name} SaaS API"}}
+
+
+@app.get("/health")
+async def health():
+    return {{"status": "healthy"}}
+
+
+@app.post("/auth/login")
+async def login(email: str, password: str):
+    # TODO: Validate credentials against database
+    token = jwt.encode(
+        {{"email": email, "exp": datetime.utcnow() + timedelta(days=7)}},
+        JWT_SECRET,
+        algorithm="HS256"
+    )
+    return {{"access_token": token, "token_type": "bearer"}}
+
+
+@app.get("/auth/me")
+async def get_current_user(user = Depends(verify_token)):
+    return user
+
+
+@app.post("/billing/create-checkout-session")
+async def create_checkout_session(price_id: str, user = Depends(verify_token)):
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            payment_method_types=["card"],
+            line_items=[{{"price": price_id, "quantity": 1}}],
+            mode="subscription",
+            success_url="http://localhost:3000/success",
+            cancel_url="http://localhost:3000/pricing",
+        )
+        return {{"checkout_url": checkout_session.url}}
+    except Exception as e:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+''',
+                "requirements.txt": """fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.0
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+stripe>=7.0.0
+pyjwt>=2.8.0
+passlib[bcrypt]>=1.7.4
+python-multipart>=0.0.6
+""",
+                ".env.example": """# Database
+DATABASE_URL=postgresql://user:password@localhost/saas_db
+
+# JWT Secret
+JWT_SECRET=your-super-secret-jwt-key
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# App
+APP_URL=http://localhost:3000
+""",
+            },
+            "frontend": {
+                "package.json": """{
+  "name": "{name_lower}-saas",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.1.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "next-auth": "5.0.0-beta.13",
+    "@stripe/stripe-js": "2.4.0",
+    "stripe": "14.15.0",
+    "tailwindcss": "3.4.1",
+    "typescript": "5.3.3",
+    "lucide-react": "0.316.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.10.0",
+    "@types/react": "18.2.0",
+    "autoprefixer": "10.4.16",
+    "postcss": "8.4.32"
+  }
+}""",
+                "src": {
+                    "app": {
+                        "page.tsx": '''import Link from "next/link"
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <nav className="p-6">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900">{name}</h1>
+          <div className="space-x-4">
+            <Link href="/login" className="text-gray-600 hover:text-gray-900">Login</Link>
+            <Link href="/signup" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+              Sign Up
+            </Link>
+          </div>
+        </div>
+      </nav>
+      
+      <main className="max-w-7xl mx-auto px-6 py-16">
+        <div className="text-center">
+          <h2 className="text-5xl font-bold text-gray-900 mb-6">
+            Welcome to {name}
+          </h2>
+          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            The modern SaaS solution you\'ve been waiting for. 
+            Get started today with our simple pricing plans.
+          </p>
+          <div className="space-x-4">
+            <Link href="/signup" className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg hover:bg-blue-700">
+              Get Started
+            </Link>
+            <Link href="/pricing" className="border border-gray-300 text-gray-700 px-8 py-3 rounded-lg text-lg hover:bg-gray-50">
+              View Pricing
+            </Link>
+          </div>
+        </div>
+        
+        <div className="mt-20 grid md:grid-cols-3 gap-8">
+          <div className="text-center p-6">
+            <div className="w-16 h-16 bg-blue-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+              ⚡
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Lightning Fast</h3>
+            <p className="text-gray-600">Built for speed and performance</p>
+          </div>
+          <div className="text-center p-6">
+            <div className="w-16 h-16 bg-green-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+              🔒
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Secure</h3>
+            <p className="text-gray-600">Enterprise-grade security</p>
+          </div>
+          <div className="text-center p-6">
+            <div className="w-16 h-16 bg-purple-100 rounded-lg mx-auto mb-4 flex items-center justify-center">
+              📈
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Scalable</h3>
+            <p className="text-gray-600">Grows with your business</p>
+          </div>
+        </div>
+      </main>
+    </div>
+  )
+}''',
+                        "pricing": {
+                            "page.tsx": '''export default function Pricing() {
+  const plans = [
+    {
+      name: "Starter",
+      price: "$9",
+      features: ["5 Projects", "Basic Support", "1GB Storage"]
+    },
+    {
+      name: "Pro",
+      price: "$29",
+      features: ["Unlimited Projects", "Priority Support", "10GB Storage", "Advanced Analytics"],
+      popular: true
+    },
+    {
+      name: "Enterprise",
+      price: "$99",
+      features: ["Everything in Pro", "Custom Integrations", "Dedicated Support", "SSO"]
+    }
+  ]
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Simple Pricing</h1>
+          <p className="text-xl text-gray-600">Choose the plan that works for you</p>
+        </div>
+        
+        <div className="grid md:grid-cols-3 gap-8">
+          {{plans.map((plan, index) => (
+            <div key={{index}} className={{`bg-white rounded-lg shadow-lg p-8 {{plan.popular ? "ring-2 ring-blue-500" : ""}}`}}>
+              {{plan.popular && (
+                <div className="bg-blue-500 text-white text-sm font-semibold px-3 py-1 rounded-full inline-block mb-4">
+                  Most Popular
+                </div>
+              )}}
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">{{plan.name}}</h3>
+              <div className="mb-6">
+                <span className="text-4xl font-bold text-gray-900">{{plan.price}}</span>
+                <span className="text-gray-600">/month</span>
+              </div>
+              <ul className="space-y-3 mb-8">
+                {{plan.features.map((feature, i) => (
+                  <li key={{i}} className="flex items-center text-gray-600">
+                    <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    {{feature}}
+                  </li>
+                ))}}
+              </ul>
+              <button className={{`w-full py-3 px-6 rounded-lg font-semibold {{plan.popular ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-900 hover:bg-gray-300"}}`}}>
+                Get Started
+              </button>
+            </div>
+          ))}}
+        </div>
+      </div>
+    </div>
+  )
+}}'''
+                        },
+                        "dashboard": {
+                            "page.tsx": '''export default function Dashboard() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <nav className="bg-white shadow border-b">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex justify-between items-center">
+            <h1 className="text-xl font-semibold text-gray-900">{name} Dashboard</h1>
+            <button className="text-gray-600 hover:text-gray-900">Logout</button>
+          </div>
+        </div>
+      </nav>
+      
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Total Users</h3>
+            <p className="text-3xl font-bold text-blue-600">1,234</p>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Revenue</h3>
+            <p className="text-3xl font-bold text-green-600">$12,345</p>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Growth</h3>
+            <p className="text-3xl font-bold text-purple-600">+23%</p>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between py-3 border-b">
+                <div>
+                  <p className="font-medium text-gray-900">New user signed up</p>
+                  <p className="text-sm text-gray-600">john@example.com</p>
+                </div>
+                <span className="text-sm text-gray-500">2 minutes ago</span>
+              </div>
+              <div className="flex items-center justify-between py-3 border-b">
+                <div>
+                  <p className="font-medium text-gray-900">Payment received</p>
+                  <p className="text-sm text-gray-600">$29.00 from jane@example.com</p>
+                </div>
+                <span className="text-sm text-gray-500">1 hour ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  )
+}}'''
+                        }
+                    }
+                },
+                "tailwind.config.js": '''/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}''',
+                "next.config.js": '''/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    appDir: true,
+  },
+}
+
+module.exports = nextConfig''',
+            },
+            "docker-compose.yml": '''version: '3.8'
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: saas_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:''',
+            "README.md": "# {name} SaaS\n\nA complete SaaS starter with authentication, billing, and dashboard.\n\n## Features\n\n- 🔐 User authentication with NextAuth.js\n- 💳 Stripe billing and subscriptions\n- 📊 Admin dashboard\n- 🎨 Beautiful landing page\n- 🚀 Ready to deploy\n\n## Quick Start\n\n1. **Backend Setup**\n   ```bash\n   cd backend\n   python -m venv venv\n   source venv/bin/activate\n   pip install -r requirements.txt\n   cp .env.example .env\n   # Edit .env with your keys\n   python main.py\n   ```\n\n2. **Frontend Setup**\n   ```bash\n   cd frontend\n   npm install\n   npm run dev\n   ```\n\n3. **Database Setup**\n   ```bash\n   docker-compose up -d postgres\n   ```\n\n## Environment Variables\n\nCopy `.env.example` to `.env` and configure:\n\n- `STRIPE_SECRET_KEY` - Your Stripe secret key\n- `DATABASE_URL` - PostgreSQL connection string\n- `JWT_SECRET` - Secret for JWT tokens\n\n## Deployment\n\n- Frontend: Deploy to Vercel\n- Backend: Deploy to Railway or Render\n- Database: Use Supabase or Railway PostgreSQL\n\n## Tech Stack\n\n- **Frontend**: Next.js 14, Tailwind CSS, TypeScript\n- **Backend**: FastAPI, SQLAlchemy, JWT\n- **Database**: PostgreSQL\n- **Payments**: Stripe\n- **Auth**: NextAuth.js\n",
+            ".gitignore": "node_modules/\nvenv/\n.env\n.env.local\n*.pyc\n__pycache__/\n.next/\ndist/\n*.log\n",
+        },
+    },
+    "marketplace": {
+        "description": "Multi-vendor marketplace: sellers, buyers, listings, payments",
+        "structure": {
+            ".planning": {
+                "PROJECT.md": "# {name} Marketplace\n\n## Vision\nMulti-vendor marketplace platform connecting sellers and buyers.\n\n## Core Features\n- Vendor registration and management\n- Product listings and catalog\n- Order management\n- Payment processing\n- Rating and review system\n- Commission tracking\n\n## User Roles\n- **Admin**: Platform management\n- **Vendor**: Sell products\n- **Buyer**: Purchase products\n\n## Goals\n- [ ] Vendor onboarding\n- [ ] Product management\n- [ ] Order processing\n- [ ] Payment splits\n- [ ] Review system\n",
+                "ROADMAP.md": "# Marketplace Roadmap\n\n## Phase 1: Core Platform\n- [ ] User authentication (buyers/sellers/admin)\n- [ ] Vendor registration and approval\n- [ ] Basic product listings\n\n## Phase 2: Commerce\n- [ ] Shopping cart and checkout\n- [ ] Payment processing with splits\n- [ ] Order management\n\n## Phase 3: Features\n- [ ] Rating and review system\n- [ ] Search and filtering\n- [ ] Vendor dashboard\n\n## Phase 4: Scale\n- [ ] Analytics and reporting\n- [ ] Commission management\n- [ ] Multi-language support\n",
+                "STATE.md": "# Marketplace State\n\n## Current Phase\nPhase 1: Core Platform\n\n## Last Updated\n{date}\n\n## Tech Stack\n- Frontend: Next.js + Tailwind\n- Backend: FastAPI + PostgreSQL\n- Payments: Stripe Connect\n- File storage: AWS S3\n",
+            },
+            "backend": {
+                "main.py": '''"""
+{name} Marketplace API
+Multi-vendor marketplace backend with Stripe Connect.
+"""
+from fastapi import FastAPI, Depends, HTTPException, status, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
+from typing import List
+import stripe
+import os
+from datetime import datetime
+
+app = FastAPI(
+    title="{name} Marketplace",
+    description="Multi-vendor marketplace API",
+    version="1.0.0"
+)
+
+# Environment
+STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "sk_test_...")
+stripe.api_key = STRIPE_SECRET_KEY
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/")
+async def root():
+    return {{"message": "Welcome to {name} Marketplace API"}}
+
+
+@app.get("/health")
+async def health():
+    return {{"status": "healthy", "timestamp": datetime.utcnow()}}
+
+
+# Vendor endpoints
+@app.post("/vendors/register")
+async def register_vendor(vendor_data: dict):
+    """Register a new vendor and create Stripe Connect account."""
+    try:
+        # Create Stripe Connect account
+        account = stripe.Account.create(
+            type="express",
+            country="US",
+            email=vendor_data.get("email"),
+            capabilities={{"card_payments": {{"requested": True}}, "transfers": {{"requested": True}}}},
+        )
+        
+        # TODO: Save vendor to database with account.id
+        return {{"vendor_id": "temp_id", "stripe_account_id": account.id, "status": "pending"}}
+    except Exception as e:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@app.get("/vendors/{{vendor_id}}/onboarding-link")
+async def get_onboarding_link(vendor_id: str):
+    """Get Stripe Connect onboarding link for vendor."""
+    try:
+        # TODO: Get stripe_account_id from database
+        stripe_account_id = "acct_..."  # From database
+        
+        account_link = stripe.AccountLink.create(
+            account=stripe_account_id,
+            refresh_url="http://localhost:3000/vendor/onboarding",
+            return_url="http://localhost:3000/vendor/dashboard",
+            type="account_onboarding",
+        )
+        
+        return {{"url": account_link.url}}
+    except Exception as e:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+# Product endpoints
+@app.post("/products")
+async def create_product(product_data: dict):
+    """Create a new product listing."""
+    # TODO: Validate vendor, save to database
+    return {{
+        "id": "prod_123",
+        "name": product_data.get("name"),
+        "price": product_data.get("price"),
+        "vendor_id": product_data.get("vendor_id"),
+        "status": "active"
+    }}
+
+
+@app.get("/products")
+async def list_products(skip: int = 0, limit: int = 20, category: str = None):
+    """List products with optional filtering."""
+    # TODO: Query database with filters
+    return {{
+        "products": [
+            {{"id": "1", "name": "Sample Product", "price": 29.99, "vendor": "Vendor A"}},
+        ],
+        "total": 1,
+        "skip": skip,
+        "limit": limit
+    }}
+
+
+@app.get("/products/{{product_id}}")
+async def get_product(product_id: str):
+    """Get product details."""
+    # TODO: Query database
+    return {{
+        "id": product_id,
+        "name": "Sample Product",
+        "description": "Product description",
+        "price": 29.99,
+        "images": ["image1.jpg"],
+        "vendor": {{"id": "vendor_1", "name": "Vendor A"}}
+    }}
+
+
+# Order endpoints
+@app.post("/orders")
+async def create_order(order_data: dict):
+    """Create order and process payment with marketplace fee."""
+    try:
+        items = order_data.get("items", [])
+        total_amount = sum(item["price"] * item["quantity"] for item in items)
+        marketplace_fee = int(total_amount * 0.10 * 100)  # 10% fee in cents
+        
+        # Create payment intent with application fee
+        payment_intent = stripe.PaymentIntent.create(
+            amount=int(total_amount * 100),  # Amount in cents
+            currency="usd",
+            application_fee_amount=marketplace_fee,
+            transfer_data={{"destination": "acct_vendor_stripe_id"}},  # TODO: Get from DB
+            metadata={{"order_id": "order_123"}}
+        )
+        
+        return {{
+            "order_id": "order_123",
+            "payment_intent_id": payment_intent.id,
+            "client_secret": payment_intent.client_secret
+        }}
+    except Exception as e:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@app.get("/orders/{{order_id}}")
+async def get_order(order_id: str):
+    """Get order details."""
+    # TODO: Query database
+    return {{
+        "id": order_id,
+        "status": "pending",
+        "total": 29.99,
+        "items": [{{"product": "Sample Product", "quantity": 1, "price": 29.99}}],
+        "created_at": datetime.utcnow().isoformat()
+    }}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+''',
+                "requirements.txt": """fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.0
+python-dotenv>=1.0.0
+pydantic>=2.5.0
+stripe>=7.0.0
+pillow>=10.0.0
+python-multipart>=0.0.6
+boto3>=1.34.0
+""",
+                ".env.example": """# Database
+DATABASE_URL=postgresql://user:password@localhost/marketplace_db
+
+# Stripe
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# AWS S3 (for product images)
+AWS_ACCESS_KEY_ID=your_access_key
+AWS_SECRET_ACCESS_KEY=your_secret_key
+AWS_S3_BUCKET=marketplace-images
+AWS_REGION=us-east-1
+
+# App
+APP_URL=http://localhost:3000
+""",
+            },
+            "frontend": {
+                "package.json": """{
+  "name": "{name_lower}-marketplace",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "14.1.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "@stripe/stripe-js": "2.4.0",
+    "@stripe/react-stripe-js": "2.4.0",
+    "tailwindcss": "3.4.1",
+    "typescript": "5.3.3",
+    "lucide-react": "0.316.0",
+    "axios": "1.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "20.10.0",
+    "@types/react": "18.2.0",
+    "autoprefixer": "10.4.16",
+    "postcss": "8.4.32"
+  }
+}""",
+                "src": {
+                    "app": {
+                        "page.tsx": '''import Link from "next/link"
+import { ShoppingBag, Store, Star } from "lucide-react"
+
+export default function Home() {
+  const featuredProducts = [
+    {{ id: 1, name: "Wireless Headphones", price: 99.99, vendor: "AudioTech", rating: 4.5, image: "/api/placeholder/300/200" }},
+    {{ id: 2, name: "Smart Watch", price: 199.99, vendor: "TechWear", rating: 4.8, image: "/api/placeholder/300/200" }},
+    {{ id: 3, name: "Laptop Stand", price: 49.99, vendor: "OfficeGear", rating: 4.2, image: "/api/placeholder/300/200" }},
+  ]
+
+  return (
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="border-b">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center space-x-8">
+              <Link href="/" className="text-2xl font-bold text-gray-900">{name}</Link>
+              <nav className="hidden md:flex space-x-6">
+                <Link href="/products" className="text-gray-600 hover:text-gray-900">Browse</Link>
+                <Link href="/categories" className="text-gray-600 hover:text-gray-900">Categories</Link>
+                <Link href="/vendors" className="text-gray-600 hover:text-gray-900">Vendors</Link>
+              </nav>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Link href="/sell" className="text-blue-600 hover:text-blue-700">Start Selling</Link>
+              <Link href="/cart" className="p-2">
+                <ShoppingBag className="w-6 h-6" />
+              </Link>
+              <Link href="/login" className="text-gray-600 hover:text-gray-900">Login</Link>
+              <Link href="/signup" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                Sign Up
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-20">
+        <div className="max-w-7xl mx-auto px-6 text-center">
+          <h1 className="text-5xl font-bold mb-6">Discover Amazing Products</h1>
+          <p className="text-xl mb-8 max-w-2xl mx-auto">
+            Shop from thousands of independent sellers and find unique products you can\'t get anywhere else.
+          </p>
+          <div className="flex justify-center space-x-4">
+            <Link href="/products" className="bg-white text-blue-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-100">
+              Start Shopping
+            </Link>
+            <Link href="/sell" className="border border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-white/10">
+              Become a Seller
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Products */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Featured Products</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {{featuredProducts.map((product) => (
+              <div key={{product.id}} className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                <div className="aspect-video bg-gray-200"></div>
+                <div className="p-6">
+                  <h3 className="font-semibold text-lg mb-2">{{product.name}}</h3>
+                  <p className="text-gray-600 mb-2">by {{product.vendor}}</p>
+                  <div className="flex items-center mb-3">
+                    <div className="flex text-yellow-400">
+                      {{[...Array(5)].map((_, i) => (
+                        <Star key={{i}} className={{`w-4 h-4 ${{i < Math.floor(product.rating) ? "fill-current" : ""}}`}} />
+                      ))}}
+                    </div>
+                    <span className="text-sm text-gray-600 ml-2">{{product.rating}}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-2xl font-bold text-gray-900">${{product.price}}</span>
+                    <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}}
+          </div>
+        </div>
+      </section>
+
+      {/* Vendor CTA */}
+      <section className="bg-gray-50 py-16">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <Store className="w-16 h-16 text-blue-600 mx-auto mb-6" />
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Start Your Online Store Today</h2>
+          <p className="text-lg text-gray-600 mb-8">
+            Join thousands of successful sellers on our platform. Easy setup, powerful tools, and dedicated support.
+          </p>
+          <Link href="/vendor/register" className="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-blue-700">
+            Become a Vendor
+          </Link>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-4 gap-8">
+            <div>
+              <h3 className="text-lg font-semibold mb-4">{name}</h3>
+              <p className="text-gray-400">The marketplace that connects you with amazing independent sellers.</p>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Shop</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/products" className="hover:text-white">All Products</Link></li>
+                <li><Link href="/categories" className="hover:text-white">Categories</Link></li>
+                <li><Link href="/vendors" className="hover:text-white">Vendors</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Sell</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/sell" className="hover:text-white">Start Selling</Link></li>
+                <li><Link href="/vendor/login" className="hover:text-white">Vendor Login</Link></li>
+                <li><Link href="/fees" className="hover:text-white">Fees & Pricing</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Support</h4>
+              <ul className="space-y-2 text-gray-400">
+                <li><Link href="/help" className="hover:text-white">Help Center</Link></li>
+                <li><Link href="/contact" className="hover:text-white">Contact Us</Link></li>
+                <li><Link href="/terms" className="hover:text-white">Terms of Service</Link></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}}''',
+                        "vendor": {
+                            "register": {
+                                "page.tsx": '''import {{ useState }} from "react"
+
+export default function VendorRegister() {{
+  const [formData, setFormData] = useState({{
+    businessName: "",
+    email: "",
+    phone: "",
+    description: "",
+    category: ""
+  }})
+
+  const handleSubmit = async (e) => {{
+    e.preventDefault()
+    // TODO: Submit to API
+    console.log("Vendor registration:", formData)
+  }}
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="max-w-2xl mx-auto px-6">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Become a Vendor</h1>
+          <p className="text-lg text-gray-600">Join our marketplace and start selling your products today</p>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-lg p-8">
+          <form onSubmit={{handleSubmit}} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Business Name</label>
+              <input
+                type="text"
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={{formData.businessName}}
+                onChange={{(e) => setFormData({{...formData, businessName: e.target.value}})}}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+              <input
+                type="email"
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={{formData.email}}
+                onChange={{(e) => setFormData({{...formData, email: e.target.value}})}}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+              <input
+                type="tel"
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={{formData.phone}}
+                onChange={{(e) => setFormData({{...formData, phone: e.target.value}})}}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Business Category</label>
+              <select
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={{formData.category}}
+                onChange={{(e) => setFormData({{...formData, category: e.target.value}})}}
+              >
+                <option value="">Select a category</option>
+                <option value="electronics">Electronics</option>
+                <option value="clothing">Clothing & Fashion</option>
+                <option value="home">Home & Garden</option>
+                <option value="sports">Sports & Outdoors</option>
+                <option value="books">Books & Media</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Business Description</label>
+              <textarea
+                rows={{4}}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Tell us about your business and products..."
+                value={{formData.description}}
+                onChange={{(e) => setFormData({{...formData, description: e.target.value}})}}
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Submit Application
+            </button>
+          </form>
+
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+            <h3 className="font-semibold text-blue-900 mb-2">What happens next?</h3>
+            <ol className="text-sm text-blue-800 space-y-1">
+              <li>1. We\'ll review your application within 24-48 hours</li>
+              <li>2. You\'ll receive an email with onboarding instructions</li>
+              <li>3. Complete your Stripe Connect setup for payments</li>
+              <li>4. Start listing and selling your products!</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}}'''
+                            }
+                        },
+                        "products": {
+                            "page.tsx": '''import {{ Star, Filter }} from "lucide-react"
+
+export default function Products() {{
+  const products = [
+    {{ id: 1, name: "Wireless Bluetooth Headphones", price: 89.99, vendor: "AudioTech", rating: 4.5, reviews: 127, image: "/api/placeholder/250/200", category: "Electronics" }},
+    {{ id: 2, name: "Organic Cotton T-Shirt", price: 24.99, vendor: "EcoWear", rating: 4.3, reviews: 89, image: "/api/placeholder/250/200", category: "Clothing" }},
+    {{ id: 3, name: "Smart Fitness Watch", price: 199.99, vendor: "TechWear", rating: 4.8, reviews: 203, image: "/api/placeholder/250/200", category: "Electronics" }},
+    {{ id: 4, name: "Handcrafted Wooden Bowl", price: 34.99, vendor: "CraftCo", rating: 4.7, reviews: 56, image: "/api/placeholder/250/200", category: "Home" }},
+    {{ id: 5, name: "Professional Yoga Mat", price: 59.99, vendor: "FitLife", rating: 4.6, reviews: 145, image: "/api/placeholder/250/200", category: "Sports" }},
+    {{ id: 6, name: "Artisan Coffee Blend", price: 18.99, vendor: "RoastMaster", rating: 4.9, reviews: 312, image: "/api/placeholder/250/200", category: "Food" }},
+  ]
+
+  const categories = ["All", "Electronics", "Clothing", "Home", "Sports", "Food"]
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">All Products</h1>
+          <div className="flex items-center space-x-4">
+            <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+              <Filter className="w-4 h-4" />
+              <span>Filter</span>
+            </button>
+            <select className="px-4 py-2 border border-gray-300 rounded-lg">
+              <option>Sort by: Featured</option>
+              <option>Price: Low to High</option>
+              <option>Price: High to Low</option>
+              <option>Customer Rating</option>
+              <option>Newest</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="flex gap-8">
+          {/* Sidebar */}
+          <div className="w-64 flex-shrink-0">
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h3 className="font-semibold text-gray-900 mb-4">Categories</h3>
+              <ul className="space-y-2">
+                {{categories.map((category) => (
+                  <li key={{category}}>
+                    <button className="text-left w-full py-2 px-3 rounded hover:bg-gray-100">
+                      {{category}}
+                    </button>
+                  </li>
+                ))}}
+              </ul>
+
+              <hr className="my-6" />
+
+              <h3 className="font-semibold text-gray-900 mb-4">Price Range</h3>
+              <div className="space-y-3">
+                <input type="range" className="w-full" min="0" max="500" />
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>$0</span>
+                  <span>$500+</span>
+                </div>
+              </div>
+
+              <hr className="my-6" />
+
+              <h3 className="font-semibold text-gray-900 mb-4">Rating</h3>
+              <div className="space-y-2">
+                {{[5, 4, 3, 2, 1].map((stars) => (
+                  <label key={{stars}} className="flex items-center space-x-2 cursor-pointer">
+                    <input type="checkbox" className="rounded" />
+                    <div className="flex text-yellow-400">
+                      {{[...Array(stars)].map((_, i) => (
+                        <Star key={{i}} className="w-4 h-4 fill-current" />
+                      ))}}
+                      {{[...Array(5 - stars)].map((_, i) => (
+                        <Star key={{i}} className="w-4 h-4" />
+                      ))}}
+                    </div>
+                    <span className="text-sm text-gray-600">& up</span>
+                  </label>
+                ))}}
+              </div>
+            </div>
+          </div>
+
+          {/* Products Grid */}
+          <div className="flex-1">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {{products.map((product) => (
+                <div key={{product.id}} className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                  <div className="aspect-square bg-gray-200"></div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-lg mb-1 line-clamp-2">{{product.name}}</h3>
+                    <p className="text-sm text-gray-600 mb-2">by {{product.vendor}}</p>
+                    
+                    <div className="flex items-center mb-3">
+                      <div className="flex text-yellow-400">
+                        {{[...Array(5)].map((_, i) => (
+                          <Star key={{i}} className={{`w-4 h-4 ${{i < Math.floor(product.rating) ? "fill-current" : ""}}`}} />
+                        ))}}
+                      </div>
+                      <span className="text-sm text-gray-600 ml-2">{{product.rating}} ({{product.reviews}})</span>
+                    </div>
+                    
+                    <div className="flex justify-between items-center">
+                      <span className="text-xl font-bold text-gray-900">${{product.price}}</span>
+                      <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 text-sm">
+                        Add to Cart
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}}
+            </div>
+
+            {/* Pagination */}
+            <div className="flex justify-center mt-12">
+              <div className="flex space-x-1">
+                <button className="px-3 py-2 rounded border hover:bg-gray-50">Previous</button>
+                <button className="px-3 py-2 rounded bg-blue-600 text-white">1</button>
+                <button className="px-3 py-2 rounded border hover:bg-gray-50">2</button>
+                <button className="px-3 py-2 rounded border hover:bg-gray-50">3</button>
+                <button className="px-3 py-2 rounded border hover:bg-gray-50">Next</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}}'''
+                        }
+                    }
+                },
+                "tailwind.config.js": '''/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}''',
+            },
+            "README.md": "# {name} Marketplace\n\nMulti-vendor marketplace platform with Stripe Connect integration.\n\n## Features\n\n- 🏪 **Multi-vendor Support**: Sellers can register and manage their own stores\n- 💳 **Stripe Connect**: Automated payment splits with marketplace fees\n- 🛍️ **Full E-commerce**: Product listings, cart, checkout, order management\n- ⭐ **Reviews & Ratings**: Customer feedback system\n- 📊 **Analytics**: Vendor and admin dashboards\n- 🔍 **Search & Filter**: Advanced product discovery\n\n## Quick Start\n\n1. **Database Setup**\n   ```bash\n   docker-compose up -d postgres\n   ```\n\n2. **Backend Setup**\n   ```bash\n   cd backend\n   python -m venv venv\n   source venv/bin/activate\n   pip install -r requirements.txt\n   cp .env.example .env\n   # Configure your environment variables\n   python main.py\n   ```\n\n3. **Frontend Setup**\n   ```bash\n   cd frontend\n   npm install\n   npm run dev\n   ```\n\n## Environment Setup\n\n### Stripe Connect Configuration\n\n1. Create a Stripe account\n2. Enable Stripe Connect in your dashboard\n3. Set up webhook endpoints for order processing\n4. Configure your platform fee percentage\n\n### Required Environment Variables\n\n```bash\n# Stripe\nSTRIPE_SECRET_KEY=sk_test_...\nSTRIPE_PUBLISHABLE_KEY=pk_test_...\nSTRIPE_WEBHOOK_SECRET=whsec_...\n\n# Database\nDATABASE_URL=postgresql://user:pass@localhost/marketplace\n\n# File Storage (AWS S3)\nAWS_ACCESS_KEY_ID=your_key\nAWS_SECRET_ACCESS_KEY=your_secret\nAWS_S3_BUCKET=marketplace-images\n```\n\n## Core Workflows\n\n### Vendor Onboarding\n1. Vendor registers with basic info\n2. Admin approves vendor application\n3. Vendor completes Stripe Connect onboarding\n4. Vendor can start listing products\n\n### Order Processing\n1. Customer adds products to cart\n2. Checkout creates Stripe payment intent\n3. Payment is split between vendor and marketplace\n4. Order is created and notifications sent\n5. Vendor fulfills order\n\n### Commission Structure\n- **Marketplace Fee**: 10% of each sale\n- **Payment Processing**: 2.9% + $0.30 (Stripe standard)\n- **Vendor Payout**: Remaining amount after fees\n\n## Tech Stack\n\n- **Frontend**: Next.js 14, Tailwind CSS, TypeScript\n- **Backend**: FastAPI, PostgreSQL, SQLAlchemy\n- **Payments**: Stripe Connect\n- **File Storage**: AWS S3\n- **Database**: PostgreSQL\n",
+            ".gitignore": "node_modules/\nvenv/\n.env\n.env.local\n*.pyc\n__pycache__/\n.next/\ndist/\n*.log\nuploads/\n",
+        },
+    },
+    "mobile": {
+        "description": "React Native / Expo mobile app starter",
+        "structure": {
+            ".planning": {
+                "PROJECT.md": "# {name} Mobile App\n\n## Vision\nCross-platform mobile app built with React Native and Expo.\n\n## Features\n- Cross-platform (iOS & Android)\n- Modern UI with native feel\n- Push notifications\n- Offline support\n- API integration\n- Navigation\n\n## Tech Stack\n- React Native\n- Expo SDK 50+\n- TypeScript\n- React Navigation\n- AsyncStorage\n- Expo Notifications\n\n## Goals\n- [ ] Basic navigation setup\n- [ ] Authentication screens\n- [ ] Main app features\n- [ ] Push notifications\n- [ ] App store deployment\n",
+                "ROADMAP.md": "# Mobile App Roadmap\n\n## Phase 1: Foundation\n- [ ] Expo project setup\n- [ ] Navigation structure\n- [ ] Basic screens\n\n## Phase 2: Core Features\n- [ ] User authentication\n- [ ] API integration\n- [ ] Local storage\n\n## Phase 3: Enhanced UX\n- [ ] Push notifications\n- [ ] Offline support\n- [ ] App icons and splash\n\n## Phase 4: Deployment\n- [ ] App store submission\n- [ ] Beta testing\n- [ ] Production release\n",
+                "STATE.md": "# Mobile App State\n\n## Current Phase\nPhase 1: Foundation\n\n## Last Updated\n{date}\n\n## Platform Status\n- iOS: Development\n- Android: Development\n- Expo: Latest SDK\n",
+            },
+            "mobile": {
+                "package.json": """{
+  "name": "{name_lower}-mobile",
+  "version": "1.0.0",
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "build:android": "eas build --platform android",
+    "build:ios": "eas build --platform ios",
+    "submit": "eas submit"
+  },
+  "dependencies": {
+    "expo": "~50.0.0",
+    "react": "18.2.0",
+    "react-native": "0.73.0",
+    "@react-navigation/native": "^6.1.9",
+    "@react-navigation/stack": "^6.3.20",
+    "@react-navigation/bottom-tabs": "^6.5.11",
+    "react-native-screens": "~3.29.0",
+    "react-native-safe-area-context": "4.8.2",
+    "expo-status-bar": "~1.11.1",
+    "expo-font": "~11.10.0",
+    "expo-splash-screen": "~0.26.0",
+    "expo-constants": "~15.4.0",
+    "expo-notifications": "~0.27.0",
+    "@expo/vector-icons": "^14.0.0",
+    "react-native-async-storage/async-storage": "1.21.0",
+    "expo-secure-store": "~12.9.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.20.0",
+    "@types/react": "~18.2.45",
+    "typescript": "^5.1.3"
+  }
+}""",
+                "app.json": """{
+  "expo": {
+    "name": "{name}",
+    "slug": "{name_lower}",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.example.{name_lower}"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.example.{name_lower}"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-notifications"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id"
+      }
+    }
+  }
+}""",
+                "App.tsx": '''import React, {{ useEffect }} from 'react';
+import {{ NavigationContainer }} from '@react-navigation/native';
+import {{ createBottomTabNavigator }} from '@react-navigation/bottom-tabs';
+import {{ createStackNavigator }} from '@react-navigation/stack';
+import {{ Ionicons }} from '@expo/vector-icons';
+import * as SplashScreen from 'expo-splash-screen';
+
+// Screens
+import HomeScreen from './src/screens/HomeScreen';
+import ProfileScreen from './src/screens/ProfileScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
+import LoginScreen from './src/screens/LoginScreen';
+
+// Types
+import {{ RootStackParamList, MainTabParamList }} from './src/types/navigation';
+
+const Stack = createStackNavigator<RootStackParamList>();
+const Tab = createBottomTabNavigator<MainTabParamList>();
+
+// Keep splash screen visible while app loads
+SplashScreen.preventAutoHideAsync();
+
+function MainTabs() {{
+  return (
+    <Tab.Navigator
+      screenOptions={{{{ route }}) => ({{
+        tabBarIcon: ({{ focused, color, size }}) => {{
+          let iconName: keyof typeof Ionicons.glyphMap;
+
+          if (route.name === 'Home') {{
+            iconName = focused ? 'home' : 'home-outline';
+          }} else if (route.name === 'Profile') {{
+            iconName = focused ? 'person' : 'person-outline';
+          }} else if (route.name === 'Settings') {{
+            iconName = focused ? 'settings' : 'settings-outline';
+          }} else {{
+            iconName = 'help-outline';
+          }}
+
+          return <Ionicons name={{iconName}} size={{size}} color={{color}} />;
+        }},
+        tabBarActiveTintColor: '#007AFF',
+        tabBarInactiveTintColor: 'gray',
+        headerShown: false,
+      }})}
+    >
+      <Tab.Screen name="Home" component={{HomeScreen}} />
+      <Tab.Screen name="Profile" component={{ProfileScreen}} />
+      <Tab.Screen name="Settings" component={{SettingsScreen}} />
+    </Tab.Navigator>
+  );
+}}
+
+export default function App() {{
+  useEffect(() => {{
+    // Hide splash screen after app loads
+    SplashScreen.hideAsync();
+  }}, []);
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{{{ headerShown: false }}}}>
+        <Stack.Screen name="Login" component={{LoginScreen}} />
+        <Stack.Screen name="Main" component={{MainTabs}} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}}''',
+                "src": {
+                    "types": {
+                        "navigation.ts": '''export type RootStackParamList = {
+  Login: undefined;
+  Main: undefined;
+};
+
+export type MainTabParamList = {
+  Home: undefined;
+  Profile: undefined;
+  Settings: undefined;
+};'''
+                    },
+                    "screens": {
+                        "HomeScreen.tsx": '''import React from 'react';
+import {{
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+}} from 'react-native';
+import {{ Ionicons }} from '@expo/vector-icons';
+
+export default function HomeScreen() {{
+  const features = [
+    {{ icon: 'flash', title: 'Fast Performance', description: 'Lightning fast app performance' }},
+    {{ icon: 'shield-checkmark', title: 'Secure', description: 'Your data is safe with us' }},
+    {{ icon: 'cloud', title: 'Cloud Sync', description: 'Access your data anywhere' }},
+  ];
+
+  return (
+    <SafeAreaView style={{styles.container}}>
+      <ScrollView contentContainerStyle={{styles.content}}>
+        <View style={{styles.header}}>
+          <Text style={{styles.title}}>Welcome to {name}</Text>
+          <Text style={{styles.subtitle}}>Your mobile companion</Text>
+        </View>
+
+        <View style={{styles.featuresContainer}}>
+          <Text style={{styles.sectionTitle}}>Features</Text>
+          {{features.map((feature, index) => (
+            <TouchableOpacity key={{index}} style={{styles.featureCard}}>
+              <View style={{styles.featureIcon}}>
+                <Ionicons name={{feature.icon as any}} size={{24}} color="#007AFF" />
+              </View>
+              <View style={{styles.featureContent}}>
+                <Text style={{styles.featureTitle}}>{{feature.title}}</Text>
+                <Text style={{styles.featureDescription}}>{{feature.description}}</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={{20}} color="#C7C7CC" />
+            </TouchableOpacity>
+          ))}}
+        </View>
+
+        <TouchableOpacity style={{styles.actionButton}}>
+          <Text style={{styles.actionButtonText}}>Get Started</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}}
+
+const styles = StyleSheet.create({{
+  container: {{
+    flex: 1,
+    backgroundColor: '#F2F2F7',
+  }},
+  content: {{
+    padding: 20,
+  }},
+  header: {{
+    alignItems: 'center',
+    marginBottom: 30,
+    paddingTop: 20,
+  }},
+  title: {{
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 8,
+  }},
+  subtitle: {{
+    fontSize: 16,
+    color: '#8E8E93',
+  }},
+  featuresContainer: {{
+    marginBottom: 30,
+  }},
+  sectionTitle: {{
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#000',
+    marginBottom: 15,
+  }},
+  featureCard: {{
+    backgroundColor: '#FFF',
+    padding: 16,
+    marginBottom: 10,
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {{ width: 0, height: 1 }},
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  }},
+  featureIcon: {{
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#E3F2FD',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  }},
+  featureContent: {{
+    flex: 1,
+  }},
+  featureTitle: {{
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#000',
+    marginBottom: 2,
+  }},
+  featureDescription: {{
+    fontSize: 14,
+    color: '#8E8E93',
+  }},
+  actionButton: {{
+    backgroundColor: '#007AFF',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  }},
+  actionButtonText: {{
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '600',
+  }},
+}});'''
+                    },
+                    "LoginScreen.tsx": '''import React, {{ useState }} from 'react';
+import {{
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  Alert,
+}} from 'react-native';
+import {{ useNavigation }} from '@react-navigation/native';
+
+export default function LoginScreen() {{
+  const navigation = useNavigation();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = () => {{
+    if (!email || !password) {{
+      Alert.alert('Error', 'Please fill in all fields');
+      return;
+    }}
+
+    // TODO: Implement actual authentication
+    console.log('Login attempt:', {{ email, password }});
+    
+    // Navigate to main app
+    navigation.navigate('Main' as never);
+  }};
+
+  return (
+    <SafeAreaView style={{styles.container}}>
+      <View style={{styles.content}}>
+        <View style={{styles.header}}>
+          <Text style={{styles.title}}>{name}</Text>
+          <Text style={{styles.subtitle}}>Sign in to your account</Text>
+        </View>
+
+        <View style={{styles.form}}>
+          <View style={{styles.inputGroup}}>
+            <Text style={{styles.label}}>Email</Text>
+            <TextInput
+              style={{styles.input}}
+              placeholder="Enter your email"
+              value={{email}}
+              onChangeText={{setEmail}}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={{false}}
+            />
+          </View>
+
+          <View style={{styles.inputGroup}}>
+            <Text style={{styles.label}}>Password</Text>
+            <TextInput
+              style={{styles.input}}
+              placeholder="Enter your password"
+              value={{password}}
+              onChangeText={{setPassword}}
+              secureTextEntry
+              autoCapitalize="none"
+            />
+          </View>
+
+          <TouchableOpacity style={{styles.loginButton}} onPress={{handleLogin}}>
+            <Text style={{styles.loginButtonText}}>Sign In</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={{styles.forgotButton}}>
+            <Text style={{styles.forgotButtonText}}>Forgot Password?</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={{styles.footer}}>
+          <Text style={{styles.footerText}}>Don't have an account?</Text>
+          <TouchableOpacity>
+            <Text style={{styles.signupText}}> Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </SafeAreaView>
+  );
+}}
+
+const styles = StyleSheet.create({{
+  container: {{
+    flex: 1,
+    backgroundColor: '#FFF',
+  }},
+  content: {{
+    flex: 1,
+    padding: 20,
+    justifyContent: 'center',
+  }},
+  header: {{
+    alignItems: 'center',
+    marginBottom: 40,
+  }},
+  title: {{
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 8,
+  }},
+  subtitle: {{
+    fontSize: 16,
+    color: '#8E8E93',
+  }},
+  form: {{
+    marginBottom: 30,
+  }},
+  inputGroup: {{
+    marginBottom: 20,
+  }},
+  label: {{
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#000',
+    marginBottom: 8,
+  }},
+  input: {{
+    borderWidth: 1,
+    borderColor: '#E5E5EA',
+    borderRadius: 12,
+    padding: 16,
+    fontSize: 16,
+    backgroundColor: '#F2F2F7',
+  }},
+  loginButton: {{
+    backgroundColor: '#007AFF',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 16,
+  }},
+  loginButtonText: {{
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '600',
+  }},
+  forgotButton: {{
+    alignItems: 'center',
+  }},
+  forgotButtonText: {{
+    color: '#007AFF',
+    fontSize: 14,
+  }},
+  footer: {{
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }},
+  footerText: {{
+    color: '#8E8E93',
+    fontSize: 14,
+  }},
+  signupText: {{
+    color: '#007AFF',
+    fontSize: 14,
+    fontWeight: '600',
+  }},
+}});'''
+                    },
+                    "ProfileScreen.tsx": '''import React from 'react';
+import {{
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+}} from 'react-native';
+import {{ Ionicons }} from '@expo/vector-icons';
+
+export default function ProfileScreen() {{
+  const menuItems = [
+    {{ icon: 'person-outline', title: 'Edit Profile', hasChevron: true }},
+    {{ icon: 'notifications-outline', title: 'Notifications', hasChevron: true }},
+    {{ icon: 'lock-closed-outline', title: 'Privacy & Security', hasChevron: true }},
+    {{ icon: 'help-circle-outline', title: 'Help & Support', hasChevron: true }},
+    {{ icon: 'information-circle-outline', title: 'About', hasChevron: true }},
+    {{ icon: 'log-out-outline', title: 'Sign Out', hasChevron: false, isDestructive: true }},
+  ];
+
+  return (
+    <SafeAreaView style={{styles.container}}>
+      <ScrollView contentContainerStyle={{styles.content}}>
+        <View style={{styles.header}}>
+          <View style={{styles.profileImageContainer}}>
+            <View style={{styles.profileImagePlaceholder}}>
+              <Ionicons name="person" size={{40}} color="#8E8E93" />
+            </View>
+          </View>
+          <Text style={{styles.name}}>John Doe</Text>
+          <Text style={{styles.email}}>john@example.com</Text>
+        </View>
+
+        <View style={{styles.menuContainer}}>
+          {{menuItems.map((item, index) => (
+            <TouchableOpacity 
+              key={{index}} 
+              style={{[
+                styles.menuItem,
+                index === menuItems.length - 1 && styles.lastMenuItem
+              ]}}
+            >
+              <View style={{styles.menuItemContent}}>
+                <View style={{styles.menuItemLeft}}>
+                  <Ionicons 
+                    name={{item.icon as any}} 
+                    size={{24}} 
+                    color={{item.isDestructive ? '#FF3B30' : '#007AFF'}} 
+                  />
+                  <Text style={{[
+                    styles.menuItemText,
+                    item.isDestructive && styles.destructiveText
+                  ]}}>
+                    {{item.title}}
+                  </Text>
+                </View>
+                {{item.hasChevron && (
+                  <Ionicons name="chevron-forward" size={{20}} color="#C7C7CC" />
+                )}}
+              </View>
+            </TouchableOpacity>
+          ))}}
+        </View>
+
+        <View style={{styles.appInfo}}>
+          <Text style={{styles.appVersion}}>Version 1.0.0</Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}}
+
+const styles = StyleSheet.create({{
+  container: {{
+    flex: 1,
+    backgroundColor: '#F2F2F7',
+  }},
+  content: {{
+    paddingBottom: 20,
+  }},
+  header: {{
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+    paddingVertical: 30,
+    marginBottom: 20,
+  }},
+  profileImageContainer: {{
+    marginBottom: 16,
+  }},
+  profileImagePlaceholder: {{
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#F2F2F7',
+    justifyContent: 'center',
+    alignItems: 'center',
+  }},
+  name: {{
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#000',
+    marginBottom: 4,
+  }},
+  email: {{
+    fontSize: 16,
+    color: '#8E8E93',
+  }},
+  menuContainer: {{
+    backgroundColor: '#FFF',
+    marginHorizontal: 20,
+    borderRadius: 12,
+    overflow: 'hidden',
+  }},
+  menuItem: {{
+    borderBottomWidth: 1,
+    borderBottomColor: '#F2F2F7',
+  }},
+  lastMenuItem: {{
+    borderBottomWidth: 0,
+  }},
+  menuItemContent: {{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+  }},
+  menuItemLeft: {{
+    flexDirection: 'row',
+    alignItems: 'center',
+  }},
+  menuItemText: {{
+    fontSize: 16,
+    color: '#000',
+    marginLeft: 12,
+  }},
+  destructiveText: {{
+    color: '#FF3B30',
+  }},
+  appInfo: {{
+    alignItems: 'center',
+    marginTop: 30,
+  }},
+  appVersion: {{
+    fontSize: 14,
+    color: '#8E8E93',
+  }},
+}});'''
+                    },
+                    "SettingsScreen.tsx": '''import React, {{ useState }} from 'react';
+import {{
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+  Switch,
+  TouchableOpacity,
+}} from 'react-native';
+import {{ Ionicons }} from '@expo/vector-icons';
+
+export default function SettingsScreen() {{
+  const [pushNotifications, setPushNotifications] = useState(true);
+  const [emailNotifications, setEmailNotifications] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
+  const [locationServices, setLocationServices] = useState(true);
+
+  const settingSections = [
+    {{
+      title: 'Notifications',
+      items: [
+        {{
+          title: 'Push Notifications',
+          subtitle: 'Receive notifications on your device',
+          type: 'switch',
+          value: pushNotifications,
+          onToggle: setPushNotifications,
+        }},
+        {{
+          title: 'Email Notifications',
+          subtitle: 'Receive updates via email',
+          type: 'switch',
+          value: emailNotifications,
+          onToggle: setEmailNotifications,
+        }},
+      ],
+    }},
+    {{
+      title: 'Appearance',
+      items: [
+        {{
+          title: 'Dark Mode',
+          subtitle: 'Use dark theme',
+          type: 'switch',
+          value: darkMode,
+          onToggle: setDarkMode,
+        }},
+      ],
+    }},
+    {{
+      title: 'Privacy',
+      items: [
+        {{
+          title: 'Location Services',
+          subtitle: 'Allow app to access your location',
+          type: 'switch',
+          value: locationServices,
+          onToggle: setLocationServices,
+        }},
+        {{
+          title: 'Data & Privacy',
+          subtitle: 'Manage your data and privacy settings',
+          type: 'navigation',
+        }},
+      ],
+    }},
+    {{
+      title: 'Support',
+      items: [
+        {{
+          title: 'Contact Support',
+          subtitle: 'Get help with your account',
+          type: 'navigation',
+        }},
+        {{
+          title: 'Terms of Service',
+          subtitle: 'Read our terms and conditions',
+          type: 'navigation',
+        }},
+        {{
+          title: 'Privacy Policy',
+          subtitle: 'Learn how we protect your privacy',
+          type: 'navigation',
+        }},
+      ],
+    }},
+  ];
+
+  const renderSettingItem = (item: any, isLast: boolean) => {{
+    return (
+      <View style={{[styles.settingItem, isLast && styles.lastSettingItem]}}>
+        <View style={{styles.settingContent}}>
+          <Text style={{styles.settingTitle}}>{{item.title}}</Text>
+          <Text style={{styles.settingSubtitle}}>{{item.subtitle}}</Text>
+        </View>
+        {{item.type === 'switch' ? (
+          <Switch
+            value={{item.value}}
+            onValueChange={{item.onToggle}}
+            trackColor={{{{ false: '#E5E5EA', true: '#007AFF' }}}}
+            thumbColor="#FFF"
+          />
+        ) : (
+          <Ionicons name="chevron-forward" size={{20}} color="#C7C7CC" />
+        )}}
+      </View>
+    );
+  }};
+
+  return (
+    <SafeAreaView style={{styles.container}}>
+      <ScrollView contentContainerStyle={{styles.content}}>
+        <View style={{styles.header}}>
+          <Text style={{styles.title}}>Settings</Text>
+        </View>
+
+        {{settingSections.map((section, sectionIndex) => (
+          <View key={{sectionIndex}} style={{styles.section}}>
+            <Text style={{styles.sectionTitle}}>{{section.title}}</Text>
+            <View style={{styles.sectionContent}}>
+              {{section.items.map((item, itemIndex) => (
+                <TouchableOpacity
+                  key={{itemIndex}}
+                  disabled={{item.type === 'switch'}}
+                  style={{styles.touchableItem}}
+                >
+                  {{renderSettingItem(item, itemIndex === section.items.length - 1)}}
+                </TouchableOpacity>
+              ))}}
+            </View>
+          </View>
+        ))}}
+      </ScrollView>
+    </SafeAreaView>
+  );
+}}
+
+const styles = StyleSheet.create({{
+  container: {{
+    flex: 1,
+    backgroundColor: '#F2F2F7',
+  }},
+  content: {{
+    paddingBottom: 20,
+  }},
+  header: {{
+    backgroundColor: '#FFF',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F2F2F7',
+  }},
+  title: {{
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#000',
+  }},
+  section: {{
+    marginTop: 20,
+  }},
+  sectionTitle: {{
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#8E8E93',
+    marginHorizontal: 20,
+    marginBottom: 8,
+  }},
+  sectionContent: {{
+    backgroundColor: '#FFF',
+    marginHorizontal: 20,
+    borderRadius: 12,
+    overflow: 'hidden',
+  }},
+  touchableItem: {{
+    // Empty style for consistency
+  }},
+  settingItem: {{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F2F2F7',
+  }},
+  lastSettingItem: {{
+    borderBottomWidth: 0,
+  }},
+  settingContent: {{
+    flex: 1,
+  }},
+  settingTitle: {{
+    fontSize: 16,
+    fontWeight: '400',
+    color: '#000',
+    marginBottom: 2,
+  }},
+  settingSubtitle: {{
+    fontSize: 14,
+    color: '#8E8E93',
+  }},
+}});'''
+                    }
+                },
+                "assets": {
+                    ".gitkeep": ""
+                },
+                "eas.json": """{
+  "cli": {
+    "version": ">= 5.0.0"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {}
+  },
+  "submit": {
+    "production": {}
+  }
+}""",
+            },
+            "README.md": "# {name} Mobile App\n\nCross-platform mobile application built with React Native and Expo.\n\n## Features\n\n- 📱 **Cross-Platform**: iOS and Android from one codebase\n- 🎨 **Native UI**: Platform-specific design patterns\n- 🔔 **Push Notifications**: Expo Notifications integration\n- 🔒 **Secure Storage**: Expo SecureStore for sensitive data\n- 🧭 **Navigation**: React Navigation with tab and stack navigators\n- 🎯 **TypeScript**: Full type safety\n- 💾 **Offline Storage**: AsyncStorage for local data\n\n## Quick Start\n\n### Prerequisites\n- Node.js 18+\n- Expo CLI: `npm install -g @expo/cli`\n- For iOS: Xcode\n- For Android: Android Studio\n\n### Development Setup\n\n1. **Install Dependencies**\n   ```bash\n   cd mobile\n   npm install\n   ```\n\n2. **Start Development Server**\n   ```bash\n   npm start\n   ```\n\n3. **Run on Device/Simulator**\n   ```bash\n   # iOS Simulator\n   npm run ios\n   \n   # Android Emulator\n   npm run android\n   \n   # Web (for testing)\n   npm run web\n   ```\n\n### Building for Production\n\n1. **Install EAS CLI**\n   ```bash\n   npm install -g eas-cli\n   ```\n\n2. **Configure EAS Build**\n   ```bash\n   eas build:configure\n   ```\n\n3. **Build for Stores**\n   ```bash\n   # iOS App Store\n   eas build --platform ios\n   \n   # Google Play Store\n   eas build --platform android\n   ```\n\n4. **Submit to Stores**\n   ```bash\n   eas submit\n   ```\n\n## Project Structure\n\n```\nmobile/\n├── src/\n│   ├── screens/          # App screens\n│   ├── components/       # Reusable components\n│   ├── navigation/       # Navigation setup\n│   ├── services/         # API and data services\n│   ├── utils/           # Helper functions\n│   └── types/           # TypeScript types\n├── assets/              # Images, fonts, etc.\n├── app.json            # Expo configuration\n├── eas.json           # EAS Build configuration\n└── App.tsx            # Main app component\n```\n\n## Key Features Implementation\n\n### Navigation\nThe app uses React Navigation with:\n- Stack Navigator for auth flow\n- Bottom Tab Navigator for main app\n- TypeScript navigation typing\n\n### Storage\n- **AsyncStorage**: Non-sensitive data (preferences, cache)\n- **SecureStore**: Sensitive data (tokens, credentials)\n\n### Notifications\nExpo Notifications setup for:\n- Local notifications\n- Push notifications\n- Notification permissions\n\n### Platform-Specific Code\nUse platform-specific styling when needed:\n```typescript\nimport {{ Platform }} from 'react-native';\n\nconst styles = StyleSheet.create({{\n  button: {{\n    padding: Platform.OS === 'ios' ? 12 : 8,\n  }}\n}});\n```\n\n## Configuration\n\n### App Config (app.json)\nUpdate these fields:\n- `name`: App display name\n- `slug`: Expo project slug\n- `bundleIdentifier` (iOS): com.yourcompany.appname\n- `package` (Android): com.yourcompany.appname\n\n### Environment Variables\nCreate `.env` files:\n- `.env.development`\n- `.env.staging`\n- `.env.production`\n\n### App Icons & Splash\nReplace default assets:\n- `assets/icon.png` (1024x1024)\n- `assets/splash.png` (1242x2436)\n- `assets/adaptive-icon.png` (1024x1024, Android)\n\n## Deployment\n\n### Expo Development Builds\nFor custom native code:\n```bash\neas build --profile development\n```\n\n### App Store Connect (iOS)\n1. Create app in App Store Connect\n2. Build with `eas build --platform ios`\n3. Submit with `eas submit --platform ios`\n\n### Google Play Console (Android)\n1. Create app in Google Play Console\n2. Build with `eas build --platform android`\n3. Submit with `eas submit --platform android`\n\n## Tech Stack\n\n- **React Native**: 0.73+\n- **Expo**: SDK 50+\n- **TypeScript**: Full type safety\n- **React Navigation**: v6\n- **Expo Notifications**: Push notifications\n- **AsyncStorage**: Local storage\n- **Expo SecureStore**: Secure storage\n\n## Testing\n\nRun tests with Jest:\n```bash\nnpm test\n```\n\n## Troubleshooting\n\n### Metro Cache Issues\n```bash\nnpx expo start --clear\n```\n\n### iOS Simulator Issues\n```bash\nnpx expo run:ios --device\n```\n\n### Android Build Issues\n```bash\nnpx expo run:android --variant release\n```\n",
+            ".gitignore": "node_modules/\n.expo/\ndist/\nnpm-debug.*\n*.jks\n*.p8\n*.p12\n*.key\n*.mobileprovision\n*.orig.*\nweb-build/\n.env.*\n",
+        },
+    },
 }
 
 

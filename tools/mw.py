@@ -20,6 +20,9 @@ Commands:
     fix             Auto-fix common issues
     report          Generate detailed health report
     doctor          Full system diagnostics
+    ecosystem       Show all live app URLs and ecosystem overview
+    marketplace     Open marketplace information and links
+    links           Show all useful framework links
 
 Project Commands:
     mw projects     List all projects (uses project registry if available)
@@ -1156,6 +1159,254 @@ echo "✅ All markdown files perfect!"
         return 1
 
 
+def cmd_ecosystem(args: List[str] = None):
+    """Show all live app URLs and ecosystem overview."""
+    if args and (args[0] in ["--help", "-h"]):
+        print("""
+Ecosystem Commands — Live Apps & Services Overview
+==================================================
+Usage:
+    mw ecosystem                    Show all live app URLs and ecosystem overview
+    mw ecosystem --help             Show this help message
+
+Description:
+    Displays all live applications and services in the MyWork-AI ecosystem
+    with direct links, descriptions, and connection information.
+
+Examples:
+    mw ecosystem                    # Show complete ecosystem overview
+""")
+        return 0
+    
+    print(f"""
+{Colors.BOLD}{Colors.BLUE}🌐 MyWork-AI Ecosystem Overview{Colors.ENDC}
+{Colors.BLUE}{'=' * 60}{Colors.ENDC}
+
+{Colors.BOLD}{Colors.GREEN}🛒 Commerce Ecosystem{Colors.ENDC}
+{Colors.GREEN}{'─' * 30}{Colors.ENDC}
+{color("📱 Marketplace Frontend", Colors.BOLD)}
+   🔗 {color("https://frontend-hazel-ten-17.vercel.app", Colors.BLUE)}
+   💡 Buy/sell complete projects, browse marketplace
+
+{color("⚙️ Marketplace Backend", Colors.BOLD)}
+   🔗 {color("https://mywork-ai-production.up.railway.app", Colors.BLUE)}
+   💡 API services, payment processing, MLM system
+
+{Colors.BOLD}{Colors.YELLOW}📊 Analytics Ecosystem{Colors.ENDC}
+{Colors.YELLOW}{'─' * 35}{Colors.ENDC}
+{color("📈 Dashboard", Colors.BOLD)}
+   🔗 {color("https://dashboard-sage-rho.vercel.app", Colors.BLUE)}
+   💡 Project analytics and framework overview
+
+{color("🤖 AI Dashboard", Colors.BOLD)}
+   🔗 {color("https://ai-dashboard-frontend-rust.vercel.app", Colors.BLUE)}
+   💡 AI performance metrics and AutoForge monitoring
+
+{color("📋 Task Tracker", Colors.BOLD)}
+   🔗 {color("https://task-tracker-weld-delta.vercel.app", Colors.BLUE)}
+   💡 Project management and team collaboration
+
+{Colors.BOLD}{Colors.BLUE}👥 User Ecosystem{Colors.ENDC}
+{Colors.BLUE}{'─' * 25}{Colors.ENDC}
+{color("👤 User Portal", Colors.BOLD)}
+   🔗 {color("https://mywork-user.vercel.app", Colors.BLUE)}
+   💡 Account management and user profiles
+
+{color("⚙️ Admin Panel", Colors.BOLD)}
+   🔗 {color("https://mywork-admin.vercel.app", Colors.BLUE)}
+   💡 Platform administration and oversight
+
+{Colors.BOLD}{Colors.HEADER}🎯 Built With MyWork-AI{Colors.ENDC}
+{Colors.HEADER}{'─' * 35}{Colors.ENDC}
+{color("🏈 SportsAI", Colors.BOLD)}
+   🔗 {color("https://sports-ai-one.vercel.app", Colors.BLUE)}
+   💡 AI-powered sports analytics (fullstack template)
+
+{Colors.BOLD}{Colors.GREEN}🔧 Quick Access Commands{Colors.ENDC}
+{Colors.GREEN}{'─' * 35}{Colors.ENDC}
+   {color("mw marketplace", Colors.BOLD)}     # Marketplace info and links
+   {color("mw dashboard", Colors.BOLD)}       # Open dashboard
+   {color("mw links", Colors.BOLD)}           # All useful links
+
+{Colors.BLUE}💡 All services work together to create a seamless development experience!{Colors.ENDC}
+""")
+    return 0
+
+
+def cmd_marketplace_info(args: List[str] = None):
+    """Open marketplace information and links."""
+    if args and (args[0] in ["--help", "-h"]):
+        print("""
+Marketplace Commands — Buy & Sell Projects
+==========================================
+Usage:
+    mw marketplace                  Show marketplace information and links
+    mw marketplace --help           Show this help message
+
+Description:
+    Provides detailed information about the MyWork-AI marketplace including
+    how to buy/sell projects, pricing, and direct links to all marketplace
+    services.
+
+Examples:
+    mw marketplace                  # Show marketplace overview
+""")
+        return 0
+    
+    print(f"""
+{Colors.BOLD}{Colors.GREEN}🛒 MyWork-AI Marketplace{Colors.ENDC}
+{Colors.GREEN}{'=' * 40}{Colors.ENDC}
+
+{Colors.BOLD}🌟 What is the Marketplace?{Colors.ENDC}
+Complete projects marketplace where developers buy and sell ready-to-deploy 
+applications, components, and templates. Skip the boilerplate, start with 
+proven solutions.
+
+{Colors.BOLD}{Colors.BLUE}📱 Marketplace Frontend{Colors.ENDC}
+{Colors.BLUE}{'─' * 30}{Colors.ENDC}
+🔗 {color("https://frontend-hazel-ten-17.vercel.app", Colors.BLUE)}
+
+✨ Features:
+   • Browse complete projects and components
+   • Credit-based payment system with Stripe  
+   • Project ratings and reviews
+   • Advanced search and filtering
+   • Mobile-responsive design
+
+{Colors.BOLD}{Colors.YELLOW}⚙️ Backend Services{Colors.ENDC}
+{Colors.YELLOW}{'─' * 25}{Colors.ENDC}
+🔗 {color("https://mywork-ai-production.up.railway.app", Colors.BLUE)}
+
+🔧 API Features:
+   • JWT authentication and authorization
+   • Stripe payment processing
+   • MLM referral system (5 levels)
+   • Real-time analytics and reporting
+   • Notification system
+
+{Colors.BOLD}{Colors.HEADER}💰 How It Works{Colors.ENDC}
+{Colors.HEADER}{'─' * 20}{Colors.ENDC}
+{Colors.BOLD}For Buyers:{Colors.ENDC}
+   1. Purchase credits with Stripe
+   2. Browse verified projects
+   3. Download source code + documentation
+   4. Get 30-day support from seller
+
+{Colors.BOLD}For Sellers:{Colors.ENDC}
+   1. List your projects (free)
+   2. Set credit pricing
+   3. Earn 70% of sale price
+   4. Build reputation with ratings
+   5. Earn MLM referral commissions
+
+{Colors.BOLD}{Colors.GREEN}🎯 MLM Referral System{Colors.ENDC}
+{Colors.GREEN}{'─' * 30}{Colors.ENDC}
+Earn from 5 levels of referrals:
+   • Level 1 (Direct): {color("15%", Colors.BOLD)} commission
+   • Level 2: {color("7%", Colors.BOLD)} commission  
+   • Level 3: {color("4%", Colors.BOLD)} commission
+   • Level 4: {color("2%", Colors.BOLD)} commission
+   • Level 5: {color("2%", Colors.BOLD)} commission
+
+{Colors.BOLD}{Colors.BLUE}🔗 Related Services{Colors.ENDC}
+{Colors.BLUE}{'─' * 25}{Colors.ENDC}
+   👤 User Portal: {color("https://mywork-user.vercel.app", Colors.BLUE)}
+   ⚙️ Admin Panel: {color("https://mywork-admin.vercel.app", Colors.BLUE)}
+
+{Colors.BOLD}{Colors.YELLOW}🚀 Getting Started{Colors.ENDC}
+{Colors.YELLOW}{'─' * 25}{Colors.ENDC}
+   1. Visit: {color("https://frontend-hazel-ten-17.vercel.app", Colors.BLUE)}
+   2. Create account and verify email
+   3. Purchase credits or list your first project
+   4. Join the community of 1000+ developers!
+
+{Colors.GREEN}💡 Pro tip: Use 'mw ecosystem' to see how marketplace connects with other services{Colors.ENDC}
+""")
+    return 0
+
+
+def cmd_links(args: List[str] = None):
+    """Show all useful framework links."""
+    if args and (args[0] in ["--help", "-h"]):
+        print("""
+Links Commands — All Useful Framework Links
+===========================================
+Usage:
+    mw links                        Show all useful framework links
+    mw links --help                 Show this help message
+
+Description:
+    Comprehensive list of all useful links related to the MyWork-AI
+    framework including documentation, live apps, community resources,
+    and development tools.
+
+Examples:
+    mw links                        # Show all links organized by category
+""")
+        return 0
+    
+    print(f"""
+{Colors.BOLD}{Colors.BLUE}🔗 MyWork-AI Links Directory{Colors.ENDC}
+{Colors.BLUE}{'=' * 45}{Colors.ENDC}
+
+{Colors.BOLD}{Colors.GREEN}🌐 Live Applications{Colors.ENDC}
+{Colors.GREEN}{'─' * 25}{Colors.ENDC}
+📱 Marketplace      {color("https://frontend-hazel-ten-17.vercel.app", Colors.BLUE)}
+📊 Dashboard        {color("https://dashboard-sage-rho.vercel.app", Colors.BLUE)}
+📋 Task Tracker     {color("https://task-tracker-weld-delta.vercel.app", Colors.BLUE)}
+👤 User Portal      {color("https://mywork-user.vercel.app", Colors.BLUE)}
+⚙️ Admin Panel      {color("https://mywork-admin.vercel.app", Colors.BLUE)}
+🤖 AI Dashboard     {color("https://ai-dashboard-frontend-rust.vercel.app", Colors.BLUE)}
+🏈 SportsAI         {color("https://sports-ai-one.vercel.app", Colors.BLUE)}
+
+{Colors.BOLD}{Colors.YELLOW}🔧 Backend Services{Colors.ENDC}
+{Colors.YELLOW}{'─' * 25}{Colors.ENDC}
+⚙️ API Backend      {color("https://mywork-ai-production.up.railway.app", Colors.BLUE)}
+
+{Colors.BOLD}{Colors.HEADER}📚 Documentation{Colors.ENDC}
+{Colors.HEADER}{'─' * 20}{Colors.ENDC}
+📖 README.md        Complete framework overview
+⚡ QUICK_START.md   Get started in 3 steps  
+🏛️ ECOSYSTEM.md     Ecosystem architecture
+🤖 CLAUDE.md        Master orchestrator instructions
+📝 CHANGELOG.md     Version history and updates
+🔒 SECURITY.md      Security policy and reporting
+🤝 CONTRIBUTING.md  Contribution guidelines
+🎯 STRATEGY.md      Project strategy and roadmap
+
+{Colors.BOLD}{Colors.BLUE}🌍 Community & Support{Colors.ENDC}
+{Colors.BLUE}{'─' * 30}{Colors.ENDC}
+🐙 GitHub Repository   {color("https://github.com/DansiDanutz/MyWork-AI", Colors.BLUE)}
+💬 Discussions         {color("https://github.com/DansiDanutz/MyWork-AI/discussions", Colors.BLUE)}
+🐛 Issues              {color("https://github.com/DansiDanutz/MyWork-AI/issues", Colors.BLUE)}
+📦 PyPI Package        {color("https://pypi.org/project/mywork-ai/", Colors.BLUE)}
+
+{Colors.BOLD}{Colors.GREEN}🎨 Frontend & Landing{Colors.ENDC}
+{Colors.GREEN}{'─' * 30}{Colors.ENDC}
+🏠 Landing Page        {color("file://docs/landing/index.html", Colors.BLUE)}
+   (Open locally or serve with: python -m http.server 8000)
+
+{Colors.BOLD}{Colors.YELLOW}🛠️ Development Tools{Colors.ENDC}
+{Colors.YELLOW}{'─' * 25}{Colors.ENDC}
+📊 Framework Health    {color("mw status", Colors.BOLD)}
+🔍 Diagnostics        {color("mw doctor", Colors.BOLD)}
+📈 Dashboard          {color("mw dashboard", Colors.BOLD)}
+🧠 Brain Search       {color("mw brain search <query>", Colors.BOLD)}
+🤖 AutoForge          {color("mw af status", Colors.BOLD)}
+
+{Colors.BOLD}{Colors.RED}⚡ Quick Commands{Colors.ENDC}
+{Colors.RED}{'─' * 20}{Colors.ENDC}
+{color("mw ecosystem", Colors.BOLD)}         # Complete ecosystem overview
+{color("mw marketplace", Colors.BOLD)}      # Marketplace details
+{color("mw setup", Colors.BOLD)}            # First-time setup
+{color("mw guide", Colors.BOLD)}            # Interactive tutorial
+{color("mw help", Colors.BOLD)}             # CLI help
+
+{Colors.GREEN}💡 Bookmark these links for easy access to the MyWork-AI ecosystem!{Colors.ENDC}
+""")
+    return 0
+
+
 def cmd_setup(args: List[str] = None):
     """Setup command for first-time users."""
     if args and (args[0] in ["--help", "-h"]):
@@ -1618,6 +1869,9 @@ def main():
         "setup": lambda: cmd_setup(args),
         "guide": lambda: cmd_guide(args),
         "prompt-enhance": lambda: cmd_prompt_enhance(args),
+        "ecosystem": lambda: cmd_ecosystem(args),
+        "marketplace": lambda: cmd_marketplace_info(args),
+        "links": lambda: cmd_links(args),
         "remember": lambda: cmd_brain(["add"] + args),  # Shortcut
         "help": lambda: print_help() or 0,
         "-h": lambda: print_help() or 0,
@@ -1658,12 +1912,24 @@ def main():
         similar_commands.sort(key=lambda x: x[1])
         suggestions = [cmd for cmd, _ in similar_commands[:3]]
         
-        print(f"{Colors.RED}Unknown command: {command}{Colors.ENDC}")
+        print(f"{Colors.RED}❌ Unknown command: {command}{Colors.ENDC}")
+        
         if suggestions:
-            print(f"{Colors.YELLOW}Did you mean:{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Did you mean:{Colors.ENDC}")
             for suggestion in suggestions:
                 print(f"   {Colors.GREEN}mw {suggestion}{Colors.ENDC}")
-        print(f"\nRun '{Colors.BLUE}mw help{Colors.ENDC}' for all available commands")
+        else:
+            # If no similar commands, suggest most common ones
+            common_commands = ["new", "status", "dashboard", "projects", "brain", "af", "setup"]
+            print(f"{Colors.YELLOW}💡 Popular commands to try:{Colors.ENDC}")
+            for cmd in common_commands[:3]:
+                print(f"   {Colors.GREEN}mw {cmd}{Colors.ENDC}")
+        
+        print(f"\n{Colors.BLUE}📚 For help:{Colors.ENDC}")
+        print(f"   {color('mw help', Colors.BOLD)}           # All available commands")
+        print(f"   {color('mw setup', Colors.BOLD)}          # First-time setup")
+        print(f"   {color('mw guide', Colors.BOLD)}          # Interactive tutorial")
+        print(f"   {color('mw ecosystem', Colors.BOLD)}      # View ecosystem")
         sys.exit(1)
 
 
