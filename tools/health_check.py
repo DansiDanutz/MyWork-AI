@@ -364,16 +364,18 @@ class HealthChecker:
                 cwd=AUTOCODER_PATH,
                 capture_output=True,
                 text=True,
+                timeout=10,
             )
             commit = result.stdout.strip() if result.returncode == 0 else "unknown"
 
             # Check for updates
-            subprocess.run(["git", "fetch", "--quiet"], cwd=AUTOCODER_PATH, capture_output=True)
+            subprocess.run(["git", "fetch", "--quiet"], cwd=AUTOCODER_PATH, capture_output=True, timeout=10)
             result = subprocess.run(
                 ["git", "log", "--oneline", "HEAD..@{u}"],
                 cwd=AUTOCODER_PATH,
                 capture_output=True,
                 text=True,
+                timeout=10,
             )
             pending_updates = (
                 len(result.stdout.strip().split("\n"))
@@ -509,7 +511,7 @@ class HealthChecker:
 
             # Test n8n-mcp availability (npx should work)
             result = subprocess.run(
-                ["npx", "n8n-mcp", "--version"], capture_output=True, text=True, timeout=30
+                ["npx", "--no-install", "n8n-mcp", "--version"], capture_output=True, text=True, timeout=5
             )
             if result.returncode == 0:
                 # npx n8n-mcp might not have --version, so just check if it runs
@@ -705,7 +707,7 @@ class HealthChecker:
         """Check Python and Node.js dependencies."""
         try:
             # Check Python
-            result = subprocess.run(["python3", "--version"], capture_output=True, text=True)
+            result = subprocess.run(["python3", "--version"], capture_output=True, text=True, timeout=10)
             if result.returncode == 0:
                 python_version = result.stdout.strip()
                 self.add_result(
@@ -717,7 +719,7 @@ class HealthChecker:
                 )
 
             # Check Node.js
-            result = subprocess.run(["node", "--version"], capture_output=True, text=True)
+            result = subprocess.run(["node", "--version"], capture_output=True, text=True, timeout=10)
             if result.returncode == 0:
                 node_version = result.stdout.strip()
                 major_version = int(node_version.replace("v", "").split(".")[0])
@@ -736,14 +738,14 @@ class HealthChecker:
                 )
 
             # Check npm
-            result = subprocess.run(["npm", "--version"], capture_output=True, text=True)
+            result = subprocess.run(["npm", "--version"], capture_output=True, text=True, timeout=10)
             if result.returncode == 0:
                 self.add_result(
                     CheckResult(name="npm", status=Status.OK, message=f"v{result.stdout.strip()}")
                 )
 
             # Check git
-            result = subprocess.run(["git", "--version"], capture_output=True, text=True)
+            result = subprocess.run(["git", "--version"], capture_output=True, text=True, timeout=10)
             if result.returncode == 0:
                 git_version = result.stdout.strip()
                 self.add_result(
@@ -763,7 +765,8 @@ class HealthChecker:
                     result = subprocess.run(
                         ["pip", "show", package], 
                         capture_output=True, 
-                        text=True
+                        text=True,
+                        timeout=10,
                     )
                     if result.returncode == 0:
                         # Extract version from pip show output
@@ -967,7 +970,8 @@ class HealthChecker:
                 ["git", "rev-parse", "--is-inside-work-tree"],
                 cwd=MYWORK_ROOT,
                 capture_output=True,
-                text=True
+                text=True,
+                timeout=10,
             )
             
             if result.returncode != 0:
@@ -987,7 +991,8 @@ class HealthChecker:
                 ["git", "status", "--porcelain"],
                 cwd=MYWORK_ROOT,
                 capture_output=True,
-                text=True
+                text=True,
+                timeout=10,
             )
             
             if result.returncode == 0:
@@ -1017,7 +1022,8 @@ class HealthChecker:
                 ["git", "log", "--oneline", "@{u}..HEAD"],
                 cwd=MYWORK_ROOT,
                 capture_output=True,
-                text=True
+                text=True,
+                timeout=10,
             )
             
             if result.returncode == 0 and result.stdout.strip():
@@ -1045,7 +1051,8 @@ class HealthChecker:
                 ["git", "config", "user.email"],
                 cwd=MYWORK_ROOT,
                 capture_output=True,
-                text=True
+                text=True,
+                timeout=10,
             )
             
             if result.returncode == 0 and result.stdout.strip():
@@ -1142,7 +1149,11 @@ def auto_fix(results: List[CheckResult]):
         print(f"\n   Fixing: {result.name}")
         print(f"   Command: {result.fix_command}")
 
-        response = input("   Run this fix? [y/N]: ").strip().lower()
+        try:
+            response = input("   Run this fix? [y/N]: ").strip().lower()
+        except EOFError:
+            response = "n"
+            print("   (skipped — non-interactive mode)")
         if response == "y":
             try:
                 # Handle different command types
@@ -1158,14 +1169,14 @@ def auto_fix(results: List[CheckResult]):
                         # Extract directory from "cd <dir>"
                         target_dir = cd_part.replace("cd ", "").strip()
                         # Run command in target directory without shell=True
-                        subprocess.run(cmd_part.split(), cwd=target_dir, shell=False)
+                        subprocess.run(cmd_part.split(), cwd=target_dir, shell=False, timeout=10)
                     else:
                         # Simple cd command - just inform user
                         print(f"   ℹ️  Please change directory manually: {result.fix_command}")
                     print("   ✅ Done")
                 else:
                     parts = result.fix_command.split()
-                    subprocess.run(parts)
+                    subprocess.run(parts, timeout=10)
                     print("   ✅ Done")
             except Exception as e:
                 print(f"   ❌ Failed: {e}")
@@ -1230,7 +1241,7 @@ def main():
 
                 results = checker.run_all()
                 print_results(results)
-                checker.auto_fix()
+                auto_fix(results)
 
             elif command == "report":
                 results = checker.run_all()

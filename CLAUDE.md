@@ -17,13 +17,17 @@ Before starting any task, determine which layer handles it:
 
 ```text
 
+```text
+
 ```
-                  │
-                  ▼
+              │
+              ▼
 
 ```
 
 ```
+
+```python
 
 ```python
 ┌─────────────────────────────────────────────────────────────────┐
@@ -35,15 +39,19 @@ Before starting any task, determine which layer handles it:
 
 ```
 
+```text
+
 ```
-                  │ NO
-                  ▼
+              │ NO
+              ▼
+
+```
 
 ```
 
 ```text
 
-```
+```yaml
 ┌─────────────────────────────────────────────────────────────────┐
 │  2. Is this a PHASE of an existing GSD project?                 │
 │     YES → /gsd:plan-phase N → /gsd:execute-phase N              │
@@ -54,10 +62,14 @@ Before starting any task, determine which layer handles it:
 ```text
 
 ```
-                  │ NO
-                  ▼
 
 ```
+              │ NO
+              ▼
+
+```
+
+```text
 
 ```
 
@@ -69,13 +81,17 @@ Before starting any task, determine which layer handles it:
 
 ```text
 
+```text
+
 ```
 
 ```
-                  │ NO
-                  ▼
+              │ NO
+              ▼
 
 ```
+
+```text
 
 ```text
 
@@ -89,13 +105,17 @@ Before starting any task, determine which layer handles it:
 
 ```text
 
+```text
+
 ```
-                  │ NO
-                  ▼
+              │ NO
+              ▼
 
 ```
 
 ```
+
+```text
 
 ```text
 ┌─────────────────────────────────────────────────────────────────┐
@@ -107,15 +127,19 @@ Before starting any task, determine which layer handles it:
 
 ```
 
+```text
+
 ```
-                  │ NO
-                  ▼
+              │ NO
+              ▼
+
+```
 
 ```
 
 ```text
 
-```
+```python
 ┌─────────────────────────────────────────────────────────────────┐
 │  6. Is this DETERMINISTIC execution (API call, data transform)? │
 │     YES → WAT tool from tools/                                  │
@@ -361,16 +385,22 @@ project-specific instructions.
   - `projects/ai-dashboard/backend/scrapers/` - Scrapers (GitHub, YouTube, News)
   - `projects/ai-dashboard/backend/services/youtube_automation.py` - YouTube
 
-```
+```text
 upload automation
 
 ```
+
   - `projects/ai-dashboard/frontend/app/` - Next.js 14 frontend
 - **When to use**: When working on YouTube scraping, news aggregation, or
+
   automation
+
 - **Important**: This is a personal tool (not multi-user SaaS), MVP is complete
+
   (focus on polish, not new features)
+
 - **Start**: `cd projects/ai-dashboard && ./start.sh` (Mac/Linux) or `start.bat`
+
   (Windows)
 
 ### Task Tracker
@@ -383,25 +413,30 @@ upload automation
   - `projects/task-tracker/.planning/STATE.md` - Current status
   - `projects/task-tracker/.planning/research/ARCHITECTURE.md` - Comprehensive
 
-```
+```text
 architecture (30,534 bytes!)
 
 ```
+
   - `projects/task-tracker/.planning/research/FEATURES.md` - Complete feature
 
-```
+```text
 inventory (14,023 bytes!)
 
 ```
+
   - `projects/task-tracker/.planning/research/PITFALLS.md` - Common mistakes to
 
-```
+```text
 avoid (20,252 bytes!)
 
 ```
+
 - **When to use**: When validating framework patterns or task management features
 - **Important**: GitHub OAuth is mandatory, all code must meet reusability
+
   standards
+
 - **Start**: `cd projects/task-tracker && npm run dev`
 
 ### Marketplace
@@ -415,6 +450,7 @@ avoid (20,252 bytes!)
   - `.github/workflows/smoke-marketplace.yml` - Marketplace smoke tests
 - **When to use**: N/A (not yet implemented)
 - **Current Focus**: Build reusable patterns in task-tracker and ai-dashboard
+
   first
 
 ---
@@ -473,7 +509,9 @@ The marketplace is a **future platform** (Phase 10) where users can:
 The marketplace will integrate with:
 
 1. **Brain Knowledge Vault**
+
 (`/Users/dansidanutz/Desktop/MyWork/.planning/BRAIN.md`)
+
    - Modules captured from completed work
    - Tested patterns and components
    - Proven architectures and workflows
@@ -624,7 +662,7 @@ cd /Users/dansidanutz/Desktop/MyWork/projects/[project-name]
 cat CLAUDE.md              # Read project-specific instructions
 npm run dev                # Start development server
 
-```
+```yaml
 
 **When in doubt**:
 
@@ -718,7 +756,7 @@ cd projects/my-new-project
 
 #    - ROADMAP.md (phases with completion tracking)
 
-```
+```markdown
 
 ### Option 2: Use AutoForge
 
@@ -768,6 +806,7 @@ file for AI agents to understand how to work on the project.
 5. **For scraper work**: Focus on `backend/scrapers/`
 6. **For frontend work**: Focus on `frontend/app/`
 7. **For YouTube automation**: Focus on `backend/services/youtube_automation.py`
+
 (be careful!)
 
 ### Working on Task Tracker
@@ -779,8 +818,11 @@ file for AI agents to understand how to work on the project.
 5. **Start development**: `npm run dev`
 6. **For authentication**: Check `src/app/api/auth/[...nextauth]/route.ts`
 7. **For tasks**: Check `src/app/api/tasks/` and
+
 `src/shared/components/TaskList.tsx`
+
 8. **For files**: Check `src/app/api/files/` and
+
 `src/shared/components/FileDropzone.tsx`
 
 ---
@@ -859,7 +901,7 @@ cp -r n8n-skills/skills/* ~/.claude/skills/
 "N8N_API_URL": "<https://seme.app.n8n.cloud",>
 "N8N_API_KEY": "your-api-key-here"
 
-```
+```yaml
 
   }
 }
@@ -1216,7 +1258,7 @@ projects/
 │   └── src/
 └── project-c/
 
-```
+```yaml
 
 ├── .planning/          # Project C's GSD state
 └── ...
@@ -1535,7 +1577,7 @@ python tools/auto_update.py check
 python tools/module_registry.py scan
 python tools/mw.py brain learn-deep  # Deep learning analysis
 
-```
+```yaml
 
 **When things feel slow or broken:**
 

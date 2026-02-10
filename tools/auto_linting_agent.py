@@ -22,8 +22,14 @@ from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Optional, Set
 from dataclasses import dataclass, asdict
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+try:
+    from watchdog.observers import Observer
+    from watchdog.events import FileSystemEventHandler
+    HAS_WATCHDOG = True
+except ImportError:
+    HAS_WATCHDOG = False
+    Observer = None
+    FileSystemEventHandler = object
 
 
 @dataclass
@@ -82,6 +88,21 @@ class AutoLintingAgent:
             "total_issues_fixed": 0,
             "last_run": None,
         }
+
+        # Auto-detect available tools
+        import shutil
+        if self.config.markdownlint and not shutil.which("markdownlint"):
+            self.config.markdownlint = False
+        if self.config.black and not shutil.which("black"):
+            self.config.black = False
+        if self.config.flake8 and not shutil.which("flake8"):
+            self.config.flake8 = False
+        if self.config.pylint and not shutil.which("pylint"):
+            self.config.pylint = False
+        if self.config.eslint and not shutil.which("eslint"):
+            self.config.eslint = False
+        if self.config.prettier and not shutil.which("prettier"):
+            self.config.prettier = False
 
         # Load existing auto_lint_fixer
         self.framework_tools = self.root_dir / "tools"
@@ -177,7 +198,7 @@ class AutoLintingAgent:
         # Fallback to command-line markdownlint
         try:
             cmd = ["markdownlint", "--fix", file_path]
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
 
             issues_fixed = result.stdout.count("fixed") if result.stdout else 0
 
@@ -205,7 +226,7 @@ class AutoLintingAgent:
         """Run Black Python formatter"""
         try:
             cmd = ["black", "--quiet", file_path]
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
 
             return LintResult(
                 file_path=file_path,
@@ -233,7 +254,7 @@ class AutoLintingAgent:
         """Run Prettier formatter"""
         try:
             cmd = ["npx", "prettier", "--write", file_path]
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
 
             return LintResult(
                 file_path=file_path,
@@ -259,7 +280,7 @@ class AutoLintingAgent:
         """Run ESLint with auto-fix"""
         try:
             cmd = ["npx", "eslint", "--fix", file_path]
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
 
             # ESLint outputs errors to stderr and fixes to stdout
             issues_found = result.stderr.count("error") + result.stderr.count("warning")
@@ -293,7 +314,7 @@ class AutoLintingAgent:
         """Run Flake8 (checking only, no auto-fix)"""
         try:
             cmd = ["flake8", file_path]
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=5)
 
             issues_found = len([line for line in result.stdout.split("\n") if line.strip()])
 

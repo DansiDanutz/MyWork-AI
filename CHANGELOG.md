@@ -13,29 +13,49 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - **Interactive Dashboard**: `mw dashboard` command with beautiful terminal UI
+
   showing framework metrics, component status, git activity, and disk usage
+
 - **AutoForge Integration**: Complete rebrand from Autocoder to AutoForge with
+
   reference to <https://github.com/AutoForgeAI/autoforge>
+
 - **Enhanced Brain Search**: Improved search formatting with colored boxes,
+
   result grouping, and pagination
+
 - **Markdown Export**: `brain export markdown` command to dump knowledge base to
+
   structured markdown
+
 - **Git Integrity Checks**: Comprehensive repository validation including working
+
   directory status, remote sync, and configuration
+
 - **Advanced Dependency Monitoring**: Framework-specific package checking with
+
   version requirements
 
 ### Changed
 
 - **Major Rebrand**: All Autocoder references updated to AutoForge throughout
+
   codebase
+
 - **CLI Commands**: New `mw af` commands replace `mw ac` (backwards compatibility
+
   maintained)
+
 - **Tool Architecture**: `autocoder_api.py` → `autoforge_api.py`,
+
   `autocoder_service.py` → `autoforge_service.py`
+
 - **Health Check System**: Enhanced with git repository checks and AutoForge
+
   connectivity validation
+
 - **Brain Tool UX**: Visual formatting with colored boxes, metadata display, and
+
   improved search results
 
 ### Fixed  
@@ -56,16 +76,26 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - **Interactive Dashboard**: New `mw dashboard` command with colored terminal UI
+
   and metrics
+
 - **Enhanced Brain Search**: Improved formatting with colored boxes and result
+
   grouping
+
 - **Markdown Export**: Brain knowledge export to structured markdown format
 - **Git Integrity Checks**: Repository status, sync validation, and configuration
+
   checking
+
 - **AutoForge Integration**: Complete rebrand from Autocoder with backwards
+
   compatibility
+
 - **Advanced Health Checks**: AutoForge connectivity, dependency monitoring,
+
   framework file validation
+
 - Comprehensive documentation overhaul with visual diagrams
 - Progressive tutorial series (6 tutorials from beginner to expert)
 - Working example projects with complete source code
@@ -78,9 +108,13 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - **Major Rebrand**: All Autocoder references updated to AutoForge
 - **CLI Commands**: `mw ac` → `mw af` with backwards compatibility aliases
 - **Tool Files**: `autocoder_api.py` → `autoforge_api.py` (with symlinks for
+
   compatibility)
+
 - **Health Monitoring**: Enhanced dependency checks with framework-specific
+
   packages
+
 - **Brain Tool**: Improved search output with pagination and visual formatting
 - Restructured documentation with `/docs` directory
 - Improved framework architecture diagrams using Mermaid.js

@@ -5,10 +5,13 @@
 ### Major Changes Today
 
 - **AutoForge Rebrand Complete** - Fully migrated from Autocoder to AutoForge
+
   branding
+
 - **Dashboard Command Added** - New `mw dashboard` interactive terminal interface
 - **Brain Tool Enhanced** - Improved search formatting and markdown export
 - **Health Check Upgraded** - Added git integrity and enhanced dependency
+
   checking
 
 ### Framework Components Status
@@ -43,7 +46,7 @@ f8256a6 feat: Improve Brain tool with enhanced search and export
 550eafa feat: Add interactive `mw dashboard` command  
 9cc481a feat: Rebrand Autocoder to AutoForge with backwards compatibility
 
-```
+```markdown
 
 ### Framework Metrics
 
@@ -57,7 +60,9 @@ f8256a6 feat: Improve Brain tool with enhanced search and export
 1. Add comprehensive tests for new dashboard and AutoForge modules
 2. Expand documentation with AutoForge branding updates
 3. Integrate with official AutoForge project:
+
 <https://github.com/AutoForgeAI/autoforge>
+
 4. Continue health check and monitoring improvements
 
 ### Architecture Status

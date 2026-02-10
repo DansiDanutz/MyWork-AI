@@ -32,9 +32,13 @@ management, code generation, knowledge management, and workflow automation.
 - ✅ **AutoForge Rebrand** - Complete migration from Autocoder branding
 - ✅ **Interactive Dashboard** - Beautiful terminal UI with metrics and status
 - ✅ **Enhanced Brain Tool** - Improved search with colored formatting and
+
   markdown export
+
 - ✅ **Advanced Health Checks** - Git integrity, dependency monitoring, AutoForge
+
   connectivity
+
 - ✅ **Backwards Compatibility** - All legacy commands preserved with aliases
 
 ### New Commands Added

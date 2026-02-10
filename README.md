@@ -588,28 +588,35 @@ python tools/mw.py doctor    # Shows what's configured and what's missing
 ```bash
 
 # Run the setup wizard (NEW!)
+
 python tools/mw.py setup
 
 # Learn the workflow (NEW!)  
+
 python tools/mw.py guide
 
-```
+```markdown
 
 ### Create Your First Project
 
 ```bash
 
 # Option 1: Enhanced prompting (NEW!)
+
 python tools/mw.py prompt-enhance "build me a todo app"
+
 # Creates detailed requirements in .planning/ENHANCED_PROMPT.md
 
 # Option 2: Direct creation
+
 python tools/mw.py new my-app fastapi
 
 # Navigate to project
+
 cd projects/my-app
 
 # In Claude Code CLI:
+
 /gsd:new-project          # Initialize with discovery
 /gsd:plan-phase 1         # Plan first phase
 /gsd:execute-phase 1      # Build it
