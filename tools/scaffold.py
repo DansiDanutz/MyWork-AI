@@ -477,6 +477,13 @@ def create_project(name: str, template: str = "basic") -> bool:
         script.chmod(0o755)
 
     print(f"✅ Project created at: {project_path}")
+
+    # Check .env configuration
+    env_file = MYWORK_ROOT / ".env"
+    if not env_file.exists():
+        print(f"\n   ⚠️  No .env file found!")
+        print(f"   Run 'mw setup' to configure your API keys and environment.")
+
     print(f"\n   Next steps:")
     print(f"   1. cd projects/{name}")
     print(f"   2. Review .planning/PROJECT.md")

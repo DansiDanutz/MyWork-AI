@@ -1,0 +1,451 @@
+{
+  "simulation_overview": {
+    "timestamp": "2026-02-10T00:23:55.897437",
+    "scenarios_passed": 5,
+    "scenarios_failed": 0,
+    "overall_success": true,
+    "total_log_entries": 10
+  },
+  "user_system": {
+    "total_users": 20,
+    "user_roles": {
+      "buyer": 9,
+      "seller": 8,
+      "affiliate": 3
+    },
+    "total_credits_in_circulation": 6375.03,
+    "total_purchase_volume": 0.0,
+    "total_sales_volume": 0.0,
+    "total_commissions_paid": 0.0,
+    "total_referrals_made": 8,
+    "average_credits_per_user": 318.75,
+    "total_actions_logged": 20
+  },
+  "credit_system": {
+    "system_overview": {
+      "total_users": 20,
+      "active_users": 20,
+      "frozen_accounts": 0,
+      "total_circulation": 6375.03,
+      "credits_issued": 10461.34,
+      "credits_burned": 4086.31
+    },
+    "financial_stats": {
+      "total_spent": 4086.31,
+      "total_transferred": 0.0,
+      "total_commissions_paid": 412.99,
+      "total_refunds": 921.88,
+      "average_balance": 318.75
+    },
+    "transaction_stats": {
+      "total_transactions": 51,
+      "completed_transactions": 51,
+      "transactions_by_type": {
+        "top_up": 26,
+        "spend": 15,
+        "commission": 7,
+        "refund": 3
+      }
+    },
+    "top_earners": [
+      {
+        "user_id": "user_0017",
+        "total_earned": 1294.3,
+        "current_balance": 826.1899999999999,
+        "total_commissions": 0.0
+      },
+      {
+        "user_id": "user_0016",
+        "total_earned": 1023.96,
+        "current_balance": 542.21,
+        "total_commissions": 0.0
+      },
+      {
+        "user_id": "user_0005",
+        "total_earned": 1015.5,
+        "current_balance": 533.75,
+        "total_commissions": 0.0
+      },
+      {
+        "user_id": "user_0001",
+        "total_earned": 880.79,
+        "current_balance": 38.86999999999995,
+        "total_commissions": 0.0
+      },
+      {
+        "user_id": "user_0012",
+        "total_earned": 542.8399999999999,
+        "current_balance": 348.54999999999995,
+        "total_commissions": 0.0
+      }
+    ],
+    "recent_volume": {
+      "period_days": 7,
+      "total_transactions": 51,
+      "total_volume": 14547.65,
+      "average_transaction_size": 285.25,
+      "volume_by_type": {
+        "top_up": {
+          "count": 26,
+          "volume": 9126.47
+        },
+        "spend": {
+          "count": 15,
+          "volume": 4086.309999999999
+        },
+        "commission": {
+          "count": 7,
+          "volume": 412.99
+        },
+        "refund": {
+          "count": 3,
+          "volume": 921.88
+        }
+      }
+    },
+    "report_generated": "2026-02-10T00:23:55.897671"
+  },
+  "mlm_system": {
+    "overview": {
+      "total_users": 20,
+      "total_commission_events": 15,
+      "total_commissions_paid": 412.99,
+      "total_sales_volume": 4086.31,
+      "average_commission_rate": 10.11,
+      "commission_rates_by_level": {
+        "1": 0.2,
+        "2": 0.1,
+        "3": 0.05,
+        "4": 0.02,
+        "5": 0.01
+      }
+    },
+    "tree_structure": {
+      "level_distribution": {
+        "0": 12,
+        "1": 8
+      },
+      "max_depth": 1,
+      "tree_roots": [
+        "user_0001",
+        "user_0002",
+        "user_0003",
+        "user_0004",
+        "user_0005",
+        "user_0006",
+        "user_0007",
+        "user_0008",
+        "user_0009",
+        "user_0010",
+        "user_0011",
+        "user_0012"
+      ]
+    },
+    "performance": {
+      "top_performers": [
+        {
+          "user_id": "user_0008",
+          "total_commission": 385.4,
+          "direct_referrals": 2,
+          "total_referrals": 2
+        },
+        {
+          "user_id": "user_0009",
+          "total_commission": 264.96,
+          "direct_referrals": 1,
+          "total_referrals": 1
+        },
+        {
+          "user_id": "user_0002",
+          "total_commission": 161.15,
+          "direct_referrals": 1,
+          "total_referrals": 1
+        },
+        {
+          "user_id": "user_0007",
+          "total_commission": 14.47,
+          "direct_referrals": 2,
+          "total_referrals": 2
+        },
+        {
+          "user_id": "user_0001",
+          "total_commission": 0.0,
+          "direct_referrals": 0,
+          "total_referrals": 0
+        },
+        {
+          "user_id": "user_0003",
+          "total_commission": 0.0,
+          "direct_referrals": 1,
+          "total_referrals": 1
+        },
+        {
+          "user_id": "user_0004",
+          "total_commission": 0.0,
+          "direct_referrals": 1,
+          "total_referrals": 1
+        },
+        {
+          "user_id": "user_0005",
+          "total_commission": 0.0,
+          "direct_referrals": 0,
+          "total_referrals": 0
+        },
+        {
+          "user_id": "user_0006",
+          "total_commission": 0.0,
+          "direct_referrals": 0,
+          "total_referrals": 0
+        },
+        {
+          "user_id": "user_0010",
+          "total_commission": 0.0,
+          "direct_referrals": 0,
+          "total_referrals": 0
+        }
+      ],
+      "commission_by_level": {
+        "level_1": 412.99
+      }
+    },
+    "recent_activity": [
+      {
+        "timestamp": "2026-02-10T00:23:55.895366",
+        "buyer_id": "user_0016",
+        "sale_amount": 481.75,
+        "total_commission": 96.35,
+        "recipients": 1
+      },
+      {
+        "timestamp": "2026-02-10T00:23:55.895536",
+        "buyer_id": "user_0007",
+        "sale_amount": 194.29,
+        "total_commission": 0,
+        "recipients": 0
+      },
+      {
+        "timestamp": "2026-02-10T00:23:55.895627",
+        "buyer_id": "user_0017",
+        "sale_amount": 194.29,
+        "total_commission": 38.86,
+        "recipients": 1
+      },
+      {
+        "timestamp": "2026-02-10T00:23:55.895748",
+        "buyer_id": "user_0016",
+        "sale_amount": 481.75,
+        "total_commission": 96.35,
+        "recipients": 1
+      },
+      {
+        "timestamp": "2026-02-10T00:23:55.895882",
+        "buyer_id": "user_0017",
+        "sale_amount": 402.87,
+        "total_commission": 80.57,
+        "recipients": 1
+      },
+      {
+        "timestamp": "2026-02-10T00:23:55.895968",
+        "buyer_id": "user_0007",
+        "sale_amount": 63.27,
+        "total_commission": 0,
+        "recipients": 0
+      },
+      {
+        "timestamp": "2026-02-10T00:23:55.896057",
+        "buyer_id": "user_0001",
+        "sale_amount": 402.87,
+        "total_commission": 0,
+        "recipients": 0
+      },
+      {
+        "timestamp": "2026-02-10T00:23:55.896124",
+        "buyer_id": "user_0009",
+        "sale_amount": 245.84,
+        "total_commission": 0,
+        "recipients": 0
+      },
+      {
+        "timestamp": "2026-02-10T00:23:55.896226",
+        "buyer_id": "user_0018",
+        "sale_amount": 36.18,
+        "total_commission": 7.24,
+        "recipients": 1
+      },
+      {
+        "timestamp": "2026-02-10T00:23:55.896318",
+        "buyer_id": "user_0001",
+        "sale_amount": 36.18,
+        "total_commission": 0,
+        "recipients": 0
+      },
+      {
+        "timestamp": "2026-02-10T00:23:55.896437",
+        "buyer_id": "user_0017",
+        "sale_amount": 65.24,
+        "total_commission": 13.05,
+        "recipients": 1
+      },
+      {
+        "timestamp": "2026-02-10T00:23:55.896537",
+        "buyer_id": "user_0001",
+        "sale_amount": 402.87,
+        "total_commission": 0,
+        "recipients": 0
+      },
+      {
+        "timestamp": "2026-02-10T00:23:55.896668",
+        "buyer_id": "user_0015",
+        "sale_amount": 402.87,
+        "total_commission": 80.57,
+        "recipients": 1
+      },
+      {
+        "timestamp": "2026-02-10T00:23:55.896838",
+        "buyer_id": "user_0005",
+        "sale_amount": 481.75,
+        "total_commission": 0,
+        "recipients": 0
+      },
+      {
+        "timestamp": "2026-02-10T00:23:55.896958",
+        "buyer_id": "user_0012",
+        "sale_amount": 194.29,
+        "total_commission": 0,
+        "recipients": 0
+      }
+    ],
+    "anomalies": [],
+    "report_generated": "2026-02-10T00:23:55.897786"
+  },
+  "product_system": {
+    "products": {
+      "total": 11,
+      "by_status": {
+        "draft": 0,
+        "pending_review": 0,
+        "approved": 0,
+        "rejected": 0,
+        "active": 11,
+        "inactive": 0,
+        "suspended": 0,
+        "deleted": 0
+      },
+      "by_type": {
+        "free": 0,
+        "one_time": 4,
+        "subscription": 3,
+        "digital": 2,
+        "physical": 1,
+        "service": 1
+      }
+    },
+    "orders": {
+      "total": 15,
+      "by_status": {
+        "pending": 0,
+        "confirmed": 0,
+        "processing": 0,
+        "shipped": 12,
+        "delivered": 0,
+        "cancelled": 0,
+        "refunded": 3
+      }
+    },
+    "reviews": {
+      "total": 5,
+      "by_status": {
+        "pending": 0,
+        "approved": 5,
+        "rejected": 0,
+        "flagged": 0
+      },
+      "average_rating": 3.6
+    },
+    "financial": {
+      "total_revenue": 3164.43,
+      "total_refunds": 921.88,
+      "net_revenue": 2242.55
+    },
+    "webhooks": {
+      "total_events": 18,
+      "by_type": {
+        "payment_intent.succeeded": 15,
+        "charge.refunded": 3,
+        "invoice.paid": 0,
+        "customer.subscription.created": 0,
+        "customer.subscription.deleted": 0,
+        "payment_method.payment_failed": 0
+      }
+    }
+  },
+  "cross_system_metrics": {
+    "total_marketplace_revenue": 3164.43,
+    "total_mlm_commissions": 412.99,
+    "commission_percentage_of_revenue": 13.05,
+    "average_commission_per_sale": 27.53,
+    "users_with_commissions": 4
+  },
+  "simulation_log": [
+    {
+      "timestamp": "2026-02-10T00:23:55.894707",
+      "step": "Generated 20 users with balances and referral relationships",
+      "success": true,
+      "details": ""
+    },
+    {
+      "timestamp": "2026-02-10T00:23:55.894718",
+      "step": "Scenario 'User Registration & Referrals' completed successfully",
+      "success": true,
+      "details": ""
+    },
+    {
+      "timestamp": "2026-02-10T00:23:55.895184",
+      "step": "Created and activated 11 products from 5 sellers",
+      "success": true,
+      "details": ""
+    },
+    {
+      "timestamp": "2026-02-10T00:23:55.895192",
+      "step": "Scenario 'Product Listings & Approval' completed successfully",
+      "success": true,
+      "details": ""
+    },
+    {
+      "timestamp": "2026-02-10T00:23:55.897021",
+      "step": "Processed 15 purchases with 7 commission payments",
+      "success": true,
+      "details": ""
+    },
+    {
+      "timestamp": "2026-02-10T00:23:55.897035",
+      "step": "Scenario 'Marketplace Activity & Commissions' completed successfully",
+      "success": true,
+      "details": ""
+    },
+    {
+      "timestamp": "2026-02-10T00:23:55.897310",
+      "step": "Processed 3 refunds with credit returns",
+      "success": true,
+      "details": ""
+    },
+    {
+      "timestamp": "2026-02-10T00:23:55.897320",
+      "step": "Scenario 'Refunds & Credit Returns' completed successfully",
+      "success": true,
+      "details": ""
+    },
+    {
+      "timestamp": "2026-02-10T00:23:55.897397",
+      "step": "System integrity check passed - no anomalies detected",
+      "success": true,
+      "details": ""
+    },
+    {
+      "timestamp": "2026-02-10T00:23:55.897405",
+      "step": "Scenario 'System Integrity Check' completed successfully",
+      "success": true,
+      "details": ""
+    }
+  ]
+}
