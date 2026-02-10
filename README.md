@@ -1,961 +1,314 @@
 <div align="center">
 
-# MyWork Framework
+```
+███╗   ███╗██╗   ██╗██╗    ██╗ ██████╗ ██████╗ ██╗  ██╗     █████╗ ██╗
+████╗ ████║╚██╗ ██╔╝██║    ██║██╔═══██╗██╔══██╗██║ ██╔╝    ██╔══██╗██║
+██╔████╔██║ ╚████╔╝ ██║ █╗ ██║██║   ██║██████╔╝█████╔╝     ███████║██║
+██║╚██╔╝██║  ╚██╔╝  ██║███╗██║██║   ██║██╔══██╗██╔═██╗     ██╔══██║██║
+██║ ╚═╝ ██║   ██║   ╚███╔███╔╝╚██████╔╝██║  ██║██║  ██╗    ██║  ██║██║
+╚═╝     ╚═╝   ╚═╝    ╚══╝╚══╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝    ╚═╝  ╚═╝╚═╝
+```
 
-### AI-Powered Development Platform
+# MyWork-AI
 
+### The AI-Powered Development Framework
+
+[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python
-3.9+](https://img.shields.io/badge/Python-3.9+-3776AB?logo=python&logoColor=white)](https://www.python.org)
-[![Node.js
-18+](https://img.shields.io/badge/Node.js-18+-339933?logo=node.js&logoColor=white)](https://nodejs.org)
-[![GSD](https://img.shields.io/badge/GSD-v1.9.10-blue?logo=anthropic&logoColor=white)](https://github.com/anthropics/claude-code)
-[![n8n](https://img.shields.io/badge/n8n-2709%20templates-EA4B71?logo=n8n&logoColor=white)](https://n8n.io)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org)
+[![Tests](https://img.shields.io/badge/tests-75%20passing-brightgreen.svg)](tests/)
+[![Security](https://img.shields.io/badge/security-audited-green.svg)](reports/)
 
-**A unified framework combining project orchestration, autonomous coding, and
-workflow automation.**
+**Build complete applications from idea to marketplace in minutes, not months.**
 
-### You Clone. You Build. You Sell. You Earn
-
-```text
-   ┌──────────┐      ┌──────────┐      ┌──────────┐      ┌──────────┐
-   │  CLONE   │ ───► │  BUILD   │ ───► │  SELL    │ ───► │  EARN    │
-   │          │      │          │      │          │      │          │
-   │ Get the  │      │ AI builds│      │ List on  │      │ Passive  │
-   │ framework│      │ your app │      │Marketplace│      │ income   │
-   └──────────┘      └──────────┘      └──────────┘      └──────────┘
-
-```markdown
-
-[Live Products](#live-products) | [Quick Start](#quick-start) |
-[Documentation](#documentation) | [How It Works](#how-it-works)
-
----
-
-### What's Included vs What You Build
-
-```python
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         WHEN YOU CLONE THIS REPO                            │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│   TOOLS (Included - Keep & Develop)          PRODUCTS (Examples - You Build)│
-│   ─────────────────────────────────          ──────────────────────────────│
-│                                                                             │
-│   ✅ Task Tracker      projects/task-tracker    🛒 Sports-AI (sold separately)│
-│   ✅ AI Dashboard      projects/ai-dashboard    🛒 Your App (you build & sell)│
-│   ✅ Marketplace       connects to platform     🛒 Another App (you earn)    │
-│                                                                             │
-│   These stay in your clone.                  These you build, list, and     │
-│   Use them. Improve them.                    sell on the Marketplace.       │
-│   Learn from the code.                       Keep 90% of revenue.           │
-│                                                                             │
-└─────────────────────────────────────────────────────────────────────────────┘
-
-```html
+[Quick Start](#-quick-start) · [Features](#-features) · [Documentation](#-documentation) · [Marketplace](#-marketplace) · [Contributing](#-contributing)
 
 </div>
 
 ---
 
-## What's Inside (Tools You Get)
+## 🎯 What is MyWork-AI?
 
-When you clone this repo, you get **working tools** you can use, learn from, and
-develop further:
+MyWork-AI is a unified development framework that combines **project orchestration**, **autonomous coding**, **knowledge management**, and **marketplace distribution** into a single CLI tool.
 
-### Task Tracker
+```
+Idea → Enhanced Prompt → GSD Planning → AutoForge Coding → Testing → Marketplace
+```
 
-> **Production-ready task management** - Use it, learn from it, improve it.
-
-| | |
-| --- | --- |
-| **Live Demo** | [task-tracker-weld-delta.vercel... |
-| **Source** | [`projects/task-tracker/`](proj... |
-| **Stack** | Next.js 15 + Prisma + Neon PostgreSQL |
-| **Features** | GitHub OAuth, Full-text search,... |
-
-**Built in 5.8 hours** with GSD orchestration (39 plans, 211 commits)
-
----
-
-### AI Dashboard
-
-> **AI news aggregation and YouTube automation** - Ready to deploy.
-
-| | |
-| --- | --- |
-| **Source** | [`projects/ai-dashboard/`](proj... |
-| **Stack** | Next.js 14 + FastAPI + APScheduler |
-  | **Features** | YouTube scraper, News aggregato... |  
-| **Status** | Ready for deployment |
-
----
-
-### Marketplace Connection
-
-> **Where you sell what you build** - The platform that powers your earnings.
-
-| | |
-| --- | --- |
-| **Platform** | [frontend-hazel-ten-17.vercel.a... |
-| **API** | [mywork-ai-production.up.railwa... |
-  | **Features** | Product listings, Stripe paymen... |  
-
----
-
-## Example Product (Built to Sell)
-
-This is an **example** of what you can build with the framework and sell on the
-Marketplace:
-
-### Sports-AI
-
-> **Real-time sports betting analytics** - Built with MyWork, sold on
-Marketplace.
-
-| | |
-| --- | --- |
-| **Live Product** | [sports-ai-one.vercel.app](http... |
-  | **Marketplace Listing** | [View on Marketplace](https://f... |  
-| **Stack** | React + FastAPI + PostgreSQL + Redis |
-| **Features** | 10+ sportsbook odds, Arbitrage alerts, AI predictions, 2FA |
-
-**This is NOT in the repo** - It's a product built to demonstrate what you can
-create and sell.
-
-The knowledge from building it lives in the **Brain** (`.planning/BRAIN.md`), so
-future projects benefit from lessons learned.
-
----
-
-## Production Status
-
-| Component | Type | Status | Link |
-| ----------- | ------ | -------- | ------ |
-  | **Task Trac... | Tool (in repo) | ![Status](h... | [Demo](http... |  
-| **AI Dashboard** | Tool (in repo) | Ready | `projects/ai-dashboard/` |
-  | **Marketpla... | Platform | ![Status](h... | [Platform](... |  
-| **Sports-AI** | Product (ex... | ![Status](h... | [Buy](https... |
-
-| | |
-| --- | --- |
-| **Status** | Ready for deployment |
-| **Stack** | Next.js 14 + FastAPI + APScheduler |
-  | **Features** | YouTube scraper, News aggregato... |  
-
-**Source:** [`projects/ai-dashboard`](projects/ai-dashboard)
-
----
-
-## How It Works
-
-<div align="center">
-
-```yaml
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-┌─────────────────────────────────────┐
-│           YOU (Request)             │
-└─────────────────┬───────────────────┘
-
-```text
-
-```text
-
-```text
-
-```text
-
-  │
-  ▼
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```yaml
-
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│                              MASTER ORCHESTRATOR                                 │
-│                                  (CLAUDE.md)                                     │
-│                                                                                  │
-│   "What type of task is this?"                                                   │
-│                                                                                  │
-│   • New project?        → GSD Layer                                              │
-│   • Quick fix?          → GSD Quick                                              │
-│   • 20+ features?       → AutoForge                                              │
-│   • Webhooks/APIs?      → n8n                                                    │
-└─────────────────────────────────────────────────────────────────────────────────┘
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-  │
-
-```yaml
-
-```yaml
-
-```yaml
-
-```yaml
-
-```yaml
-
-```yaml
-
-```yaml
-
- ┌────────────────────────────┼────────────────────────────┐
- │                            │                            │
- ▼                            ▼                            ▼
-
-```yaml
-
-```yaml
-
-```yaml
-
-```yaml
-┌─────────────────────────┐   ┌─────────────────────────┐   ┌─────────────────────────┐
-│      LAYER 1: GSD       │   │      LAYER 2: WAT       │   │   LAYER 3: ENGINES      │
-│  (Project Orchestration)│   │   (Task Execution)      │   │     (Automation)        │
-├─────────────────────────┤   ├─────────────────────────┤   ├─────────────────────────┤
-│                         │   │                         │   │                         │
-│  /gsd:new-project       │   │  workflows/             │   │  ┌─────────────────┐   │
-│         │               │   │  (Markdown SOPs)        │   │  │   AUTOFORGE     │   │
-│         ▼               │   │         │               │   │  │  Autonomous     │   │
-│  /gsd:plan-phase        │   │         ▼               │   │  │  multi-hour     │   │
-│         │               │   │  tools/                 │   │  │  coding         │   │
-│         ▼               │   │  (Python scripts)       │   │  └─────────────────┘   │
-│  /gsd:execute-phase     │   │                         │   │                         │
-│         │               │   │  AI reasons,            │   │  ┌─────────────────┐   │
-│         ▼               │   │  Scripts execute        │   │  │      n8n        │   │
-│  /gsd:verify-work       │   │                         │   │  │  2,709 workflow │   │
-│                         │   │                         │   │  │  templates      │   │
-└────────────┬────────────┘   └────────────┬────────────┘   └──────────┬──────────┘
-
-```text
-
-```html
-
-```text
-
- │                             │                            │
- └─────────────────────────────┼────────────────────────────┘
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-
-```text
-   │
-   ▼
-
-```html
-
-```html
-
-```html
-
-```html
-
-```html
-
- ┌─────────────────────────────────────────────┐
- │              SELF-LEARNING                   │
- ├─────────────────────────────────────────────┤
- │                                              │
- │   🧠 BRAIN           📦 MODULE REGISTRY      │
- │   Remembers what     Indexes your code       │
- │   worked & failed    1,300+ reusable modules │
- │                                              │
- │   Every completed task makes the next faster │
- │                                              │
- └─────────────────────────────────────────────┘
-
-```html
-
-```html
-
-```html
-
-```text
-
-```html
-
-```html
-
-</div>
-
-### The Simple Flow
-
-```markdown
-
-1. You ask for something
-2. CLAUDE.md routes to the right tool
-3. Work gets done (with atomic commits)
-4. Brain learns from result
-5. Next time is faster
-
-```markdown
-
----
-
-## Architecture Details
-
-```mermaid
-
-graph TB
-
-```yaml
-
-subgraph "Master Orchestrator"
-
-```yaml
-
-MO[CLAUDE.md
-Routes all requests]
-
-```yaml
-
-end
-
-subgraph "Layer 1: GSD - Project Orchestration"
-
-```yaml
-GSD_NEW["/gsd:new-project"]
-GSD_PLAN["/gsd:plan-phase"]
-GSD_EXEC["/gsd:execute-phase"]
-GSD_VERIFY["/gsd:verify-work"]
-
-```yaml
-
-end
-
-subgraph "Layer 2: WAT - Task Execution"
-
-```yaml
-WORKFLOWS[Workflows<br/>markdown SOPs]
-TOOLS[Tools<br/>Python scripts]
-
-```yaml
-
-end
-
-subgraph "Layer 3: Automation Engines"
-
-```text
-AUTOFORGE[AutoForge<br/>Autonomous coding]
-N8N[n8n<br/>2,709 templates]
-
-```text
-
-end
-
-subgraph "Self-Learning"
-
-```yaml
-BRAIN[Brain<br/>Knowledge vault]
-REGISTRY[Module Registry<br/>1,300+ modules]
-
-```yaml
-
-end
-
-MO --> GSD_NEW
-MO --> GSD_PLAN
-MO --> WORKFLOWS
-MO --> AUTOFORGE
-MO --> N8N
-
-GSD_NEW --> GSD_PLAN
-GSD_PLAN --> GSD_EXEC
-GSD_EXEC --> GSD_VERIFY
-GSD_VERIFY --> BRAIN
-
-WORKFLOWS --> TOOLS
-TOOLS --> REGISTRY
-
-style MO fill:#4A90D9,stroke:#333,color:#fff
-style BRAIN fill:#34A853,stroke:#333,color:#fff
-style AUTOFORGE fill:#EA4335,stroke:#333,color:#fff
-style N8N fill:#EA4B71,stroke:#333,color:#fff
-
-```markdown
-
-```markdown
-
-### Decision Flow
-
-```mermaid
-
-flowchart TD
-
-```yaml
-
-A[User Request] --> B{New Project?}
-B -->|Yes| C["/gsd:new-project"]
-B -->|No| D{Existing GSD Phase?}
-D -->|Yes| E["/gsd:plan-phase N"]
-D -->|No| F{Quick Task?}
-F -->|Yes| G["/gsd:quick"]
-F -->|No| H{20+ Features?}
-H -->|Yes| I[AutoForge]
-H -->|No| J{Visual Automation?}
-J -->|Yes| K[n8n Workflow]
-J -->|No| L[WAT Tools]
-
-E --> M["/gsd:execute-phase N"]
-M --> N["/gsd:verify-work"]
-
-style C fill:#4A90D9,stroke:#333,color:#fff
-style E fill:#4A90D9,stroke:#333,color:#fff
-style I fill:#EA4335,stroke:#333,color:#fff
-style K fill:#EA4B71,stroke:#333,color:#fff
-
-```markdown
-
-```markdown
-
----
-
-## Installation (2 Steps)
-
-<div align="center">
-
-### Just Clone and Run
-
-</div>
+**One command to start. One framework to ship.**
 
 ```bash
+pip install mywork-ai
+mw setup
+mw new my-saas fullstack
+```
 
-# Step 1: Clone
+## ⚡ Quick Start
 
+### Installation
+
+```bash
+# Install from PyPI
+pip install mywork-ai
+
+# Or install from source
 git clone https://github.com/DansiDanutz/MyWork-AI.git
 cd MyWork-AI
+pip install -e .
+```
 
-# Step 2: Install (does everything automatically)
-
-./install.sh          # macOS/Linux
-install.bat           # Windows
-
-```markdown
-
-**That's it.** The script installs Python dependencies, sets up the environment,
-and verifies everything works.
-
-### What the Install Script Does
-
-| Step | What Happens |
-| ------ | -------------- |
-| 1 | Checks Python 3.9+ and Node.js 18+ |
-| 2 | Creates virtual environment |
-| 3 | Installs all dependencies |
-| 4 | Creates `.env` from template |
-| 5 | Runs health check |
-| 6 | Shows next steps |
-
----
-
-## Configuration
-
-After installation, configure your API keys in `.env`:
-
-### Required (Minimum)
+### Your First Project
 
 ```bash
+# 1. Setup your environment
+mw setup
 
-# Opens .env in your editor
+# 2. Learn the workflow
+mw guide
 
-nano .env   # or: code .env / vim .env
+# 3. Enhance your idea into a full spec
+mw prompt-enhance "build a SaaS invoice tool with Stripe payments"
 
-```markdown
+# 4. Scaffold your project
+mw new invoice-app fullstack
 
-```env
+# 5. Check framework health
+mw status
 
-# REQUIRED - You need at least this one
+# 6. View your dashboard
+mw dashboard
+```
 
-ANTHROPIC_API_KEY=sk-ant-xxxxx
+## 🚀 Features
 
-```markdown
+### 🏗️ Project Scaffolding
+Create production-ready projects in seconds with 6+ templates:
 
-### Optional (Enable More Features)
-
-```env
-
-# Other AI Providers
-
-OPENAI_API_KEY=sk-xxxxx              # For GPT models
-GROQ_API_KEY=gsk_xxxxx               # Fast inference
-
-# n8n Workflow Automation
-
-N8N_API_URL=https://your.app.n8n.cloud
-N8N_API_KEY=your-n8n-api-key
-
-# GitHub Integration
-
-GITHUB_TOKEN=ghp_xxxxx               # For GitHub OAuth features
-
-# AutoForge (if using external instance)
-
-AUTOFORGE_ROOT=/path/to/autoforge    # Default: .autoforge/
-AUTOFORGE_PORT=8889                  # Default: 8889
-
-```markdown
-
-### Verify Configuration
-
-```bash
-python tools/mw.py doctor    # Shows what's configured and what's missing
-
-```yaml
-
-**Output example:**
-
-```yaml
-✅ ANTHROPIC_API_KEY: Configured
-✅ Python: 3.11.5
-✅ Node.js: 20.10.0
-⚠️  N8N_API_KEY: Not set (n8n features disabled)
-⚠️  GITHUB_TOKEN: Not set (GitHub features disabled)
-
-```markdown
-
----
-
-## Quick Start
-
-### First-Time Setup
-
-```bash
-
-# Run the setup wizard (NEW!)
-
-python tools/mw.py setup
-
-# Learn the workflow (NEW!)  
-
-python tools/mw.py guide
-
-```markdown
-
-### Create Your First Project
-
-```bash
-
-# Option 1: Enhanced prompting (NEW!)
-
-python tools/mw.py prompt-enhance "build me a todo app"
-
-# Creates detailed requirements in .planning/ENHANCED_PROMPT.md
-
-# Option 2: Direct creation
-
-python tools/mw.py new my-app fastapi
-
-# Navigate to project
-
-cd projects/my-app
-
-# In Claude Code CLI:
-
-/gsd:new-project          # Initialize with discovery
-/gsd:plan-phase 1         # Plan first phase
-/gsd:execute-phase 1      # Build it
-/gsd:verify-work          # Validate
-
-```markdown
-
-### Available Templates
-
-| Template | What You Get |
-| ---------- | -------------- |
+| Template | Description |
+|----------|-------------|
 | `basic` | Empty project with GSD structure |
-| `fastapi` | FastAPI + SQLAlchemy + SQLite backend |
-| `nextjs` | Next.js + TypeScript + Tailwind frontend |
+| `fastapi` | FastAPI backend + SQLite + SQLAlchemy |
+| `nextjs` | Next.js + TypeScript + Tailwind CSS |
 | `fullstack` | FastAPI backend + Next.js frontend |
-| `cli` | Python CLI tool with Click |
-| `automation` | n8n + Python webhook handler |
+| `cli` | Python CLI application |
+| `automation` | n8n + Python automation |
 
 ```bash
+mw new my-app fastapi    # Create a FastAPI project
+mw new my-site nextjs    # Create a Next.js project
+mw new my-saas fullstack # Create a full-stack app
+```
 
-# Examples
+### 🧠 Brain — Knowledge Vault
+A persistent knowledge system that learns from your work:
 
-python tools/mw.py new my-api fastapi
-python tools/mw.py new my-site nextjs
-python tools/mw.py new my-saas fullstack
+```bash
+mw brain add lesson "Always validate inputs before DB writes"
+mw brain search "deployment"
+mw brain stats
+mw brain export
+```
 
-```markdown
+Features:
+- **Semantic search** with TF-IDF ranking
+- **Knowledge graph** with relationship detection
+- **Auto-learning** from git commits and error patterns
+- **Analytics** with growth tracking and quality scores
+- **Backup/restore** with timestamped snapshots
 
----
+### 🔨 GSD — Project Orchestration
+*Get Shit Done* — structured project management:
 
-## Project Structure
+```
+/gsd:new-project    → Full planning with requirements & roadmap
+/gsd:plan-phase N   → Detailed task plans for each phase
+/gsd:execute-phase N → Parallel execution with atomic commits
+/gsd:verify-work N  → Quality verification and testing
+```
 
-```markdown
+### 🤖 AutoForge — Autonomous Coding
+Long-running autonomous coding powered by Claude Agent SDK:
 
+```bash
+mw af start my-project   # Start AutoForge
+mw af status             # Check progress
+mw af stop my-project    # Stop when done
+```
+
+### 🔍 Smart Prompt Enhancement
+Turn vague ideas into detailed project specs:
+
+```bash
+mw prompt-enhance "build me a todo app"
+# Outputs: detailed requirements, tech stack, security considerations,
+#          testing strategy, 5-phase development roadmap
+```
+
+### 🛡️ Security
+Built-in security scanning and monitoring:
+
+```bash
+python tools/security/code_scanner.py     # Scan code for vulnerabilities
+python tools/security/dep_audit.py        # Audit dependencies
+python tools/security/infra_scanner.py    # Check infrastructure
+python tools/security/generate_report.py  # Full security report
+```
+
+### 🎮 Simulation Engine
+Test your marketplace with virtual users, credits, and MLM:
+
+```bash
+python tools/simulation/run_simulation.py
+# Simulates: 20 users, product listings, purchases,
+#            MLM commissions (5 levels), credit flows
+```
+
+### 🔗 Agent Skills System
+Install and manage reusable skills:
+
+```bash
+mw skills list           # List installed skills
+mw skills install <url>  # Install from GitHub
+mw skills create <name>  # Create a new skill
+```
+
+Pre-built skills: `code-review`, `security-scan`, `deploy-check`, `doc-generator`
+
+## 📊 CLI Reference
+
+```
+mw setup              First-time setup wizard
+mw guide              Interactive workflow tutorial
+mw status             Quick health check
+mw dashboard          Visual framework overview
+mw doctor             Full diagnostics
+mw report             Detailed health report
+mw fix                Auto-fix common issues
+
+mw new <name> <tpl>   Create new project
+mw projects           List all projects
+mw projects scan      Refresh project registry
+mw prompt-enhance     Enhance prompts for GSD
+
+mw brain search <q>   Search knowledge vault
+mw brain add <type>   Add knowledge entry
+mw brain stats        Brain statistics
+mw brain export       Export to markdown
+
+mw af start <proj>    Start AutoForge
+mw af status          Check AutoForge status
+mw af stop <proj>     Stop AutoForge
+
+mw lint scan          Scan for linting issues
+mw lint stats         Linting statistics
+mw search <query>     Search module registry
+mw skills list        List agent skills
+```
+
+## 🏛️ Architecture
+
+```
 MyWork-AI/
-├── projects/                    # All projects live here
-│   ├── task-tracker/            # Production task manager
-│   ├── ai-dashboard/            # AI news aggregator
-│   └── _template/               # New project template
-│
-├── tools/                       # CLI and utilities
-│   ├── mw.py                    # Unified CLI entry point
-│   ├── brain.py                 # Knowledge vault manager
-│   ├── module_registry.py       # Code pattern indexer
-│   ├── health_check.py          # System diagnostics
-│   ├── autoforge_api.py         # AutoForge control
-│   └── scaffold.py              # Project templates
-│
-├── workflows/                   # WAT workflow definitions
-│   ├── create_n8n_workflow.md   # n8n workflow SOP
-│   ├── gsd_to_autoforge.md      # GSD → AutoForge handoff
-│   └── session_handoff.md       # Context preservation
-│
-├── docs/                        # Documentation
-│   ├── quickstart.md            # Getting started guide
-│   ├── troubleshooting.md       # Common issues
-│   └── architecture/            # System design docs
-│
-├── .planning/                   # Framework-level state
-│   ├── BRAIN.md                 # Knowledge vault
-│   ├── STATE.md                 # Current context
-│   └── codebase/                # Codebase analysis
-│
-├── CLAUDE.md                    # Master Orchestrator instructions
-├── .env.example                 # Environment template
-└── .mcp.json.example            # MCP server config template
+├── tools/                    # Core framework tools
+│   ├── mw.py                # Unified CLI (entry point)
+│   ├── brain.py             # Knowledge vault manager
+│   ├── brain_search.py      # Semantic search engine
+│   ├── brain_graph.py       # Knowledge graph & clustering
+│   ├── brain_learner.py     # Auto-learning engine
+│   ├── scaffold.py          # Project scaffolding
+│   ├── health_check.py      # System diagnostics
+│   ├── autoforge_api.py     # AutoForge integration
+│   ├── module_registry.py   # Reusable code index
+│   ├── security/            # Security scanning suite
+│   ├── simulation/          # Marketplace simulation
+│   ├── skills/              # Agent skills framework
+│   └── e2e/                 # End-to-end test suite
+├── workflows/               # Workflow templates
+│   ├── code_review.md
+│   ├── deploy_to_vercel.md
+│   ├── release.md
+│   └── incident_response.md
+├── projects/                # Your projects live here
+├── tests/                   # 75+ unit tests
+├── .planning/               # Framework state & roadmap
+└── reports/                 # Generated reports
+```
 
-```markdown
+## 🏪 Marketplace
 
----
+MyWork-AI includes a full marketplace for selling your projects:
 
-## CLI Reference
+- **Frontend**: Next.js on Vercel
+- **Backend**: FastAPI on Railway
+- **Features**: Credits system, MLM referrals (5 levels), Stripe payments, seller verification
 
-### Core Commands
+[Visit Marketplace →](https://frontend-hazel-ten-17.vercel.app)
 
-```bash
+## 📈 Quality Metrics
 
-# Getting Started
+| Metric | Value |
+|--------|-------|
+| Unit Tests | 75/75 passing ✅ |
+| User Simulations | 30/30 completed ✅ |
+| Security Issues | 0 critical ✅ |
+| CLI Commands | 20+ all working ✅ |
+| Response Time | <15s per command ✅ |
+| Package Size | 106 KB ✅ |
 
-mw setup                     # First-time setup wizard (NEW!)
-mw guide                     # Interactive workflow guide (NEW!)
-
-# Status & Health
-
-mw dashboard                 # Interactive framework dashboard with metrics  
-mw status                    # Quick health check (now supports --help)
-mw doctor                    # Full diagnostics with auto-fix
-
-# Projects
-
-mw new <name> [template]     # Create project (now supports --help)
-mw prompt-enhance <prompt>   # Enhance prompts for GSD (NEW!)
-mw projects                  # List all projects
-mw open <name>               # Open in VS Code
-mw cd <name>                 # Print cd command for project
-
-# Knowledge Management
-
-mw brain search <query>      # Search knowledge vault (enhanced help)
-mw brain add <lesson>        # Add new lesson/insight  
-mw brain review              # Show entries needing review
-mw brain stats               # Knowledge statistics
-mw brain learn               # Run daily learning
-mw brain learn-deep          # Weekly deep analysis
-mw search <query>            # Search module registry (1,300+ modules)
-mw scan                      # Re-index all modules
-
-# Code Quality
-
-mw lint scan                 # Scan for linting issues (enhanced help)
-mw lint fix                  # Auto-fix all issues
-mw lint watch                # Watch and auto-lint
-mw lint start                # Start lint scheduler
-mw lint install-hooks        # Install git hooks
-
-# Workflow Automation
-
-mw n8n status                # Check n8n connection (enhanced help)
-mw n8n list                  # List workflows
-
-# Updates
-
-mw update check              # Check for updates
-mw update <component>        # Update gsd|autoforge|n8n-skills
-
-# Help & Documentation
-
-mw help                      # Show all commands
-mw <command> --help          # Detailed help for any command (NEW!)
-
-```markdown
-
-### GSD Commands
-
-| Command | Purpose |
-| --------- | --------- |
-| `/gsd:new-project` | Initialize with discovery, research, roadmap |
-| `/gsd:plan-phase N` | Create detailed task plans for phase N |
-| `/gsd:execute-phase N` | Run plans in parallel waves |
-| `/gsd:verify-work` | User acceptance testing |
-| `/gsd:progress` | Check current status |
-| `/gsd:quick` | Ad-hoc tasks with GSD guarantees |
-| `/gsd:pause-work` | Save context when stopping |
-| `/gsd:resume-work` | Restore context next session |
-
-### AutoForge Commands
+## 🛠️ Development
 
 ```bash
+# Clone and setup
+git clone https://github.com/DansiDanutz/MyWork-AI.git
+cd MyWork-AI
+python -m venv venv && source venv/bin/activate
+pip install -e ".[dev]"
 
-# Control
+# Run tests
+pytest tests/ -v
 
-mw ac start <project>        # Start autonomous coding
-mw ac stop <project>         # Stop gracefully
-mw ac pause <project>        # Pause execution
-mw ac resume <project>       # Resume execution
-mw ac status                 # Check server status
-mw ac progress <project>     # View progress
+# Run security scan
+python tools/security/generate_report.py
 
-# UI
+# Run simulation
+python tools/simulation/run_simulation.py
+```
 
-mw ac ui                     # Open web interface (localhost:8889)
+## 📋 Documentation
 
-# Service (macOS)
+- [CLAUDE.md](CLAUDE.md) — Master orchestrator instructions
+- [CHANGELOG.md](CHANGELOG.md) — Version history
+- [SECURITY.md](SECURITY.md) — Security policy
+- [CONTRIBUTING.md](CONTRIBUTING.md) — Contribution guidelines
+- [STRATEGY.md](STRATEGY.md) — Project strategy
 
-mw ac service install        # Install LaunchAgent
-mw ac service status         # Check service
-mw ac service logs           # View logs
+## 🤝 Contributing
 
-```markdown
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
----
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing`)
+3. Run tests (`pytest tests/ -v`)
+4. Commit your changes (`git commit -m 'feat: add amazing feature'`)
+5. Push to the branch (`git push origin feature/amazing`)
+6. Open a Pull Request
 
-## Configuration
+## 📄 License
 
-### Required Environment Variables
+This project is licensed under the MIT License — see [LICENSE](LICENSE) for details.
 
-```bash
+## 👨‍💻 Team
 
-# Minimum required
-
-ANTHROPIC_API_KEY=sk-ant-xxxxx
-
-# Optional LLM providers
-
-OPENAI_API_KEY=sk-xxxxx
-GROQ_API_KEY=gsk_xxxxx
-
-# Optional n8n integration
-
-N8N_API_URL=https://your-instance.app.n8n.cloud
-N8N_API_KEY=your-api-key
-
-# Optional GitHub integration
-
-GITHUB_TOKEN=ghp_xxxxx
-
-```markdown
-
-### MCP Server Configuration
-
-Copy `.mcp.json.example` to `.mcp.json`:
-
-```json
-{
-  "mcpServers": {
-
-```yaml
-
-"n8n-mcp": {
-  "command": "npx",
-  "args": ["n8n-mcp"],
-  "env": {
-
-```yaml
-
-"N8N_API_URL": "<https://your-instance.app.n8n.cloud",>
-"N8N_API_KEY": "your-api-key"
-
-```text
-
-  }
-}
-
-```markdown
-
-  }
-}
-
-```markdown
-
----
-
-## Project Templates
-
-| Template | Stack | Best For |
-| ---------- | ------- | ---------- |
-| `basic` | Python only | Scripts, utilities |
-| `fastapi` | FastAPI + SQLAlchemy + SQLite | APIs, backends |
-| `nextjs` | Next.js + TypeScript + Tailwind | Frontends, SPAs |
-| `fullstack` | FastAPI + Next.js | Complete web apps |
-| `cli` | Python + Click | Command-line tools |
-| `automation` | n8n + Python webhooks | Workflow automation |
-
-```bash
-mw new my-api fastapi
-mw new my-frontend nextjs
-mw new my-app fullstack
-
-```markdown
-
----
-
-## Documentation
-
-| Document | Description |
-| ---------- | ------------- |
-| [Quick Start Guide](docs/quickstart.md) | Get running in 5 minutes |
-| [Troubleshooting](docs/troubleshooting.md) | Common issues and fixes |
-| [FAQ](docs/faq.md) | Frequently asked questions |
-| [Architecture](docs/architecture/) | System design deep-dive |
-| [API Reference](docs/api/) | Tool and workflow APIs |
-| [Contributing](CONTRIBUTING.md) | Contribution guidelines |
-| [Security](SECURITY.md) | Security policy and reporting |
-| [Changelog](CHANGELOG.md) | Version history |
-
----
-
-## Security
-
-This framework handles sensitive credentials. Follow these practices:
-
-| File | Purpose | Commit? |
-| ------ | --------- | --------- |
-| `.env` | API keys and secrets | **Never** |
-| `.mcp.json` | MCP server credentials | **Never** |
-| `.env.example` | Template (no real values) | Safe |
-| `.mcp.json.example` | Template (no real values) | Safe |
-
-Run `mw doctor` regularly to check for exposed secrets.
-
-See [SECURITY.md](SECURITY.md) for vulnerability reporting.
-
----
-
-## Contributing
-
-We welcome contributions! Please read [CONTRIBUTING.md](CONTRIBUTING.md) first.
-
-```bash
-
-# Fork and clone
-
-git clone https://github.com/YOUR_USERNAME/MyWork-AI.git
-
-# Create feature branch
-
-git checkout -b feature/amazing-feature
-
-# Make changes and commit
-
-git commit -m 'Add amazing feature'
-
-# Push and create PR
-
-git push origin feature/amazing-feature
-
-```markdown
-
----
-
-## License
-
-MIT License - see [LICENSE](LICENSE) for details.
-
----
-
-## Acknowledgments
-
-- [Claude Code](https://github.com/anthropics/claude-code) - AI coding assistant
-
-  and GSD orchestration
-
-- [n8n](https://n8n.io) - Workflow automation platform
-- [n8n-mcp](https://github.com/czlonkowski/n8n-mcp) - n8n MCP server (1,084
-
-  nodes)
-
-- [n8n-skills](https://github.com/czlonkowski/n8n-skills) - Claude Code skills
-
-  for n8n
+- **Dan Sidanutz** — Creator & Owner
+- **Dexter** — Senior Developer & Architect
+- **Memo** — Developer & Project Manager
 
 ---
 
 <div align="center">
 
-**Built with AI, for AI-assisted development.**
+**Built with ❤️ by the MyWork-AI team**
 
-[Report Bug](https://github.com/DansiDanutz/MyWork-AI/issues) | [Request
-Feature](https://github.com/DansiDanutz/MyWork-AI/issues) |
-[Discussions](https://github.com/DansiDanutz/MyWork-AI/discussions)
+[⬆ Back to Top](#mywork-ai)
 
 </div>

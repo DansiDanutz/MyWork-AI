@@ -1,8 +1,54 @@
-# MyWork Framework Changelog
+# MyWork-AI Changelog
 
-All notable changes to the MyWork Framework will be documented in this file.
+All notable changes to MyWork-AI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+
+## [2.0.0] - 2026-02-10
+
+### 🚀 Major Release — Production Ready
+
+#### Added
+- **`mw setup`** — First-time setup wizard with ASCII art welcome
+- **`mw guide`** — Interactive workflow tutorial for new users
+- **`mw prompt-enhance`** — Turn rough ideas into GSD-ready specs
+- **`mw dashboard`** — Visual framework overview with colors
+- **AutoForge integration** — Rebranded from Autocoder, backwards compatible
+- **Brain semantic search** — TF-IDF based search with fuzzy matching
+- **Brain knowledge graph** — Auto-detect relationships, clustering, ASCII visualization
+- **Brain analytics** — Growth tracking, tag clouds, quality scores, staleness reports
+- **Agent Skills System** — Install/create/manage skills (Anthropic-compatible)
+- **Simulation Engine** — 20 virtual users, MLM (5 levels), virtual credits, product lifecycle
+- **Security Scanner** — Code scanner, dependency audit, API tester, infrastructure scanner
+- **30 User Simulations** — Beginner/intermediate/advanced scenarios with error handling
+- **E2E Test Suite** — GSD, Brain, AutoForge, marketplace smoke tests
+- **4 Workflow Templates** — Deploy, code review, release, incident response
+- **`--help` for all commands** — Every subcommand now self-documenting
+- **Fuzzy command matching** — Typos suggest correct commands
+- **Project name validation** — Prevents invalid names with clear guidance
+- **Input validation** — Brain entries, search queries, all inputs validated
+
+#### Fixed
+- All hanging commands (health check, doctor, report, fix, lint scan)
+- Added timeouts to ALL subprocess calls (max 10s)
+- npx n8n-mcp uses `--no-install` to prevent download hangs
+- Auto-detect available lint tools (skip missing ones)
+- Fixed `auto_fix()` function call in health check
+- Fixed scaffold.py format string bug with literal braces
+- Fixed 6 failing mw_cli tests (SystemExit handling)
+- Made watchdog import optional
+
+#### Security
+- 0 critical vulnerabilities (down from 4)
+- Hardcoded secrets moved to environment variables
+- Input validation on all subprocess calls
+- Security baseline established for monitoring
+
+#### Quality
+- 75/75 unit tests passing
+- 30/30 user simulations completed
+- Marketplace endpoints healthy (4/4)
+- All CLI commands respond in <15s
 and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
