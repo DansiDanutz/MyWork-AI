@@ -3312,42 +3312,7 @@ def cmd_hook(args: List[str] = None) -> int:
 
     # Hook templates with smart defaults
     HOOK_TEMPLATES = {
-        "pre-commit": '''#!/bin/bash
-# MyWork-AI pre-commit hook — lint & format check
-set -e
-
-echo "🔍 Running pre-commit checks..."
-
-# Python: ruff check
-if find . -name "*.py" -not -path "./.git/*" -not -path "./venv/*" | head -1 | grep -q .; then
-    if command -v ruff &>/dev/null; then
-        echo "  🐍 Ruff lint..."
-        ruff check --fix . 2>/dev/null || true
-        git add -u  # Re-add auto-fixed files
-    elif command -v flake8 &>/dev/null; then
-        echo "  🐍 Flake8 lint..."
-        flake8 --max-line-length=120 --exclude=venv,.git . || { echo "❌ Lint failed"; exit 1; }
-    fi
-fi
-
-# Node: eslint check
-if [ -f "package.json" ]; then
-    if command -v npx &>/dev/null && [ -f "node_modules/.bin/eslint" ]; then
-        echo "  📦 ESLint..."
-        npx eslint --fix . 2>/dev/null || true
-        git add -u
-    fi
-fi
-
-# Check for secrets/keys
-if git diff --cached --diff-filter=ACM | grep -iE "(api[_-]?key|secret|password|token)\\s*[:=]\\s*['\"][^'\"]{8,}" | grep -v "example\\|placeholder\\|YOUR_\\|xxx\\|test"; then
-    echo "⚠️  Possible secret detected in staged files! Review before committing."
-    echo "   Use 'mw security scan' for a full check."
-    exit 1
-fi
-
-echo "✅ Pre-commit passed"
-''',
+        "pre-commit": "#!/bin/bash\n# MyWork-AI pre-commit hook — lint & format check\nset -e\n\necho \"🔍 Running pre-commit checks...\"\n\n# Python: ruff check\nif find . -name \"*.py\" -not -path \"./.git/*\" -not -path \"./venv/*\" | head -1 | grep -q .; then\n    if command -v ruff &>/dev/null; then\n        echo \"  🐍 Ruff lint...\"\n        ruff check --fix . 2>/dev/null || true\n        git add -u\n    elif command -v flake8 &>/dev/null; then\n        echo \"  🐍 Flake8 lint...\"\n        flake8 --max-line-length=120 --exclude=venv,.git . || { echo \"❌ Lint failed\"; exit 1; }\n    fi\nfi\n\n# Node: eslint check\nif [ -f \"package.json\" ]; then\n    if command -v npx &>/dev/null && [ -f \"node_modules/.bin/eslint\" ]; then\n        echo \"  📦 ESLint...\"\n        npx eslint --fix . 2>/dev/null || true\n        git add -u\n    fi\nfi\n\n# Check for secrets/keys\nif git diff --cached --diff-filter=ACM | grep -iE '(api[_-]?key|secret|password|token)\\s*[:=]\\s*.[^\"]{8,}' | grep -v 'example\\|placeholder\\|YOUR_\\|xxx\\|test'; then\n    echo \"⚠️  Possible secret detected! Review before committing.\"\n    exit 1\nfi\n\necho \"✅ Pre-commit passed\"\n",
         "commit-msg": '''#!/bin/bash
 # MyWork-AI commit-msg hook — enforce conventional commits
 MSG_FILE="$1"
