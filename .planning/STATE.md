@@ -42,6 +42,8 @@ Date: 2026-02-10
 - Added `mw monitor` — deployment history and URL health checks
 - 11 new tests → **186 total passing**
 - Added `mw plugin` — extensible plugin system (install/uninstall/enable/disable/create from git or local path)
+- Added `mw ci` — CI/CD pipeline generator (GitHub Actions, GitLab CI; auto-detects Node/Python/Go/Rust/Docker)
+- 16 new ci tests → **219 total passing**
 - 17 new plugin tests → **203 total passing**
 - Added `mw version` command (+ `-v`/`--version` flags) showing version, Python, platform, install path
 
