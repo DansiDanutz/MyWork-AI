@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional
 
 # OpenRouter API configuration
-OPENROUTER_API_KEY = "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"
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 MODEL = "google/gemini-2.0-flash-001"
 
