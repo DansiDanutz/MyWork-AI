@@ -3602,6 +3602,252 @@ def _save_deploy_record(project_dir: str, platform: str, url: str, prod: bool) -
         pass  # Non-critical
 
 
+def cmd_env(args: List[str] = None) -> int:
+    """Manage environment variables across projects.
+
+    Usage:
+        mw env                        # Show current .env status
+        mw env list                   # List all variables (values hidden)
+        mw env list --show            # List all variables (values shown)
+        mw env get KEY                # Get a specific variable
+        mw env set KEY=VALUE          # Set a variable
+        mw env set KEY VALUE          # Set a variable (alt syntax)
+        mw env rm KEY                 # Remove a variable
+        mw env diff                   # Compare .env vs .env.example
+        mw env validate               # Check all required vars are set
+        mw env export --format=docker # Export as Docker env format
+        mw env init                   # Create .env from .env.example
+    """
+    args = args or []
+    subcommand = args[0] if args else "status"
+
+    # Find .env files
+    env_file = Path(".env")
+    env_example = Path(".env.example")
+
+    def _parse_env(path: Path) -> dict:
+        """Parse a .env file into key-value dict."""
+        result = {}
+        if not path.exists():
+            return result
+        for line in path.read_text().splitlines():
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if "=" in line:
+                key, _, value = line.partition("=")
+                key = key.strip()
+                value = value.strip().strip('"').strip("'")
+                result[key] = value
+        return result
+
+    def _write_env(path: Path, data: dict, comments: dict = None):
+        """Write key-value dict back to .env preserving comments."""
+        lines = []
+        if path.exists():
+            existing_lines = path.read_text().splitlines()
+            written_keys = set()
+            for line in existing_lines:
+                stripped = line.strip()
+                if not stripped or stripped.startswith("#"):
+                    lines.append(line)
+                    continue
+                if "=" in stripped:
+                    key = stripped.split("=", 1)[0].strip()
+                    if key in data:
+                        lines.append(f"{key}={data[key]}")
+                        written_keys.add(key)
+                    # Skip removed keys
+                    elif key not in data:
+                        continue
+            # Add new keys
+            for key, value in data.items():
+                if key not in written_keys:
+                    lines.append(f"{key}={value}")
+        else:
+            for key, value in data.items():
+                lines.append(f"{key}={value}")
+        path.write_text("\n".join(lines) + "\n")
+
+    def _mask(value: str) -> str:
+        if len(value) <= 4:
+            return "****"
+        return value[:2] + "*" * (len(value) - 4) + value[-2:]
+
+    if subcommand == "status":
+        print(f"\n{Colors.BOLD}📋 Environment Status{Colors.ENDC}\n")
+        env_exists = env_file.exists()
+        example_exists = env_example.exists()
+        print(f"  .env          {'✅ Found' if env_exists else '❌ Not found'}")
+        print(f"  .env.example  {'✅ Found' if example_exists else '⚠️  Not found'}")
+        if env_exists:
+            data = _parse_env(env_file)
+            print(f"  Variables     {Colors.GREEN}{len(data)}{Colors.ENDC}")
+            empty = sum(1 for v in data.values() if not v)
+            if empty:
+                print(f"  Empty values  {Colors.YELLOW}{empty}{Colors.ENDC}")
+        if example_exists and env_exists:
+            example_data = _parse_env(env_example)
+            env_data = _parse_env(env_file)
+            missing = set(example_data.keys()) - set(env_data.keys())
+            if missing:
+                print(f"  Missing vars  {Colors.RED}{len(missing)}{Colors.ENDC}: {', '.join(sorted(missing))}")
+            else:
+                print(f"  Coverage      {Colors.GREEN}100% ✓{Colors.ENDC}")
+        print()
+        return 0
+
+    elif subcommand == "list":
+        if not env_file.exists():
+            print(f"{Colors.RED}❌ No .env file found{Colors.ENDC}")
+            return 1
+        data = _parse_env(env_file)
+        show = "--show" in args
+        print(f"\n{Colors.BOLD}📋 Environment Variables ({len(data)}){Colors.ENDC}\n")
+        for key in sorted(data.keys()):
+            value = data[key] if show else _mask(data[key]) if data[key] else "(empty)"
+            print(f"  {Colors.GREEN}{key}{Colors.ENDC}={value}")
+        print()
+        return 0
+
+    elif subcommand == "get":
+        if len(args) < 2:
+            print(f"{Colors.RED}Usage: mw env get KEY{Colors.ENDC}")
+            return 1
+        key = args[1]
+        data = _parse_env(env_file)
+        if key in data:
+            print(data[key])
+            return 0
+        else:
+            print(f"{Colors.RED}❌ Variable '{key}' not found{Colors.ENDC}")
+            return 1
+
+    elif subcommand == "set":
+        if len(args) < 2:
+            print(f"{Colors.RED}Usage: mw env set KEY=VALUE or mw env set KEY VALUE{Colors.ENDC}")
+            return 1
+        if "=" in args[1]:
+            key, _, value = args[1].partition("=")
+        elif len(args) >= 3:
+            key, value = args[1], args[2]
+        else:
+            print(f"{Colors.RED}Usage: mw env set KEY=VALUE{Colors.ENDC}")
+            return 1
+        data = _parse_env(env_file)
+        is_new = key not in data
+        data[key] = value
+        _write_env(env_file, data)
+        action = "Added" if is_new else "Updated"
+        print(f"{Colors.GREEN}✅ {action} {key}{Colors.ENDC}")
+        return 0
+
+    elif subcommand == "rm":
+        if len(args) < 2:
+            print(f"{Colors.RED}Usage: mw env rm KEY{Colors.ENDC}")
+            return 1
+        key = args[1]
+        data = _parse_env(env_file)
+        if key not in data:
+            print(f"{Colors.RED}❌ Variable '{key}' not found{Colors.ENDC}")
+            return 1
+        del data[key]
+        _write_env(env_file, data)
+        print(f"{Colors.GREEN}✅ Removed {key}{Colors.ENDC}")
+        return 0
+
+    elif subcommand == "diff":
+        if not env_example.exists():
+            print(f"{Colors.RED}❌ No .env.example found{Colors.ENDC}")
+            return 1
+        example_data = _parse_env(env_example)
+        env_data = _parse_env(env_file) if env_file.exists() else {}
+        all_keys = sorted(set(list(example_data.keys()) + list(env_data.keys())))
+        print(f"\n{Colors.BOLD}🔍 Environment Diff (.env vs .env.example){Colors.ENDC}\n")
+        for key in all_keys:
+            in_env = key in env_data
+            in_example = key in example_data
+            has_value = in_env and bool(env_data.get(key))
+            if in_env and in_example and has_value:
+                print(f"  {Colors.GREEN}✅{Colors.ENDC} {key}")
+            elif in_example and not in_env:
+                print(f"  {Colors.RED}❌{Colors.ENDC} {key} (missing from .env)")
+            elif in_env and not in_example:
+                print(f"  {Colors.YELLOW}➕{Colors.ENDC} {key} (extra, not in .env.example)")
+            elif in_env and not has_value:
+                print(f"  {Colors.YELLOW}⚠️{Colors.ENDC}  {key} (empty value)")
+        print()
+        return 0
+
+    elif subcommand == "validate":
+        if not env_example.exists():
+            print(f"{Colors.YELLOW}⚠️  No .env.example to validate against{Colors.ENDC}")
+            return 0
+        example_data = _parse_env(env_example)
+        env_data = _parse_env(env_file) if env_file.exists() else {}
+        missing = []
+        empty = []
+        for key in example_data:
+            if key not in env_data:
+                missing.append(key)
+            elif not env_data[key]:
+                empty.append(key)
+        if not missing and not empty:
+            print(f"{Colors.GREEN}✅ All {len(example_data)} required variables are set{Colors.ENDC}")
+            return 0
+        if missing:
+            print(f"{Colors.RED}❌ Missing variables:{Colors.ENDC}")
+            for k in missing:
+                print(f"   {k}")
+        if empty:
+            print(f"{Colors.YELLOW}⚠️  Empty variables:{Colors.ENDC}")
+            for k in empty:
+                print(f"   {k}")
+        return 1 if missing else 0
+
+    elif subcommand == "export":
+        if not env_file.exists():
+            print(f"{Colors.RED}❌ No .env file found{Colors.ENDC}")
+            return 1
+        data = _parse_env(env_file)
+        fmt = "shell"
+        for a in args:
+            if a.startswith("--format="):
+                fmt = a.split("=", 1)[1]
+        if fmt == "docker":
+            for key, value in sorted(data.items()):
+                print(f"-e {key}={value}")
+        elif fmt == "json":
+            import json as json_mod
+            print(json_mod.dumps(data, indent=2))
+        elif fmt == "yaml":
+            for key, value in sorted(data.items()):
+                print(f"{key}: \"{value}\"")
+        else:  # shell
+            for key, value in sorted(data.items()):
+                print(f"export {key}=\"{value}\"")
+        return 0
+
+    elif subcommand == "init":
+        if env_file.exists():
+            print(f"{Colors.YELLOW}⚠️  .env already exists. Use 'mw env set' to modify.{Colors.ENDC}")
+            return 0
+        if not env_example.exists():
+            print(f"{Colors.RED}❌ No .env.example to copy from{Colors.ENDC}")
+            return 1
+        import shutil
+        shutil.copy2(env_example, env_file)
+        data = _parse_env(env_file)
+        print(f"{Colors.GREEN}✅ Created .env from .env.example ({len(data)} variables){Colors.ENDC}")
+        print(f"   Edit with: {Colors.BOLD}mw env set KEY=VALUE{Colors.ENDC}")
+        return 0
+
+    else:
+        print(f"{Colors.RED}❌ Unknown env subcommand: {subcommand}{Colors.ENDC}")
+        print(f"   Try: mw env list | get | set | rm | diff | validate | export | init")
+        return 1
+
+
 def cmd_monitor(args: List[str] = None) -> int:
     """Monitor project health and uptime.
     
@@ -3734,6 +3980,7 @@ def main() -> None:
         "ci": lambda: cmd_ci(args),
         "deploy": lambda: cmd_deploy(args),
         "monitor": lambda: cmd_monitor(args),
+        "env": lambda: cmd_env(args),
         "plugin": lambda: _cmd_plugin_wrapper(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
