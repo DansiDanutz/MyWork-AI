@@ -24,30 +24,112 @@ DIM = "\033[2m"
 RESET = "\033[0m"
 
 
-def _get_api_key() -> Optional[str]:
-    """Get OpenRouter API key from env or config."""
-    key = os.environ.get("OPENROUTER_API_KEY")
+# Multi-provider configuration
+PROVIDERS = {
+    "openrouter": {
+        "url": "https://openrouter.ai/api/v1/chat/completions",
+        "env_key": "OPENROUTER_API_KEY",
+        "config_key": "openrouter_api_key",
+        "default_model": "deepseek/deepseek-chat",
+        "extra_headers": {"HTTP-Referer": "https://mywork-ai.dev", "X-Title": "MyWork-AI CLI"},
+    },
+    "deepseek": {
+        "url": "https://api.deepseek.com/chat/completions",
+        "env_key": "DEEPSEEK_API_KEY",
+        "config_key": "deepseek_api_key",
+        "default_model": "deepseek-chat",
+        "extra_headers": {},
+    },
+    "openai": {
+        "url": "https://api.openai.com/v1/chat/completions",
+        "env_key": "OPENAI_API_KEY",
+        "config_key": "openai_api_key",
+        "default_model": "gpt-4o-mini",
+        "extra_headers": {},
+    },
+    "gemini": {
+        "url": "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+        "env_key": "GEMINI_API_KEY",
+        "config_key": "gemini_api_key",
+        "default_model": "gemini-2.0-flash",
+        "extra_headers": {},
+    },
+}
+
+# Model shortcuts for --model flag
+MODEL_SHORTCUTS = {
+    "deepseek": ("openrouter", "deepseek/deepseek-chat"),
+    "ds-reasoner": ("deepseek", "deepseek-reasoner"),
+    "gpt4": ("openai", "gpt-4o-mini"),
+    "gpt4o": ("openai", "gpt-4o"),
+    "claude": ("openrouter", "anthropic/claude-3.5-sonnet"),
+    "gemini": ("gemini", "gemini-2.0-flash"),
+    "gemini-pro": ("gemini", "gemini-2.5-pro"),
+    "kimi": ("openrouter", "moonshotai/kimi-k2"),
+    "llama": ("openrouter", "meta-llama/llama-3.3-70b-instruct"),
+}
+
+
+def _load_env():
+    """Load .env from framework root."""
+    env_file = Path(__file__).parent.parent / ".env"
+    if env_file.exists():
+        for line in env_file.read_text().splitlines():
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                k, v = line.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+
+
+def _get_provider_key(provider_name: str) -> Optional[str]:
+    """Get API key for a specific provider."""
+    _load_env()
+    prov = PROVIDERS.get(provider_name, {})
+    # Check env
+    key = os.environ.get(prov.get("env_key", ""), "")
     if key:
         return key
-    # Try config file
+    # Check config
     config_path = Path.home() / ".mywork" / "config.json"
     if config_path.exists():
         try:
             cfg = json.loads(config_path.read_text())
-            return cfg.get("openrouter_api_key")
+            return cfg.get(prov.get("config_key", ""))
         except Exception:
             pass
     return None
 
 
-def _call_llm(prompt: str, system: str = "", model: str = "deepseek/deepseek-chat") -> str:
-    """Call LLM via OpenRouter API."""
+def _detect_provider() -> tuple:
+    """Auto-detect first available provider. Returns (name, api_key)."""
+    _load_env()
+    for name in ["openrouter", "deepseek", "gemini", "openai"]:
+        key = _get_provider_key(name)
+        if key:
+            return name, key
+    return None, None
+
+
+def _call_llm(prompt: str, system: str = "", model: str = "deepseek/deepseek-chat",
+              provider_name: str = None) -> str:
+    """Call LLM via configurable provider (OpenRouter, DeepSeek, OpenAI, Gemini)."""
     import urllib.request
     import urllib.error
 
-    api_key = _get_api_key()
+    # Resolve provider
+    if provider_name and provider_name in PROVIDERS:
+        api_key = _get_provider_key(provider_name)
+    else:
+        provider_name, api_key = _detect_provider()
+
     if not api_key:
-        return f"{RED}Error: No API key found. Set OPENROUTER_API_KEY or run: mw config set openrouter_api_key <key>{RESET}"
+        return (f"{RED}Error: No API key found. Set one of: "
+                f"OPENROUTER_API_KEY, DEEPSEEK_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY\n"
+                f"Or run: mw config set <provider>_api_key <key>{RESET}")
+
+    prov = PROVIDERS[provider_name]
+    if model == "deepseek/deepseek-chat" and provider_name != "openrouter":
+        model = prov["default_model"]
 
     messages = []
     if system:
@@ -61,16 +143,13 @@ def _call_llm(prompt: str, system: str = "", model: str = "deepseek/deepseek-cha
         "temperature": 0.3,
     }).encode()
 
-    req = urllib.request.Request(
-        "https://openrouter.ai/api/v1/chat/completions",
-        data=payload,
-        headers={
-            "Authorization": f"Bearer {api_key}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "https://mywork-ai.dev",
-            "X-Title": "MyWork-AI CLI",
-        },
-    )
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+    headers.update(prov.get("extra_headers", {}))
+
+    req = urllib.request.Request(prov["url"], data=payload, headers=headers)
 
     try:
         with urllib.request.urlopen(req, timeout=60) as resp:
@@ -78,9 +157,9 @@ def _call_llm(prompt: str, system: str = "", model: str = "deepseek/deepseek-cha
             return data["choices"][0]["message"]["content"]
     except urllib.error.HTTPError as e:
         body = e.read().decode() if e.fp else ""
-        return f"{RED}API Error ({e.code}): {body[:200]}{RESET}"
+        return f"{RED}API Error ({e.code}) [{provider_name}]: {body[:200]}{RESET}"
     except Exception as e:
-        return f"{RED}Error: {e}{RESET}"
+        return f"{RED}Error [{provider_name}]: {e}{RESET}"
 
 
 def _read_file(path: str) -> Optional[str]:
@@ -340,12 +419,14 @@ def cmd_ai(args: List[str] = None) -> int:
     mw ai test <file> [--framework pytest]   {DIM}Generate tests{RESET}
     mw ai commit [--push]                    {DIM}Generate commit message{RESET}
 
-{BOLD}Configuration:{RESET}
-    mw config set openrouter_api_key <key>   {DIM}Set API key{RESET}
-    export OPENROUTER_API_KEY=<key>          {DIM}Or use env var{RESET}
+{BOLD}Interactive:{RESET}
+    mw ai chat                               {DIM}Start interactive chat session{RESET}
+    mw ai chat --model gemini                {DIM}Chat with specific model{RESET}
+    mw ai providers                          {DIM}Show configured AI providers{RESET}
+    mw ai models                             {DIM}Show model shortcuts{RESET}
 
-{BOLD}Models:{RESET} Uses DeepSeek Chat by default (fast & cheap).
-    Set MYWORK_AI_MODEL env var to override (e.g. anthropic/claude-3.5-sonnet)
+{BOLD}Providers:{RESET} OpenRouter, DeepSeek, OpenAI, Google Gemini (auto-detected)
+{BOLD}Models:{RESET} deepseek (default), claude, gpt4, gemini, gemini-pro, kimi, llama
 """)
         return 0
 
@@ -359,11 +440,125 @@ def cmd_ai(args: List[str] = None) -> int:
         "refactor": cmd_ai_refactor,
         "test": cmd_ai_test,
         "commit": cmd_ai_commit,
+        "chat": cmd_ai_chat,
+        "providers": cmd_ai_providers,
+        "models": cmd_ai_models,
     }
 
     if subcmd in subcmds:
         return subcmds[subcmd](sub_args)
     else:
-        print(f"{RED}Unknown subcommand: {subcmd}{RESET}")
-        print(f"Run {CYAN}mw ai{RESET} for help.")
-        return 1
+        # Treat unknown subcommand as a question (convenience shortcut)
+        return cmd_ai_ask([subcmd] + sub_args)
+
+
+def cmd_ai_chat(args: List[str]) -> int:
+    """Interactive AI chat with project context."""
+    # Parse --model flag
+    provider_name = None
+    model = None
+    i = 0
+    while i < len(args):
+        if args[i] == "--model" and i + 1 < len(args):
+            shortcut = args[i + 1]
+            if shortcut in MODEL_SHORTCUTS:
+                provider_name, model = MODEL_SHORTCUTS[shortcut]
+            else:
+                model = shortcut
+            i += 2
+        else:
+            i += 1
+
+    if not provider_name:
+        provider_name, _ = _detect_provider()
+    if not model and provider_name:
+        model = PROVIDERS[provider_name]["default_model"]
+
+    print(f"\n{BOLD}{CYAN}🤖 MyWork AI Chat{RESET}")
+    print(f"{DIM}Provider: {provider_name or 'auto'} | Model: {model or 'auto'}{RESET}")
+    print(f"{DIM}Type 'quit' or Ctrl+C to exit. Type '/context <file>' to add context.{RESET}\n")
+
+    context_files = []
+    history = []
+
+    while True:
+        try:
+            user_input = input(f"{GREEN}You>{RESET} ").strip()
+        except (KeyboardInterrupt, EOFError):
+            print(f"\n{DIM}Goodbye!{RESET}")
+            return 0
+
+        if not user_input:
+            continue
+        if user_input.lower() in ("quit", "exit", "q"):
+            print(f"{DIM}Goodbye!{RESET}")
+            return 0
+
+        # Commands
+        if user_input.startswith("/context "):
+            path = user_input[9:].strip()
+            if Path(path).exists():
+                context_files.append(path)
+                print(f"{GREEN}✓ Added {path} to context{RESET}")
+            else:
+                print(f"{RED}File not found: {path}{RESET}")
+            continue
+        if user_input == "/clear":
+            history.clear()
+            context_files.clear()
+            print(f"{GREEN}✓ Context and history cleared{RESET}")
+            continue
+
+        # Build prompt with context
+        prompt_parts = []
+        if context_files:
+            for cf in context_files:
+                try:
+                    content = Path(cf).read_text()[:3000]
+                    prompt_parts.append(f"[File: {cf}]\n{content}")
+                except Exception:
+                    pass
+        if history:
+            prompt_parts.append("Previous conversation:\n" + "\n".join(
+                f"{'User' if i % 2 == 0 else 'AI'}: {msg}" for i, msg in enumerate(history[-6:])
+            ))
+        prompt_parts.append(user_input)
+        full_prompt = "\n\n".join(prompt_parts)
+
+        print(f"{CYAN}AI>{RESET} ", end="", flush=True)
+        result = _call_llm(
+            full_prompt,
+            system="You are a helpful developer assistant. Be concise and practical.",
+            model=model or "deepseek/deepseek-chat",
+            provider_name=provider_name,
+        )
+        print(result)
+        print()
+
+        history.append(user_input)
+        history.append(result[:500])
+
+    return 0
+
+
+def cmd_ai_providers(args: List[str]) -> int:
+    """Show available AI providers and their status."""
+    _load_env()
+    print(f"\n{BOLD}{CYAN}🤖 AI Providers{RESET}\n")
+    for name, prov in PROVIDERS.items():
+        key = _get_provider_key(name)
+        status = f"{GREEN}✓ configured{RESET}" if key else f"{RED}✗ no key{RESET}"
+        print(f"  {BOLD}{name:12}{RESET}  {status}  (model: {prov['default_model']})")
+        print(f"  {DIM}  env: {prov['env_key']}{RESET}")
+    print(f"\n{DIM}Set keys: mw config set <provider>_api_key <key> or export ENV_VAR=<key>{RESET}\n")
+    return 0
+
+
+def cmd_ai_models(args: List[str]) -> int:
+    """Show model shortcuts for --model flag."""
+    print(f"\n{BOLD}{CYAN}🤖 Model Shortcuts{RESET}\n")
+    for shortcut, (prov, model) in sorted(MODEL_SHORTCUTS.items()):
+        print(f"  {BOLD}{shortcut:14}{RESET}  → {prov}/{model}")
+    print(f"\n{DIM}Usage: mw ai chat --model gemini{RESET}")
+    print(f"{DIM}       mw ai ask --model claude \"your question\"{RESET}\n")
+    return 0
