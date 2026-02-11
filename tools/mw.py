@@ -3045,6 +3045,59 @@ def cmd_config(args: List[str] = None) -> int:
     return 1
 
 
+def cmd_security(args: list = None) -> int:
+    """Run security scanner on project."""
+    args = args or []
+    try:
+        from tools.security_scanner import full_scan, print_report, scan_secrets, scan_code_patterns, scan_dependencies
+    except ImportError:
+        # Try relative import
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("security_scanner", 
+            os.path.join(os.path.dirname(__file__), "security_scanner.py"))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        full_scan, print_report = mod.full_scan, mod.print_report
+        scan_secrets, scan_code_patterns, scan_dependencies = mod.scan_secrets, mod.scan_code_patterns, mod.scan_dependencies
+
+    project_path = os.getcwd()
+    
+    if not args or args[0] == 'scan':
+        results = full_scan(project_path)
+        print_report(results)
+        return 0
+    
+    subcmd = args[0]
+    if subcmd == 'secrets':
+        findings = scan_secrets(project_path)
+        for f in findings:
+            print(f"🔴 [{f['type']}] {f['file']}:L{f['line']} — {f['masked_value']}")
+        print(f"\n{len(findings)} secret(s) found.")
+    elif subcmd == 'patterns':
+        findings = scan_code_patterns(project_path)
+        for f in findings:
+            print(f"⚠️  [{f['type']}] {f['file']}:L{f['line']}")
+        print(f"\n{len(findings)} pattern(s) found.")
+    elif subcmd == 'deps':
+        findings = scan_dependencies(project_path)
+        for f in findings:
+            print(f"📦 {f.get('package', '?')} — {f.get('vuln_id', f.get('severity_level', '?'))}")
+        print(f"\n{len(findings)} vulnerability(ies) found.")
+    elif subcmd == 'help':
+        print("🔒 mw security — Security Scanner")
+        print("  mw security          Full scan (all checks)")
+        print("  mw security scan     Full scan with report")
+        print("  mw security secrets  Scan for hardcoded secrets only")
+        print("  mw security patterns Scan for dangerous code patterns")
+        print("  mw security deps     Check dependency vulnerabilities")
+    else:
+        print(f"Unknown security subcommand: {subcmd}")
+        print("Run 'mw security help' for usage.")
+        return 1
+    
+    return 0
+
+
 def cmd_version() -> int:
     """Show framework version, Python version, and platform info."""
     import platform
@@ -4127,6 +4180,8 @@ def main() -> None:
         "config": lambda: cmd_config(args),
         "cfg": lambda: cmd_config(args),
         "ai": lambda: _cmd_ai_wrapper(args),
+        "security": lambda: cmd_security(args),
+        "sec": lambda: cmd_security(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),
