@@ -2917,6 +2917,439 @@ def cmd_version() -> int:
     return 0
 
 
+def cmd_deploy(args: List[str] = None) -> int:
+    """Deploy a project to Vercel, Railway, Render, or Docker.
+    
+    Usage:
+        mw deploy                          # Deploy current directory
+        mw deploy <project>                # Deploy named project
+        mw deploy <project> --platform X   # Specify platform (vercel|railway|render|docker)
+        mw deploy <project> --prod         # Production deploy
+        mw deploy <project> --preview      # Preview/staging deploy
+        mw deploy --status                 # Check last deployment status
+        mw deploy --list                   # List recent deployments
+    """
+    args = args or []
+    
+    # Parse flags
+    platform = None
+    prod = False
+    preview = False
+    show_status = False
+    list_deploys = False
+    project_name = None
+    token = None
+    
+    i = 0
+    while i < len(args):
+        if args[i] == "--platform" and i + 1 < len(args):
+            platform = args[i + 1].lower()
+            i += 2
+        elif args[i] == "--prod":
+            prod = True
+            i += 1
+        elif args[i] == "--preview":
+            preview = True
+            i += 1
+        elif args[i] == "--status":
+            show_status = True
+            i += 1
+        elif args[i] == "--list":
+            list_deploys = True
+            i += 1
+        elif args[i] == "--token" and i + 1 < len(args):
+            token = args[i + 1]
+            i += 2
+        elif not args[i].startswith("-"):
+            project_name = args[i]
+            i += 1
+        else:
+            i += 1
+    
+    # Detect project directory
+    project_dir = os.getcwd()
+    if project_name:
+        # Try to find project in registry
+        registry_path = os.path.join(os.path.expanduser("~"), "MyWork-AI", ".planning", "project_registry.json")
+        if os.path.exists(registry_path):
+            try:
+                with open(registry_path) as f:
+                    registry = json.load(f)
+                for proj in registry.get("projects", []):
+                    if proj.get("name", "").lower() == project_name.lower():
+                        project_dir = proj.get("path", project_dir)
+                        break
+            except Exception:
+                pass
+        # Also check common locations
+        for base in [os.path.expanduser("~"), "/home/Memo1981"]:
+            candidate = os.path.join(base, project_name)
+            if os.path.isdir(candidate):
+                project_dir = candidate
+                break
+    
+    print(f"\n{Colors.BOLD}🚀 MyWork Deploy{Colors.ENDC}")
+    print(f"{'─' * 50}")
+    
+    # Auto-detect platform if not specified
+    if not platform:
+        if os.path.exists(os.path.join(project_dir, "vercel.json")):
+            platform = "vercel"
+        elif os.path.exists(os.path.join(project_dir, "railway.json")) or os.path.exists(os.path.join(project_dir, "railway.toml")):
+            platform = "railway"
+        elif os.path.exists(os.path.join(project_dir, "render.yaml")):
+            platform = "render"
+        elif os.path.exists(os.path.join(project_dir, "Dockerfile")):
+            platform = "docker"
+        elif os.path.exists(os.path.join(project_dir, "package.json")):
+            platform = "vercel"  # Default for Node.js
+        elif os.path.exists(os.path.join(project_dir, "requirements.txt")) or os.path.exists(os.path.join(project_dir, "pyproject.toml")):
+            platform = "railway"  # Default for Python
+        else:
+            print(f"{Colors.RED}❌ Could not auto-detect platform. Use --platform <vercel|railway|render|docker>{Colors.ENDC}")
+            return 1
+    
+    print(f"  📁 Project: {Colors.GREEN}{os.path.basename(project_dir)}{Colors.ENDC}")
+    print(f"  📍 Path: {project_dir}")
+    print(f"  🎯 Platform: {Colors.BLUE}{platform}{Colors.ENDC}")
+    print(f"  🏷️  Mode: {'Production' if prod else 'Preview'}")
+    print()
+    
+    # Pre-deploy checks
+    print(f"{Colors.YELLOW}⏳ Running pre-deploy checks...{Colors.ENDC}")
+    
+    checks_passed = True
+    
+    # Check git status
+    try:
+        result = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, cwd=project_dir, timeout=10)
+        uncommitted = result.stdout.strip()
+        if uncommitted:
+            lines = uncommitted.split("\n")
+            print(f"  {Colors.YELLOW}⚠️  {len(lines)} uncommitted changes{Colors.ENDC}")
+            if prod:
+                print(f"  {Colors.RED}❌ Cannot deploy to production with uncommitted changes{Colors.ENDC}")
+                print(f"  {Colors.YELLOW}💡 Commit first or use --preview{Colors.ENDC}")
+                return 1
+        else:
+            print(f"  {Colors.GREEN}✅ Git clean{Colors.ENDC}")
+    except Exception:
+        print(f"  {Colors.YELLOW}⚠️  Not a git repo or git not available{Colors.ENDC}")
+    
+    # Check for build errors (Node.js)
+    if os.path.exists(os.path.join(project_dir, "package.json")):
+        try:
+            with open(os.path.join(project_dir, "package.json")) as f:
+                pkg = json.load(f)
+            if "build" in pkg.get("scripts", {}):
+                print(f"  {Colors.YELLOW}⏳ Running build check...{Colors.ENDC}")
+                build_result = subprocess.run(
+                    ["npm", "run", "build"], capture_output=True, text=True, 
+                    cwd=project_dir, timeout=120
+                )
+                if build_result.returncode != 0:
+                    print(f"  {Colors.RED}❌ Build failed!{Colors.ENDC}")
+                    # Show last 5 lines of error
+                    errors = build_result.stderr.strip().split("\n")[-5:]
+                    for line in errors:
+                        print(f"     {line}")
+                    return 1
+                else:
+                    print(f"  {Colors.GREEN}✅ Build successful{Colors.ENDC}")
+        except (json.JSONDecodeError, FileNotFoundError):
+            pass
+        except subprocess.TimeoutExpired:
+            print(f"  {Colors.YELLOW}⚠️  Build timed out (120s limit){Colors.ENDC}")
+    
+    # Check for tests
+    if os.path.exists(os.path.join(project_dir, "package.json")):
+        try:
+            with open(os.path.join(project_dir, "package.json")) as f:
+                pkg = json.load(f)
+            if "test" in pkg.get("scripts", {}) and pkg["scripts"]["test"] != "echo \"Error: no test specified\" && exit 1":
+                print(f"  {Colors.YELLOW}⏳ Running tests...{Colors.ENDC}")
+                test_result = subprocess.run(
+                    ["npm", "test", "--", "--passWithNoTests"], capture_output=True, text=True,
+                    cwd=project_dir, timeout=120
+                )
+                if test_result.returncode == 0:
+                    print(f"  {Colors.GREEN}✅ Tests passed{Colors.ENDC}")
+                else:
+                    print(f"  {Colors.YELLOW}⚠️  Tests failed (continuing anyway for preview){Colors.ENDC}")
+                    if prod:
+                        print(f"  {Colors.RED}❌ Cannot deploy to production with failing tests{Colors.ENDC}")
+                        return 1
+        except Exception:
+            pass
+    
+    print()
+    
+    # Deploy based on platform
+    if platform == "vercel":
+        return _deploy_vercel(project_dir, prod, token)
+    elif platform == "railway":
+        return _deploy_railway(project_dir, prod)
+    elif platform == "render":
+        return _deploy_render(project_dir, prod)
+    elif platform == "docker":
+        return _deploy_docker(project_dir, prod, project_name or os.path.basename(project_dir))
+    else:
+        print(f"{Colors.RED}❌ Unknown platform: {platform}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Supported: vercel, railway, render, docker{Colors.ENDC}")
+        return 1
+
+
+def _deploy_vercel(project_dir: str, prod: bool, token: str = None) -> int:
+    """Deploy to Vercel."""
+    print(f"{Colors.BLUE}☁️  Deploying to Vercel...{Colors.ENDC}")
+    
+    # Check for vercel CLI
+    vercel_check = subprocess.run(["which", "vercel"], capture_output=True, text=True)
+    if vercel_check.returncode != 0:
+        # Try npx
+        print(f"  {Colors.YELLOW}📦 vercel CLI not found, using npx...{Colors.ENDC}")
+        vercel_cmd = ["npx", "vercel"]
+    else:
+        vercel_cmd = ["vercel"]
+    
+    cmd = vercel_cmd.copy()
+    if prod:
+        cmd.append("--prod")
+    if token:
+        cmd.extend(["--token", token])
+    cmd.append("--yes")  # Skip prompts
+    
+    print(f"  {Colors.YELLOW}⏳ Running: {' '.join(cmd)}{Colors.ENDC}")
+    
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, cwd=project_dir, timeout=300)
+        if result.returncode == 0:
+            url = result.stdout.strip().split("\n")[-1]
+            print(f"\n  {Colors.GREEN}✅ Deployed successfully!{Colors.ENDC}")
+            print(f"  {Colors.BOLD}🔗 URL: {url}{Colors.ENDC}")
+            
+            # Save deployment record
+            _save_deploy_record(project_dir, "vercel", url, prod)
+            return 0
+        else:
+            print(f"\n  {Colors.RED}❌ Deployment failed{Colors.ENDC}")
+            errors = result.stderr.strip().split("\n")[-5:]
+            for line in errors:
+                print(f"     {line}")
+            return 1
+    except subprocess.TimeoutExpired:
+        print(f"\n  {Colors.RED}❌ Deployment timed out (5 min limit){Colors.ENDC}")
+        return 1
+
+
+def _deploy_railway(project_dir: str, prod: bool) -> int:
+    """Deploy to Railway."""
+    print(f"{Colors.BLUE}🚂 Deploying to Railway...{Colors.ENDC}")
+    
+    railway_check = subprocess.run(["which", "railway"], capture_output=True, text=True)
+    if railway_check.returncode != 0:
+        print(f"  {Colors.RED}❌ Railway CLI not installed{Colors.ENDC}")
+        print(f"  {Colors.YELLOW}💡 Install: npm install -g @railway/cli{Colors.ENDC}")
+        return 1
+    
+    cmd = ["railway", "up"]
+    if not prod:
+        cmd.append("--detach")
+    
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, cwd=project_dir, timeout=300)
+        if result.returncode == 0:
+            print(f"\n  {Colors.GREEN}✅ Deployed to Railway!{Colors.ENDC}")
+            output = result.stdout.strip()
+            if output:
+                print(f"  {output}")
+            _save_deploy_record(project_dir, "railway", "", prod)
+            return 0
+        else:
+            print(f"\n  {Colors.RED}❌ Railway deployment failed{Colors.ENDC}")
+            print(f"  {result.stderr.strip()[:200]}")
+            return 1
+    except subprocess.TimeoutExpired:
+        print(f"\n  {Colors.RED}❌ Timed out{Colors.ENDC}")
+        return 1
+
+
+def _deploy_render(project_dir: str, prod: bool) -> int:
+    """Deploy to Render (via git push)."""
+    print(f"{Colors.BLUE}🎨 Deploying to Render...{Colors.ENDC}")
+    print(f"  {Colors.YELLOW}💡 Render deploys automatically on git push{Colors.ENDC}")
+    
+    try:
+        # Check if render remote exists
+        result = subprocess.run(["git", "remote", "-v"], capture_output=True, text=True, cwd=project_dir, timeout=10)
+        if "render" not in result.stdout.lower() and "origin" in result.stdout:
+            print(f"  {Colors.YELLOW}⏳ Pushing to origin (Render auto-deploys)...{Colors.ENDC}")
+            push = subprocess.run(["git", "push", "origin", "main"], capture_output=True, text=True, cwd=project_dir, timeout=60)
+            if push.returncode == 0:
+                print(f"\n  {Colors.GREEN}✅ Pushed! Render will auto-deploy.{Colors.ENDC}")
+                _save_deploy_record(project_dir, "render", "", prod)
+                return 0
+            else:
+                print(f"\n  {Colors.RED}❌ Push failed: {push.stderr.strip()[:200]}{Colors.ENDC}")
+                return 1
+        else:
+            print(f"  {Colors.YELLOW}💡 Configure Render dashboard at https://dashboard.render.com{Colors.ENDC}")
+            return 0
+    except Exception as e:
+        print(f"  {Colors.RED}❌ Error: {e}{Colors.ENDC}")
+        return 1
+
+
+def _deploy_docker(project_dir: str, prod: bool, name: str) -> int:
+    """Build and run Docker container."""
+    print(f"{Colors.BLUE}🐳 Building Docker image...{Colors.ENDC}")
+    
+    if not os.path.exists(os.path.join(project_dir, "Dockerfile")):
+        print(f"  {Colors.RED}❌ No Dockerfile found{Colors.ENDC}")
+        return 1
+    
+    tag = f"{name.lower()}:{'latest' if prod else 'preview'}"
+    
+    try:
+        # Build
+        print(f"  {Colors.YELLOW}⏳ Building {tag}...{Colors.ENDC}")
+        build = subprocess.run(
+            ["docker", "build", "-t", tag, "."], 
+            capture_output=True, text=True, cwd=project_dir, timeout=300
+        )
+        if build.returncode != 0:
+            print(f"\n  {Colors.RED}❌ Build failed{Colors.ENDC}")
+            errors = build.stderr.strip().split("\n")[-5:]
+            for line in errors:
+                print(f"     {line}")
+            return 1
+        
+        print(f"  {Colors.GREEN}✅ Image built: {tag}{Colors.ENDC}")
+        
+        # Run
+        print(f"  {Colors.YELLOW}⏳ Starting container...{Colors.ENDC}")
+        run = subprocess.run(
+            ["docker", "run", "-d", "--name", f"{name.lower()}-deploy", "-p", "3000:3000", tag],
+            capture_output=True, text=True, timeout=30
+        )
+        if run.returncode == 0:
+            container_id = run.stdout.strip()[:12]
+            print(f"\n  {Colors.GREEN}✅ Container running: {container_id}{Colors.ENDC}")
+            print(f"  {Colors.BOLD}🔗 http://localhost:3000{Colors.ENDC}")
+            _save_deploy_record(project_dir, "docker", f"localhost:3000", prod)
+            return 0
+        else:
+            print(f"\n  {Colors.YELLOW}⚠️  Container may already exist. Try: docker rm -f {name.lower()}-deploy{Colors.ENDC}")
+            return 1
+    except subprocess.TimeoutExpired:
+        print(f"\n  {Colors.RED}❌ Timed out{Colors.ENDC}")
+        return 1
+
+
+def _save_deploy_record(project_dir: str, platform: str, url: str, prod: bool) -> None:
+    """Save deployment record for history."""
+    try:
+        deploy_log = os.path.join(project_dir, ".mw-deploys.json")
+        deploys = []
+        if os.path.exists(deploy_log):
+            with open(deploy_log) as f:
+                deploys = json.load(f)
+        
+        from datetime import datetime
+        deploys.append({
+            "timestamp": datetime.now().isoformat(),
+            "platform": platform,
+            "url": url,
+            "production": prod,
+            "project": os.path.basename(project_dir)
+        })
+        
+        # Keep last 50
+        deploys = deploys[-50:]
+        
+        with open(deploy_log, "w") as f:
+            json.dump(deploys, f, indent=2)
+    except Exception:
+        pass  # Non-critical
+
+
+def cmd_monitor(args: List[str] = None) -> int:
+    """Monitor project health and uptime.
+    
+    Usage:
+        mw monitor                    # Monitor all registered projects
+        mw monitor <project>          # Monitor specific project
+        mw monitor --urls             # Check all deployed URLs
+    """
+    args = args or []
+    
+    print(f"\n{Colors.BOLD}📊 MyWork Project Monitor{Colors.ENDC}")
+    print(f"{'─' * 50}")
+    
+    # Check deployed URLs from deploy records
+    check_urls = "--urls" in args
+    project_filter = None
+    for a in args:
+        if not a.startswith("-"):
+            project_filter = a
+            break
+    
+    # Find all projects with deploy records
+    import glob
+    deploy_files = glob.glob(os.path.expanduser("~/*/. mw-deploys.json")) + \
+                   glob.glob(os.path.expanduser("~/*/.mw-deploys.json"))
+    
+    # Also check common project locations
+    for base in [os.path.expanduser("~"), "/home/Memo1981"]:
+        for item in os.listdir(base):
+            deploy_file = os.path.join(base, item, ".mw-deploys.json")
+            if os.path.exists(deploy_file) and deploy_file not in deploy_files:
+                deploy_files.append(deploy_file)
+    
+    if not deploy_files:
+        print(f"  {Colors.YELLOW}No deployment records found.{Colors.ENDC}")
+        print(f"  {Colors.YELLOW}💡 Deploy a project first: mw deploy <project>{Colors.ENDC}")
+        return 0
+    
+    for deploy_file in deploy_files:
+        try:
+            with open(deploy_file) as f:
+                deploys = json.load(f)
+            if not deploys:
+                continue
+            
+            last = deploys[-1]
+            project = last.get("project", "unknown")
+            
+            if project_filter and project_filter.lower() != project.lower():
+                continue
+            
+            print(f"\n  {Colors.BOLD}{project}{Colors.ENDC}")
+            print(f"    Platform: {last.get('platform', 'unknown')}")
+            print(f"    Last deploy: {last.get('timestamp', 'unknown')[:19]}")
+            print(f"    Mode: {'Production' if last.get('production') else 'Preview'}")
+            
+            url = last.get("url", "")
+            if url and check_urls:
+                # Quick health check
+                try:
+                    import urllib.request
+                    req = urllib.request.Request(url if url.startswith("http") else f"https://{url}", method="HEAD")
+                    resp = urllib.request.urlopen(req, timeout=10)
+                    print(f"    Status: {Colors.GREEN}✅ UP ({resp.status}){Colors.ENDC}")
+                except Exception as e:
+                    print(f"    Status: {Colors.RED}❌ DOWN ({e}){Colors.ENDC}")
+            elif url:
+                print(f"    URL: {url}")
+            
+            print(f"    Total deploys: {len(deploys)}")
+        except Exception:
+            continue
+    
+    print()
+    return 0
+
+
 def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
@@ -2969,6 +3402,8 @@ def main() -> None:
         "wf": lambda: cmd_workflow(args),
         "analytics": lambda: cmd_analytics_wrapper(args),
         "docs": lambda: cmd_docs(args),
+        "deploy": lambda: cmd_deploy(args),
+        "monitor": lambda: cmd_monitor(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),
