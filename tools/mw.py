@@ -1110,6 +1110,14 @@ def is_auto_linter_running() -> bool:
         return False
 
 
+def cmd_credits(args: List[str]) -> int:
+    """Credits ledger management — Phase 8 Payments."""
+    import subprocess
+    script = os.path.join(os.path.dirname(__file__), "credits_ledger.py")
+    result = subprocess.run([sys.executable, script] + args)
+    return result.returncode
+
+
 def cmd_lint(args: List[str]) -> int:
     """Auto-linting commands."""
     if not args or (len(args) == 1 and args[0] in ["--help", "-h"]):
@@ -2684,6 +2692,7 @@ def main() -> None:
         "autocoder": lambda: cmd_autoforge(args),  # Backwards compatibility alias
         "n8n": lambda: cmd_n8n(args),
         "brain": lambda: cmd_brain(args),
+        "credits": lambda: cmd_credits(args),
         "lint": lambda: cmd_lint(args),
         "setup": lambda: cmd_setup(args),
         "guide": lambda: cmd_guide(args),
