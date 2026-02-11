@@ -53,7 +53,7 @@ TEMPLATES = {
                 "ROADMAP.md": "# {name} Roadmap\n\n## Current Milestone: v1.0\n\n### Phase 1: Setup\n- [ ] Initialize project structure\n- [ ] Configure development environment\n\n### Phase 2: Core Features\n- [ ] Feature 1\n- [ ] Feature 2\n",
                 "STATE.md": "# {name} State\n\n## Current Phase\nPhase 1: Setup\n\n## Last Updated\n{date}\n\n## Recent Decisions\n\n## Blockers\nNone\n\n## Next Steps\n1. Define project requirements\n2. Set up development environment\n",
             },
-            "README.md": "# {name}\n\nCreated with MyWork Framework on {date}\n\n## Getting Started\n\n```bash\ncd projects/{name}\n# Start development\n```\n\n## Structure\n\n```\n{name}/\n├── .planning/     # GSD state files\n└── README.md\n```\n",
+            "README.md": "# {name}\n\nA new project created with MyWork scaffold.\n\n## Quick Start\n\n```bash\n# Set up your development environment\n```\n",
             ".gitignore": "# Dependencies\nnode_modules/\nvenv/\n.venv/\n\n# Environment\n.env\n.env.local\n\n# Build\ndist/\nbuild/\n.next/\n\n# IDE\n.idea/\n.vscode/\n*.swp\n\n# OS\n.DS_Store\nThumbs.db\n\n# Python\n__pycache__/\n*.pyc\n*.pyo\n",
         },
     },
@@ -4177,9 +4177,8 @@ const styles = StyleSheet.create({{
     fontSize: 16,
     fontWeight: '600',
   }},
-}});'''
-                    },
-                    "LoginScreen.tsx": '''import React, {{ useState }} from 'react';
+}});''',
+                        "LoginScreen.tsx": '''import React, {{ useState }} from 'react';
 import {{
   View,
   Text,
@@ -4340,9 +4339,8 @@ const styles = StyleSheet.create({{
     fontSize: 14,
     fontWeight: '600',
   }},
-}});'''
-                    },
-                    "ProfileScreen.tsx": '''import React from 'react';
+}});''',
+                        "ProfileScreen.tsx": '''import React from 'react';
 import {{
   View,
   Text,
@@ -4490,9 +4488,8 @@ const styles = StyleSheet.create({{
     fontSize: 14,
     color: '#8E8E93',
   }},
-}});'''
-                    },
-                    "SettingsScreen.tsx": '''import React, {{ useState }} from 'react';
+}});''',
+                        "SettingsScreen.tsx": '''import React, {{ useState }} from 'react';
 import {{
   View,
   Text,
@@ -4693,8 +4690,8 @@ const styles = StyleSheet.create({{
     fontSize: 14,
     color: '#8E8E93',
   }},
-}});'''
-                    }
+}});''',
+                    },
                 },
                 "assets": {
                     ".gitkeep": ""
@@ -4718,7 +4715,7 @@ const styles = StyleSheet.create({{
   }
 }""",
             },
-            "README.md": "# {name} Mobile App\n\nCross-platform mobile application built with React Native and Expo.\n\n## Features\n\n- 📱 **Cross-Platform**: iOS and Android from one codebase\n- 🎨 **Native UI**: Platform-specific design patterns\n- 🔔 **Push Notifications**: Expo Notifications integration\n- 🔒 **Secure Storage**: Expo SecureStore for sensitive data\n- 🧭 **Navigation**: React Navigation with tab and stack navigators\n- 🎯 **TypeScript**: Full type safety\n- 💾 **Offline Storage**: AsyncStorage for local data\n\n## Quick Start\n\n### Prerequisites\n- Node.js 18+\n- Expo CLI: `npm install -g @expo/cli`\n- For iOS: Xcode\n- For Android: Android Studio\n\n### Development Setup\n\n1. **Install Dependencies**\n   ```bash\n   cd mobile\n   npm install\n   ```\n\n2. **Start Development Server**\n   ```bash\n   npm start\n   ```\n\n3. **Run on Device/Simulator**\n   ```bash\n   # iOS Simulator\n   npm run ios\n   \n   # Android Emulator\n   npm run android\n   \n   # Web (for testing)\n   npm run web\n   ```\n\n### Building for Production\n\n1. **Install EAS CLI**\n   ```bash\n   npm install -g eas-cli\n   ```\n\n2. **Configure EAS Build**\n   ```bash\n   eas build:configure\n   ```\n\n3. **Build for Stores**\n   ```bash\n   # iOS App Store\n   eas build --platform ios\n   \n   # Google Play Store\n   eas build --platform android\n   ```\n\n4. **Submit to Stores**\n   ```bash\n   eas submit\n   ```\n\n## Project Structure\n\n```\nmobile/\n├── src/\n│   ├── screens/          # App screens\n│   ├── components/       # Reusable components\n│   ├── navigation/       # Navigation setup\n│   ├── services/         # API and data services\n│   ├── utils/           # Helper functions\n│   └── types/           # TypeScript types\n├── assets/              # Images, fonts, etc.\n├── app.json            # Expo configuration\n├── eas.json           # EAS Build configuration\n└── App.tsx            # Main app component\n```\n\n## Key Features Implementation\n\n### Navigation\nThe app uses React Navigation with:\n- Stack Navigator for auth flow\n- Bottom Tab Navigator for main app\n- TypeScript navigation typing\n\n### Storage\n- **AsyncStorage**: Non-sensitive data (preferences, cache)\n- **SecureStore**: Sensitive data (tokens, credentials)\n\n### Notifications\nExpo Notifications setup for:\n- Local notifications\n- Push notifications\n- Notification permissions\n\n### Platform-Specific Code\nUse platform-specific styling when needed:\n```typescript\nimport {{ Platform }} from 'react-native';\n\nconst styles = StyleSheet.create({{\n  button: {{\n    padding: Platform.OS === 'ios' ? 12 : 8,\n  }}\n}});\n```\n\n## Configuration\n\n### App Config (app.json)\nUpdate these fields:\n- `name`: App display name\n- `slug`: Expo project slug\n- `bundleIdentifier` (iOS): com.yourcompany.appname\n- `package` (Android): com.yourcompany.appname\n\n### Environment Variables\nCreate `.env` files:\n- `.env.development`\n- `.env.staging`\n- `.env.production`\n\n### App Icons & Splash\nReplace default assets:\n- `assets/icon.png` (1024x1024)\n- `assets/splash.png` (1242x2436)\n- `assets/adaptive-icon.png` (1024x1024, Android)\n\n## Deployment\n\n### Expo Development Builds\nFor custom native code:\n```bash\neas build --profile development\n```\n\n### App Store Connect (iOS)\n1. Create app in App Store Connect\n2. Build with `eas build --platform ios`\n3. Submit with `eas submit --platform ios`\n\n### Google Play Console (Android)\n1. Create app in Google Play Console\n2. Build with `eas build --platform android`\n3. Submit with `eas submit --platform android`\n\n## Tech Stack\n\n- **React Native**: 0.73+\n- **Expo**: SDK 50+\n- **TypeScript**: Full type safety\n- **React Navigation**: v6\n- **Expo Notifications**: Push notifications\n- **AsyncStorage**: Local storage\n- **Expo SecureStore**: Secure storage\n\n## Testing\n\nRun tests with Jest:\n```bash\nnpm test\n```\n\n## Troubleshooting\n\n### Metro Cache Issues\n```bash\nnpx expo start --clear\n```\n\n### iOS Simulator Issues\n```bash\nnpx expo run:ios --device\n```\n\n### Android Build Issues\n```bash\nnpx expo run:android --variant release\n```\n",
+            "README.md": "# {name} Mobile App\n\nBuilt with React Native and Expo.\n\n## Quick Start\n\n```bash\nnpm install\nnpm start\n```\n",
             ".gitignore": "node_modules/\n.expo/\ndist/\nnpm-debug.*\n*.jks\n*.p8\n*.p12\n*.key\n*.mobileprovision\n*.orig.*\nweb-build/\n.env.*\n",
         },
     },
