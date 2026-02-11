@@ -2897,6 +2897,12 @@ def cmd_docs(args: list) -> int:
     return run_docs(args) or 0
 
 
+def _cmd_plugin_wrapper(args: List[str] = None) -> int:
+    """Plugin management command."""
+    from tools.plugin_manager import cmd_plugin
+    return cmd_plugin(args or [])
+
+
 def cmd_version() -> int:
     """Show framework version, Python version, and platform info."""
     import platform
@@ -3404,6 +3410,7 @@ def main() -> None:
         "docs": lambda: cmd_docs(args),
         "deploy": lambda: cmd_deploy(args),
         "monitor": lambda: cmd_monitor(args),
+        "plugin": lambda: _cmd_plugin_wrapper(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),

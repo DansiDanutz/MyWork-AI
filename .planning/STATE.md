@@ -38,6 +38,11 @@ Date: 2026-02-10
 - Added `mw test` — universal test runner (auto-detects Python/Node/Rust/Go/Ruby, supports --coverage, --watch, --verbose)
 - Added `mw workflow` / `mw wf` — exposes workflow engine via CLI
 - 6 new tests → **175 total passing** (8.5s)
+- Added `mw deploy` — universal deploy to Vercel/Railway/Render/Docker (auto-detect, pre-checks, history)
+- Added `mw monitor` — deployment history and URL health checks
+- 11 new tests → **186 total passing**
+- Added `mw plugin` — extensible plugin system (install/uninstall/enable/disable/create from git or local path)
+- 17 new plugin tests → **203 total passing**
 - Added `mw version` command (+ `-v`/`--version` flags) showing version, Python, platform, install path
 
 ### Recent Changes (2026-02-10)
