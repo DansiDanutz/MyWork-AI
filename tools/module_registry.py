@@ -236,11 +236,20 @@ class ModuleRegistry:
         self.modules[module.id] = module
         self._index_module(module)
 
-    def search(self, query: str, type_filter: Optional[str] = None) -> List[Module]:
-        """Search modules by name, tags, or description."""
+    def search(self, query: str, type_filter: Optional[str] = None, 
+              include_brain: bool = True, include_files: bool = True,
+              max_results: int = 50) -> Dict[str, List[Any]]:
+        """Enhanced search across modules, brain entries, and project files."""
         query_lower = query.lower()
-        results = []
+        results = {
+            "modules": [],
+            "brain_entries": [],
+            "project_files": [],
+            "total_found": 0
+        }
 
+        # Search modules (existing functionality)
+        module_results = []
         for module in self.modules.values():
             if type_filter and module.type != type_filter:
                 continue
@@ -265,11 +274,165 @@ class ModuleRegistry:
                 score += 1
 
             if score > 0:
-                results.append((score, module))
+                module_results.append((score, module))
 
         # Sort by score descending
-        results.sort(key=lambda x: x[0], reverse=True)
-        return [m for _, m in results]
+        module_results.sort(key=lambda x: x[0], reverse=True)
+        results["modules"] = [m for _, m in module_results[:max_results//2]]
+
+        # Search brain entries if enabled
+        if include_brain:
+            brain_results = self._search_brain_entries(query_lower, max_results//4)
+            results["brain_entries"] = brain_results
+
+        # Search project files if enabled
+        if include_files:
+            file_results = self._search_project_files(query_lower, max_results//4)
+            results["project_files"] = file_results
+
+        results["total_found"] = len(results["modules"]) + len(results["brain_entries"]) + len(results["project_files"])
+        return results
+    
+    def _search_brain_entries(self, query_lower: str, max_results: int) -> List[Dict[str, Any]]:
+        """Search brain entries for matching content."""
+        brain_results = []
+        
+        try:
+            # Try to import brain functionality
+            brain_data_file = get_mywork_root() / "tools" / "brain_data.json"
+            if brain_data_file.exists():
+                import json
+                brain_data = json.loads(brain_data_file.read_text())
+                entries = brain_data.get("entries", [])
+                
+                for entry in entries:
+                    score = 0
+                    
+                    # Search in content
+                    content = entry.get("content", "").lower()
+                    if query_lower in content:
+                        score += 8
+                    
+                    # Search in tags
+                    tags = entry.get("tags", [])
+                    for tag in tags:
+                        if query_lower in tag.lower():
+                            score += 5
+                    
+                    # Search in type
+                    entry_type = entry.get("type", "").lower()
+                    if query_lower in entry_type:
+                        score += 3
+                    
+                    # Search in context
+                    context = entry.get("context", "").lower()
+                    if query_lower in context:
+                        score += 2
+                    
+                    if score > 0:
+                        brain_results.append({
+                            "score": score,
+                            "id": entry.get("id", ""),
+                            "type": entry.get("type", ""),
+                            "content": entry.get("content", "")[:200] + "..." if len(entry.get("content", "")) > 200 else entry.get("content", ""),
+                            "tags": entry.get("tags", []),
+                            "created": entry.get("created", ""),
+                            "status": entry.get("status", "")
+                        })
+                
+                # Sort and limit results
+                brain_results.sort(key=lambda x: x["score"], reverse=True)
+                brain_results = brain_results[:max_results]
+                
+        except Exception:
+            # Silently fail if brain search is not available
+            pass
+        
+        return brain_results
+    
+    def _search_project_files(self, query_lower: str, max_results: int) -> List[Dict[str, Any]]:
+        """Search project files for matching content."""
+        file_results = []
+        
+        try:
+            projects_dir = get_mywork_root() / "projects"
+            if not projects_dir.exists():
+                return file_results
+            
+            searchable_extensions = {'.py', '.js', '.jsx', '.ts', '.tsx', '.vue', '.md', '.txt', '.json', '.yaml', '.yml'}
+            files_checked = 0
+            max_files_to_check = 1000  # Limit to prevent performance issues
+            
+            for project_dir in projects_dir.iterdir():
+                if not project_dir.is_dir() or project_dir.name.startswith('.'):
+                    continue
+                
+                for file_path in project_dir.rglob("*"):
+                    if files_checked >= max_files_to_check:
+                        break
+                    
+                    if (not file_path.is_file() or 
+                        file_path.suffix.lower() not in searchable_extensions or
+                        any(exclude in str(file_path) for exclude in ['.git', 'node_modules', '__pycache__', '.pytest_cache', 'venv', '.env'])):
+                        continue
+                    
+                    try:
+                        content = file_path.read_text(encoding='utf-8', errors='ignore')
+                        content_lower = content.lower()
+                        
+                        if query_lower in content_lower:
+                            score = 0
+                            
+                            # Filename match
+                            if query_lower in file_path.name.lower():
+                                score += 10
+                            
+                            # Path match
+                            if query_lower in str(file_path.relative_to(projects_dir)).lower():
+                                score += 5
+                            
+                            # Content match - count occurrences
+                            occurrences = content_lower.count(query_lower)
+                            score += min(occurrences, 20)  # Cap at 20 to prevent skewing
+                            
+                            # Find matching lines for preview
+                            matching_lines = []
+                            lines = content.split('\n')
+                            for i, line in enumerate(lines):
+                                if query_lower in line.lower():
+                                    matching_lines.append({
+                                        "line_number": i + 1,
+                                        "content": line.strip()[:200]  # Limit line length
+                                    })
+                                    if len(matching_lines) >= 3:  # Max 3 matching lines
+                                        break
+                            
+                            file_results.append({
+                                "score": score,
+                                "file_path": str(file_path.relative_to(projects_dir)),
+                                "project": project_dir.name,
+                                "file_type": file_path.suffix,
+                                "matching_lines": matching_lines,
+                                "total_matches": occurrences
+                            })
+                        
+                        files_checked += 1
+                    
+                    except Exception:
+                        continue
+                
+                if files_checked >= max_files_to_check:
+                    break
+            
+            # Sort and limit results
+            file_results.sort(key=lambda x: x["score"], reverse=True)
+            file_results = file_results[:max_results]
+            
+        except Exception:
+            # Silently fail if file search is not available
+            pass
+        
+        return file_results
 
     def get_by_type(self, module_type: str) -> List[Module]:
         """Get all modules of a specific type."""

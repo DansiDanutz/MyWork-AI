@@ -38,7 +38,7 @@ import sys
 import re
 import json
 import hashlib
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Any, Optional, Tuple
 from dataclasses import dataclass, asdict, field, fields
@@ -211,20 +211,39 @@ class BrainManager:
         return False
 
     def search(self, query: str) -> List[BrainEntry]:
-        """Search entries by content, context, or tags."""
+        """Search entries by content, context, or tags.
+        
+        Supports multi-word queries: matches full phrase first (higher score),
+        then individual words for broader recall.
+        """
         query_lower = query.lower()
+        query_words = query_lower.split()
         results = []
 
         for entry in self.entries.values():
             score = 0
+            content_lower = entry.content.lower()
+            context_lower = entry.context.lower()
+            tags_lower = [t.lower() for t in entry.tags]
 
-            if query_lower in entry.content.lower():
+            # Full phrase match (highest priority)
+            if query_lower in content_lower:
                 score += 10
-            if query_lower in entry.context.lower():
+            if query_lower in context_lower:
                 score += 5
-            for tag in entry.tags:
-                if query_lower in tag.lower():
+            for tag in tags_lower:
+                if query_lower in tag:
                     score += 3
+
+            # Individual word matches (additive)
+            for word in query_words:
+                if word in content_lower:
+                    score += 2
+                if word in context_lower:
+                    score += 1
+                for tag in tags_lower:
+                    if word in tag:
+                        score += 1
 
             if score > 0:
                 results.append((score, entry))
@@ -1396,6 +1415,249 @@ def cmd_remember(args: List[str]):
     print("   Status: EXPERIMENTAL (validate and update to TESTED when confirmed)")
 
 
+def cmd_learn_git(args: List[str]):
+    """Learn from git commit messages automatically."""
+    import subprocess
+    
+    # Parse arguments
+    project_path = None
+    limit = 50  # Default limit
+    days = 30   # Default days to look back
+    
+    i = 0
+    while i < len(args):
+        if args[i] == "--project" and i + 1 < len(args):
+            project_path = Path(args[i + 1])
+            i += 2
+        elif args[i] == "--limit" and i + 1 < len(args):
+            try:
+                limit = int(args[i + 1])
+            except ValueError:
+                print(f"Error: Invalid limit value: {args[i + 1]}")
+                return
+            i += 2
+        elif args[i] == "--days" and i + 1 < len(args):
+            try:
+                days = int(args[i + 1])
+            except ValueError:
+                print(f"Error: Invalid days value: {args[i + 1]}")
+                return
+            i += 2
+        elif args[i] in ["--help", "-h"]:
+            print("""
+Usage: python brain.py learn-git [options]
+
+Options:
+    --project <path>    Path to git repository (default: current MyWork root)
+    --limit <n>         Maximum number of commits to analyze (default: 50)
+    --days <n>          Number of days to look back (default: 30)
+    --help, -h          Show this help
+
+Examples:
+    python brain.py learn-git
+    python brain.py learn-git --project ../my-project --limit 100
+    python brain.py learn-git --days 7 --limit 20
+""")
+            return
+        else:
+            print(f"Error: Unknown argument: {args[i]}")
+            return
+    
+    # Default to MyWork root if no project specified
+    if project_path is None:
+        try:
+            from config import get_mywork_root
+            project_path = get_mywork_root()
+        except ImportError:
+            project_path = Path(__file__).resolve().parent.parent
+    
+    if not project_path.exists():
+        print(f"Error: Project path does not exist: {project_path}")
+        return
+    
+    if not (project_path / ".git").exists():
+        print(f"Error: Not a git repository: {project_path}")
+        return
+    
+    print(f"🔍 Learning from git commits in: {project_path}")
+    print(f"   Looking back {days} days, analyzing up to {limit} commits")
+    
+    try:
+        # Get git commits from the last N days
+        since_date = datetime.now() - timedelta(days=days)
+        since_str = since_date.strftime("%Y-%m-%d")
+        
+        result = subprocess.run([
+            "git", "log", 
+            f"--since={since_str}",
+            f"--max-count={limit}",
+            "--pretty=format:%H|%s|%ad|%an",
+            "--date=short"
+        ], cwd=project_path, capture_output=True, text=True)
+        
+        if result.returncode != 0:
+            print(f"Error: Failed to get git log: {result.stderr}")
+            return
+        
+        commits = result.stdout.strip().split('\n')
+        if not commits or commits == ['']:
+            print("No commits found in the specified time range")
+            return
+        
+        print(f"   Found {len(commits)} commits to analyze")
+        
+        brain = BrainManager()
+        learned_count = 0
+        patterns = {}
+        
+        # Analyze commits for learning opportunities
+        for commit_line in commits:
+            if '|' not in commit_line:
+                continue
+            
+            try:
+                commit_hash, message, date, author = commit_line.split('|', 3)
+                
+                # Extract learnings from commit messages
+                learnings = extract_learnings_from_commit(message, commit_hash[:8], date, author)
+                
+                for learning in learnings:
+                    # Check if we already have similar learning
+                    existing = brain.search_entries(learning['content'])
+                    if not any(entry.content.lower().strip() == learning['content'].lower().strip() 
+                             for entry in existing):
+                        entry = brain.add(
+                            learning['type'], 
+                            learning['content'],
+                            context=learning['context'],
+                            status="EXPERIMENTAL",
+                            tags=learning.get('tags', [])
+                        )
+                        learned_count += 1
+                        print(f"   🧠 Learned: {entry.id} - {learning['content'][:50]}...")
+                
+                # Track patterns
+                if ':' in message:
+                    commit_type = message.split(':', 1)[0].lower().strip()
+                    patterns[commit_type] = patterns.get(commit_type, 0) + 1
+                
+            except ValueError:
+                continue  # Skip malformed commit lines
+        
+        # Add pattern insights if we found interesting patterns
+        if patterns:
+            common_patterns = [(k, v) for k, v in sorted(patterns.items(), key=lambda x: x[1], reverse=True)][:5]
+            if common_patterns and common_patterns[0][1] >= 5:  # At least 5 occurrences
+                pattern_content = f"Common commit patterns in {project_path.name}: " + \
+                                ", ".join([f"{p[0]} ({p[1]}x)" for p in common_patterns])
+                
+                existing = brain.search_entries(f"commit patterns {project_path.name}")
+                if not any("commit patterns" in entry.content.lower() for entry in existing):
+                    pattern_entry = brain.add(
+                        "pattern",
+                        pattern_content,
+                        context=f"Analyzed {len(commits)} commits from git history",
+                        status="EXPERIMENTAL",
+                        tags=["git", "patterns", "commits"]
+                    )
+                    learned_count += 1
+                    print(f"   🧠 Learned pattern: {pattern_entry.id}")
+        
+        print(f"\n✅ Git learning complete!")
+        print(f"   📚 Added {learned_count} new learnings to brain")
+        print(f"   🔍 Use 'python brain.py search git' to see git-related learnings")
+        
+    except Exception as e:
+        print(f"Error during git learning: {e}")
+
+
+def extract_learnings_from_commit(message: str, commit_hash: str, date: str, author: str) -> List[Dict[str, Any]]:
+    """Extract potential learnings from a git commit message."""
+    learnings = []
+    
+    # Keywords that indicate learning opportunities
+    learning_keywords = {
+        'fix': ['fixed', 'fix', 'bugfix', 'hotfix', 'patch'],
+        'improve': ['improve', 'optimize', 'enhance', 'refactor', 'cleanup'],
+        'add': ['add', 'implement', 'create', 'introduce'],
+        'prevent': ['prevent', 'avoid', 'handle', 'catch', 'validate'],
+        'update': ['update', 'upgrade', 'migrate', 'change']
+    }
+    
+    # Anti-patterns and mistakes
+    mistake_keywords = ['revert', 'undo', 'wrong', 'mistake', 'error', 'broken', 'oops']
+    
+    message_lower = message.lower()
+    
+    # Check for fixes (potential lessons about what to avoid)
+    for keyword in learning_keywords['fix']:
+        if keyword in message_lower:
+            if any(mistake in message_lower for mistake in mistake_keywords):
+                # This looks like fixing a mistake
+                learning_content = f"Avoid: Issue that led to commit '{message[:100]}'"
+                learnings.append({
+                    'type': 'antipattern',
+                    'content': learning_content,
+                    'context': f"Git commit {commit_hash} by {author} on {date}",
+                    'tags': ['git', 'fix', 'mistake']
+                })
+            else:
+                # Regular fix
+                learning_content = f"Fix pattern: {message}"
+                learnings.append({
+                    'type': 'pattern',
+                    'content': learning_content,
+                    'context': f"Git commit {commit_hash} by {author} on {date}",
+                    'tags': ['git', 'fix']
+                })
+    
+    # Check for improvements (potential best practices)
+    for keyword in learning_keywords['improve']:
+        if keyword in message_lower:
+            learning_content = f"Improvement approach: {message}"
+            learnings.append({
+                'type': 'pattern',
+                'content': learning_content,
+                'context': f"Git commit {commit_hash} by {author} on {date}",
+                'tags': ['git', 'improvement']
+            })
+    
+    # Check for security-related commits
+    security_keywords = ['security', 'auth', 'password', 'token', 'encrypt', 'secure', 'vulnerability', 'xss', 'sql injection']
+    if any(sec_word in message_lower for sec_word in security_keywords):
+        learning_content = f"Security consideration: {message}"
+        learnings.append({
+            'type': 'lesson',
+            'content': learning_content,
+            'context': f"Git commit {commit_hash} by {author} on {date}",
+            'tags': ['git', 'security']
+        })
+    
+    # Check for performance-related commits
+    perf_keywords = ['performance', 'optimize', 'speed', 'slow', 'cache', 'memory', 'cpu']
+    if any(perf_word in message_lower for perf_word in perf_keywords):
+        learning_content = f"Performance insight: {message}"
+        learnings.append({
+            'type': 'insight',
+            'content': learning_content,
+            'context': f"Git commit {commit_hash} by {author} on {date}",
+            'tags': ['git', 'performance']
+        })
+    
+    # Check for testing-related commits
+    test_keywords = ['test', 'spec', 'unit', 'integration', 'mock', 'coverage']
+    if any(test_word in message_lower for test_word in test_keywords):
+        learning_content = f"Testing approach: {message}"
+        learnings.append({
+            'type': 'pattern',
+            'content': learning_content,
+            'context': f"Git commit {commit_hash} by {author} on {date}",
+            'tags': ['git', 'testing']
+        })
+    
+    return learnings
+
+
 def main():
     """Main entry point."""
     if len(sys.argv) < 2:
@@ -1421,6 +1683,7 @@ def main():
         "restore": cmd_restore,
         "list": cmd_list,
         "remember": cmd_remember,
+        "learn-git": cmd_learn_git,
         "help": lambda a: print(__doc__),
     }
 

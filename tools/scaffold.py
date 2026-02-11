@@ -4734,11 +4734,11 @@ def create_structure(path: Path, structure: Dict[str, Any], context: Dict[str, s
         else:
             # It's a file
             item_path.parent.mkdir(parents=True, exist_ok=True)
-            try:
-                formatted_content = content.format(**context)
-            except (KeyError, ValueError):
-                # Template contains literal braces (e.g. dicts in code), skip formatting
-                formatted_content = content
+            # Use manual replacement to handle templates with literal braces
+            # (e.g. JSON, Python dicts) that break str.format()
+            formatted_content = content
+            for key, value in context.items():
+                formatted_content = formatted_content.replace("{" + key + "}", value)
             item_path.write_text(formatted_content)
 
 
@@ -4752,7 +4752,7 @@ def create_project(name: str, template: str = "basic") -> bool:
 
     # Validate project name
     import re
-    if not re.match(r'^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$', name):
+    if not name or not re.match(r'^[a-z0-9]([a-z0-9]|-(?!-))*[a-z0-9]$|^[a-z0-9]$', name) or not any(c.isalpha() for c in name):
         print(f"❌ Invalid project name: '{name}'")
         print("   Project names must:")
         print("   • Be lowercase letters, numbers, and hyphens only")

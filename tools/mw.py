@@ -67,6 +67,14 @@ Lint Commands:
     mw lint config --edit    Edit linting configuration
     mw lint stats            Show linting statistics
 
+Code Review & Quality Commands:
+    mw review <file>         AI-powered code review of specific file
+    mw review --diff         Review current git diff
+    mw review --staged       Review staged changes
+    mw docs generate <proj>  Generate AI documentation for project
+    mw health <project>      Score project health (0-100)
+    mw deploy <proj> --platform <vercel|railway|render>  Deploy project
+
 Examples:
     mw setup                 # First-time setup wizard
     mw guide                 # Learn the MyWork workflow
@@ -76,6 +84,10 @@ Examples:
     mw prompt-enhance "build a todo app"  # Enhance prompts for GSD
     mw af start my-app       # Start AutoForge
     mw lint watch            # Auto-fix linting as you code
+    mw review main.py        # AI code review
+    mw docs generate my-app  # Generate documentation
+    mw health my-app         # Check project health
+    mw deploy my-app --platform vercel  # Deploy to Vercel
 """
 
 import os
@@ -127,8 +139,88 @@ def color(text: str, color_code: str) -> str:
     return f"{color_code}{text}{Colors.ENDC}"
 
 
+def validate_input(value: str, name: str, max_length: int = 255, allow_empty: bool = False, 
+                  allow_paths: bool = False) -> bool:
+    """Validate user input for security and correctness.
+    
+    Args:
+        value: The input value to validate
+        name: Name of the input field for error messages
+        max_length: Maximum allowed length
+        allow_empty: Whether empty strings are allowed
+        allow_paths: Whether path characters like / are allowed
+        
+    Returns:
+        True if valid, False if invalid (with error message printed)
+    """
+    if not allow_empty and not value.strip():
+        print(f"{Colors.RED}❌ Error: {name} cannot be empty{Colors.ENDC}")
+        return False
+    
+    if len(value) > max_length:
+        print(f"{Colors.RED}❌ Error: {name} too long (max {max_length} chars, got {len(value)}){Colors.ENDC}")
+        return False
+    
+    # Check for path traversal attempts
+    if not allow_paths:
+        dangerous_patterns = ['../', '..\\', '/./', '/.\\', '/..', '\\..']
+        for pattern in dangerous_patterns:
+            if pattern in value:
+                print(f"{Colors.RED}❌ Error: {name} contains invalid path characters{Colors.ENDC}")
+                return False
+    
+    # Check for null bytes and other dangerous characters
+    if '\x00' in value:
+        print(f"{Colors.RED}❌ Error: {name} contains null bytes{Colors.ENDC}")
+        return False
+    
+    # Check for potentially dangerous characters in non-path inputs
+    if not allow_paths:
+        dangerous_chars = ['<', '>', '|', '&', ';', '$', '`']
+        for char in dangerous_chars:
+            if char in value:
+                print(f"{Colors.RED}❌ Error: {name} contains invalid character: '{char}'{Colors.ENDC}")
+                return False
+    
+    return True
+
+
+def validate_project_name(name: str) -> bool:
+    """Validate project name according to MyWork conventions.
+    
+    Args:
+        name: Project name to validate
+        
+    Returns:
+        True if valid, False if invalid (with error message printed)
+    """
+    if not validate_input(name, "project name", max_length=50):
+        return False
+    
+    # Project name specific validation
+    import re
+    if not re.match(r'^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$', name):
+        print(f"{Colors.RED}❌ Error: Invalid project name '{name}'{Colors.ENDC}")
+        print(f"{Colors.YELLOW}   Project names must:{Colors.ENDC}")
+        print(f"   • Be lowercase letters, numbers, and hyphens only")
+        print(f"   • Start and end with a letter or number")
+        print(f"   • Not contain spaces or special characters")
+        print(f"{Colors.BLUE}   Examples: my-app, api-server, todo-list{Colors.ENDC}")
+        return False
+    
+    return True
+
+
 def run_tool(tool_name: str, args: List[str] = None) -> int:
-    """Run a MyWork tool with arguments."""
+    """Run a MyWork tool with arguments.
+    
+    Args:
+        tool_name: Name of the tool to run (without .py extension)
+        args: Optional list of arguments to pass to the tool
+        
+    Returns:
+        Exit code from the tool (0 for success, non-zero for error)
+    """
     tool_path = TOOLS_DIR / f"{tool_name}.py"
     if not tool_path.exists():
         print(f"{Colors.RED}Tool not found: {tool_name}{Colors.ENDC}")
@@ -138,8 +230,15 @@ def run_tool(tool_name: str, args: List[str] = None) -> int:
     return subprocess.call(cmd)
 
 
-def cmd_status(args: List[str] = None):
-    """Quick status check."""
+def cmd_status(args: Optional[List[str]] = None) -> int:
+    """Run a quick health check of all MyWork framework components.
+    
+    Args:
+        args: Command line arguments, supports --help/-h for usage info
+        
+    Returns:
+        Exit code from the health check tool
+    """
     if args and (args[0] in ["--help", "-h"]):
         print("""
 Status Commands — Framework Health Monitor
@@ -168,15 +267,29 @@ Examples:
     return run_tool("health_check", ["quick"])
 
 
-def cmd_update(args: List[str]):
-    """Check and apply updates."""
+def cmd_update(args: List[str]) -> int:
+    """Check and apply updates for GSD, AutoForge, and n8n components.
+    
+    Args:
+        args: Update command arguments (defaults to 'check' if empty)
+        
+    Returns:
+        Exit code from the auto_update tool
+    """
     if not args:
         args = ["check"]
     return run_tool("auto_update", args)
 
 
-def cmd_search(args: List[str]):
-    """Search module registry."""
+def cmd_search(args: List[str]) -> int:
+    """Search the module registry for reusable code components.
+    
+    Args:
+        args: Search query or --help/-h for usage information
+        
+    Returns:
+        Exit code from the module registry search
+    """
     if not args or (len(args) == 1 and args[0] in ["--help", "-h"]):
         print("""
 Search Commands — Module Registry Search  
@@ -200,11 +313,16 @@ Examples:
     
     if args[0] in ["--help", "-h"]:
         return 0  # Help already shown above
+    
+    # Validate search query
+    query = " ".join(args)
+    if not validate_input(query, "search query", max_length=200, allow_empty=False):
+        return 1
         
     return run_tool("module_registry", ["search"] + args)
 
 
-def cmd_new(args: List[str]):
+def cmd_new(args: List[str]) -> int:
     """Create new project."""
     if not args or (len(args) == 1 and args[0] in ["--help", "-h"]):
         print("""
@@ -239,32 +357,44 @@ Examples:
     
     if args[0] in ["--help", "-h"]:
         return 0  # Help already shown above
+    
+    # Validate project name if provided
+    if len(args) > 0:
+        project_name = args[0]
+        if not validate_project_name(project_name):
+            return 1
+    
+    # Validate template name if provided
+    if len(args) > 1:
+        template = args[1]
+        if not validate_input(template, "template name", max_length=50):
+            return 1
         
     return run_tool("scaffold", ["new"] + args)
 
 
-def cmd_scan():
+def cmd_scan() -> int:
     """Scan projects for modules."""
     print(f"\n{Colors.BOLD}🔍 Scanning projects for modules...{Colors.ENDC}")
     return run_tool("module_registry", ["scan"])
 
 
-def cmd_fix():
+def cmd_fix() -> int:
     """Auto-fix issues."""
     return run_tool("health_check", ["fix"])
 
 
-def cmd_report():
+def cmd_report() -> int:
     """Generate health report."""
     return run_tool("health_check", ["report"])
 
 
-def cmd_doctor():
+def cmd_doctor() -> int:
     """Full system diagnostics."""
     return run_tool("health_check")
 
 
-def cmd_dashboard(args: List[str] = None):
+def cmd_dashboard(args: Optional[List[str]] = None) -> None:
     """Interactive framework dashboard with metrics and status."""
     if args and (args[0] in ["--help", "-h"]):
         print("""
@@ -426,7 +556,7 @@ Examples:
     return 0
 
 
-def cmd_projects():
+def cmd_projects() -> None:
     """List all projects."""
     args: Optional[List[str]] = None
     if len(sys.argv) > 2:
@@ -639,13 +769,18 @@ def tick_cross(condition: bool) -> str:
     return f"{Colors.GREEN}✓{Colors.ENDC}" if condition else f"{Colors.RED}✗{Colors.ENDC}"
 
 
-def cmd_open(args: List[str]):
+def cmd_open(args: List[str]) -> None:
     """Open project in VS Code."""
     if not args:
+        print(f"{Colors.RED}❌ Error: Project name required{Colors.ENDC}")
         print("Usage: mw open <project-name>")
         return 1
 
     project_name = args[0]
+    
+    # Validate project name
+    if not validate_project_name(project_name):
+        return 1
     project_path = PROJECTS_DIR / project_name
 
     if not project_path.exists():
@@ -657,13 +792,18 @@ def cmd_open(args: List[str]):
     return 0
 
 
-def cmd_cd(args: List[str]):
+def cmd_cd(args: List[str]) -> None:
     """Print cd command for project."""
     if not args:
+        print(f"{Colors.RED}❌ Error: Project name required{Colors.ENDC}")
         print("Usage: mw cd <project-name>")
         return 1
 
     project_name = args[0]
+    
+    # Validate project name
+    if not validate_project_name(project_name):
+        return 1
     project_path = PROJECTS_DIR / project_name
 
     if not project_path.exists():
@@ -674,7 +814,7 @@ def cmd_cd(args: List[str]):
     return 0
 
 
-def cmd_autoforge(args: List[str]):
+def cmd_autoforge(args: List[str]) -> int:
     """AutoForge commands."""
     if not args or (len(args) == 1 and args[0] in ["--help", "-h"]):
         print("""
@@ -794,7 +934,7 @@ Examples:
         return 1
 
 
-def cmd_n8n(args: List[str]):
+def cmd_n8n(args: List[str]) -> int:
     """n8n commands."""
     if not args or (len(args) == 1 and args[0] in ["--help", "-h"]):
         print("""
@@ -829,7 +969,7 @@ Examples:
         return 1
 
 
-def cmd_brain(args: List[str]):
+def cmd_brain(args: List[str]) -> int:
     """Brain knowledge vault commands."""
     if not args or (len(args) == 1 and args[0] in ["--help", "-h"]):
         print("""
@@ -970,7 +1110,7 @@ def is_auto_linter_running() -> bool:
         return False
 
 
-def cmd_lint(args: List[str]):
+def cmd_lint(args: List[str]) -> int:
     """Auto-linting commands."""
     if not args or (len(args) == 1 and args[0] in ["--help", "-h"]):
         print("""
@@ -1159,7 +1299,7 @@ echo "✅ All markdown files perfect!"
         return 1
 
 
-def cmd_ecosystem(args: List[str] = None):
+def cmd_ecosystem(args: Optional[List[str]] = None) -> None:
     """Show all live app URLs and ecosystem overview."""
     if args and (args[0] in ["--help", "-h"]):
         print("""
@@ -1233,7 +1373,7 @@ Examples:
     return 0
 
 
-def cmd_marketplace_info(args: List[str] = None):
+def cmd_marketplace_info(args: Optional[List[str]] = None) -> None:
     """Open marketplace information and links."""
     if args and (args[0] in ["--help", "-h"]):
         print("""
@@ -1325,7 +1465,7 @@ Earn from 5 levels of referrals:
     return 0
 
 
-def cmd_links(args: List[str] = None):
+def cmd_links(args: Optional[List[str]] = None) -> None:
     """Show all useful framework links."""
     if args and (args[0] in ["--help", "-h"]):
         print("""
@@ -1407,7 +1547,7 @@ Examples:
     return 0
 
 
-def cmd_setup(args: List[str] = None):
+def cmd_setup(args: Optional[List[str]] = None) -> None:
     """Setup command for first-time users."""
     if args and (args[0] in ["--help", "-h"]):
         print("""
@@ -1552,7 +1692,7 @@ Examples:
     return 0
 
 
-def cmd_guide(args: List[str] = None):
+def cmd_guide(args: Optional[List[str]] = None) -> None:
     """Interactive guide showing the full workflow."""
     if args and (args[0] in ["--help", "-h"]):
         print("""
@@ -1671,7 +1811,7 @@ Share your finished project with the community:
     return 0
 
 
-def cmd_prompt_enhance(args: List[str]):
+def cmd_prompt_enhance(args: List[str]) -> None:
     """Enhance user prompts for GSD."""
     if not args or (len(args) == 1 and args[0] in ["--help", "-h"]):
         print("""
@@ -1831,12 +1971,687 @@ Examples:
     return 0
 
 
-def print_help():
+def cmd_init(args: List[str] = None):
+    """Initialize current directory as a MyWork project."""
+    import datetime
+    if args and (args[0] in ["--help", "-h"]):
+        print("""
+Init Commands — Initialize MyWork Project
+========================================
+Usage:
+    mw init                         Initialize current directory as MyWork project
+    mw init --help                  Show this help message
+
+Description:
+    Initialize the current directory as a MyWork project by creating:
+    • .mw/ configuration directory
+    • .env environment file
+    • README.md template
+    • Basic project structure
+
+Examples:
+    mw init                         # Initialize current directory
+""")
+        return 0
+        
+    current_dir = Path.cwd()
+    print(f"{Colors.BOLD}🚀 Initializing MyWork project in: {current_dir}{Colors.ENDC}")
+    
+    # Create .mw config directory
+    mw_dir = current_dir / ".mw"
+    mw_dir.mkdir(exist_ok=True)
+    
+    # Create config file
+    config_content = {
+        "project_name": current_dir.name,
+        "created_at": str(datetime.datetime.now()),
+        "version": "1.0.0",
+        "type": "basic",
+        "brain_enabled": True,
+        "autoforge_enabled": True
+    }
+    
+    config_file = mw_dir / "config.json"
+    config_file.write_text(json.dumps(config_content, indent=2))
+    print(f"   ✅ Created .mw/config.json")
+    
+    # Create .env if it doesn't exist
+    env_file = current_dir / ".env"
+    if not env_file.exists():
+        env_content = """# MyWork Project Environment Variables
+# Add your API keys and configuration here
+
+# Development settings
+DEBUG=true
+ENVIRONMENT=development
+
+# API Keys (optional)
+# OPENAI_API_KEY=your_key_here
+"""
+        env_file.write_text(env_content)
+        print(f"   ✅ Created .env file")
+    else:
+        print(f"   ⚪ .env already exists")
+    
+    # Create README template if it doesn't exist
+    readme_file = current_dir / "README.md"
+    if not readme_file.exists():
+        readme_content = f"""# {current_dir.name}
+
+A MyWork-AI project.
+
+## Getting Started
+
+This project was initialized with MyWork-AI framework.
+
+### Prerequisites
+
+- Python 3.11+
+- MyWork-AI framework: `pip install mywork-ai`
+
+### Installation
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd {current_dir.name}
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set up environment
+cp .env.example .env  # Edit with your settings
+```
+
+### Usage
+
+```bash
+# Start development
+mw status          # Check project health
+mw brain --help    # Knowledge management
+mw af start .      # Start AutoForge (optional)
+```
+
+### MyWork Commands
+
+- `mw status` - Check project health
+- `mw brain search <query>` - Search knowledge base
+- `mw lint scan` - Code quality check
+- `mw dashboard` - Framework overview
+
+## Contributing
+
+This project follows MyWork-AI best practices. See `mw guide` for the complete workflow.
+
+## License
+
+MIT License - see LICENSE file for details.
+"""
+        readme_file.write_text(readme_content)
+        print(f"   ✅ Created README.md template")
+    else:
+        print(f"   ⚪ README.md already exists")
+    
+    # Create gitignore if it doesn't exist
+    gitignore_file = current_dir / ".gitignore"
+    if not gitignore_file.exists():
+        gitignore_content = """# MyWork-AI project gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.env
+.venv
+env.bak/
+venv.bak/
+
+# MyWork
+.mw/cache/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+"""
+        gitignore_file.write_text(gitignore_content)
+        print(f"   ✅ Created .gitignore")
+    else:
+        print(f"   ⚪ .gitignore already exists")
+    
+    print(f"\n{Colors.GREEN}🎉 Project initialized successfully!{Colors.ENDC}")
+    print(f"{Colors.BLUE}Next steps:{Colors.ENDC}")
+    print(f"   • Run 'mw status' to check project health")
+    print(f"   • Run 'mw guide' for workflow guidance")
+    print(f"   • Edit .env with your configuration")
+    
+    return 0
+
+
+def cmd_stats(args: List[str] = None):
+    """Show framework-wide statistics."""
+    if args and (args[0] in ["--help", "-h"]):
+        print("""
+Stats Commands — Framework Statistics
+====================================
+Usage:
+    mw stats                        Show framework-wide statistics
+    mw stats --help                 Show this help message
+
+Description:
+    Displays comprehensive statistics about your MyWork framework including:
+    • Total projects count
+    • Brain entries count
+    • Lines of code across all projects
+    • Git commits count
+    • Framework usage metrics
+
+Examples:
+    mw stats                        # Show all statistics
+""")
+        return 0
+    
+    print(f"{Colors.BOLD}{Colors.BLUE}📊 MyWork-AI Framework Statistics{Colors.ENDC}")
+    print(f"{Colors.BLUE}{'=' * 50}{Colors.ENDC}")
+    
+    stats = {}
+    
+    # Count projects
+    if PROJECTS_DIR.exists():
+        projects = [p for p in PROJECTS_DIR.iterdir() if p.is_dir() and not p.name.startswith('.')]
+        stats['projects'] = len(projects)
+    else:
+        stats['projects'] = 0
+    
+    # Count brain entries
+    brain_file = MYWORK_ROOT / "tools" / "brain_data.json"
+    if brain_file.exists():
+        try:
+            brain_data = json.loads(brain_file.read_text())
+            stats['brain_entries'] = len(brain_data.get('entries', []))
+        except:
+            stats['brain_entries'] = 0
+    else:
+        stats['brain_entries'] = 0
+    
+    # Count lines of code (Python files only for performance)
+    total_lines = 0
+    total_files = 0
+    
+    for root, dirs, files in os.walk(MYWORK_ROOT):
+        # Skip certain directories
+        dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['node_modules', '__pycache__', 'venv', 'env']]
+        
+        for file in files:
+            if file.endswith(('.py', '.js', '.jsx', '.ts', '.tsx', '.vue', '.md')):
+                file_path = Path(root) / file
+                try:
+                    lines = len(file_path.read_text().splitlines())
+                    total_lines += lines
+                    total_files += 1
+                except:
+                    continue
+    
+    stats['total_lines'] = total_lines
+    stats['total_files'] = total_files
+    
+    # Count git commits
+    try:
+        result = subprocess.run(
+            ['git', 'rev-list', '--count', 'HEAD'],
+            cwd=MYWORK_ROOT,
+            capture_output=True,
+            text=True
+        )
+        if result.returncode == 0:
+            stats['git_commits'] = int(result.stdout.strip())
+        else:
+            stats['git_commits'] = 0
+    except:
+        stats['git_commits'] = 0
+    
+    # Framework size
+    try:
+        result = subprocess.run(['du', '-sh', str(MYWORK_ROOT)], capture_output=True, text=True)
+        if result.returncode == 0:
+            stats['framework_size'] = result.stdout.split()[0]
+        else:
+            stats['framework_size'] = 'Unknown'
+    except:
+        stats['framework_size'] = 'Unknown'
+    
+    # Display stats in a nice format
+    def stat_line(icon, label, value, color=Colors.GREEN):
+        return f"   {icon} {Colors.BOLD}{label}:{Colors.ENDC} {color}{value}{Colors.ENDC}"
+    
+    print(stat_line("📁", "Total Projects", stats['projects']))
+    print(stat_line("🧠", "Brain Entries", stats['brain_entries']))
+    print(stat_line("📄", "Total Files", stats['total_files']))
+    print(stat_line("📝", "Lines of Code", f"{stats['total_lines']:,}"))
+    print(stat_line("🔄", "Git Commits", stats['git_commits']))
+    print(stat_line("💽", "Framework Size", stats['framework_size']))
+    
+    # Calculate some metrics
+    if stats['projects'] > 0:
+        avg_lines_per_project = stats['total_lines'] // stats['projects']
+        print(stat_line("📊", "Avg Lines/Project", f"{avg_lines_per_project:,}", Colors.BLUE))
+    
+    if stats['git_commits'] > 0 and stats['projects'] > 0:
+        avg_commits_per_project = stats['git_commits'] // stats['projects']
+        print(stat_line("⚡", "Avg Commits/Project", avg_commits_per_project, Colors.BLUE))
+    
+    print(f"\n{Colors.BLUE}💡 Use 'mw dashboard' for detailed project overview{Colors.ENDC}")
+    return 0
+
+
+def cmd_clean(args: List[str] = None):
+    """Clean temporary files across all projects."""
+    if args and (args[0] in ["--help", "-h"]):
+        print("""
+Clean Commands — Clean Temporary Files
+=====================================
+Usage:
+    mw clean                        Clean all temporary files
+    mw clean --help                 Show this help message
+
+Description:
+    Recursively clean temporary files and directories from all projects:
+    • __pycache__/ directories
+    • .pytest_cache/ directories
+    • node_modules/ directories (with --deep flag)
+    • dist/ and build/ directories
+    • *.pyc, *.pyo files
+    • .DS_Store files
+
+Examples:
+    mw clean                        # Clean temp files (safe)
+    mw clean --deep                 # Also remove node_modules
+    mw clean --dry-run              # Show what would be cleaned
+""")
+        return 0
+    
+    import shutil
+    
+    deep_clean = "--deep" in args
+    dry_run = "--dry-run" in args
+    
+    print(f"{Colors.BOLD}🧹 Cleaning temporary files{' (deep mode)' if deep_clean else ''}...{Colors.ENDC}")
+    if dry_run:
+        print(f"{Colors.YELLOW}🔍 DRY RUN - showing what would be cleaned{Colors.ENDC}")
+    
+    cleaned_items = []
+    saved_space = 0
+    
+    # Directories to clean
+    temp_dirs = ["__pycache__", ".pytest_cache", "dist", "build", ".coverage"]
+    if deep_clean:
+        temp_dirs.append("node_modules")
+    
+    # File patterns to clean
+    temp_files = ["*.pyc", "*.pyo", "*.pyd", ".DS_Store", "Thumbs.db", "*.log"]
+    
+    def get_dir_size(path):
+        """Get directory size in bytes."""
+        total = 0
+        try:
+            for dirpath, dirnames, filenames in os.walk(path):
+                for f in filenames:
+                    fp = os.path.join(dirpath, f)
+                    if os.path.exists(fp):
+                        total += os.path.getsize(fp)
+        except:
+            pass
+        return total
+    
+    def format_bytes(bytes_val):
+        """Format bytes to human readable."""
+        for unit in ['B', 'KB', 'MB', 'GB']:
+            if bytes_val < 1024.0:
+                return f"{bytes_val:.1f}{unit}"
+            bytes_val /= 1024.0
+        return f"{bytes_val:.1f}TB"
+    
+    # Clean directories
+    for root, dirs, files in os.walk(MYWORK_ROOT):
+        # Skip .git directories
+        dirs[:] = [d for d in dirs if d != '.git']
+        
+        for dir_name in dirs[:]:  # Create copy to safely modify
+            if dir_name in temp_dirs:
+                dir_path = Path(root) / dir_name
+                if dir_path.exists():
+                    size = get_dir_size(dir_path)
+                    if dry_run:
+                        print(f"   🗂️  Would remove: {dir_path} ({format_bytes(size)})")
+                        cleaned_items.append(dir_path)
+                        saved_space += size
+                    else:
+                        try:
+                            shutil.rmtree(dir_path)
+                            print(f"   ✅ Removed: {dir_path} ({format_bytes(size)})")
+                            cleaned_items.append(dir_path)
+                            saved_space += size
+                        except Exception as e:
+                            print(f"   ❌ Failed to remove {dir_path}: {e}")
+    
+    # Clean individual files
+    for pattern in temp_files:
+        for file_path in Path(MYWORK_ROOT).rglob(pattern):
+            # Skip .git directories
+            if '.git' in file_path.parts:
+                continue
+            
+            try:
+                size = file_path.stat().st_size
+                if dry_run:
+                    print(f"   📄 Would remove: {file_path} ({format_bytes(size)})")
+                    cleaned_items.append(file_path)
+                    saved_space += size
+                else:
+                    file_path.unlink()
+                    print(f"   ✅ Removed: {file_path} ({format_bytes(size)})")
+                    cleaned_items.append(file_path)
+                    saved_space += size
+            except Exception as e:
+                if not dry_run:
+                    print(f"   ❌ Failed to remove {file_path}: {e}")
+    
+    # Summary
+    print(f"\n{Colors.BOLD}📊 Cleanup Summary:{Colors.ENDC}")
+    print(f"   Items {'would be ' if dry_run else ''}cleaned: {Colors.GREEN}{len(cleaned_items)}{Colors.ENDC}")
+    print(f"   Space {'would be ' if dry_run else ''}freed: {Colors.GREEN}{format_bytes(saved_space)}{Colors.ENDC}")
+    
+    if not dry_run and saved_space > 0:
+        print(f"{Colors.GREEN}✅ Cleanup completed successfully!{Colors.ENDC}")
+    elif dry_run:
+        print(f"{Colors.BLUE}💡 Run 'mw clean' without --dry-run to actually clean{Colors.ENDC}")
+    
+    return 0
+
+
+def cmd_backup(args: List[str] = None):
+    """Backup all projects and brain data."""
+    if args and (args[0] in ["--help", "-h"]):
+        print("""
+Backup Commands — Framework Backup
+==================================
+Usage:
+    mw backup                       Create timestamped backup
+    mw backup --help                Show this help message
+
+Description:
+    Creates a timestamped archive containing:
+    • All projects in /projects
+    • Brain data and configuration
+    • Framework configuration
+    • Environment files (sanitized)
+
+Examples:
+    mw backup                       # Create backup archive
+""")
+        return 0
+    
+    import shutil
+    import tempfile
+    from datetime import datetime
+    
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup_name = f"mywork_backup_{timestamp}"
+    
+    print(f"{Colors.BOLD}📦 Creating MyWork-AI backup: {backup_name}{Colors.ENDC}")
+    
+    # Create backups directory if it doesn't exist
+    backups_dir = MYWORK_ROOT / "backups"
+    backups_dir.mkdir(exist_ok=True)
+    
+    backup_path = backups_dir / f"{backup_name}.zip"
+    
+    try:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir) / backup_name
+            temp_path.mkdir()
+            
+            # Backup projects
+            if PROJECTS_DIR.exists():
+                projects_backup = temp_path / "projects"
+                shutil.copytree(PROJECTS_DIR, projects_backup)
+                print(f"   ✅ Backed up projects directory")
+            
+            # Backup brain data
+            brain_files = ["brain_data.json", "brain.py"]
+            for brain_file in brain_files:
+                brain_path = TOOLS_DIR / brain_file
+                if brain_path.exists():
+                    shutil.copy2(brain_path, temp_path)
+                    print(f"   ✅ Backed up {brain_file}")
+            
+            # Backup configuration
+            config_dirs = [".planning", "tools"]
+            for config_dir in config_dirs:
+                source = MYWORK_ROOT / config_dir
+                if source.exists():
+                    dest = temp_path / config_dir
+                    shutil.copytree(source, dest)
+                    print(f"   ✅ Backed up {config_dir}")
+            
+            # Backup environment (sanitized)
+            env_file = MYWORK_ROOT / ".env"
+            if env_file.exists():
+                env_content = env_file.read_text()
+                # Sanitize by removing sensitive values
+                sanitized_lines = []
+                for line in env_content.split('\n'):
+                    if '=' in line and not line.strip().startswith('#'):
+                        key, _ = line.split('=', 1)
+                        sanitized_lines.append(f"{key}=YOUR_VALUE_HERE")
+                    else:
+                        sanitized_lines.append(line)
+                
+                sanitized_env = temp_path / ".env.template"
+                sanitized_env.write_text('\n'.join(sanitized_lines))
+                print(f"   ✅ Backed up .env (sanitized)")
+            
+            # Create metadata
+            metadata = {
+                "backup_created": datetime.now().isoformat(),
+                "mywork_root": str(MYWORK_ROOT),
+                "backup_version": "1.0",
+                "included_items": [
+                    "projects/",
+                    "brain_data.json",
+                    ".planning/",
+                    "tools/",
+                    ".env (sanitized)"
+                ]
+            }
+            
+            metadata_file = temp_path / "backup_metadata.json"
+            metadata_file.write_text(json.dumps(metadata, indent=2))
+            print(f"   ✅ Created backup metadata")
+            
+            # Create zip archive
+            shutil.make_archive(str(backup_path.with_suffix('')), 'zip', temp_dir)
+            
+        file_size = backup_path.stat().st_size
+        size_mb = file_size / (1024 * 1024)
+        
+        print(f"\n{Colors.GREEN}📦 Backup created successfully!{Colors.ENDC}")
+        print(f"   📁 File: {backup_path}")
+        print(f"   📊 Size: {size_mb:.1f} MB")
+        
+        # Clean old backups (keep last 5)
+        backup_files = sorted(backups_dir.glob("mywork_backup_*.zip"))
+        if len(backup_files) > 5:
+            for old_backup in backup_files[:-5]:
+                old_backup.unlink()
+                print(f"   🗑️  Cleaned old backup: {old_backup.name}")
+        
+        return 0
+        
+    except Exception as e:
+        print(f"{Colors.RED}❌ Backup failed: {e}{Colors.ENDC}")
+        return 1
+
+
+def cmd_changelog(args: List[str] = None):
+    """Generate changelog from git commits."""
+    if args and (args[0] in ["--help", "-h"]):
+        print("""
+Changelog Commands — Auto-generate Changelog
+============================================
+Usage:
+    mw changelog                    Generate changelog from git commits
+    mw changelog --help             Show this help message
+
+Description:
+    Automatically generates a changelog from git commits using conventional
+    commit format. Supports feat:, fix:, docs:, style:, refactor:, test:, chore:
+
+Examples:
+    mw changelog                    # Generate and save changelog
+""")
+        return 0
+    
+    from datetime import datetime
+    
+    print(f"{Colors.BOLD}📝 Generating changelog from git commits...{Colors.ENDC}")
+    
+    try:
+        # Get git log with format
+        result = subprocess.run([
+            'git', 'log', '--pretty=format:%H|%s|%ad|%an', '--date=short'
+        ], cwd=MYWORK_ROOT, capture_output=True, text=True)
+        
+        if result.returncode != 0:
+            print(f"{Colors.RED}❌ Error getting git log: {result.stderr}{Colors.ENDC}")
+            return 1
+        
+        commits = result.stdout.strip().split('\n')
+        if not commits or commits == ['']:
+            print(f"{Colors.YELLOW}⚠️  No git commits found{Colors.ENDC}")
+            return 0
+        
+        # Parse commits
+        changes = {
+            'feat': [],
+            'fix': [],
+            'docs': [],
+            'style': [],
+            'refactor': [],
+            'test': [],
+            'chore': [],
+            'other': []
+        }
+        
+        for commit in commits:
+            if '|' not in commit:
+                continue
+                
+            hash_id, message, date, author = commit.split('|', 3)
+            
+            # Parse conventional commit format
+            commit_type = 'other'
+            if ':' in message:
+                prefix = message.split(':', 1)[0].lower()
+                if prefix in changes:
+                    commit_type = prefix
+                    message = message.split(':', 1)[1].strip()
+            
+            changes[commit_type].append({
+                'hash': hash_id[:8],
+                'message': message,
+                'date': date,
+                'author': author
+            })
+        
+        # Generate changelog
+        changelog_content = f"""# Changelog
+
+All notable changes to MyWork-AI will be documented in this file.
+
+*Generated automatically from git commits on {datetime.now().strftime('%Y-%m-%d')}*
+
+## [Unreleased]
+
+"""
+        
+        # Add sections for each type
+        sections = {
+            'feat': '### ✨ Features',
+            'fix': '### 🐛 Bug Fixes',
+            'docs': '### 📚 Documentation',
+            'style': '### 💄 Styling',
+            'refactor': '### ♻️ Refactoring',
+            'test': '### ✅ Testing',
+            'chore': '### 🔧 Maintenance',
+            'other': '### 📦 Other Changes'
+        }
+        
+        for change_type, section_title in sections.items():
+            if changes[change_type]:
+                changelog_content += f"{section_title}\n\n"
+                for change in changes[change_type][:10]:  # Limit to 10 per section
+                    changelog_content += f"- {change['message']} ({change['hash']})\n"
+                changelog_content += "\n"
+        
+        # Add statistics
+        total_commits = sum(len(changes[ct]) for ct in changes)
+        changelog_content += f"""---
+
+## Statistics
+
+- **Total commits**: {total_commits}
+- **Features**: {len(changes['feat'])}
+- **Bug fixes**: {len(changes['fix'])}
+- **Documentation**: {len(changes['docs'])}
+- **Other changes**: {len(changes['other']) + len(changes['style']) + len(changes['refactor']) + len(changes['test']) + len(changes['chore'])}
+
+Generated by MyWork-AI `mw changelog` command.
+"""
+        
+        # Save changelog
+        changelog_file = MYWORK_ROOT / "CHANGELOG_AUTO.md"
+        changelog_file.write_text(changelog_content)
+        
+        print(f"   ✅ Analyzed {total_commits} commits")
+        print(f"   ✅ Generated changelog: {changelog_file}")
+        print(f"\n{Colors.BOLD}📊 Commit Summary:{Colors.ENDC}")
+        for change_type, count in [(ct, len(changes[ct])) for ct in changes if changes[ct]]:
+            print(f"   {sections[change_type].split()[1]} {count}")
+        
+        return 0
+        
+    except Exception as e:
+        print(f"{Colors.RED}❌ Error generating changelog: {e}{Colors.ENDC}")
+        return 1
+
+
+def print_help() -> None:
     """Print help message."""
     print(__doc__)
 
 
-def main():
+def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
         print_help()
@@ -1844,6 +2659,10 @@ def main():
 
     command = sys.argv[1].lower()
     args = sys.argv[2:]
+    
+    # Validate command input
+    if not validate_input(command, "command", max_length=50):
+        sys.exit(1)
 
     # Command routing
     commands = {
@@ -1873,6 +2692,11 @@ def main():
         "marketplace": lambda: cmd_marketplace_info(args),
         "links": lambda: cmd_links(args),
         "remember": lambda: cmd_brain(["add"] + args),  # Shortcut
+        "init": lambda: cmd_init(args),
+        "stats": lambda: cmd_stats(args),
+        "clean": lambda: cmd_clean(args),
+        "backup": lambda: cmd_backup(args),
+        "changelog": lambda: cmd_changelog(args),
         "help": lambda: print_help() or 0,
         "-h": lambda: print_help() or 0,
         "--help": lambda: print_help() or 0,

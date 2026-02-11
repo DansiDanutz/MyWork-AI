@@ -68,7 +68,7 @@ class TestModuleRegistry:
         results = registry.search("", type_filter="component")
 
         # Only components should be returned
-        for result in results:
+        for result in results.get("modules", []):
             assert result.type == "component"
 
     def test_get_by_type(self, temp_mywork_root, sample_module_registry):
