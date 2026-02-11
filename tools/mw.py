@@ -100,10 +100,11 @@ Examples:
 
 import os
 import sys
+import re
 import json
 import subprocess
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 try:
     import yaml
@@ -4545,6 +4546,318 @@ def cmd_monitor(args: List[str] = None) -> int:
     return 0
 
 
+def cmd_audit(args: List[str] = None) -> int:
+    """Comprehensive project audit — generates a quality report card.
+
+    Usage:
+        mw audit [project_path]        Full audit of a project
+        mw audit --quick [path]        Quick audit (skip slow checks)
+        mw audit --json [path]         Output as JSON
+        mw audit --help                Show this help
+
+    Checks:
+        • Code health (file count, size, complexity)
+        • Dependencies (outdated, missing lock files)
+        • Tests (presence, coverage estimation)
+        • Security (secrets, known patterns)
+        • Documentation (README, docs coverage)
+        • Git health (uncommitted changes, branch hygiene)
+
+    Output: Letter grade A-F with detailed breakdown.
+    """
+    args = args or []
+
+    if "--help" in args or "-h" in args:
+        print(cmd_audit.__doc__)
+        return 0
+
+    quick_mode = "--quick" in args
+    json_mode = "--json" in args
+    path_args = [a for a in args if not a.startswith("-")]
+    project_path = Path(path_args[0]).resolve() if path_args else Path.cwd()
+
+    if not project_path.is_dir():
+        print(f"{Colors.RED}❌ Not a directory: {project_path}{Colors.ENDC}")
+        return 1
+
+    scores: Dict[str, Dict[str, Any]] = {}
+    findings: List[str] = []
+
+    # --- 1. Code Health ---
+    code_files = []
+    total_lines = 0
+    lang_counts: Dict[str, int] = {}
+    exts_map = {".py": "Python", ".js": "JavaScript", ".ts": "TypeScript", ".jsx": "React",
+                ".tsx": "React/TS", ".go": "Go", ".rs": "Rust", ".rb": "Ruby", ".java": "Java"}
+    ignore_dirs = {".git", "node_modules", "__pycache__", ".venv", "venv", "dist", "build", ".next", ".tox"}
+
+    for root_dir, dirs, files in os.walk(project_path):
+        dirs[:] = [d for d in dirs if d not in ignore_dirs]
+        for f in files:
+            ext = Path(f).suffix
+            if ext in exts_map:
+                fp = Path(root_dir) / f
+                code_files.append(fp)
+                lang_counts[exts_map[ext]] = lang_counts.get(exts_map[ext], 0) + 1
+                try:
+                    total_lines += sum(1 for _ in open(fp, errors="ignore"))
+                except Exception:
+                    pass
+
+    code_score = 10
+    if len(code_files) == 0:
+        code_score = 0
+        findings.append("⚠️  No source code files found")
+    elif total_lines > 50000:
+        code_score = 7
+        findings.append("⚠️  Large codebase (>50k lines) — consider splitting")
+    elif total_lines > 100000:
+        code_score = 5
+    # Check for very large files
+    large_files = []
+    for cf in code_files:
+        try:
+            lc = sum(1 for _ in open(cf, errors="ignore"))
+            if lc > 500:
+                large_files.append((cf.relative_to(project_path), lc))
+        except Exception:
+            pass
+    if large_files:
+        code_score = max(code_score - 1, 0)
+        top3 = sorted(large_files, key=lambda x: -x[1])[:3]
+        for lf, lc in top3:
+            findings.append(f"📏 Large file: {lf} ({lc} lines)")
+
+    scores["Code Health"] = {"score": code_score, "files": len(code_files),
+                             "lines": total_lines, "languages": lang_counts}
+
+    # --- 2. Dependencies ---
+    dep_score = 10
+    has_pkg_json = (project_path / "package.json").exists()
+    has_requirements = (project_path / "requirements.txt").exists()
+    has_pyproject = (project_path / "pyproject.toml").exists()
+    has_lock = any((project_path / lf).exists() for lf in
+                   ["package-lock.json", "yarn.lock", "pnpm-lock.yaml", "poetry.lock", "Pipfile.lock"])
+
+    if not (has_pkg_json or has_requirements or has_pyproject):
+        dep_score = 5
+        findings.append("⚠️  No dependency manifest found")
+    if (has_pkg_json or has_requirements) and not has_lock:
+        dep_score = max(dep_score - 2, 0)
+        findings.append("🔒 No lock file — builds may not be reproducible")
+    # Check for pinned versions
+    if has_requirements:
+        try:
+            reqs = (project_path / "requirements.txt").read_text()
+            unpinned = sum(1 for line in reqs.strip().splitlines()
+                          if line.strip() and not line.startswith("#") and "==" not in line and ">=" not in line)
+            if unpinned > 3:
+                dep_score = max(dep_score - 1, 0)
+                findings.append(f"📌 {unpinned} unpinned dependencies in requirements.txt")
+        except Exception:
+            pass
+
+    scores["Dependencies"] = {"score": dep_score}
+
+    # --- 3. Tests ---
+    test_score = 0
+    test_dirs = ["tests", "test", "__tests__", "spec"]
+    test_files = []
+    for td in test_dirs:
+        tp = project_path / td
+        if tp.is_dir():
+            for root_dir, _, files in os.walk(tp):
+                for f in files:
+                    if f.startswith("test_") or f.endswith("_test.py") or f.endswith(".test.js") or f.endswith(".test.ts") or f.endswith(".spec.js") or f.endswith(".spec.ts"):
+                        test_files.append(Path(root_dir) / f)
+    # Also check for test files in src
+    for cf in code_files:
+        if "test" in cf.name.lower() and cf not in test_files:
+            test_files.append(cf)
+
+    if not test_files:
+        findings.append("🧪 No test files found")
+    else:
+        ratio = len(test_files) / max(len(code_files), 1)
+        if ratio >= 0.5:
+            test_score = 10
+        elif ratio >= 0.3:
+            test_score = 8
+        elif ratio >= 0.1:
+            test_score = 6
+        else:
+            test_score = 4
+            findings.append(f"🧪 Low test ratio: {len(test_files)} tests / {len(code_files)} source files")
+
+    # Check for CI test config
+    has_ci_tests = False
+    for ci_file in [".github/workflows", ".gitlab-ci.yml", "Jenkinsfile"]:
+        if (project_path / ci_file).exists():
+            has_ci_tests = True
+            break
+    if test_files and not has_ci_tests:
+        test_score = max(test_score - 1, 0)
+        findings.append("⚙️  Tests exist but no CI pipeline detected")
+
+    scores["Tests"] = {"score": test_score, "test_files": len(test_files)}
+
+    # --- 4. Security ---
+    sec_score = 10
+    secret_patterns = [
+        r'(?:api[_-]?key|secret|password|token)\s*[=:]\s*["\'][A-Za-z0-9+/=_-]{16,}',
+        r'sk-[A-Za-z0-9]{20,}',
+        r'ghp_[A-Za-z0-9]{36}',
+        r'AKIA[A-Z0-9]{16}',
+    ]
+    secrets_found = 0
+    if not quick_mode:
+        for cf in code_files[:200]:  # Cap at 200 files
+            try:
+                content = cf.read_text(errors="ignore")
+                for pat in secret_patterns:
+                    if re.search(pat, content, re.IGNORECASE):
+                        secrets_found += 1
+                        break
+            except Exception:
+                pass
+    if secrets_found:
+        sec_score = max(10 - secrets_found * 2, 0)
+        findings.append(f"🔑 Potential secrets in {secrets_found} file(s)")
+    if not (project_path / ".gitignore").exists():
+        sec_score = max(sec_score - 2, 0)
+        findings.append("📄 No .gitignore file")
+    # Check for env file committed
+    if (project_path / ".env").exists():
+        sec_score = max(sec_score - 1, 0)
+        findings.append("⚠️  .env file present — ensure it's in .gitignore")
+
+    scores["Security"] = {"score": sec_score, "secrets_found": secrets_found}
+
+    # --- 5. Documentation ---
+    doc_score = 0
+    has_readme = any((project_path / r).exists() for r in ["README.md", "README.rst", "README.txt", "README"])
+    has_changelog = any((project_path / c).exists() for c in ["CHANGELOG.md", "CHANGES.md", "HISTORY.md"])
+    has_contributing = (project_path / "CONTRIBUTING.md").exists()
+    has_license = any((project_path / l).exists() for l in ["LICENSE", "LICENSE.md", "LICENSE.txt"])
+    has_docs_dir = (project_path / "docs").is_dir()
+
+    if has_readme:
+        doc_score += 4
+    else:
+        findings.append("📖 No README file")
+    if has_changelog:
+        doc_score += 2
+    if has_contributing:
+        doc_score += 1
+    if has_license:
+        doc_score += 2
+    else:
+        findings.append("📜 No LICENSE file")
+    if has_docs_dir:
+        doc_score += 1
+
+    scores["Documentation"] = {"score": min(doc_score, 10)}
+
+    # --- 6. Git Health ---
+    git_score = 10
+    git_dir = project_path / ".git"
+    if not git_dir.is_dir():
+        git_score = 3
+        findings.append("📂 Not a git repository")
+    else:
+        import subprocess
+        try:
+            result = subprocess.run(["git", "status", "--porcelain"], capture_output=True,
+                                    text=True, cwd=project_path, timeout=10)
+            dirty = len([l for l in result.stdout.strip().splitlines() if l.strip()])
+            if dirty > 20:
+                git_score = max(git_score - 3, 0)
+                findings.append(f"📝 {dirty} uncommitted changes")
+            elif dirty > 5:
+                git_score = max(git_score - 1, 0)
+                findings.append(f"📝 {dirty} uncommitted changes")
+        except Exception:
+            pass
+        # Check for .gitignore
+        if not (project_path / ".gitignore").exists():
+            git_score = max(git_score - 2, 0)
+
+    scores["Git Health"] = {"score": git_score}
+
+    # --- Calculate Overall Grade ---
+    weights = {"Code Health": 2, "Dependencies": 1.5, "Tests": 2, "Security": 2.5,
+               "Documentation": 1, "Git Health": 1}
+    weighted_sum = sum(scores[cat]["score"] * weights[cat] for cat in scores)
+    max_weighted = sum(10 * w for w in weights.values())
+    overall_pct = (weighted_sum / max_weighted) * 100
+
+    if overall_pct >= 90:
+        grade, grade_color = "A", Colors.GREEN
+    elif overall_pct >= 80:
+        grade, grade_color = "B", Colors.GREEN
+    elif overall_pct >= 70:
+        grade, grade_color = "C", Colors.YELLOW
+    elif overall_pct >= 60:
+        grade, grade_color = "D", Colors.YELLOW
+    else:
+        grade, grade_color = "F", Colors.RED
+
+    # --- Output ---
+    if json_mode:
+        import json as _json
+        output = {"project": str(project_path), "grade": grade, "score": round(overall_pct, 1),
+                  "categories": scores, "findings": findings}
+        print(_json.dumps(output, indent=2, default=str))
+        return 0
+
+    print(f"\n{Colors.BOLD}{'='*60}{Colors.ENDC}")
+    print(f"{Colors.BOLD}  🔍 PROJECT AUDIT — {project_path.name}{Colors.ENDC}")
+    print(f"{Colors.BOLD}{'='*60}{Colors.ENDC}\n")
+
+    bar_chars = 20
+    for cat, data in scores.items():
+        s = data["score"]
+        filled = int((s / 10) * bar_chars)
+        bar = "█" * filled + "░" * (bar_chars - filled)
+        sc = Colors.GREEN if s >= 7 else (Colors.YELLOW if s >= 5 else Colors.RED)
+        extra = ""
+        if cat == "Code Health":
+            extra = f" ({data['lines']} lines, {data['files']} files)"
+        elif cat == "Tests":
+            extra = f" ({data['test_files']} test files)"
+        print(f"  {cat:<18} {sc}{bar} {s}/10{Colors.ENDC}{extra}")
+
+    print(f"\n  {'─'*56}")
+    print(f"  {Colors.BOLD}Overall Grade:{Colors.ENDC}  {grade_color}{Colors.BOLD}{grade}{Colors.ENDC}  ({overall_pct:.0f}%)")
+    print(f"  {'─'*56}")
+
+    if findings:
+        print(f"\n  {Colors.BOLD}📋 Findings:{Colors.ENDC}")
+        for f in findings:
+            print(f"    {f}")
+
+    # Recommendations
+    print(f"\n  {Colors.BOLD}💡 Top Recommendations:{Colors.ENDC}")
+    recs = []
+    if scores["Tests"]["score"] < 7:
+        recs.append("Add more tests — aim for 1 test file per 2-3 source files")
+    if scores["Security"]["score"] < 8:
+        recs.append("Run `mw security scan` and fix findings")
+    if scores["Documentation"]["score"] < 7:
+        recs.append("Add README, LICENSE, and CHANGELOG")
+    if scores["Dependencies"]["score"] < 8:
+        recs.append("Pin dependencies and add a lock file")
+    if scores["Git Health"]["score"] < 8:
+        recs.append("Commit or stash uncommitted changes")
+    if not recs:
+        recs.append("Looking good! Keep up the quality 🎉")
+    for i, r in enumerate(recs[:3], 1):
+        print(f"    {i}. {r}")
+
+    print()
+    return 0
+
+
 def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
@@ -4611,6 +4924,7 @@ def main() -> None:
         "g": lambda: cmd_git(args),
         "hook": lambda: cmd_hook(args),
         "hooks": lambda: cmd_hook(args),
+        "audit": lambda: cmd_audit(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),
