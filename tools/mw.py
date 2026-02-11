@@ -989,6 +989,10 @@ Usage:
     mw brain score                  Score all entries (0-100)
     mw brain dedupe [--apply]       Find/remove duplicates
     mw brain prune [--below N]      Remove low-quality entries
+    mw brain semantic <query>       Semantic search (TF-IDF)
+    mw brain duplicates             Find near-duplicate entries
+    mw brain provenance <id>        Show entry history/provenance
+    mw brain reindex                Rebuild semantic search index
     mw brain --help                 Show this help message
 
 Description:
@@ -1101,6 +1105,24 @@ Examples:
 
     elif subcmd == "prune":
         return run_tool("brain_quality", ["prune"] + remaining)
+
+    elif subcmd == "semantic":
+        if not remaining:
+            print("Usage: mw brain semantic <query>")
+            return 1
+        return run_tool("brain_semantic", ["search"] + remaining)
+
+    elif subcmd == "duplicates":
+        return run_tool("brain_semantic", ["dedupe"] + remaining)
+
+    elif subcmd == "provenance":
+        if not remaining:
+            print("Usage: mw brain provenance <entry_id>")
+            return 1
+        return run_tool("brain_semantic", ["provenance"] + remaining)
+
+    elif subcmd == "reindex":
+        return run_tool("brain_semantic", ["reindex"])
 
     else:
         print(f"Unknown brain command: {subcmd}")
