@@ -48,6 +48,9 @@ Date: 2026-02-10
 - Added `mw env` — environment variable management (list/get/set/rm/diff/validate/export/init with masked values)
 - 23 new env tests → **242 total passing**
 - Added `mw version` command (+ `-v`/`--version` flags) showing version, Python, platform, install path
+- Added `mw config` / `mw cfg` — configuration management (list/get/set/reset/rm/path) with ~/.mywork/config.json
+- 15 new config tests → **257 total passing**
+- Updated README badge (was stuck at 84, now 257)
 
 ### Recent Changes (2026-02-10)
 - Added 9 brain tests (deprecate, delete, cleanup, filtering, validation) → 84 total

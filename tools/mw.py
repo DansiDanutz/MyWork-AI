@@ -2903,6 +2903,134 @@ def _cmd_plugin_wrapper(args: List[str] = None) -> int:
     return cmd_plugin(args or [])
 
 
+def cmd_config(args: List[str] = None) -> int:
+    """Manage framework configuration.
+
+    Usage:
+        mw config                     # Show all config
+        mw config list                # Same as above
+        mw config get <key>           # Get a specific value
+        mw config set <key> <value>   # Set a value
+        mw config reset               # Reset to defaults
+        mw config path                # Show config file path
+
+    Config is stored in ~/.mywork/config.json.
+    """
+    import json as _json
+
+    args = args or []
+    sub = args[0] if args else "list"
+
+    config_dir = Path.home() / ".mywork"
+    config_file = config_dir / "config.json"
+
+    DEFAULTS = {
+        "theme": "default",
+        "editor": "auto",
+        "auto_update": True,
+        "telemetry": False,
+        "default_template": "python-api",
+        "git_auto_commit": False,
+        "brain_auto_learn": True,
+        "plugin_auto_update": False,
+        "log_level": "info",
+        "max_brain_entries": 1000,
+    }
+
+    def _load() -> dict:
+        if config_file.exists():
+            try:
+                return _json.loads(config_file.read_text())
+            except Exception:
+                return dict(DEFAULTS)
+        return dict(DEFAULTS)
+
+    def _save(cfg: dict):
+        config_dir.mkdir(parents=True, exist_ok=True)
+        config_file.write_text(_json.dumps(cfg, indent=2) + "\n")
+
+    if sub == "path":
+        print(f"📁 Config file: {config_file}")
+        print(f"   Exists: {'✅ Yes' if config_file.exists() else '❌ No (using defaults)'}")
+        return 0
+
+    if sub in ("list", "show"):
+        cfg = _load()
+        print(f"\n{'='*50}")
+        print(f"  ⚙️  MyWork Configuration")
+        print(f"{'='*50}")
+        for k, v in sorted(cfg.items()):
+            default_mark = " (default)" if k in DEFAULTS and cfg.get(k) == DEFAULTS[k] else " *"
+            print(f"  {k:<25} = {v}{default_mark}")
+        print(f"{'='*50}")
+        print(f"  📁 {config_file}")
+        return 0
+
+    if sub == "get":
+        if len(args) < 2:
+            print("❌ Usage: mw config get <key>")
+            return 1
+        key = args[1]
+        cfg = _load()
+        if key in cfg:
+            print(cfg[key])
+            return 0
+        elif key in DEFAULTS:
+            print(f"{DEFAULTS[key]}  (default)")
+            return 0
+        else:
+            print(f"❌ Unknown config key: {key}")
+            print(f"   Available: {', '.join(sorted(DEFAULTS.keys()))}")
+            return 1
+
+    if sub == "set":
+        if len(args) < 3:
+            print("❌ Usage: mw config set <key> <value>")
+            return 1
+        key, value = args[1], " ".join(args[2:])
+        # Type coercion
+        if value.lower() in ("true", "yes", "1"):
+            value = True
+        elif value.lower() in ("false", "no", "0"):
+            value = False
+        elif value.isdigit():
+            value = int(value)
+        cfg = _load()
+        old = cfg.get(key, "(unset)")
+        cfg[key] = value
+        _save(cfg)
+        print(f"✅ {key}: {old} → {value}")
+        return 0
+
+    if sub == "reset":
+        _save(dict(DEFAULTS))
+        print("✅ Configuration reset to defaults")
+        for k, v in sorted(DEFAULTS.items()):
+            print(f"  {k:<25} = {v}")
+        return 0
+
+    if sub == "rm" or sub == "delete":
+        if len(args) < 2:
+            print("❌ Usage: mw config rm <key>")
+            return 1
+        key = args[1]
+        cfg = _load()
+        if key in cfg:
+            del cfg[key]
+            _save(cfg)
+            if key in DEFAULTS:
+                print(f"✅ Removed {key} (will use default: {DEFAULTS[key]})")
+            else:
+                print(f"✅ Removed {key}")
+            return 0
+        print(f"❌ Key '{key}' not found")
+        return 1
+
+    print(f"❌ Unknown subcommand: {sub}")
+    print("   Usage: mw config [list|get|set|reset|rm|path]")
+    return 1
+
+
 def cmd_version() -> int:
     """Show framework version, Python version, and platform info."""
     import platform
@@ -3982,6 +4110,8 @@ def main() -> None:
         "monitor": lambda: cmd_monitor(args),
         "env": lambda: cmd_env(args),
         "plugin": lambda: _cmd_plugin_wrapper(args),
+        "config": lambda: cmd_config(args),
+        "cfg": lambda: cmd_config(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),
