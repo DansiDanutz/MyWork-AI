@@ -45,6 +45,8 @@ Date: 2026-02-10
 - Added `mw ci` — CI/CD pipeline generator (GitHub Actions, GitLab CI; auto-detects Node/Python/Go/Rust/Docker)
 - 16 new ci tests → **219 total passing**
 - 17 new plugin tests → **203 total passing**
+- Added `mw env` — environment variable management (list/get/set/rm/diff/validate/export/init with masked values)
+- 23 new env tests → **242 total passing**
 - Added `mw version` command (+ `-v`/`--version` flags) showing version, Python, platform, install path
 
 ### Recent Changes (2026-02-10)
