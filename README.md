@@ -16,7 +16,7 @@
 [![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org)
-[![Tests](https://img.shields.io/badge/tests-281%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-336%20passing-brightgreen.svg)](tests/)
 [![Security](https://img.shields.io/badge/security-audited-green.svg)](reports/)
 
 **Build complete applications from idea to marketplace in minutes, not months.**

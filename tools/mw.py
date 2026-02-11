@@ -3268,6 +3268,296 @@ def cmd_git(args: List[str] = None) -> int:
         return 0
 
 
+def cmd_hook(args: List[str] = None) -> int:
+    """Git hooks management — install, remove, list, and create custom hooks.
+
+    Usage:
+        mw hook list                    # List installed hooks and their status
+        mw hook install [hook_name]     # Install a hook (or all recommended hooks)
+        mw hook remove <hook_name>      # Remove a specific hook
+        mw hook run <hook_name>         # Run a hook manually
+        mw hook create <hook_name>      # Create a custom hook from template
+        mw hook status                  # Show hooks health and recommendations
+
+    Recommended hooks: pre-commit (lint+format), commit-msg (conventional commits),
+    pre-push (tests), post-merge (dependency install).
+    """
+    import subprocess as _sp
+    import stat
+
+    args = args or ["list"]
+    sub = args[0] if args else "list"
+    rest = args[1:] if len(args) > 1 else []
+
+    def _run(cmd, capture=True):
+        r = _sp.run(cmd, shell=True, capture_output=capture, text=True)
+        return r.stdout.strip() if capture else r.returncode
+
+    def _is_git():
+        return _run("git rev-parse --is-inside-work-tree") == "true"
+
+    if not _is_git():
+        print("❌ Not inside a git repository")
+        return 1
+
+    hooks_dir = Path(_run("git rev-parse --git-dir")) / "hooks"
+    hooks_dir.mkdir(exist_ok=True)
+
+    # All standard git hooks
+    ALL_HOOKS = [
+        "pre-commit", "prepare-commit-msg", "commit-msg", "post-commit",
+        "pre-rebase", "post-rewrite", "post-checkout", "post-merge",
+        "pre-push", "pre-auto-gc", "post-update",
+    ]
+
+    # Hook templates with smart defaults
+    HOOK_TEMPLATES = {
+        "pre-commit": '''#!/bin/bash
+# MyWork-AI pre-commit hook — lint & format check
+set -e
+
+echo "🔍 Running pre-commit checks..."
+
+# Python: ruff check
+if find . -name "*.py" -not -path "./.git/*" -not -path "./venv/*" | head -1 | grep -q .; then
+    if command -v ruff &>/dev/null; then
+        echo "  🐍 Ruff lint..."
+        ruff check --fix . 2>/dev/null || true
+        git add -u  # Re-add auto-fixed files
+    elif command -v flake8 &>/dev/null; then
+        echo "  🐍 Flake8 lint..."
+        flake8 --max-line-length=120 --exclude=venv,.git . || { echo "❌ Lint failed"; exit 1; }
+    fi
+fi
+
+# Node: eslint check
+if [ -f "package.json" ]; then
+    if command -v npx &>/dev/null && [ -f "node_modules/.bin/eslint" ]; then
+        echo "  📦 ESLint..."
+        npx eslint --fix . 2>/dev/null || true
+        git add -u
+    fi
+fi
+
+# Check for secrets/keys
+if git diff --cached --diff-filter=ACM | grep -iE "(api[_-]?key|secret|password|token)\\s*[:=]\\s*['\"][^'\"]{8,}" | grep -v "example\\|placeholder\\|YOUR_\\|xxx\\|test"; then
+    echo "⚠️  Possible secret detected in staged files! Review before committing."
+    echo "   Use 'mw security scan' for a full check."
+    exit 1
+fi
+
+echo "✅ Pre-commit passed"
+''',
+        "commit-msg": '''#!/bin/bash
+# MyWork-AI commit-msg hook — enforce conventional commits
+MSG_FILE="$1"
+MSG=$(cat "$MSG_FILE")
+
+# Conventional commit pattern: type(scope): description
+PATTERN="^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert|security|wip)(\\([a-zA-Z0-9_-]+\\))?(!)?:\\s.{3,}"
+
+if ! echo "$MSG" | grep -qE "$PATTERN"; then
+    echo "❌ Commit message doesn't follow Conventional Commits format."
+    echo ""
+    echo "Format: <type>(<scope>): <description>"
+    echo ""
+    echo "Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert, security, wip"
+    echo "Example: feat(auth): add OAuth2 login support"
+    echo "Example: fix: resolve null pointer in dashboard"
+    echo ""
+    echo "Your message: $MSG"
+    exit 1
+fi
+
+echo "✅ Commit message OK"
+''',
+        "pre-push": '''#!/bin/bash
+# MyWork-AI pre-push hook — run tests before pushing
+set -e
+
+echo "🧪 Running tests before push..."
+
+# Python tests
+if [ -d "tests" ] && find tests -name "test_*.py" | head -1 | grep -q .; then
+    if command -v pytest &>/dev/null; then
+        echo "  🐍 pytest..."
+        pytest tests/ --tb=short -q || { echo "❌ Tests failed — push aborted"; exit 1; }
+    fi
+fi
+
+# Node tests
+if [ -f "package.json" ] && grep -q '"test"' package.json 2>/dev/null; then
+    echo "  📦 npm test..."
+    npm test --silent 2>/dev/null || { echo "❌ Tests failed — push aborted"; exit 1; }
+fi
+
+echo "✅ All tests passed — pushing"
+''',
+        "post-merge": '''#!/bin/bash
+# MyWork-AI post-merge hook — auto-install deps after pull
+echo "📦 Checking for dependency changes..."
+
+# Python
+if git diff HEAD@{1} --name-only | grep -qE "requirements.*\\.txt|setup\\.py|pyproject\\.toml"; then
+    echo "  🐍 Python deps changed — installing..."
+    pip install -r requirements.txt 2>/dev/null || pip install -e . 2>/dev/null || true
+fi
+
+# Node
+if git diff HEAD@{1} --name-only | grep -q "package-lock.json\\|yarn.lock\\|pnpm-lock.yaml"; then
+    echo "  📦 Node deps changed — installing..."
+    if [ -f "pnpm-lock.yaml" ]; then pnpm install
+    elif [ -f "yarn.lock" ]; then yarn install
+    else npm install
+    fi
+fi
+
+echo "✅ Dependencies up to date"
+''',
+    }
+
+    RECOMMENDED = ["pre-commit", "commit-msg", "pre-push", "post-merge"]
+
+    if sub == "list":
+        print("🪝 Git Hooks Status\n")
+        installed = 0
+        for hook in ALL_HOOKS:
+            hook_path = hooks_dir / hook
+            if hook_path.exists() and not str(hook_path).endswith(".sample"):
+                is_mw = "# MyWork-AI" in hook_path.read_text()
+                tag = "🟢 MyWork" if is_mw else "🔵 Custom"
+                print(f"  {tag}  {hook}")
+                installed += 1
+            elif hook in RECOMMENDED:
+                print(f"  ⚪ {hook} (recommended — run 'mw hook install {hook}')")
+        if installed == 0:
+            print("  No hooks installed. Run 'mw hook install' for recommended set.")
+        print(f"\n📊 {installed} hooks active | {len(RECOMMENDED)} recommended")
+        return 0
+
+    elif sub == "install":
+        target = rest[0] if rest else None
+        hooks_to_install = [target] if target else RECOMMENDED
+
+        for hook_name in hooks_to_install:
+            if hook_name not in HOOK_TEMPLATES:
+                print(f"⚠️  No template for '{hook_name}' — use 'mw hook create {hook_name}'")
+                continue
+            hook_path = hooks_dir / hook_name
+            if hook_path.exists():
+                # Back up existing
+                backup = hooks_dir / f"{hook_name}.backup"
+                hook_path.rename(backup)
+                print(f"  📋 Backed up existing {hook_name} → {hook_name}.backup")
+
+            hook_path.write_text(HOOK_TEMPLATES[hook_name])
+            hook_path.chmod(hook_path.stat().st_mode | stat.S_IEXEC)
+            print(f"  ✅ Installed {hook_name}")
+
+        print(f"\n🪝 {'All recommended hooks' if not target else target} installed!")
+        return 0
+
+    elif sub == "remove":
+        if not rest:
+            print("❌ Usage: mw hook remove <hook_name>")
+            return 1
+        hook_name = rest[0]
+        hook_path = hooks_dir / hook_name
+        if hook_path.exists():
+            hook_path.unlink()
+            print(f"✅ Removed {hook_name}")
+            # Restore backup if exists
+            backup = hooks_dir / f"{hook_name}.backup"
+            if backup.exists():
+                backup.rename(hook_path)
+                print(f"  📋 Restored previous {hook_name} from backup")
+        else:
+            print(f"⚠️  Hook '{hook_name}' not installed")
+        return 0
+
+    elif sub == "run":
+        if not rest:
+            print("❌ Usage: mw hook run <hook_name>")
+            return 1
+        hook_name = rest[0]
+        hook_path = hooks_dir / hook_name
+        if not hook_path.exists():
+            print(f"❌ Hook '{hook_name}' not installed")
+            return 1
+        print(f"🏃 Running {hook_name}...")
+        return _run(str(hook_path), capture=False)
+
+    elif sub == "create":
+        if not rest:
+            print("❌ Usage: mw hook create <hook_name>")
+            return 1
+        hook_name = rest[0]
+        if hook_name not in ALL_HOOKS:
+            print(f"⚠️  '{hook_name}' is not a standard git hook.")
+            print(f"   Standard hooks: {', '.join(ALL_HOOKS)}")
+            return 1
+        hook_path = hooks_dir / hook_name
+        if hook_path.exists():
+            print(f"⚠️  Hook '{hook_name}' already exists. Remove it first with 'mw hook remove {hook_name}'")
+            return 1
+        template = f'''#!/bin/bash
+# MyWork-AI {hook_name} hook — custom
+# Created by: mw hook create {hook_name}
+set -e
+
+echo "🪝 Running {hook_name}..."
+
+# Add your commands here:
+
+
+echo "✅ {hook_name} passed"
+'''
+        hook_path.write_text(template)
+        hook_path.chmod(hook_path.stat().st_mode | stat.S_IEXEC)
+        print(f"✅ Created {hook_name} template at {hook_path}")
+        print(f"   Edit it: $EDITOR {hook_path}")
+        return 0
+
+    elif sub == "status":
+        print("🪝 Hooks Health Check\n")
+        issues = []
+        installed_hooks = []
+        for hook in ALL_HOOKS:
+            hook_path = hooks_dir / hook
+            if hook_path.exists() and not str(hook_path).endswith(".sample"):
+                installed_hooks.append(hook)
+                # Check executable
+                if not os.access(hook_path, os.X_OK):
+                    issues.append(f"  ⚠️  {hook} is not executable (run: chmod +x {hook_path})")
+                # Check shebang
+                first_line = hook_path.read_text().split('\n')[0] if hook_path.read_text() else ""
+                if not first_line.startswith("#!"):
+                    issues.append(f"  ⚠️  {hook} missing shebang line")
+
+        for rec in RECOMMENDED:
+            if rec not in installed_hooks:
+                issues.append(f"  💡 {rec} not installed (recommended)")
+
+        if installed_hooks:
+            print(f"✅ {len(installed_hooks)} hooks active: {', '.join(installed_hooks)}")
+        else:
+            print("⚠️  No hooks installed")
+
+        if issues:
+            print(f"\n📋 {len(issues)} suggestions:")
+            for issue in issues:
+                print(issue)
+        else:
+            print("\n🎉 All hooks healthy!")
+
+        return 0
+
+    else:
+        print(f"❌ Unknown hook subcommand: {sub}")
+        print("Usage: mw hook [list|install|remove|run|create|status]")
+        return 1
+
+
 def cmd_version() -> int:
     """Show framework version, Python version, and platform info."""
     import platform
@@ -4354,6 +4644,8 @@ def main() -> None:
         "sec": lambda: cmd_security(args),
         "git": lambda: cmd_git(args),
         "g": lambda: cmd_git(args),
+        "hook": lambda: cmd_hook(args),
+        "hooks": lambda: cmd_hook(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),
