@@ -985,6 +985,10 @@ Usage:
     mw brain learn-deep             Weekly deep analysis
     mw brain discover               Discover new learnings
     mw brain cleanup                Clean up duplicate entries
+    mw brain quality                Quality report (scores + dupes)
+    mw brain score                  Score all entries (0-100)
+    mw brain dedupe [--apply]       Find/remove duplicates
+    mw brain prune [--below N]      Remove low-quality entries
     mw brain --help                 Show this help message
 
 Description:
@@ -1084,6 +1088,19 @@ Examples:
 
     elif subcmd == "discover":
         return run_tool("brain_learner", ["discover"])
+
+    elif subcmd == "quality":
+        return run_tool("brain_quality", ["report"])
+
+    elif subcmd == "dedupe":
+        apply_flag = ["--apply"] if "--apply" in remaining else []
+        return run_tool("brain_quality", ["dedupe"] + apply_flag)
+
+    elif subcmd == "score":
+        return run_tool("brain_quality", ["score"])
+
+    elif subcmd == "prune":
+        return run_tool("brain_quality", ["prune"] + remaining)
 
     else:
         print(f"Unknown brain command: {subcmd}")
