@@ -2704,6 +2704,12 @@ def print_help() -> None:
     print(__doc__)
 
 
+def cmd_docs(args: list) -> int:
+    """Auto-generate documentation for a project."""
+    from doc_generator import run_docs
+    return run_docs(args) or 0
+
+
 def cmd_version() -> int:
     """Show framework version, Python version, and platform info."""
     import platform
@@ -2772,6 +2778,7 @@ def main() -> None:
         "backup": lambda: cmd_backup(args),
         "changelog": lambda: cmd_changelog(args),
         "analytics": lambda: cmd_analytics_wrapper(args),
+        "docs": lambda: cmd_docs(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),
