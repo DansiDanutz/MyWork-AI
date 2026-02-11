@@ -2698,6 +2698,26 @@ def print_help() -> None:
     print(__doc__)
 
 
+def cmd_version() -> int:
+    """Show framework version, Python version, and platform info."""
+    import platform
+    try:
+        pyproject_path = MYWORK_ROOT / "pyproject.toml"
+        version = "unknown"
+        if pyproject_path.exists():
+            with open(pyproject_path, 'r') as f:
+                for line in f:
+                    if line.startswith('version ='):
+                        version = line.split('=')[1].strip().strip('"')
+                        break
+        print(f"MyWork-AI v{version}")
+        print(f"Python {platform.python_version()} on {platform.system()} {platform.machine()}")
+        print(f"Install: {MYWORK_ROOT}")
+    except Exception as e:
+        print(f"MyWork-AI (version check failed: {e})")
+    return 0
+
+
 def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
@@ -2745,6 +2765,9 @@ def main() -> None:
         "clean": lambda: cmd_clean(args),
         "backup": lambda: cmd_backup(args),
         "changelog": lambda: cmd_changelog(args),
+        "version": lambda: cmd_version(),
+        "-v": lambda: cmd_version(),
+        "--version": lambda: cmd_version(),
         "help": lambda: print_help() or 0,
         "-h": lambda: print_help() or 0,
         "--help": lambda: print_help() or 0,

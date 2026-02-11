@@ -34,6 +34,9 @@ Date: 2026-02-10
 - **Simulation engine**: 5/5 scenarios pass
 - **Security audit**: 0 critical, 5 low-risk remaining
 
+### Recent Changes (2026-02-11)
+- Added `mw version` command (+ `-v`/`--version` flags) showing version, Python, platform, install path
+
 ### Recent Changes (2026-02-10)
 - Added 9 brain tests (deprecate, delete, cleanup, filtering, validation) → 84 total
 - Test coverage for brain module now includes all CRUD + lifecycle operations
