@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from tools.ai_assistant import (
     cmd_ai, cmd_ai_ask, cmd_ai_explain, cmd_ai_fix,
     cmd_ai_refactor, cmd_ai_test, cmd_ai_commit,
-    _get_api_key, _read_file, _get_git_diff,
+    _get_provider_key, _read_file, _get_git_diff,
 )
 
 
@@ -26,11 +26,11 @@ class TestCmdAi:
         assert "AI Assistant" in out
         assert "mw ai ask" in out
 
-    def test_unknown_subcommand(self, capsys):
-        result = cmd_ai(["nonexistent"])
-        assert result == 1
-        out = capsys.readouterr().out
-        assert "Unknown subcommand" in out
+    def test_unknown_subcommand_treated_as_question(self):
+        """Unknown subcommands are treated as questions (convenience shortcut)."""
+        with patch("tools.ai_assistant._call_llm", return_value="mocked answer"):
+            result = cmd_ai(["nonexistent"])
+            assert result == 0
 
     def test_dispatches_ask(self):
         with patch("tools.ai_assistant.cmd_ai_ask", return_value=0) as m:
@@ -68,20 +68,22 @@ class TestGetApiKey:
 
     def test_from_env(self):
         with patch.dict(os.environ, {"OPENROUTER_API_KEY": "test-key"}):
-            assert _get_api_key() == "test-key"
+            assert _get_provider_key("openrouter") == "test-key"
 
     def test_from_config(self, tmp_path):
         config = tmp_path / ".mywork" / "config.json"
         config.parent.mkdir(parents=True)
         config.write_text(json.dumps({"openrouter_api_key": "cfg-key"}))
         with patch.dict(os.environ, {}, clear=True):
-            with patch("tools.ai_assistant.Path.home", return_value=tmp_path):
-                assert _get_api_key() == "cfg-key"
+            with patch("tools.ai_assistant._load_env"):
+                with patch("tools.ai_assistant.Path.home", return_value=tmp_path):
+                    assert _get_provider_key("openrouter") == "cfg-key"
 
     def test_no_key_returns_none(self, tmp_path):
         with patch.dict(os.environ, {}, clear=True):
-            with patch("tools.ai_assistant.Path.home", return_value=tmp_path):
-                assert _get_api_key() is None
+            with patch("tools.ai_assistant._load_env"):
+                with patch("tools.ai_assistant.Path.home", return_value=tmp_path):
+                    assert _get_provider_key("openrouter") is None
 
 
 class TestReadFile:
