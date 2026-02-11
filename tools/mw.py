@@ -23,6 +23,7 @@ Commands:
     ecosystem       Show all live app URLs and ecosystem overview
     marketplace     Open marketplace information and links
     links           Show all useful framework links
+    serve           Start web dashboard (browser UI for mw)
 
 Project Commands:
     mw projects     List all projects (uses project registry if available)
@@ -2906,6 +2907,11 @@ def cmd_docs(args: list) -> int:
     return run_docs(args) or 0
 
 
+def _cmd_serve_wrapper(args: List[str] = None) -> int:
+    """Launch web dashboard."""
+    from tools.web_dashboard import cmd_serve
+    return cmd_serve(args or [])
+
 def _cmd_ai_wrapper(args: List[str] = None) -> int:
     """AI assistant command."""
     from tools.ai_assistant import cmd_ai
@@ -4927,6 +4933,8 @@ def main() -> None:
         "audit": lambda: cmd_audit(args),
         "perf": lambda: run_tool("perf_analyzer", args),
         "performance": lambda: run_tool("perf_analyzer", args),
+        "serve": lambda: _cmd_serve_wrapper(args),
+        "web": lambda: _cmd_serve_wrapper(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),
