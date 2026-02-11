@@ -2923,6 +2923,329 @@ def cmd_version() -> int:
     return 0
 
 
+def cmd_ci(args: List[str] = None) -> int:
+    """Generate CI/CD pipeline configurations for projects.
+    
+    Usage:
+        mw ci generate [project_path] [--platform github|gitlab|bitbucket]
+        mw ci validate [project_path]
+        mw ci templates
+    
+    Generates CI/CD pipelines based on project type detection.
+    """
+    args = args or []
+    sub = args[0] if args else "generate"
+    
+    def _detect_project(path: str) -> dict:
+        """Detect project type, language, and tools."""
+        info = {"path": os.path.abspath(path), "type": "unknown", "lang": [], "tools": [], "features": []}
+        
+        if os.path.exists(os.path.join(path, "package.json")):
+            info["lang"].append("node")
+            try:
+                import json
+                with open(os.path.join(path, "package.json")) as f:
+                    pkg = json.load(f)
+                scripts = pkg.get("scripts", {})
+                deps = {**pkg.get("dependencies", {}), **pkg.get("devDependencies", {})}
+                if "next" in deps: info["type"] = "nextjs"
+                elif "react" in deps: info["type"] = "react"
+                elif "vue" in deps: info["type"] = "vue"
+                elif "express" in deps: info["type"] = "express"
+                else: info["type"] = "node"
+                if "typescript" in deps or "ts-node" in deps: info["tools"].append("typescript")
+                if "jest" in deps or "vitest" in deps or "mocha" in deps: info["features"].append("test")
+                if "eslint" in deps: info["features"].append("lint")
+                if "prettier" in deps: info["features"].append("format")
+                if "test" in scripts: info["features"].append("test")
+                if "lint" in scripts: info["features"].append("lint")
+                if "build" in scripts: info["features"].append("build")
+            except Exception:
+                pass
+        
+        if os.path.exists(os.path.join(path, "requirements.txt")) or \
+           os.path.exists(os.path.join(path, "pyproject.toml")) or \
+           os.path.exists(os.path.join(path, "setup.py")):
+            info["lang"].append("python")
+            if info["type"] == "unknown": info["type"] = "python"
+            if os.path.exists(os.path.join(path, "pyproject.toml")):
+                info["tools"].append("pyproject")
+            for tf in ["pytest.ini", "tox.ini", "tests", "test"]:
+                if os.path.exists(os.path.join(path, tf)):
+                    info["features"].append("test")
+                    break
+        
+        if os.path.exists(os.path.join(path, "go.mod")):
+            info["lang"].append("go"); info["type"] = "go"; info["features"].append("test")
+        if os.path.exists(os.path.join(path, "Cargo.toml")):
+            info["lang"].append("rust"); info["type"] = "rust"; info["features"].append("test")
+        if os.path.exists(os.path.join(path, "Dockerfile")):
+            info["tools"].append("docker")
+        if os.path.exists(os.path.join(path, "docker-compose.yml")) or \
+           os.path.exists(os.path.join(path, "docker-compose.yaml")):
+            info["tools"].append("docker-compose")
+        
+        return info
+    
+    def _gen_github_actions(info: dict) -> str:
+        """Generate GitHub Actions workflow YAML."""
+        lines = [
+            "name: CI/CD Pipeline",
+            "",
+            "on:",
+            "  push:",
+            "    branches: [main, develop]",
+            "  pull_request:",
+            "    branches: [main]",
+            "",
+            "jobs:",
+        ]
+        
+        # Build & Test job
+        if "node" in info["lang"]:
+            node_ver = "20" if info["type"] == "nextjs" else "18"
+            lines += [
+                "  build-and-test:",
+                "    runs-on: ubuntu-latest",
+                "    strategy:",
+                "      matrix:",
+                f"        node-version: [{node_ver}.x]",
+                "",
+                "    steps:",
+                "      - uses: actions/checkout@v4",
+                "",
+                "      - name: Setup Node.js ${{ matrix.node-version }}",
+                "        uses: actions/setup-node@v4",
+                "        with:",
+                "          node-version: ${{ matrix.node-version }}",
+                "          cache: 'npm'",
+                "",
+                "      - name: Install dependencies",
+                "        run: npm ci",
+                "",
+            ]
+            if "lint" in info["features"]:
+                lines += [
+                    "      - name: Lint",
+                    "        run: npm run lint",
+                    "",
+                ]
+            if "test" in info["features"]:
+                lines += [
+                    "      - name: Test",
+                    "        run: npm test",
+                    "",
+                ]
+            if "build" in info["features"]:
+                lines += [
+                    "      - name: Build",
+                    "        run: npm run build",
+                    "",
+                ]
+        
+        elif "python" in info["lang"]:
+            lines += [
+                "  build-and-test:",
+                "    runs-on: ubuntu-latest",
+                "    strategy:",
+                "      matrix:",
+                "        python-version: ['3.10', '3.11', '3.12']",
+                "",
+                "    steps:",
+                "      - uses: actions/checkout@v4",
+                "",
+                "      - name: Setup Python ${{ matrix.python-version }}",
+                "        uses: actions/setup-python@v5",
+                "        with:",
+                "          python-version: ${{ matrix.python-version }}",
+                "",
+                "      - name: Install dependencies",
+                "        run: |",
+                "          python -m pip install --upgrade pip",
+            ]
+            if "pyproject" in info["tools"]:
+                lines.append("          pip install -e '.[dev]'")
+            else:
+                lines += [
+                    "          pip install -r requirements.txt",
+                    "          pip install pytest pytest-cov flake8",
+                ]
+            lines.append("")
+            lines += [
+                "      - name: Lint with flake8",
+                "        run: |",
+                "          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics",
+                "          flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics",
+                "",
+                "      - name: Test with pytest",
+                "        run: pytest --cov --cov-report=xml -v",
+                "",
+            ]
+        
+        elif "go" in info["lang"]:
+            lines += [
+                "  build-and-test:",
+                "    runs-on: ubuntu-latest",
+                "    steps:",
+                "      - uses: actions/checkout@v4",
+                "      - uses: actions/setup-go@v5",
+                "        with:",
+                "          go-version: '1.22'",
+                "      - name: Build",
+                "        run: go build -v ./...",
+                "      - name: Test",
+                "        run: go test -v -race -coverprofile=coverage.out ./...",
+                "",
+            ]
+        
+        elif "rust" in info["lang"]:
+            lines += [
+                "  build-and-test:",
+                "    runs-on: ubuntu-latest",
+                "    steps:",
+                "      - uses: actions/checkout@v4",
+                "      - uses: dtolnay/rust-toolchain@stable",
+                "      - name: Build",
+                "        run: cargo build --verbose",
+                "      - name: Test",
+                "        run: cargo test --verbose",
+                "      - name: Clippy",
+                "        run: cargo clippy -- -D warnings",
+                "",
+            ]
+        
+        # Docker build job
+        if "docker" in info["tools"]:
+            lines += [
+                "",
+                "  docker:",
+                "    needs: build-and-test",
+                "    runs-on: ubuntu-latest",
+                "    if: github.ref == 'refs/heads/main'",
+                "    steps:",
+                "      - uses: actions/checkout@v4",
+                "      - name: Build Docker image",
+                "        run: docker build -t ${{ github.repository }}:${{ github.sha }} .",
+                "",
+            ]
+        
+        return "\n".join(lines)
+    
+    def _gen_gitlab_ci(info: dict) -> str:
+        """Generate GitLab CI YAML."""
+        lines = ["stages:", "  - test", "  - build", "  - deploy", ""]
+        if "node" in info["lang"]:
+            lines += [
+                "test:", "  stage: test", "  image: node:20-alpine", "  script:",
+                "    - npm ci",
+            ]
+            if "lint" in info["features"]: lines.append("    - npm run lint")
+            if "test" in info["features"]: lines.append("    - npm test")
+            lines.append("")
+            if "build" in info["features"]:
+                lines += ["build:", "  stage: build", "  image: node:20-alpine",
+                          "  script:", "    - npm ci", "    - npm run build",
+                          "  artifacts:", "    paths:", "      - dist/", "      - .next/", ""]
+        elif "python" in info["lang"]:
+            lines += [
+                "test:", "  stage: test", "  image: python:3.12-slim", "  script:",
+                "    - pip install -r requirements.txt", "    - pip install pytest",
+                "    - pytest -v", ""
+            ]
+        return "\n".join(lines)
+    
+    if sub == "templates":
+        print(f"\n{Colors.BOLD}📋 Available CI/CD Templates{Colors.ENDC}\n")
+        templates = [
+            ("GitHub Actions", "github", "Most popular, free for public repos"),
+            ("GitLab CI", "gitlab", "Built into GitLab, powerful pipelines"),
+            ("Bitbucket Pipelines", "bitbucket", "Atlassian ecosystem integration"),
+        ]
+        for name, key, desc in templates:
+            print(f"  {Colors.GREEN}▸ {name}{Colors.ENDC} (--platform {key})")
+            print(f"    {Colors.BLUE}{desc}{Colors.ENDC}")
+        print(f"\n  {Colors.YELLOW}Supported project types:{Colors.ENDC} Node.js, Python, Go, Rust, Docker")
+        print(f"  {Colors.YELLOW}Auto-detected features:{Colors.ENDC} tests, linting, builds, Docker\n")
+        return 0
+    
+    if sub == "validate":
+        proj_path = args[1] if len(args) > 1 else "."
+        gh_path = os.path.join(proj_path, ".github", "workflows")
+        gl_path = os.path.join(proj_path, ".gitlab-ci.yml")
+        found = False
+        if os.path.isdir(gh_path):
+            yamls = [f for f in os.listdir(gh_path) if f.endswith(('.yml', '.yaml'))]
+            print(f"{Colors.GREEN}✅ GitHub Actions: {len(yamls)} workflow(s) found{Colors.ENDC}")
+            for y in yamls: print(f"   ▸ {y}")
+            found = True
+        if os.path.exists(gl_path):
+            print(f"{Colors.GREEN}✅ GitLab CI: .gitlab-ci.yml found{Colors.ENDC}")
+            found = True
+        if not found:
+            print(f"{Colors.RED}❌ No CI/CD configuration found{Colors.ENDC}")
+            print(f"   Run: {Colors.BOLD}mw ci generate{Colors.ENDC}")
+            return 1
+        return 0
+    
+    if sub == "generate":
+        proj_path = "."
+        platform = "github"
+        i = 1
+        while i < len(args):
+            if args[i] == "--platform" and i + 1 < len(args):
+                platform = args[i + 1]; i += 2
+            elif not args[i].startswith("-"):
+                proj_path = args[i]; i += 1
+            else:
+                i += 1
+        
+        info = _detect_project(proj_path)
+        print(f"\n{Colors.BOLD}🔍 Project Analysis{Colors.ENDC}")
+        print(f"  Path:     {info['path']}")
+        print(f"  Type:     {Colors.GREEN}{info['type']}{Colors.ENDC}")
+        print(f"  Lang:     {', '.join(info['lang']) or 'unknown'}")
+        print(f"  Tools:    {', '.join(info['tools']) or 'none detected'}")
+        print(f"  Features: {', '.join(set(info['features'])) or 'none detected'}")
+        
+        if info["type"] == "unknown" and not info["lang"]:
+            print(f"\n{Colors.RED}❌ Could not detect project type{Colors.ENDC}")
+            print(f"   Ensure you're in a project directory with package.json, requirements.txt, go.mod, or Cargo.toml")
+            return 1
+        
+        if platform == "github":
+            content = _gen_github_actions(info)
+            out_dir = os.path.join(proj_path, ".github", "workflows")
+            out_file = os.path.join(out_dir, "ci.yml")
+            os.makedirs(out_dir, exist_ok=True)
+        elif platform == "gitlab":
+            content = _gen_gitlab_ci(info)
+            out_file = os.path.join(proj_path, ".gitlab-ci.yml")
+        else:
+            print(f"{Colors.RED}❌ Unsupported platform: {platform}{Colors.ENDC}")
+            return 1
+        
+        # Check if file exists
+        if os.path.exists(out_file):
+            print(f"\n{Colors.YELLOW}⚠️  {out_file} already exists!{Colors.ENDC}")
+            print(f"   Overwriting with new configuration...")
+        
+        with open(out_file, "w") as f:
+            f.write(content)
+        
+        print(f"\n{Colors.GREEN}✅ Generated: {out_file}{Colors.ENDC}")
+        print(f"   Platform: {platform.title()}")
+        print(f"\n{Colors.BLUE}📝 Next steps:{Colors.ENDC}")
+        print(f"   1. Review the generated pipeline: {Colors.BOLD}cat {out_file}{Colors.ENDC}")
+        print(f"   2. Customize environment variables and secrets")
+        print(f"   3. Commit and push to trigger the pipeline")
+        print(f"   4. Validate: {Colors.BOLD}mw ci validate{Colors.ENDC}\n")
+        return 0
+    
+    print(f"{Colors.RED}❌ Unknown ci subcommand: {sub}{Colors.ENDC}")
+    print(f"   Usage: mw ci [generate|validate|templates]")
+    return 1
+
+
 def cmd_deploy(args: List[str] = None) -> int:
     """Deploy a project to Vercel, Railway, Render, or Docker.
     
@@ -3408,6 +3731,7 @@ def main() -> None:
         "wf": lambda: cmd_workflow(args),
         "analytics": lambda: cmd_analytics_wrapper(args),
         "docs": lambda: cmd_docs(args),
+        "ci": lambda: cmd_ci(args),
         "deploy": lambda: cmd_deploy(args),
         "monitor": lambda: cmd_monitor(args),
         "plugin": lambda: _cmd_plugin_wrapper(args),
