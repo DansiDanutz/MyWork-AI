@@ -35,6 +35,9 @@ Date: 2026-02-10
 - **Security audit**: 0 critical, 5 low-risk remaining
 
 ### Recent Changes (2026-02-11)
+- Added `mw test` — universal test runner (auto-detects Python/Node/Rust/Go/Ruby, supports --coverage, --watch, --verbose)
+- Added `mw workflow` / `mw wf` — exposes workflow engine via CLI
+- 6 new tests → **175 total passing** (8.5s)
 - Added `mw version` command (+ `-v`/`--version` flags) showing version, Python, platform, install path
 
 ### Recent Changes (2026-02-10)
