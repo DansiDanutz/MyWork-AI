@@ -2907,6 +2907,16 @@ def cmd_docs(args: list) -> int:
     return run_docs(args) or 0
 
 
+def _cmd_bench_wrapper(args: List[str] = None) -> int:
+    """Project benchmarking."""
+    bench_path = Path(__file__).parent / "bench.py"
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("bench", bench_path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.cmd_bench(args or [])
+
+
 def _cmd_serve_wrapper(args: List[str] = None) -> int:
     """Launch web dashboard."""
     from tools.web_dashboard import cmd_serve
@@ -4931,6 +4941,8 @@ def main() -> None:
         "hook": lambda: cmd_hook(args),
         "hooks": lambda: cmd_hook(args),
         "audit": lambda: cmd_audit(args),
+        "bench": lambda: _cmd_bench_wrapper(args),
+        "benchmark": lambda: _cmd_bench_wrapper(args),
         "perf": lambda: run_tool("perf_analyzer", args),
         "performance": lambda: run_tool("perf_analyzer", args),
         "serve": lambda: _cmd_serve_wrapper(args),

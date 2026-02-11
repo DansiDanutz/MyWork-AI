@@ -1,0 +1,21 @@
+[
+  {
+    "timestamp": "2026-02-11T22:11:01.862693",
+    "git_ref": "6859c8b",
+    "project_type": "python",
+    "metrics": {
+      "file_counts": {
+        ".py": 159,
+        ".ts": 40,
+        ".js": 5,
+        ".tsx": 80
+      },
+      "total_source_files": 284,
+      "project_size_mb": 8.33,
+      "dependency_count": 0,
+      "lines_of_code": 71417,
+      "test_time_s": null,
+      "import_time_s": 0.089
+    }
+  }
+]
