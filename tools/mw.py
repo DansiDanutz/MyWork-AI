@@ -67,6 +67,14 @@ Lint Commands:
     mw lint config --edit    Edit linting configuration
     mw lint stats            Show linting statistics
 
+AI Assistant Commands:
+    mw ai ask "question"     Ask a coding question
+    mw ai explain <file>     Explain code in a file
+    mw ai fix <file>         Fix bugs in code
+    mw ai refactor <file>    Get refactoring suggestions
+    mw ai test <file>        Generate tests for code
+    mw ai commit [--push]    Generate commit message from diff
+
 Code Review & Quality Commands:
     mw review <file>         AI-powered code review of specific file
     mw review --diff         Review current git diff
@@ -2897,6 +2905,12 @@ def cmd_docs(args: list) -> int:
     return run_docs(args) or 0
 
 
+def _cmd_ai_wrapper(args: List[str] = None) -> int:
+    """AI assistant command."""
+    from tools.ai_assistant import cmd_ai
+    return cmd_ai(args or [])
+
+
 def _cmd_plugin_wrapper(args: List[str] = None) -> int:
     """Plugin management command."""
     from tools.plugin_manager import cmd_plugin
@@ -4112,6 +4126,7 @@ def main() -> None:
         "plugin": lambda: _cmd_plugin_wrapper(args),
         "config": lambda: cmd_config(args),
         "cfg": lambda: cmd_config(args),
+        "ai": lambda: _cmd_ai_wrapper(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),

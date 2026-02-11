@@ -49,6 +49,8 @@ Date: 2026-02-10
 - 23 new env tests → **242 total passing**
 - Added `mw version` command (+ `-v`/`--version` flags) showing version, Python, platform, install path
 - Added `mw config` / `mw cfg` — configuration management (list/get/set/reset/rm/path) with ~/.mywork/config.json
+- Added `mw ai` — AI assistant (ask, explain, fix, refactor, test, commit) with OpenRouter multi-model support
+- 24 new ai tests → **281 total passing**
 - 15 new config tests → **257 total passing**
 - Updated README badge (was stuck at 84, now 257)
 
