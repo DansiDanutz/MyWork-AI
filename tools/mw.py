@@ -4925,6 +4925,8 @@ def main() -> None:
         "hook": lambda: cmd_hook(args),
         "hooks": lambda: cmd_hook(args),
         "audit": lambda: cmd_audit(args),
+        "perf": lambda: run_tool("perf_analyzer", args),
+        "performance": lambda: run_tool("perf_analyzer", args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),
