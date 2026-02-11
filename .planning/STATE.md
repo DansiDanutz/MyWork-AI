@@ -53,6 +53,8 @@ Date: 2026-02-10
 - 24 new ai tests → **281 total passing**
 - 15 new config tests → **257 total passing**
 - Updated README badge (was stuck at 84, now 257)
+- Added `mw git` / `mw g` — smart git operations (status, commit with auto-message, log, branch, diff, push, pull, stash, undo, amend, cleanup, passthrough)
+- 18 new git tests → **317 total passing**
 
 ### Recent Changes (2026-02-10)
 - Added 9 brain tests (deprecate, delete, cleanup, filtering, validation) → 84 total

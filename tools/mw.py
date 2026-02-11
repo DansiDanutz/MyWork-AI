@@ -3098,6 +3098,176 @@ def cmd_security(args: list = None) -> int:
     return 0
 
 
+def cmd_git(args: List[str] = None) -> int:
+    """Smart git operations with AI-powered commit messages.
+
+    Usage:
+        mw git status                 # Enhanced git status with summary
+        mw git commit [message]       # Auto-generate commit message if none given
+        mw git log [n]                # Pretty log (default last 10)
+        mw git branch [name]          # List or create branch
+        mw git diff                   # Summarized diff
+        mw git push                   # Push current branch
+        mw git pull                   # Pull with rebase
+        mw git stash [pop]            # Stash or pop changes
+        mw git undo                   # Undo last commit (soft reset)
+        mw git amend [message]        # Amend last commit
+        mw git cleanup                # Delete merged branches
+    """
+    import subprocess as _sp
+    args = args or ["status"]
+    sub = args[0] if args else "status"
+    rest = args[1:] if len(args) > 1 else []
+
+    def _run(cmd, capture=True):
+        r = _sp.run(cmd, shell=True, capture_output=capture, text=True)
+        return r.stdout.strip() if capture else r.returncode
+
+    def _is_git():
+        return _run("git rev-parse --is-inside-work-tree") == "true"
+
+    if not _is_git():
+        print("❌ Not inside a git repository")
+        return 1
+
+    if sub == "status":
+        branch = _run("git branch --show-current")
+        ahead = _run("git rev-list @{u}..HEAD --count 2>/dev/null") or "?"
+        behind = _run("git rev-list HEAD..@{u} --count 2>/dev/null") or "?"
+        staged = len([l for l in _run("git diff --cached --name-only").split('\n') if l])
+        modified = len([l for l in _run("git diff --name-only").split('\n') if l])
+        untracked = len([l for l in _run("git ls-files --others --exclude-standard").split('\n') if l])
+        print(f"🌿 Branch: {branch}")
+        print(f"📊 Staged: {staged} | Modified: {modified} | Untracked: {untracked}")
+        print(f"↑ Ahead: {ahead} | ↓ Behind: {behind}")
+        if staged + modified + untracked == 0:
+            print("✅ Working tree clean")
+        else:
+            print("\n📝 Changes:")
+            _run("git status --short", capture=False)
+        return 0
+
+    elif sub == "commit":
+        # Auto-generate commit message from diff if none provided
+        if rest:
+            msg = " ".join(rest)
+        else:
+            diff = _run("git diff --cached --stat")
+            if not diff:
+                # Auto-stage all if nothing staged
+                _run("git add -A", capture=False)
+                diff = _run("git diff --cached --stat")
+            if not diff:
+                print("Nothing to commit")
+                return 1
+            # Generate smart commit message from diff
+            files_changed = _run("git diff --cached --name-only")
+            diff_summary = _run("git diff --cached --stat")
+            # Detect type from file paths
+            types = set()
+            for f in files_changed.split('\n'):
+                if 'test' in f.lower():
+                    types.add('test')
+                elif 'doc' in f.lower() or 'readme' in f.lower():
+                    types.add('docs')
+                elif 'fix' in _run(f"git diff --cached -- '{f}' 2>/dev/null").lower()[:500]:
+                    types.add('fix')
+                else:
+                    types.add('feat')
+            prefix = sorted(types)[0] if types else 'chore'
+            n_files = len([f for f in files_changed.split('\n') if f])
+            short_files = ", ".join(files_changed.split('\n')[:3])
+            if n_files > 3:
+                short_files += f" (+{n_files - 3} more)"
+            msg = f"{prefix}: update {short_files}"
+        rc = _run(f'git commit -m "{msg}"', capture=False)
+        if rc == 0:
+            print(f"✅ Committed: {msg}")
+        return rc or 0
+
+    elif sub == "log":
+        n = rest[0] if rest else "10"
+        _run(f'git log --oneline --graph --decorate -n {n}', capture=False)
+        return 0
+
+    elif sub == "branch":
+        if rest:
+            _run(f"git checkout -b {rest[0]}", capture=False)
+            print(f"🌿 Created and switched to branch: {rest[0]}")
+        else:
+            current = _run("git branch --show-current")
+            branches = _run("git branch --list").split('\n')
+            for b in branches:
+                marker = "→ " if b.strip().lstrip('* ') == current else "  "
+                print(f"{marker}{b.strip().lstrip('* ')}")
+        return 0
+
+    elif sub == "diff":
+        stat = _run("git diff --stat")
+        if not stat:
+            stat = _run("git diff --cached --stat")
+        if stat:
+            print("📊 Diff Summary:")
+            print(stat)
+            lines = _run("git diff --shortstat") or _run("git diff --cached --shortstat")
+            if lines:
+                print(f"\n{lines}")
+        else:
+            print("No changes")
+        return 0
+
+    elif sub == "push":
+        branch = _run("git branch --show-current")
+        print(f"⬆️ Pushing {branch}...")
+        _run(f"git push origin {branch}", capture=False)
+        return 0
+
+    elif sub == "pull":
+        print("⬇️ Pulling with rebase...")
+        _run("git pull --rebase", capture=False)
+        return 0
+
+    elif sub == "stash":
+        if rest and rest[0] == "pop":
+            _run("git stash pop", capture=False)
+            print("📦 Stash popped")
+        else:
+            _run("git stash", capture=False)
+            print("📦 Changes stashed")
+        return 0
+
+    elif sub == "undo":
+        _run("git reset --soft HEAD~1", capture=False)
+        print("↩️ Last commit undone (changes preserved)")
+        return 0
+
+    elif sub == "amend":
+        if rest:
+            msg = " ".join(rest)
+            _run(f'git commit --amend -m "{msg}"', capture=False)
+        else:
+            _run("git commit --amend --no-edit", capture=False)
+        print("✏️ Last commit amended")
+        return 0
+
+    elif sub == "cleanup":
+        merged = _run("git branch --merged").split('\n')
+        current = _run("git branch --show-current")
+        deleted = 0
+        for b in merged:
+            b = b.strip().lstrip('* ')
+            if b and b != current and b not in ('main', 'master', 'develop'):
+                _run(f"git branch -d {b}")
+                deleted += 1
+        print(f"🧹 Cleaned up {deleted} merged branches")
+        return 0
+
+    else:
+        # Pass through to git
+        _run(f"git {sub} {' '.join(rest)}", capture=False)
+        return 0
+
+
 def cmd_version() -> int:
     """Show framework version, Python version, and platform info."""
     import platform
@@ -4182,6 +4352,8 @@ def main() -> None:
         "ai": lambda: _cmd_ai_wrapper(args),
         "security": lambda: cmd_security(args),
         "sec": lambda: cmd_security(args),
+        "git": lambda: cmd_git(args),
+        "g": lambda: cmd_git(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),
