@@ -1,181 +1,179 @@
-"""Tests for the MyWork plugin manager."""
+#!/usr/bin/env python3
+"""Tests for plugin_manager.py"""
 
 import json
 import os
+import sys
 import shutil
 import tempfile
-from pathlib import Path
-from unittest.mock import patch
-
 import pytest
+from pathlib import Path
+from unittest.mock import patch, MagicMock
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 from tools.plugin_manager import (
-    cmd_plugin,
+    validate_plugin,
     create_plugin_scaffold,
-    disable_plugin,
-    enable_plugin,
-    get_plugin_commands,
     install_plugin,
-    list_plugins,
-    load_plugin_manifest,
     uninstall_plugin,
+    list_plugins,
+    load_registry,
+    save_registry,
+    _security_scan,
+    main,
+    PLUGIN_DIR,
 )
 
 
 @pytest.fixture
-def tmp_plugins(tmp_path, monkeypatch):
-    """Use a temporary plugins directory."""
-    monkeypatch.setattr("tools.plugin_manager.PLUGINS_DIR", tmp_path / "plugins")
-    return tmp_path / "plugins"
+def tmp_plugin_dir(tmp_path, monkeypatch):
+    """Override plugin directory to temp."""
+    monkeypatch.setattr("tools.plugin_manager.PLUGIN_DIR", tmp_path / "plugins")
+    monkeypatch.setattr("tools.plugin_manager.PLUGIN_REGISTRY", tmp_path / "plugins" / "registry.json")
+    return tmp_path
 
 
 @pytest.fixture
 def sample_plugin(tmp_path):
-    """Create a sample plugin directory."""
-    plugin_dir = tmp_path / "sample-plugin"
+    """Create a valid sample plugin."""
+    plugin_dir = tmp_path / "test-plugin"
     plugin_dir.mkdir()
-    manifest = {
-        "name": "sample-plugin",
+    (plugin_dir / "plugin.json").write_text(json.dumps({
+        "name": "test-plugin",
         "version": "1.0.0",
         "description": "A test plugin",
-        "commands": {
-            "greet": {"run": "greet.py", "description": "Say hello"}
-        }
-    }
-    with open(plugin_dir / "plugin.json", "w") as f:
-        json.dump(manifest, f)
-    with open(plugin_dir / "greet.py", "w") as f:
-        f.write('print("Hello from sample!")\n')
+        "author": "Test",
+        "entry": "main.py",
+        "commands": ["test-cmd"],
+    }))
+    (plugin_dir / "main.py").write_text('print("hello")')
     return plugin_dir
 
 
-def test_list_plugins_empty(tmp_plugins):
-    """Empty plugins dir returns empty list."""
-    assert list_plugins() == []
+def test_validate_plugin_valid(sample_plugin):
+    result = validate_plugin(sample_plugin)
+    assert result["valid"] is True
+    assert result["name"] == "test-plugin"
 
 
-def test_load_manifest_missing():
-    """Loading from nonexistent dir returns None."""
-    assert load_plugin_manifest(Path("/nonexistent")) is None
+def test_validate_plugin_missing_manifest(tmp_path):
+    result = validate_plugin(tmp_path)
+    assert result["valid"] is False
+    assert "Missing plugin.json" in result["error"]
 
 
-def test_load_manifest_valid(sample_plugin):
-    """Loading a valid manifest works."""
-    manifest = load_plugin_manifest(sample_plugin)
-    assert manifest is not None
-    assert manifest["name"] == "sample-plugin"
-    assert manifest["version"] == "1.0.0"
+def test_validate_plugin_missing_fields(tmp_path):
+    (tmp_path / "plugin.json").write_text('{"name": "x"}')
+    result = validate_plugin(tmp_path)
+    assert result["valid"] is False
+    assert "Missing fields" in result["error"]
 
 
-def test_install_from_local(tmp_plugins, sample_plugin):
-    """Install plugin from local path."""
+def test_validate_plugin_missing_entry(tmp_path):
+    (tmp_path / "plugin.json").write_text(json.dumps({
+        "name": "x", "version": "1.0", "description": "x", "author": "x"
+    }))
+    result = validate_plugin(tmp_path)
+    assert result["valid"] is False
+    assert "Entry point" in result["error"]
+
+
+def test_security_scan_clean(sample_plugin):
+    warnings = _security_scan(sample_plugin)
+    assert len(warnings) == 0
+
+
+def test_security_scan_suspicious(tmp_path):
+    (tmp_path / "bad.py").write_text('eval("dangerous")')
+    warnings = _security_scan(tmp_path)
+    assert len(warnings) > 0
+    assert "eval(" in warnings[0]
+
+
+def test_create_plugin_scaffold(tmp_path):
+    result = create_plugin_scaffold("my-plugin", str(tmp_path))
+    assert result["success"] is True
+    assert (tmp_path / "my-plugin" / "plugin.json").exists()
+    assert (tmp_path / "my-plugin" / "main.py").exists()
+    assert (tmp_path / "my-plugin" / "README.md").exists()
+
+
+def test_create_plugin_scaffold_exists(tmp_path):
+    (tmp_path / "my-plugin").mkdir()
+    result = create_plugin_scaffold("my-plugin", str(tmp_path))
+    assert result["success"] is False
+
+
+def test_install_from_local(tmp_plugin_dir, sample_plugin):
     result = install_plugin(str(sample_plugin))
-    assert result["ok"] is True
-    assert result["name"] == "sample-plugin"
-    assert (tmp_plugins / "sample-plugin" / "plugin.json").exists()
+    assert result["success"] is True
+    assert result["name"] == "test-plugin"
 
 
-def test_install_duplicate(tmp_plugins, sample_plugin):
-    """Installing same plugin twice fails."""
+def test_install_duplicate_blocked(tmp_plugin_dir, sample_plugin):
     install_plugin(str(sample_plugin))
     result = install_plugin(str(sample_plugin))
-    assert result["ok"] is False
+    assert result["success"] is False
     assert "already installed" in result["error"]
 
 
-def test_uninstall(tmp_plugins, sample_plugin):
-    """Uninstalling removes the plugin."""
+def test_install_force_reinstall(tmp_plugin_dir, sample_plugin):
     install_plugin(str(sample_plugin))
-    result = uninstall_plugin("sample-plugin")
-    assert result["ok"] is True
-    assert not (tmp_plugins / "sample-plugin").exists()
+    result = install_plugin(str(sample_plugin), force=True)
+    assert result["success"] is True
 
 
-def test_uninstall_missing(tmp_plugins):
-    """Uninstalling nonexistent plugin fails."""
-    result = uninstall_plugin("nope")
-    assert result["ok"] is False
-
-
-def test_enable_disable(tmp_plugins, sample_plugin):
-    """Enable/disable toggle works."""
+def test_uninstall(tmp_plugin_dir, sample_plugin):
     install_plugin(str(sample_plugin))
-    result = disable_plugin("sample-plugin")
-    assert result["ok"] is True
-    assert (tmp_plugins / "sample-plugin" / ".disabled").exists()
-
-    result = enable_plugin("sample-plugin")
-    assert result["ok"] is True
-    assert not (tmp_plugins / "sample-plugin" / ".disabled").exists()
+    result = uninstall_plugin("test-plugin")
+    assert result["success"] is True
+    assert len(list_plugins()) == 0
 
 
-def test_list_plugins_with_installed(tmp_plugins, sample_plugin):
-    """List shows installed plugins."""
+def test_uninstall_not_found(tmp_plugin_dir):
+    result = uninstall_plugin("nonexistent")
+    assert result["success"] is False
+
+
+def test_list_plugins_empty(tmp_plugin_dir):
+    assert list_plugins() == []
+
+
+def test_list_plugins_with_installed(tmp_plugin_dir, sample_plugin):
     install_plugin(str(sample_plugin))
     plugins = list_plugins()
     assert len(plugins) == 1
-    assert plugins[0]["name"] == "sample-plugin"
-    assert plugins[0]["_enabled"] is True
+    assert plugins[0]["name"] == "test-plugin"
 
 
-def test_list_plugins_disabled(tmp_plugins, sample_plugin):
-    """Disabled plugins show in list."""
+def test_registry_persistence(tmp_plugin_dir, sample_plugin):
     install_plugin(str(sample_plugin))
-    disable_plugin("sample-plugin")
-    plugins = list_plugins()
-    assert len(plugins) == 1
-    assert plugins[0]["_enabled"] is False
+    reg = load_registry()
+    assert "test-plugin" in reg["plugins"]
 
 
-def test_get_plugin_commands(tmp_plugins, sample_plugin):
-    """Get commands from enabled plugins."""
-    install_plugin(str(sample_plugin))
-    cmds = get_plugin_commands()
-    assert "sample-plugin:greet" in cmds
+def test_cli_help(capsys):
+    result = main(["--help"])
+    assert result == 0
 
 
-def test_get_plugin_commands_disabled(tmp_plugins, sample_plugin):
-    """Disabled plugins don't expose commands."""
-    install_plugin(str(sample_plugin))
-    disable_plugin("sample-plugin")
-    cmds = get_plugin_commands()
-    assert len(cmds) == 0
+def test_cli_list_empty(tmp_plugin_dir, capsys):
+    result = main(["list"])
+    assert result == 0
 
 
-def test_create_scaffold(tmp_path):
-    """Create plugin scaffold generates correct files."""
-    result = create_plugin_scaffold("my-plugin", str(tmp_path))
-    assert result["ok"] is True
-    plugin_dir = tmp_path / "my-plugin"
-    assert (plugin_dir / "plugin.json").exists()
-    assert (plugin_dir / "hello.py").exists()
-    assert (plugin_dir / "README.md").exists()
-    manifest = json.loads((plugin_dir / "plugin.json").read_text())
-    assert manifest["name"] == "my-plugin"
+def test_cli_create(tmp_path, capsys):
+    os.chdir(tmp_path)
+    result = main(["create", "demo"])
+    assert result == 0
+    assert (tmp_path / "demo" / "plugin.json").exists()
 
 
-def test_create_scaffold_exists(tmp_path):
-    """Can't scaffold over existing dir."""
-    (tmp_path / "existing").mkdir()
-    result = create_plugin_scaffold("existing", str(tmp_path))
-    assert result["ok"] is False
+def test_cli_install_missing_source(capsys):
+    result = main(["install"])
+    assert result == 1
 
 
-def test_install_invalid_path(tmp_plugins):
-    """Install from nonexistent local path gives error."""
-    result = install_plugin("/nonexistent/path/to/plugin")
-    assert result["ok"] is False
-
-
-def test_cmd_plugin_list_empty(tmp_plugins, capsys):
-    """CLI: mw plugin list with no plugins."""
-    cmd_plugin(["list"])
-    out = capsys.readouterr().out
-    assert "No plugins installed" in out
-
-
-def test_cmd_plugin_create(tmp_plugins, tmp_path, capsys):
-    """CLI: mw plugin create."""
-    cmd_plugin(["create", "test-plug", "--path", str(tmp_path)])
-    out = capsys.readouterr().out
-    assert "Created plugin scaffold" in out
+def test_cli_unknown_command(capsys):
+    result = main(["foobar"])
+    assert result == 1

@@ -1,325 +1,442 @@
-"""
-MyWork Plugin Manager — Extensible plugin system for mw CLI.
+#!/usr/bin/env python3
+"""MyWork Plugin Manager - Extensible plugin system for mw CLI.
 
-Plugins live in ~/.mywork/plugins/<name>/ with a plugin.json manifest.
-Each plugin can add CLI commands, hooks, and templates.
+Enables community plugins that add new commands, templates, and integrations.
+Plugins live in ~/.mywork/plugins/ and are auto-discovered on startup.
 """
 
 import json
 import os
+import sys
 import shutil
 import subprocess
-import sys
+import hashlib
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from datetime import datetime
+from typing import Dict, List, Optional, Any
 
-PLUGINS_DIR = Path.home() / ".mywork" / "plugins"
-PLUGIN_REGISTRY_URL = "https://raw.githubusercontent.com/DansiDanutz/MyWork-AI/main/plugin-registry.json"
-
-
-def get_plugins_dir() -> Path:
-    """Get or create plugins directory."""
-    PLUGINS_DIR.mkdir(parents=True, exist_ok=True)
-    return PLUGINS_DIR
+PLUGIN_DIR = Path.home() / ".mywork" / "plugins"
+PLUGIN_REGISTRY = PLUGIN_DIR / "registry.json"
+PLUGIN_INDEX_URL = "https://raw.githubusercontent.com/DansiDanutz/mywork-plugins/main/index.json"
 
 
-def load_plugin_manifest(plugin_dir: Path) -> Optional[Dict[str, Any]]:
-    """Load plugin.json from a plugin directory."""
-    manifest_path = plugin_dir / "plugin.json"
-    if not manifest_path.exists():
-        return None
+class Colors:
+    BOLD = "\033[1m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    BLUE = "\033[94m"
+    CYAN = "\033[96m"
+    DIM = "\033[2m"
+    ENDC = "\033[0m"
+
+
+def ensure_plugin_dir():
+    """Create plugin directory if it doesn't exist."""
+    PLUGIN_DIR.mkdir(parents=True, exist_ok=True)
+    if not PLUGIN_REGISTRY.exists():
+        PLUGIN_REGISTRY.write_text(json.dumps({"plugins": {}, "installed_at": datetime.now().isoformat()}, indent=2))
+
+
+def load_registry() -> Dict:
+    """Load the local plugin registry."""
+    ensure_plugin_dir()
     try:
-        with open(manifest_path, "r") as f:
-            return json.load(f)
-    except (json.JSONDecodeError, IOError):
-        return None
+        return json.loads(PLUGIN_REGISTRY.read_text())
+    except (json.JSONDecodeError, FileNotFoundError):
+        return {"plugins": {}}
 
 
-def list_plugins() -> List[Dict[str, Any]]:
-    """List all installed plugins with their metadata."""
-    plugins_dir = get_plugins_dir()
+def save_registry(registry: Dict):
+    """Save the local plugin registry."""
+    ensure_plugin_dir()
+    PLUGIN_REGISTRY.write_text(json.dumps(registry, indent=2))
+
+
+def validate_plugin(plugin_path: Path) -> Dict[str, Any]:
+    """Validate a plugin directory structure and return its manifest."""
+    manifest_file = plugin_path / "plugin.json"
+    if not manifest_file.exists():
+        return {"valid": False, "error": "Missing plugin.json manifest"}
+    
+    try:
+        manifest = json.loads(manifest_file.read_text())
+    except json.JSONDecodeError as e:
+        return {"valid": False, "error": f"Invalid plugin.json: {e}"}
+    
+    required_fields = ["name", "version", "description", "author"]
+    missing = [f for f in required_fields if f not in manifest]
+    if missing:
+        return {"valid": False, "error": f"Missing fields in plugin.json: {', '.join(missing)}"}
+    
+    # Check for entry point
+    entry = manifest.get("entry", "main.py")
+    entry_path = plugin_path / entry
+    if not entry_path.exists():
+        return {"valid": False, "error": f"Entry point '{entry}' not found"}
+    
+    # Security: check for suspicious patterns
+    suspicious = _security_scan(plugin_path)
+    if suspicious:
+        manifest["_warnings"] = suspicious
+    
+    manifest["_path"] = str(plugin_path)
+    manifest["valid"] = True
+    return manifest
+
+
+def _security_scan(plugin_path: Path) -> List[str]:
+    """Basic security scan for suspicious patterns."""
+    warnings = []
+    dangerous_patterns = [
+        ("os.system(", "Direct system command execution"),
+        ("subprocess.call(", "Subprocess without capture"),
+        ("eval(", "Dynamic code evaluation"),
+        ("exec(", "Dynamic code execution"),
+        ("__import__", "Dynamic imports"),
+        ("open('/etc/", "System file access"),
+        ("shutil.rmtree('/'", "Root directory deletion"),
+    ]
+    
+    for py_file in plugin_path.rglob("*.py"):
+        try:
+            content = py_file.read_text()
+            for pattern, desc in dangerous_patterns:
+                if pattern in content:
+                    warnings.append(f"⚠️  {py_file.name}: {desc} ({pattern})")
+        except Exception:
+            pass
+    
+    return warnings
+
+
+def install_plugin(source: str, force: bool = False) -> Dict:
+    """Install a plugin from a local path or git URL."""
+    ensure_plugin_dir()
+    
+    if source.startswith(("http://", "https://", "git@")):
+        # Git clone
+        plugin_name = source.rstrip("/").split("/")[-1].replace(".git", "")
+        target = PLUGIN_DIR / plugin_name
+        
+        if target.exists():
+            if force:
+                shutil.rmtree(target)
+            else:
+                return {"success": False, "error": f"Plugin '{plugin_name}' already installed. Use --force to reinstall."}
+        
+        result = subprocess.run(
+            ["git", "clone", "--depth=1", source, str(target)],
+            capture_output=True, text=True, timeout=60
+        )
+        if result.returncode != 0:
+            return {"success": False, "error": f"Git clone failed: {result.stderr}"}
+    
+    elif os.path.isdir(source):
+        # Local directory — copy
+        plugin_name = os.path.basename(os.path.abspath(source))
+        target = PLUGIN_DIR / plugin_name
+        
+        if target.exists():
+            if force:
+                shutil.rmtree(target)
+            else:
+                return {"success": False, "error": f"Plugin '{plugin_name}' already installed. Use --force to reinstall."}
+        
+        shutil.copytree(source, target)
+    else:
+        return {"success": False, "error": f"Invalid source: {source}"}
+    
+    # Validate
+    validation = validate_plugin(target)
+    if not validation.get("valid"):
+        shutil.rmtree(target, ignore_errors=True)
+        return {"success": False, "error": f"Invalid plugin: {validation.get('error')}"}
+    
+    # Show security warnings
+    if validation.get("_warnings"):
+        print(f"\n{Colors.YELLOW}⚠️  Security warnings:{Colors.ENDC}")
+        for w in validation["_warnings"]:
+            print(f"   {w}")
+    
+    # Register
+    registry = load_registry()
+    registry["plugins"][validation["name"]] = {
+        "version": validation["version"],
+        "description": validation["description"],
+        "author": validation["author"],
+        "path": str(target),
+        "installed": datetime.now().isoformat(),
+        "enabled": True,
+        "commands": validation.get("commands", []),
+    }
+    save_registry(registry)
+    
+    # Install dependencies if requirements.txt exists
+    req_file = target / "requirements.txt"
+    if req_file.exists():
+        subprocess.run([sys.executable, "-m", "pip", "install", "-r", str(req_file), "-q"],
+                      capture_output=True, timeout=120)
+    
+    return {"success": True, "name": validation["name"], "version": validation["version"]}
+
+
+def uninstall_plugin(name: str) -> Dict:
+    """Remove an installed plugin."""
+    registry = load_registry()
+    if name not in registry.get("plugins", {}):
+        return {"success": False, "error": f"Plugin '{name}' not found"}
+    
+    plugin_info = registry["plugins"][name]
+    plugin_path = Path(plugin_info["path"])
+    
+    if plugin_path.exists():
+        shutil.rmtree(plugin_path)
+    
+    del registry["plugins"][name]
+    save_registry(registry)
+    
+    return {"success": True, "name": name}
+
+
+def list_plugins() -> List[Dict]:
+    """List all installed plugins."""
+    registry = load_registry()
     plugins = []
-    for item in sorted(plugins_dir.iterdir()):
-        if item.is_dir():
-            manifest = load_plugin_manifest(item)
-            if manifest:
-                manifest["_path"] = str(item)
-                manifest["_enabled"] = not (item / ".disabled").exists()
-                plugins.append(manifest)
+    for name, info in registry.get("plugins", {}).items():
+        info["name"] = name
+        plugins.append(info)
     return plugins
 
 
-def install_plugin(source: str) -> Dict[str, Any]:
-    """
-    Install a plugin from a git URL or local path.
-    Returns result dict with status.
-    """
-    plugins_dir = get_plugins_dir()
-    source_path = Path(source).expanduser()
-
-    if source_path.exists() and source_path.is_dir():
-        # Local install — copy
-        manifest = load_plugin_manifest(source_path)
-        if not manifest:
-            return {"ok": False, "error": f"No valid plugin.json in {source}"}
-        name = manifest.get("name", source_path.name)
-        dest = plugins_dir / name
-        if dest.exists():
-            return {"ok": False, "error": f"Plugin '{name}' already installed. Use 'mw plugin update {name}'."}
-        shutil.copytree(source_path, dest)
-        return {"ok": True, "name": name, "version": manifest.get("version", "0.0.0")}
-
-    elif source.startswith("http") or source.startswith("git@"):
-        # Git clone
-        try:
-            tmp_dir = plugins_dir / ".tmp_clone"
-            if tmp_dir.exists():
-                shutil.rmtree(tmp_dir)
-            subprocess.run(["git", "clone", "--depth=1", source, str(tmp_dir)],
-                           capture_output=True, text=True, check=True, timeout=30)
-            manifest = load_plugin_manifest(tmp_dir)
-            if not manifest:
-                shutil.rmtree(tmp_dir)
-                return {"ok": False, "error": "Cloned repo has no valid plugin.json"}
-            name = manifest.get("name", tmp_dir.name)
-            dest = plugins_dir / name
-            if dest.exists():
-                shutil.rmtree(tmp_dir)
-                return {"ok": False, "error": f"Plugin '{name}' already installed."}
-            tmp_dir.rename(dest)
-            return {"ok": True, "name": name, "version": manifest.get("version", "0.0.0")}
-        except subprocess.CalledProcessError as e:
-            return {"ok": False, "error": f"Git clone failed: {e.stderr}"}
-        except subprocess.TimeoutExpired:
-            return {"ok": False, "error": "Git clone timed out"}
-    else:
-        return {"ok": False, "error": f"Unknown source: {source}. Use a git URL or local path."}
-
-
-def uninstall_plugin(name: str) -> Dict[str, Any]:
-    """Remove an installed plugin."""
-    plugin_dir = get_plugins_dir() / name
-    if not plugin_dir.exists():
-        return {"ok": False, "error": f"Plugin '{name}' not found."}
-    shutil.rmtree(plugin_dir)
-    return {"ok": True, "name": name}
-
-
-def enable_plugin(name: str) -> Dict[str, Any]:
-    """Enable a disabled plugin."""
-    plugin_dir = get_plugins_dir() / name
-    disabled_flag = plugin_dir / ".disabled"
-    if not plugin_dir.exists():
-        return {"ok": False, "error": f"Plugin '{name}' not found."}
-    if disabled_flag.exists():
-        disabled_flag.unlink()
-    return {"ok": True, "name": name, "enabled": True}
-
-
-def disable_plugin(name: str) -> Dict[str, Any]:
-    """Disable a plugin without removing it."""
-    plugin_dir = get_plugins_dir() / name
-    if not plugin_dir.exists():
-        return {"ok": False, "error": f"Plugin '{name}' not found."}
-    (plugin_dir / ".disabled").touch()
-    return {"ok": True, "name": name, "enabled": False}
-
-
-def run_plugin_command(name: str, cmd_args: List[str]) -> int:
-    """Run a command defined by a plugin."""
-    plugin_dir = get_plugins_dir() / name
-    manifest = load_plugin_manifest(plugin_dir)
-    if not manifest:
-        print(f"❌ Plugin '{name}' not found or invalid.")
-        return 1
-    if (plugin_dir / ".disabled").exists():
-        print(f"⚠️  Plugin '{name}' is disabled. Run: mw plugin enable {name}")
-        return 1
-
-    commands = manifest.get("commands", {})
-    if not cmd_args:
-        # Show available commands
-        print(f"📦 {manifest.get('name', name)} v{manifest.get('version', '?')}")
-        print(f"   {manifest.get('description', 'No description')}")
-        if commands:
-            print(f"\n   Commands:")
-            for cmd_name, cmd_info in commands.items():
-                desc = cmd_info.get("description", "") if isinstance(cmd_info, dict) else ""
-                print(f"     mw {name}:{cmd_name}  — {desc}")
-        return 0
-
-    sub_cmd = cmd_args[0]
-    if sub_cmd not in commands:
-        print(f"❌ Unknown command '{sub_cmd}' for plugin '{name}'.")
-        return 1
-
-    cmd_info = commands[sub_cmd]
-    script = cmd_info.get("run") if isinstance(cmd_info, dict) else cmd_info
-    if not script:
-        print(f"❌ No 'run' defined for command '{sub_cmd}'.")
-        return 1
-
-    # Run the script from the plugin directory
-    script_path = plugin_dir / script
-    if script.endswith(".py"):
-        result = subprocess.run([sys.executable, str(script_path)] + cmd_args[1:], cwd=str(plugin_dir))
-    elif script.endswith(".sh"):
-        result = subprocess.run(["bash", str(script_path)] + cmd_args[1:], cwd=str(plugin_dir))
-    else:
-        result = subprocess.run([str(script_path)] + cmd_args[1:], cwd=str(plugin_dir))
-    return result.returncode
-
-
-def get_plugin_commands() -> Dict[str, str]:
-    """Get all commands from enabled plugins. Returns {command_name: plugin_name}."""
+def get_plugin_commands() -> Dict[str, Dict]:
+    """Get all commands registered by plugins for CLI integration."""
+    registry = load_registry()
     commands = {}
-    for plugin in list_plugins():
-        if plugin.get("_enabled", True):
-            for cmd_name in plugin.get("commands", {}):
-                full_name = f"{plugin['name']}:{cmd_name}"
-                commands[full_name] = plugin["name"]
+    for name, info in registry.get("plugins", {}).items():
+        if not info.get("enabled", True):
+            continue
+        for cmd in info.get("commands", []):
+            commands[cmd] = {
+                "plugin": name,
+                "path": info["path"],
+            }
     return commands
 
 
-def create_plugin_scaffold(name: str, path: Optional[str] = None) -> Dict[str, Any]:
+def run_plugin_command(plugin_name: str, command: str, args: List[str] = None) -> int:
+    """Execute a plugin command."""
+    registry = load_registry()
+    plugin_info = registry.get("plugins", {}).get(plugin_name)
+    if not plugin_info:
+        print(f"{Colors.RED}Plugin '{plugin_name}' not found{Colors.ENDC}")
+        return 1
+    
+    plugin_path = Path(plugin_info["path"])
+    entry = "main.py"
+    
+    # Load manifest for entry point
+    manifest_file = plugin_path / "plugin.json"
+    if manifest_file.exists():
+        manifest = json.loads(manifest_file.read_text())
+        entry = manifest.get("entry", "main.py")
+    
+    entry_path = plugin_path / entry
+    if not entry_path.exists():
+        print(f"{Colors.RED}Plugin entry point not found: {entry}{Colors.ENDC}")
+        return 1
+    
+    # Run the plugin
+    cmd = [sys.executable, str(entry_path), command] + (args or [])
+    result = subprocess.run(cmd, cwd=str(plugin_path))
+    return result.returncode
+
+
+def create_plugin_scaffold(name: str, path: str = None) -> Dict:
     """Create a new plugin scaffold."""
-    dest = Path(path or ".") / name
-    if dest.exists():
-        return {"ok": False, "error": f"Directory '{dest}' already exists."}
-
-    dest.mkdir(parents=True)
-
+    target = Path(path or ".") / name
+    if target.exists():
+        return {"success": False, "error": f"Directory '{target}' already exists"}
+    
+    target.mkdir(parents=True)
+    
+    # plugin.json
     manifest = {
         "name": name,
         "version": "0.1.0",
-        "description": f"{name} plugin for MyWork-AI",
-        "author": "",
-        "commands": {
-            "hello": {
-                "run": "hello.py",
-                "description": "Example command"
-            }
-        },
-        "hooks": {},
-        "requires": []
+        "description": f"MyWork plugin: {name}",
+        "author": "Your Name",
+        "entry": "main.py",
+        "commands": [name],
+        "mw_version": ">=2.0.0",
     }
+    (target / "plugin.json").write_text(json.dumps(manifest, indent=2))
+    
+    # main.py
+    (target / "main.py").write_text(f'''#!/usr/bin/env python3
+"""{name} - MyWork Plugin"""
 
-    with open(dest / "plugin.json", "w") as f:
-        json.dump(manifest, f, indent=2)
+import sys
 
-    with open(dest / "hello.py", "w") as f:
-        f.write('#!/usr/bin/env python3\n"""Example plugin command."""\nimport sys\n\ndef main():\n    print(f"Hello from {__file__}!")\n    print(f"Args: {sys.argv[1:]}")\n\nif __name__ == "__main__":\n    main()\n')
+def run(args=None):
+    """Main entry point for the plugin."""
+    args = args or sys.argv[1:]
+    print(f"🔌 {name} plugin running!")
+    print(f"   Args: {{args}}")
+    return 0
 
-    with open(dest / "README.md", "w") as f:
-        f.write(f"# {name}\n\nMyWork-AI plugin.\n\n## Commands\n\n- `mw {name}:hello` — Example command\n")
+if __name__ == "__main__":
+    sys.exit(run())
+''')
+    
+    # README.md
+    (target / "README.md").write_text(f"""# {name}
 
-    return {"ok": True, "path": str(dest)}
+A MyWork plugin.
+
+## Installation
+
+```bash
+mw plugin install /path/to/{name}
+```
+
+## Usage
+
+```bash
+mw {name}
+```
+""")
+    
+    return {"success": True, "path": str(target)}
 
 
-def cmd_plugin(args: List[str]) -> int:
-    """Handle 'mw plugin' subcommands."""
-    if not args:
-        args = ["list"]
+# CLI interface
+def main(args: List[str] = None) -> int:
+    """Plugin manager CLI."""
+    args = args or sys.argv[1:]
+    
+    if not args or args[0] in ("--help", "-h", "help"):
+        print(f"""
+{Colors.BOLD}🔌 MyWork Plugin Manager{Colors.ENDC}
+{'─' * 45}
 
-    sub = args[0]
+{Colors.CYAN}Usage:{Colors.ENDC}
+  mw plugin list                    List installed plugins
+  mw plugin install <source>        Install from path or git URL
+  mw plugin uninstall <name>        Remove a plugin
+  mw plugin create <name>           Scaffold a new plugin
+  mw plugin info <name>             Show plugin details
+  mw plugin enable <name>           Enable a plugin
+  mw plugin disable <name>          Disable a plugin
 
-    if sub == "list":
+{Colors.CYAN}Sources:{Colors.ENDC}
+  Local:  mw plugin install ./my-plugin
+  Git:    mw plugin install https://github.com/user/mw-plugin.git
+
+{Colors.CYAN}Create your own:{Colors.ENDC}
+  mw plugin create my-plugin        Creates scaffold with plugin.json + main.py
+""")
+        return 0
+    
+    subcmd = args[0]
+    subargs = args[1:]
+    
+    if subcmd == "list":
         plugins = list_plugins()
         if not plugins:
-            print("📦 No plugins installed.")
-            print("   Install one: mw plugin install <git-url-or-path>")
-            print("   Create one:  mw plugin create <name>")
+            print(f"\n{Colors.DIM}No plugins installed. Try: mw plugin install <source>{Colors.ENDC}")
             return 0
-        print(f"📦 Installed plugins ({len(plugins)}):\n")
+        
+        print(f"\n{Colors.BOLD}🔌 Installed Plugins{Colors.ENDC}")
+        print(f"{'─' * 55}")
         for p in plugins:
-            status = "✅" if p.get("_enabled", True) else "⏸️"
-            print(f"  {status} {p.get('name', '?')} v{p.get('version', '?')}")
-            print(f"     {p.get('description', '')}")
-            cmds = list(p.get("commands", {}).keys())
+            status = f"{Colors.GREEN}●{Colors.ENDC}" if p.get("enabled", True) else f"{Colors.RED}○{Colors.ENDC}"
+            cmds = ", ".join(p.get("commands", []))
+            print(f"  {status} {Colors.BOLD}{p['name']}{Colors.ENDC} v{p.get('version', '?')}")
+            print(f"    {Colors.DIM}{p.get('description', '')}{Colors.ENDC}")
             if cmds:
-                print(f"     Commands: {', '.join(cmds)}")
-            print()
+                print(f"    Commands: {Colors.CYAN}{cmds}{Colors.ENDC}")
+        print()
         return 0
-
-    elif sub == "install":
-        if len(args) < 2:
-            print("Usage: mw plugin install <git-url-or-local-path>")
+    
+    elif subcmd == "install":
+        if not subargs:
+            print(f"{Colors.RED}Usage: mw plugin install <source>{Colors.ENDC}")
             return 1
-        result = install_plugin(args[1])
-        if result["ok"]:
-            print(f"✅ Installed plugin '{result['name']}' v{result.get('version', '?')}")
+        force = "--force" in subargs
+        source = [a for a in subargs if not a.startswith("--")][0]
+        
+        print(f"\n{Colors.BOLD}📦 Installing plugin...{Colors.ENDC}")
+        result = install_plugin(source, force=force)
+        if result["success"]:
+            print(f"{Colors.GREEN}✅ Installed {result['name']} v{result['version']}{Colors.ENDC}\n")
+            return 0
         else:
-            print(f"❌ {result['error']}")
+            print(f"{Colors.RED}❌ {result['error']}{Colors.ENDC}\n")
             return 1
-        return 0
-
-    elif sub == "uninstall" or sub == "remove":
-        if len(args) < 2:
-            print("Usage: mw plugin uninstall <name>")
+    
+    elif subcmd == "uninstall":
+        if not subargs:
+            print(f"{Colors.RED}Usage: mw plugin uninstall <name>{Colors.ENDC}")
             return 1
-        result = uninstall_plugin(args[1])
-        if result["ok"]:
-            print(f"✅ Removed plugin '{result['name']}'")
+        result = uninstall_plugin(subargs[0])
+        if result["success"]:
+            print(f"{Colors.GREEN}✅ Uninstalled {result['name']}{Colors.ENDC}")
+            return 0
         else:
-            print(f"❌ {result['error']}")
+            print(f"{Colors.RED}❌ {result['error']}{Colors.ENDC}")
             return 1
-        return 0
-
-    elif sub == "enable":
-        if len(args) < 2:
-            print("Usage: mw plugin enable <name>")
+    
+    elif subcmd == "create":
+        if not subargs:
+            print(f"{Colors.RED}Usage: mw plugin create <name>{Colors.ENDC}")
             return 1
-        result = enable_plugin(args[1])
-        if result["ok"]:
-            print(f"✅ Enabled plugin '{result['name']}'")
+        result = create_plugin_scaffold(subargs[0])
+        if result["success"]:
+            print(f"{Colors.GREEN}✅ Plugin scaffold created at {result['path']}{Colors.ENDC}")
+            print(f"{Colors.DIM}   Edit plugin.json and main.py, then: mw plugin install {result['path']}{Colors.ENDC}")
+            return 0
         else:
-            print(f"❌ {result['error']}")
+            print(f"{Colors.RED}❌ {result['error']}{Colors.ENDC}")
             return 1
+    
+    elif subcmd == "info":
+        if not subargs:
+            print(f"{Colors.RED}Usage: mw plugin info <name>{Colors.ENDC}")
+            return 1
+        registry = load_registry()
+        info = registry.get("plugins", {}).get(subargs[0])
+        if not info:
+            print(f"{Colors.RED}Plugin '{subargs[0]}' not found{Colors.ENDC}")
+            return 1
+        print(f"\n{Colors.BOLD}🔌 {subargs[0]}{Colors.ENDC}")
+        print(f"{'─' * 40}")
+        for k, v in info.items():
+            if not k.startswith("_"):
+                print(f"  {Colors.CYAN}{k}:{Colors.ENDC} {v}")
+        print()
         return 0
-
-    elif sub == "disable":
-        if len(args) < 2:
-            print("Usage: mw plugin disable <name>")
+    
+    elif subcmd in ("enable", "disable"):
+        if not subargs:
+            print(f"{Colors.RED}Usage: mw plugin {subcmd} <name>{Colors.ENDC}")
             return 1
-        result = disable_plugin(args[1])
-        if result["ok"]:
-            print(f"⏸️  Disabled plugin '{result['name']}'")
-        else:
-            print(f"❌ {result['error']}")
+        registry = load_registry()
+        if subargs[0] not in registry.get("plugins", {}):
+            print(f"{Colors.RED}Plugin '{subargs[0]}' not found{Colors.ENDC}")
             return 1
+        registry["plugins"][subargs[0]]["enabled"] = (subcmd == "enable")
+        save_registry(registry)
+        state = "enabled" if subcmd == "enable" else "disabled"
+        print(f"{Colors.GREEN}✅ Plugin '{subargs[0]}' {state}{Colors.ENDC}")
         return 0
-
-    elif sub == "create":
-        if len(args) < 2:
-            print("Usage: mw plugin create <name> [--path <dir>]")
-            return 1
-        path = None
-        if "--path" in args:
-            idx = args.index("--path")
-            if idx + 1 < len(args):
-                path = args[idx + 1]
-        result = create_plugin_scaffold(args[1], path)
-        if result["ok"]:
-            print(f"✅ Created plugin scaffold at {result['path']}")
-            print(f"   Edit plugin.json to configure, then: mw plugin install {result['path']}")
-        else:
-            print(f"❌ {result['error']}")
-            return 1
-        return 0
-
-    elif sub == "info":
-        if len(args) < 2:
-            print("Usage: mw plugin info <name>")
-            return 1
-        return run_plugin_command(args[1], [])
-
-    elif sub == "run":
-        if len(args) < 3:
-            print("Usage: mw plugin run <name> <command> [args...]")
-            return 1
-        return run_plugin_command(args[1], args[2:])
-
+    
     else:
-        print(f"Unknown subcommand: {sub}")
-        print("Available: list, install, uninstall, enable, disable, create, info, run")
+        print(f"{Colors.RED}Unknown command: {subcmd}. Try: mw plugin --help{Colors.ENDC}")
         return 1
+
+
+cmd_plugin = main  # alias for mw.py integration
+
+if __name__ == "__main__":
+    sys.exit(main())
