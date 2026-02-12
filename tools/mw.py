@@ -25,6 +25,7 @@ Commands:
     links           Show all useful framework links
     api             Start REST API server (programmatic access)
     serve           Start web dashboard (browser UI for mw)
+    tour            Interactive feature tour (2 min onboarding)
 
 Project Commands:
     mw projects     List all projects (uses project registry if available)
@@ -3370,6 +3371,13 @@ def _cmd_serve_wrapper(args: List[str] = None) -> int:
     from tools.web_dashboard import cmd_serve
     return cmd_serve(args or [])
 
+
+def _cmd_tour_wrapper(args: List[str] = None) -> int:
+    """Launch interactive tour."""
+    from tools.tour import cmd_tour
+    return cmd_tour(args or [])
+
+
 def _cmd_run_wrapper(args: List[str] = None) -> int:
     """Universal task runner."""
     from tools.task_runner import cmd_run
@@ -6462,7 +6470,7 @@ def cmd_completions(args: List[str] = None) -> int:
         "marketplace", "monitor", "n8n", "new", "open", "perf", "plugin",
         "projects", "prompt-enhance", "release", "remember", "report", "scan",
         "run", "search", "sec", "security", "serve", "setup", "stats", "status", "test",
-        "update", "version", "web", "wf", "workflow",
+        "tour", "update", "version", "web", "wf", "workflow",
     ]
     # Subcommands per command
     subcmds = {
@@ -6684,6 +6692,7 @@ def main() -> None:
         "performance": lambda: run_tool("perf_analyzer", args),
         "api": lambda: _cmd_api_wrapper(args),
         "serve": lambda: _cmd_serve_wrapper(args),
+        "tour": lambda: _cmd_tour_wrapper(args),
         "web": lambda: _cmd_serve_wrapper(args),
         "db": lambda: _cmd_db_wrapper(args),
         "database": lambda: _cmd_db_wrapper(args),
