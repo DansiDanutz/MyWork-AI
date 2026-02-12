@@ -2992,7 +2992,17 @@ Examples:
 
 
 def cmd_changelog(args: List[str] = None):
-    """Generate changelog from git commits."""
+    """Generate changelog from git commits (enhanced with categorization and stats).
+
+    Delegates to tools/changelog_gen.py for full conventional-commit parsing,
+    breaking-change detection, scoped grouping, and JSON/Markdown output.
+    """
+    from tools.changelog_gen import cmd_changelog as _changelog_impl
+    return _changelog_impl(args or [])
+
+
+def _cmd_changelog_legacy(args: List[str] = None):
+    """Legacy changelog generator (kept for reference)."""
     if args and (args[0] in ["--help", "-h"]):
         print("""
 Changelog Commands — Auto-generate Changelog
