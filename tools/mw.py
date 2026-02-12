@@ -3133,6 +3133,12 @@ def _cmd_run_wrapper(args: List[str] = None) -> int:
     from tools.task_runner import cmd_run
     return cmd_run(args or [])
 
+def _cmd_check_wrapper(args: List[str] = None) -> int:
+    """Quality gate command."""
+    from tools.quality_gate import cmd_check
+    return cmd_check(args or [])
+
+
 def _cmd_ai_wrapper(args: List[str] = None) -> int:
     """AI assistant command."""
     from tools.ai_assistant import cmd_ai
@@ -6029,7 +6035,7 @@ def cmd_completions(args: List[str] = None) -> int:
     # All top-level commands (excluding flags)
     top_cmds = [
         "ai", "analytics", "api", "audit", "af", "autoforge", "backup", "bench",
-        "brain", "cd", "cfg", "changelog", "ci", "clean", "completions", "config",
+        "brain", "cd", "cfg", "changelog", "check", "ci", "clean", "completions", "config",
         "credits", "dashboard", "db", "deploy", "docs", "doctor", "ecosystem",
         "env", "fix", "git", "guide", "help", "hook", "init", "links", "lint",
         "marketplace", "monitor", "n8n", "new", "open", "perf", "plugin",
@@ -6224,6 +6230,7 @@ def main() -> None:
         "remember": lambda: cmd_brain(["add"] + args),  # Shortcut
         "init": lambda: cmd_init(args),
         "stats": lambda: cmd_stats(args),
+        "check": lambda: _cmd_check_wrapper(args),
         "clean": lambda: cmd_clean(args),
         "backup": lambda: cmd_backup(args),
         "changelog": lambda: cmd_changelog(args),

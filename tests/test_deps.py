@@ -98,18 +98,21 @@ def test_deps_tree(pip_project):
 
 
 @pytest.mark.slow
+@pytest.mark.timeout(30)
 def test_deps_outdated_pip(pip_project):
     """Should run outdated check."""
     assert cmd_deps(["outdated"]) == 0
 
 
 @pytest.mark.slow
+@pytest.mark.timeout(30)
 def test_deps_audit_pip(pip_project):
     """Should run audit."""
     assert cmd_deps(["audit"]) == 0
 
 
 @pytest.mark.slow
+@pytest.mark.timeout(30)
 def test_deps_licenses(pip_project):
     """Should run license check."""
     assert cmd_deps(["licenses"]) == 0
