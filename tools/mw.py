@@ -5700,6 +5700,307 @@ def cmd_audit(args: List[str] = None) -> int:
     return 0
 
 
+def cmd_deps(args: List[str] = None) -> int:
+    """Dependency management — audit, outdated, tree, licenses, cleanup.
+
+    Usage:
+        mw deps                  # Overview (counts + summary)
+        mw deps list             # List all dependencies with versions
+        mw deps outdated         # Show outdated packages
+        mw deps audit            # Security vulnerability scan
+        mw deps tree             # Dependency tree (top 2 levels)
+        mw deps licenses         # License audit (flag copyleft/unknown)
+        mw deps why <package>    # Why is this package installed?
+        mw deps size             # Disk usage of dependency dirs
+        mw deps cleanup          # Remove unused/orphaned deps
+        mw deps export           # Export deps to lock files
+    """
+    import subprocess as _sp
+    args = args or []
+    sub = args[0] if args else "overview"
+
+    has_pip = os.path.exists("requirements.txt") or os.path.exists("pyproject.toml") or os.path.exists("setup.py")
+    has_npm = os.path.exists("package.json")
+    has_cargo = os.path.exists("Cargo.toml")
+    has_go = os.path.exists("go.mod")
+
+    if not any([has_pip, has_npm, has_cargo, has_go]):
+        print("\033[93m⚠️  No dependency files found (requirements.txt, package.json, Cargo.toml, go.mod)\033[0m")
+        return 1
+
+    def _run_cmd(cmd):
+        try:
+            r = _sp.run(cmd, shell=True, capture_output=True, text=True, timeout=30)
+            return r.stdout.strip(), r.stderr.strip(), r.returncode
+        except Exception as e:
+            return "", str(e), 1
+
+    def _pip_deps():
+        deps = []
+        if os.path.exists("requirements.txt"):
+            with open("requirements.txt") as fh:
+                for line in fh:
+                    line = line.strip()
+                    if line and not line.startswith("#") and not line.startswith("-"):
+                        parts = line.split("==")
+                        name = parts[0].split(">=")[0].split("<=")[0].split("~=")[0].split("!=")[0].strip()
+                        ver = parts[1].strip() if len(parts) > 1 else "any"
+                        deps.append({"name": name, "version": ver, "source": "requirements.txt"})
+        if os.path.exists("pyproject.toml"):
+            with open("pyproject.toml") as fh:
+                in_deps = False
+                for line in fh:
+                    if "dependencies" in line and "[" in line:
+                        in_deps = True
+                        continue
+                    if in_deps:
+                        if line.strip().startswith("]"):
+                            in_deps = False
+                            continue
+                        pkg = line.strip().strip('",').strip("',")
+                        if pkg:
+                            name = pkg.split(">=")[0].split("==")[0].split("<")[0].split("~=")[0].strip()
+                            if name:
+                                deps.append({"name": name, "version": "spec", "source": "pyproject.toml"})
+        return deps
+
+    def _npm_deps():
+        deps = []
+        if os.path.exists("package.json"):
+            import json as _json
+            with open("package.json") as fh:
+                pkg = _json.load(fh)
+            for section in ["dependencies", "devDependencies"]:
+                for name, ver in pkg.get(section, {}).items():
+                    deps.append({"name": name, "version": ver, "dev": section == "devDependencies"})
+        return deps
+
+    if sub == "list":
+        print("\033[1m📦 Dependencies\033[0m\n")
+        if has_pip:
+            deps = _pip_deps()
+            print(f"  \033[96mPython ({len(deps)} packages)\033[0m")
+            for d in sorted(deps, key=lambda x: x["name"]):
+                print(f"    {d['name']:30s} {d['version']:15s} ({d['source']})")
+        if has_npm:
+            deps = _npm_deps()
+            prod = [d for d in deps if not d.get("dev")]
+            dev = [d for d in deps if d.get("dev")]
+            print(f"  \033[96mNode.js ({len(prod)} prod + {len(dev)} dev)\033[0m")
+            for d in sorted(prod, key=lambda x: x["name"]):
+                print(f"    {d['name']:30s} {d['version']}")
+            if dev:
+                print("  \033[90m  Dev:\033[0m")
+                for d in sorted(dev, key=lambda x: x["name"])[:15]:
+                    print(f"    {d['name']:30s} {d['version']}")
+                if len(dev) > 15:
+                    print(f"    ... and {len(dev)-15} more dev deps")
+        return 0
+
+    elif sub == "outdated":
+        print("\033[1m📦 Outdated Dependencies\033[0m\n")
+        if has_pip:
+            out, _, _ = _run_cmd("pip list --outdated --format=columns 2>/dev/null")
+            if out:
+                print("  \033[96mPython:\033[0m")
+                for line in out.split("\n"):
+                    print(f"    {line}")
+            else:
+                print("  \033[92m✅ All Python packages up to date\033[0m")
+        if has_npm:
+            out, _, _ = _run_cmd("npm outdated --json 2>/dev/null")
+            if out and out != "{}":
+                import json as _json
+                try:
+                    data = _json.loads(out)
+                    print(f"  \033[96mNode.js ({len(data)} outdated):\033[0m")
+                    print(f"    {'Package':25s} {'Current':12s} {'Wanted':12s} {'Latest':12s}")
+                    for pkg, info in sorted(data.items()):
+                        cur = info.get("current", "?")
+                        want = info.get("wanted", "?")
+                        lat = info.get("latest", "?")
+                        flag = " 🔴" if cur != lat else ""
+                        print(f"    {pkg:25s} {cur:12s} {want:12s} {lat:12s}{flag}")
+                except Exception:
+                    print(f"    {out[:300]}")
+            else:
+                print("  \033[92m✅ All Node packages up to date\033[0m")
+        return 0
+
+    elif sub == "audit":
+        print("\033[1m🔒 Dependency Security Audit\033[0m\n")
+        vulns = 0
+        if has_pip:
+            print("  \033[96mPython:\033[0m")
+            out, err, rc = _run_cmd("pip-audit --format=columns 2>/dev/null")
+            if rc == 0 and ("No known" in out or "No known" in err or not out):
+                print("    \033[92m✅ No known vulnerabilities\033[0m")
+            elif out:
+                for line in out.split("\n")[:20]:
+                    print(f"    {line}")
+                vulns += max(1, out.count("\n"))
+            else:
+                print("    \033[93m⚠️  Install pip-audit: pip install pip-audit\033[0m")
+        if has_npm:
+            print("  \033[96mNode.js:\033[0m")
+            out, _, _ = _run_cmd("npm audit --json 2>/dev/null")
+            if out:
+                import json as _json
+                try:
+                    data = _json.loads(out)
+                    meta = data.get("metadata", {}).get("vulnerabilities", {})
+                    c, h, m, l = meta.get("critical", 0), meta.get("high", 0), meta.get("moderate", 0), meta.get("low", 0)
+                    total = c + h + m + l
+                    vulns += total
+                    if total == 0:
+                        print("    \033[92m✅ No vulnerabilities\033[0m")
+                    else:
+                        if c: print(f"    \033[91m🔴 Critical: {c}\033[0m")
+                        if h: print(f"    \033[91m🟠 High: {h}\033[0m")
+                        if m: print(f"    \033[93m🟡 Moderate: {m}\033[0m")
+                        if l: print(f"    \033[90m⚪ Low: {l}\033[0m")
+                except Exception:
+                    pass
+        if vulns == 0:
+            print(f"\n  \033[92m🛡️  All clear!\033[0m")
+        else:
+            print(f"\n  \033[91m⚠️  {vulns} issue(s) found\033[0m")
+        return 0
+
+    elif sub == "tree":
+        print("\033[1m🌳 Dependency Tree\033[0m\n")
+        if has_pip:
+            out, _, _ = _run_cmd("pipdeptree --warn silence 2>/dev/null")
+            if out:
+                for line in out.split("\n")[:40]:
+                    print(f"  {line}")
+            else:
+                print("  \033[93m⚠️  Install pipdeptree: pip install pipdeptree\033[0m")
+        if has_npm:
+            out, _, _ = _run_cmd("npm ls --depth=1 2>/dev/null")
+            if out:
+                for line in out.split("\n")[:40]:
+                    print(f"  {line}")
+        return 0
+
+    elif sub == "licenses":
+        print("\033[1m📜 License Audit\033[0m\n")
+        copyleft_kw = {"GPL", "AGPL", "LGPL", "SSPL", "EUPL"}
+        flagged = []
+        if has_pip:
+            out, _, _ = _run_cmd("pip list --format=json 2>/dev/null")
+            if out:
+                import json as _json
+                try:
+                    pkgs = _json.loads(out)
+                    print(f"  \033[96mPython ({len(pkgs)} packages):\033[0m")
+                    for pkg in pkgs[:30]:
+                        meta_out, _, _ = _run_cmd(f"pip show {pkg['name']} 2>/dev/null | grep -i license")
+                        lic = meta_out.split(":", 1)[1].strip() if ":" in meta_out else "Unknown"
+                        flag = ""
+                        if any(c in lic.upper() for c in copyleft_kw):
+                            flag = " \033[91m⚠️ COPYLEFT\033[0m"
+                            flagged.append(f"{pkg['name']} ({lic})")
+                        elif lic in ["UNKNOWN", "Unknown", ""]:
+                            flag = " \033[93m❓\033[0m"
+                        print(f"    {pkg['name']:30s} {lic:20s}{flag}")
+                except Exception:
+                    pass
+        if flagged:
+            print(f"\n  \033[91m⚠️  {len(flagged)} need review:\033[0m")
+            for f in flagged:
+                print(f"    • {f}")
+        else:
+            print(f"\n  \033[92m✅ All licenses look clean\033[0m")
+        return 0
+
+    elif sub == "why" and len(args) > 1:
+        pkg = args[1]
+        print(f"\033[1m🔍 Why is '{pkg}' installed?\033[0m\n")
+        if has_pip:
+            out, _, _ = _run_cmd(f"pipdeptree --reverse --packages {pkg} 2>/dev/null")
+            if out:
+                for line in out.split("\n")[:15]:
+                    print(f"  {line}")
+            else:
+                out2, _, _ = _run_cmd(f"pip show {pkg} 2>/dev/null")
+                if out2:
+                    for line in out2.split("\n"):
+                        if "Required-by:" in line or "Requires:" in line:
+                            print(f"  {line}")
+        if has_npm:
+            out, _, _ = _run_cmd(f"npm ls {pkg} 2>/dev/null")
+            if out:
+                for line in out.split("\n")[:10]:
+                    print(f"  {line}")
+        return 0
+
+    elif sub == "size":
+        print("\033[1m💾 Dependency Disk Usage\033[0m\n")
+        for d, label in [("node_modules", "Node.js"), (".venv", "Python venv"), ("venv", "Python venv"), ("__pycache__", "Cache"), ("target", "Rust")]:
+            if os.path.isdir(d):
+                out, _, _ = _run_cmd(f"du -sh {d} 2>/dev/null")
+                size = out.split("\t")[0] if out else "?"
+                print(f"  📁 {d:20s} {size:>10s}  ({label})")
+        return 0
+
+    elif sub == "cleanup":
+        print("\033[1m🧹 Dependency Cleanup\033[0m\n")
+        if has_npm and os.path.isdir("node_modules"):
+            out, _, _ = _run_cmd("npx depcheck --json 2>/dev/null")
+            if out:
+                import json as _json
+                try:
+                    data = _json.loads(out)
+                    unused = data.get("dependencies", [])
+                    if unused:
+                        print(f"  \033[93mUnused ({len(unused)}):\033[0m")
+                        for pkg in unused:
+                            print(f"    npm uninstall {pkg}")
+                    else:
+                        print("  \033[92m✅ All deps in use\033[0m")
+                except Exception:
+                    pass
+        return 0
+
+    elif sub == "export":
+        print("\033[1m📤 Export Dependencies\033[0m\n")
+        if has_pip:
+            out, _, _ = _run_cmd("pip freeze 2>/dev/null")
+            if out:
+                with open("requirements.lock.txt", "w") as fh:
+                    fh.write(out + "\n")
+                print(f"  \033[92m✅ {len(out.strip().split(chr(10)))} packages → requirements.lock.txt\033[0m")
+        if has_npm and not os.path.exists("package-lock.json"):
+            _run_cmd("npm install --package-lock-only 2>/dev/null")
+            print("  \033[92m✅ Generated package-lock.json\033[0m")
+        elif has_npm:
+            print("  \033[92m✅ package-lock.json exists\033[0m")
+        return 0
+
+    else:
+        # Overview
+        print("\033[1m📦 Dependency Overview\033[0m\n")
+        total = 0
+        if has_pip:
+            deps = _pip_deps()
+            total += len(deps)
+            print(f"  🐍 Python: {len(deps)} packages")
+        if has_npm:
+            deps = _npm_deps()
+            prod = len([d for d in deps if not d.get("dev")])
+            dev = len([d for d in deps if d.get("dev")])
+            total += len(deps)
+            print(f"  📦 Node.js: {prod} prod + {dev} dev")
+        if has_cargo:
+            print("  🦀 Rust: Cargo.toml detected")
+        if has_go:
+            print("  🐹 Go: go.mod detected")
+        print(f"\n  Total: {total} dependencies")
+        print(f"\n  \033[90mSubcommands: list | outdated | audit | tree | licenses | why <pkg> | size | cleanup | export\033[0m")
+        return 0
+
+
 def cmd_completions(args: List[str] = None) -> int:
     """Generate shell completion scripts.
 
@@ -5950,6 +6251,8 @@ def main() -> None:
         "database": lambda: _cmd_db_wrapper(args),
         "snapshot": lambda: cmd_snapshot(args),
         "snap": lambda: cmd_snapshot(args),
+        "deps": lambda: cmd_deps(args),
+        "dependencies": lambda: cmd_deps(args),
         "completions": lambda: cmd_completions(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
