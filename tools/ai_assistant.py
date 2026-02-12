@@ -392,6 +392,175 @@ def cmd_ai_commit(args: List[str]) -> int:
     return 0
 
 
+def cmd_ai_review(args: List[str]) -> int:
+    """Review code changes with AI — like a senior dev code review.
+
+    Usage: mw ai review [--staged] [--branch main] [--severity]
+    """
+    staged_only = "--staged" in args
+    show_severity = "--severity" in args
+    branch = None
+    for i, arg in enumerate(args):
+        if arg == "--branch" and i + 1 < len(args):
+            branch = args[i + 1]
+
+    # Get diff
+    if branch:
+        diff = subprocess.run(
+            ["git", "diff", branch], capture_output=True, text=True
+        ).stdout
+    elif staged_only:
+        diff = subprocess.run(
+            ["git", "diff", "--cached"], capture_output=True, text=True
+        ).stdout
+    else:
+        diff = _get_git_diff()
+
+    if not diff or not diff.strip():
+        print(f"{GREEN}✓ No changes to review.{RESET}")
+        return 0
+
+    # Truncate very large diffs
+    if len(diff) > 8000:
+        diff = diff[:8000] + "\n\n... (truncated, showing first 8000 chars)"
+
+    print(f"{CYAN}🔍 Reviewing code changes...{RESET}\n")
+
+    system = """You are a senior code reviewer. Review the git diff and provide:
+
+1. **Summary** — What changed in 1-2 sentences
+2. **Issues** — Bugs, security problems, logic errors (with file:line references)
+3. **Suggestions** — Improvements for readability, performance, best practices
+4. **Rating** — Overall quality: 🟢 Good / 🟡 Needs Work / 🔴 Critical Issues
+
+Be specific, reference file names and line numbers. Be constructive, not harsh."""
+
+    prompt = f"Review this git diff:\n\n```diff\n{diff}\n```"
+    answer = _call_llm(prompt, system)
+    print(f"{answer}\n")
+    return 0
+
+
+def cmd_ai_doc(args: List[str]) -> int:
+    """Auto-generate documentation for a file or project.
+
+    Usage: mw ai doc <file> [--style google|numpy|sphinx] [--readme]
+    """
+    if not args:
+        print(f"{RED}Usage: mw ai doc <file> [--style google|numpy] [--readme]{RESET}")
+        return 1
+
+    file_path = args[0]
+    style = "google"
+    gen_readme = "--readme" in args
+
+    for i, arg in enumerate(args):
+        if arg == "--style" and i + 1 < len(args):
+            style = args[i + 1]
+
+    if gen_readme:
+        # Generate README for current project
+        print(f"{CYAN}📄 Generating README...{RESET}\n")
+
+        # Gather project info
+        files_info = []
+        for ext in ("*.py", "*.js", "*.ts", "*.go", "*.rs"):
+            for f in Path(".").rglob(ext):
+                if ".git" not in str(f) and "node_modules" not in str(f):
+                    files_info.append(str(f))
+                if len(files_info) >= 30:
+                    break
+
+        pkg_json = Path("package.json")
+        pyproject = Path("pyproject.toml")
+        setup_py = Path("setup.py")
+        project_info = ""
+        if pkg_json.exists():
+            project_info = pkg_json.read_text()[:1000]
+        elif pyproject.exists():
+            project_info = pyproject.read_text()[:1000]
+        elif setup_py.exists():
+            project_info = setup_py.read_text()[:1000]
+
+        prompt = f"""Generate a professional README.md for this project.
+
+Project config:
+{project_info}
+
+Files in project:
+{chr(10).join(files_info[:20])}
+
+Include: badges, features, installation, usage, API reference outline, contributing, license sections."""
+
+        system = "You are a technical writer. Generate clean, professional README files in markdown."
+        answer = _call_llm(prompt, system)
+        print(f"{answer}\n")
+        return 0
+
+    content = _read_file(file_path)
+    if content is None:
+        return 1
+
+    print(f"{CYAN}📄 Generating docs for {file_path} ({style} style)...{RESET}\n")
+
+    prompt = f"""Generate comprehensive documentation for this code using {style} docstring style.
+
+For each function/class:
+- Purpose description
+- Parameters with types
+- Return values
+- Example usage
+- Any exceptions raised
+
+Code:
+```
+{content}
+```
+
+Output the fully documented version of the code."""
+
+    system = f"You are a documentation expert. Generate {style}-style docstrings and inline comments."
+    answer = _call_llm(prompt, system)
+    print(f"{answer}\n")
+    return 0
+
+
+def cmd_ai_changelog(args: List[str]) -> int:
+    """Generate a changelog from recent git commits.
+
+    Usage: mw ai changelog [--since "1 week ago"] [--format keep-a-changelog]
+    """
+    since = "1 week ago"
+    for i, arg in enumerate(args):
+        if arg == "--since" and i + 1 < len(args):
+            since = args[i + 1]
+
+    log = subprocess.run(
+        ["git", "log", f"--since={since}", "--oneline", "--no-merges"],
+        capture_output=True, text=True,
+    ).stdout
+
+    if not log.strip():
+        print(f"{YELLOW}No commits found since {since}.{RESET}")
+        return 0
+
+    print(f"{CYAN}📋 Generating changelog from recent commits...{RESET}\n")
+
+    prompt = f"""Generate a clean changelog from these git commits:
+
+{log}
+
+Format as Keep a Changelog (https://keepachangelog.com) with sections:
+### Added, ### Changed, ### Fixed, ### Removed
+
+Group related commits, write user-friendly descriptions (not raw commit messages)."""
+
+    system = "You are a release manager. Generate clean, user-friendly changelogs."
+    answer = _call_llm(prompt, system)
+    print(f"{answer}\n")
+    return 0
+
+
 def cmd_ai(args: List[str] = None) -> int:
     """AI Assistant — inline AI help for developers.
 
@@ -403,6 +572,9 @@ def cmd_ai(args: List[str] = None) -> int:
         mw ai refactor <file> [--focus area]     Refactor suggestions
         mw ai test <file> [--framework pytest]   Generate tests
         mw ai commit [--push]                    Generate commit message
+        mw ai review [--staged] [--branch main]  Code review of changes
+        mw ai doc <file> [--readme]              Generate documentation
+        mw ai changelog [--since "1 week ago"]   Generate changelog
     """
     args = args or []
 
@@ -418,6 +590,9 @@ def cmd_ai(args: List[str] = None) -> int:
     mw ai refactor <file> [--focus area]     {DIM}Suggest refactoring{RESET}
     mw ai test <file> [--framework pytest]   {DIM}Generate tests{RESET}
     mw ai commit [--push]                    {DIM}Generate commit message{RESET}
+    mw ai review [--staged] [--branch main]  {DIM}AI code review of changes{RESET}
+    mw ai doc <file> [--readme]              {DIM}Generate documentation{RESET}
+    mw ai changelog [--since "1 week ago"]   {DIM}Generate changelog from commits{RESET}
 
 {BOLD}Interactive:{RESET}
     mw ai chat                               {DIM}Start interactive chat session{RESET}
@@ -443,6 +618,9 @@ def cmd_ai(args: List[str] = None) -> int:
         "chat": cmd_ai_chat,
         "providers": cmd_ai_providers,
         "models": cmd_ai_models,
+        "review": cmd_ai_review,
+        "doc": cmd_ai_doc,
+        "changelog": cmd_ai_changelog,
     }
 
     if subcmd in subcmds:

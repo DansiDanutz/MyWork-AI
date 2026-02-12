@@ -75,6 +75,9 @@ AI Assistant Commands:
     mw ai refactor <file>    Get refactoring suggestions
     mw ai test <file>        Generate tests for code
     mw ai commit [--push]    Generate commit message from diff
+    mw ai review [--staged]  AI code review of git changes
+    mw ai doc <file>         Generate documentation for code
+    mw ai changelog          Generate changelog from commits
 
 Code Review & Quality Commands:
     mw review <file>         AI-powered code review of specific file

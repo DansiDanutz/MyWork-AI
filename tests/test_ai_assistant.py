@@ -193,3 +193,72 @@ class TestCommitCommand:
         assert result == 0
         out = capsys.readouterr().out
         assert "feat: add stuff" in out
+
+
+class TestReviewCommand:
+    """Test mw ai review."""
+
+    @patch("tools.ai_assistant._get_git_diff", return_value="")
+    def test_no_changes(self, mock_diff, capsys):
+        from tools.ai_assistant import cmd_ai_review
+        result = cmd_ai_review([])
+        assert result == 0
+        assert "No changes" in capsys.readouterr().out
+
+    @patch("tools.ai_assistant._get_git_diff", return_value="+ added line\n- removed line")
+    @patch("tools.ai_assistant._call_llm", return_value="🟢 Good: clean changes")
+    def test_review_diff(self, mock_llm, mock_diff, capsys):
+        from tools.ai_assistant import cmd_ai_review
+        result = cmd_ai_review([])
+        assert result == 0
+        out = capsys.readouterr().out
+        assert "Good" in out
+
+    @patch("tools.ai_assistant._get_git_diff", return_value="big diff " * 2000)
+    @patch("tools.ai_assistant._call_llm", return_value="truncated review")
+    def test_truncates_large_diff(self, mock_llm, mock_diff, capsys):
+        from tools.ai_assistant import cmd_ai_review
+        result = cmd_ai_review([])
+        assert result == 0
+        prompt = mock_llm.call_args[0][0]
+        assert "truncated" in prompt
+
+
+class TestDocCommand:
+    """Test mw ai doc."""
+
+    def test_no_args(self, capsys):
+        from tools.ai_assistant import cmd_ai_doc
+        result = cmd_ai_doc([])
+        assert result == 1
+        assert "Usage" in capsys.readouterr().out
+
+    @patch("tools.ai_assistant._call_llm", return_value='def foo():\n    """Documented."""')
+    def test_doc_file(self, mock_llm, tmp_path, capsys):
+        from tools.ai_assistant import cmd_ai_doc
+        f = tmp_path / "code.py"
+        f.write_text("def foo(): pass")
+        result = cmd_ai_doc([str(f)])
+        assert result == 0
+        assert "Generating docs" in capsys.readouterr().out
+
+
+class TestChangelogCommand:
+    """Test mw ai changelog."""
+
+    @patch("subprocess.run")
+    def test_no_commits(self, mock_run, capsys):
+        from tools.ai_assistant import cmd_ai_changelog
+        mock_run.return_value = type("R", (), {"stdout": ""})()
+        result = cmd_ai_changelog([])
+        assert result == 0
+        assert "No commits" in capsys.readouterr().out
+
+    @patch("tools.ai_assistant._call_llm", return_value="### Added\n- Feature X")
+    @patch("subprocess.run")
+    def test_generates_changelog(self, mock_run, mock_llm, capsys):
+        from tools.ai_assistant import cmd_ai_changelog
+        mock_run.return_value = type("R", (), {"stdout": "abc123 feat: add X\ndef456 fix: bug Y"})()
+        result = cmd_ai_changelog([])
+        assert result == 0
+        assert "Added" in capsys.readouterr().out
