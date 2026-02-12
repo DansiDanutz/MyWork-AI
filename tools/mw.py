@@ -2059,8 +2059,122 @@ Examples:
     return 0
 
 
+def _detect_project_type(project_dir: Path) -> dict:
+    """Auto-detect project type, language, framework, and tooling."""
+    info = {
+        "language": "unknown",
+        "framework": None,
+        "package_manager": None,
+        "has_git": (project_dir / ".git").exists(),
+        "has_tests": False,
+        "has_ci": False,
+        "has_docker": False,
+        "dependencies": [],
+        "scripts": {},
+        "recommendations": [],
+    }
+
+    # Python detection
+    pyproject = project_dir / "pyproject.toml"
+    setup_py = project_dir / "setup.py"
+    requirements = project_dir / "requirements.txt"
+    pipfile = project_dir / "Pipfile"
+
+    if pyproject.exists() or setup_py.exists() or requirements.exists():
+        info["language"] = "python"
+        if pipfile.exists():
+            info["package_manager"] = "pipenv"
+        elif (project_dir / "poetry.lock").exists():
+            info["package_manager"] = "poetry"
+        else:
+            info["package_manager"] = "pip"
+
+        # Detect Python frameworks
+        search_files = [requirements, pyproject, setup_py]
+        combined = ""
+        for f in search_files:
+            if f.exists():
+                try:
+                    combined += f.read_text(errors="ignore")
+                except Exception:
+                    pass
+        if "fastapi" in combined.lower():
+            info["framework"] = "FastAPI"
+        elif "django" in combined.lower():
+            info["framework"] = "Django"
+        elif "flask" in combined.lower():
+            info["framework"] = "Flask"
+        elif "click" in combined.lower() or "typer" in combined.lower():
+            info["framework"] = "CLI (Click/Typer)"
+
+    # Node.js detection
+    pkg_json = project_dir / "package.json"
+    if pkg_json.exists():
+        info["language"] = "node" if info["language"] == "unknown" else f"{info['language']}+node"
+        if (project_dir / "pnpm-lock.yaml").exists():
+            info["package_manager"] = "pnpm"
+        elif (project_dir / "yarn.lock").exists():
+            info["package_manager"] = "yarn"
+        elif (project_dir / "bun.lockb").exists():
+            info["package_manager"] = "bun"
+        else:
+            info["package_manager"] = info.get("package_manager") or "npm"
+
+        try:
+            pkg = json.loads(pkg_json.read_text())
+            all_deps = {**pkg.get("dependencies", {}), **pkg.get("devDependencies", {})}
+            info["scripts"] = pkg.get("scripts", {})
+            if "next" in all_deps:
+                info["framework"] = "Next.js"
+            elif "react" in all_deps and "vite" in all_deps:
+                info["framework"] = "React + Vite"
+            elif "react" in all_deps:
+                info["framework"] = "React"
+            elif "vue" in all_deps:
+                info["framework"] = "Vue.js"
+            elif "svelte" in all_deps or "@sveltejs/kit" in all_deps:
+                info["framework"] = "SvelteKit" if "@sveltejs/kit" in all_deps else "Svelte"
+            elif "express" in all_deps:
+                info["framework"] = "Express.js"
+            elif "@nestjs/core" in all_deps:
+                info["framework"] = "NestJS"
+        except Exception:
+            pass
+
+    # Go detection
+    if (project_dir / "go.mod").exists():
+        info["language"] = "go" if info["language"] == "unknown" else f"{info['language']}+go"
+        info["package_manager"] = "go modules"
+
+    # Rust detection
+    if (project_dir / "Cargo.toml").exists():
+        info["language"] = "rust" if info["language"] == "unknown" else f"{info['language']}+rust"
+        info["package_manager"] = "cargo"
+
+    # Tooling detection
+    test_dirs = ["tests", "test", "__tests__", "spec", "src/test"]
+    info["has_tests"] = any((project_dir / d).exists() for d in test_dirs)
+    ci_dirs = [".github/workflows", ".gitlab-ci.yml", ".circleci", "Jenkinsfile"]
+    info["has_ci"] = any((project_dir / d).exists() for d in ci_dirs)
+    info["has_docker"] = (project_dir / "Dockerfile").exists() or (project_dir / "docker-compose.yml").exists()
+
+    # Generate recommendations
+    if not info["has_git"]:
+        info["recommendations"].append("Run 'git init' — version control is essential")
+    if not info["has_tests"]:
+        info["recommendations"].append("Add tests with 'mw test' — use --init to scaffold test directory")
+    if not info["has_ci"]:
+        info["recommendations"].append("Generate CI/CD with 'mw ci github' or 'mw ci gitlab'")
+    if not info["has_docker"]:
+        info["recommendations"].append("Consider adding Docker — run 'mw new --template docker'")
+    if info["language"] == "unknown":
+        info["recommendations"].append("No recognized project files found — consider 'mw new <name>' to scaffold")
+
+    return info
+
+
 def cmd_init(args: List[str] = None):
-    """Initialize current directory as a MyWork project."""
+    """Initialize current directory as a MyWork project with smart auto-detection."""
     import datetime
     if args and (args[0] in ["--help", "-h"]):
         print("""
@@ -2068,41 +2182,133 @@ Init Commands — Initialize MyWork Project
 ========================================
 Usage:
     mw init                         Initialize current directory as MyWork project
+    mw init --force                 Re-initialize (overwrite existing .mw config)
+    mw init --minimal               Skip auto-detection, create bare config only
     mw init --help                  Show this help message
 
 Description:
-    Initialize the current directory as a MyWork project by creating:
-    • .mw/ configuration directory
-    • .env environment file
-    • README.md template
-    • Basic project structure
+    Smart project initialization that auto-detects:
+    • Language (Python, Node.js, Go, Rust, multi-lang)
+    • Framework (FastAPI, Next.js, Django, Express, etc.)
+    • Package manager (pip, npm, yarn, pnpm, cargo, etc.)
+    • Existing tooling (tests, CI/CD, Docker)
+    
+    Creates:
+    • .mw/ configuration directory with detected settings
+    • .env environment file (if missing)
+    • GSD plan template for structured development
+    • Tailored recommendations based on your project
 
 Examples:
-    mw init                         # Initialize current directory
+    mw init                         # Smart init with auto-detection
+    mw init --force                 # Re-initialize existing project
+    mw init --minimal               # Bare minimum setup
 """)
         return 0
-        
+
+    force = args and "--force" in args if args else False
+    minimal = args and "--minimal" in args if args else False
     current_dir = Path.cwd()
-    print(f"{Colors.BOLD}🚀 Initializing MyWork project in: {current_dir}{Colors.ENDC}")
     
-    # Create .mw config directory
+    # Check if already initialized
     mw_dir = current_dir / ".mw"
-    mw_dir.mkdir(exist_ok=True)
+    if mw_dir.exists() and not force:
+        print(f"{Colors.YELLOW}⚠️  Already a MyWork project (.mw/ exists). Use --force to re-initialize.{Colors.ENDC}")
+        return 1
+
+    print(f"\n{Colors.BOLD}🚀 Initializing MyWork project in: {current_dir.name}/{Colors.ENDC}\n")
     
-    # Create config file
+    # Auto-detect project type
+    if not minimal:
+        print(f"   🔍 Scanning project...")
+        info = _detect_project_type(current_dir)
+        
+        lang_display = info["language"].replace("+", " + ").title() if info["language"] != "unknown" else "Not detected"
+        print(f"   📦 Language:        {Colors.BLUE}{lang_display}{Colors.ENDC}")
+        if info["framework"]:
+            print(f"   🏗️  Framework:      {Colors.BLUE}{info['framework']}{Colors.ENDC}")
+        if info["package_manager"]:
+            print(f"   📋 Package Manager: {Colors.BLUE}{info['package_manager']}{Colors.ENDC}")
+        print(f"   🧪 Tests:           {'✅ Found' if info['has_tests'] else '❌ Not found'}")
+        print(f"   🔄 CI/CD:           {'✅ Found' if info['has_ci'] else '❌ Not found'}")
+        print(f"   🐳 Docker:          {'✅ Found' if info['has_docker'] else '❌ Not found'}")
+        print(f"   📂 Git:             {'✅ Initialized' if info['has_git'] else '❌ Not found'}")
+        print()
+        lang_display = info["language"].replace("+", " + ").title() if info["language"] != "unknown" else "Not detected"
+    else:
+        info = {"language": "unknown", "framework": None, "package_manager": None,
+                "has_git": False, "has_tests": False, "has_ci": False, "has_docker": False,
+                "recommendations": [], "scripts": {}}
+        lang_display = "Not detected"
+
+    # Create .mw config directory
+    mw_dir.mkdir(exist_ok=True)
+    (mw_dir / "cache").mkdir(exist_ok=True)
+    
+    # Create config file with detected info
     config_content = {
         "project_name": current_dir.name,
-        "created_at": str(datetime.datetime.now()),
+        "created_at": str(datetime.datetime.now(datetime.timezone.utc)),
+        "mywork_version": "2.1.0",
         "version": "1.0.0",
-        "type": "basic",
+        "type": info["language"],
+        "framework": info["framework"],
+        "package_manager": info["package_manager"],
         "brain_enabled": True,
-        "autoforge_enabled": True
+        "autoforge_enabled": True,
+        "detected": {
+            "has_tests": info["has_tests"],
+            "has_ci": info["has_ci"],
+            "has_docker": info["has_docker"],
+            "has_git": info["has_git"],
+        }
     }
     
     config_file = mw_dir / "config.json"
     config_file.write_text(json.dumps(config_content, indent=2))
-    print(f"   ✅ Created .mw/config.json")
-    
+    print(f"   ✅ Created .mw/config.json (with auto-detected settings)")
+
+    # Create GSD plan template
+    gsd_dir = mw_dir / "gsd"
+    gsd_dir.mkdir(exist_ok=True)
+    plan_file = gsd_dir / "PLAN.md"
+    if not plan_file.exists():
+        fw_note = f" ({info['framework']})" if info['framework'] else ""
+        plan_content = f"""# {current_dir.name} — Development Plan
+
+## Project Type: {lang_display}{fw_note}
+
+## Vision
+<!-- What is this project? What problem does it solve? -->
+
+## Milestones
+
+### v1.0 — MVP
+- [ ] Core functionality
+- [ ] Basic tests
+- [ ] Documentation
+- [ ] CI/CD pipeline
+
+### v1.1 — Polish
+- [ ] Error handling
+- [ ] Performance optimization
+- [ ] User feedback integration
+
+## Architecture Notes
+<!-- Key design decisions, data flow, etc. -->
+
+## Commands
+```bash
+mw status          # Health check
+mw test            # Run tests
+mw lint scan       # Code quality
+mw check           # Full quality gate
+mw deploy          # Deploy to production
+```
+"""
+        plan_file.write_text(plan_content)
+        print(f"   ✅ Created .mw/gsd/PLAN.md (development plan template)")
+
     # Create .env if it doesn't exist
     env_file = current_dir / ".env"
     if not env_file.exists():
@@ -2227,11 +2433,28 @@ build/
     else:
         print(f"   ⚪ .gitignore already exists")
     
+    # Add .mw/cache to gitignore if git exists
+    gitignore_file = current_dir / ".gitignore"
+    if gitignore_file.exists():
+        content = gitignore_file.read_text()
+        if ".mw/cache/" not in content:
+            with open(gitignore_file, "a") as f:
+                f.write("\n# MyWork\n.mw/cache/\n")
+            print(f"   ✅ Added .mw/cache/ to .gitignore")
+
     print(f"\n{Colors.GREEN}🎉 Project initialized successfully!{Colors.ENDC}")
-    print(f"{Colors.BLUE}Next steps:{Colors.ENDC}")
+    
+    # Show recommendations
+    if info.get("recommendations"):
+        print(f"\n{Colors.YELLOW}💡 Recommendations:{Colors.ENDC}")
+        for rec in info["recommendations"]:
+            print(f"   → {rec}")
+    
+    print(f"\n{Colors.BLUE}Next steps:{Colors.ENDC}")
     print(f"   • Run 'mw status' to check project health")
+    print(f"   • Edit .mw/gsd/PLAN.md to define your development plan")
     print(f"   • Run 'mw guide' for workflow guidance")
-    print(f"   • Edit .env with your configuration")
+    print(f"   • Run 'mw check' before committing")
     
     return 0
 
