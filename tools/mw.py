@@ -74,6 +74,10 @@ Lint Commands:
 AI Assistant Commands:
     mw ai ask "question"     Ask a coding question
     mw ai explain <file>     Explain code in a file
+    mw pair                  Live AI pair programming (watches file changes)
+    mw pair --review         Review all uncommitted changes
+    mw pair --quiet          Only flag bugs and security issues
+    mw pair history          Show past pairing sessions
     mw ai fix <file>         Fix bugs in code
     mw ai refactor <file>    Get refactoring suggestions
     mw ai test <file>        Generate tests for code
@@ -3402,6 +3406,12 @@ def _cmd_ai_wrapper(args: List[str] = None) -> int:
     return cmd_ai(args or [])
 
 
+def _cmd_pair_wrapper(args: List[str] = None) -> int:
+    """Pair programming command."""
+    from tools.pair_session import cmd_pair
+    return cmd_pair(args or [])
+
+
 def _cmd_plugin_wrapper(args: List[str] = None) -> int:
     """Plugin management command."""
     from tools.plugin_manager import cmd_plugin
@@ -6489,6 +6499,7 @@ def cmd_completions(args: List[str] = None) -> int:
         "config": ["list", "get", "set", "reset", "rm", "path"],
         "deploy": ["vercel", "railway", "render", "docker"],
         "plugin": ["install", "uninstall", "enable", "disable", "list", "create", "scan"],
+        "pair": ["--path", "--model", "--quiet", "--review", "history"],
         "ci": ["github", "gitlab", "status"],
         "lint": ["scan", "stats", "watch"],
         "af": ["start", "stop", "pause", "resume", "status", "progress", "list", "ui", "service"],
@@ -6685,6 +6696,7 @@ def main() -> None:
         "config": lambda: cmd_config(args),
         "cfg": lambda: cmd_config(args),
         "ai": lambda: _cmd_ai_wrapper(args),
+        "pair": lambda: _cmd_pair_wrapper(args),
         "security": lambda: cmd_security(args),
         "sec": lambda: cmd_security(args),
         "git": lambda: cmd_git(args),
