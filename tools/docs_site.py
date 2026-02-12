@@ -41,16 +41,24 @@ SITE_CSS = """
     --purple: #bc8cff;
     --sidebar-width: 280px;
     --header-height: 60px;
+    --toc-width: 220px;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
     line-height: 1.6;
+    opacity: 0;
+    transition: opacity .5s;
+    min-height: 100vh;
 }
+
+body.fade-in { opacity: 1; }
 
 /* Header */
 .header {
@@ -64,7 +72,7 @@ body {
     display: flex;
     align-items: center;
     padding: 0 24px;
-    z-index: 100;
+    z-index: 1001;
 }
 
 .header h1 {
@@ -98,6 +106,22 @@ body {
 
 .header .search:focus { border-color: var(--accent); }
 
+.hamburger {
+    display: none;
+    background: none;
+    border: none;
+    margin-right: 12px;
+    margin-left: -8px;
+    font-size: 28px;
+    color: var(--accent);
+    cursor: pointer;
+    z-index: 1500;
+}
+
+@media (max-width: 768px) {
+    .hamburger { display: block; }
+}
+
 /* Sidebar */
 .sidebar {
     position: fixed;
@@ -109,6 +133,30 @@ body {
     border-right: 1px solid var(--border);
     overflow-y: auto;
     padding: 16px 0;
+    z-index: 1100;
+    transition: transform 0.2s cubic-bezier(.4,0,.2,1);
+}
+
+.sidebar.sidebar-mobile-hidden {
+    transform: translateX(-100%);
+    box-shadow: none;
+}
+
+.sidebar.sidebar-mobile-visible {
+    transform: translateX(0);
+    box-shadow: 2px 0 14px 0 rgba(0,0,0,0.38);
+}
+
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    left: 0; top: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.28);
+    z-index: 1099;
+}
+
+.sidebar-backdrop.visible {
+    display: block;
 }
 
 .sidebar .section-title {
@@ -138,75 +186,177 @@ body {
     margin-top: var(--header-height);
     padding: 40px 48px;
     max-width: 900px;
+    min-height: calc(100vh - var(--header-height) - 80px);
+    transition: margin-left .2s cubic-bezier(.4,0,.2,1);
 }
 
-.content h1 { font-size: 32px; margin-bottom: 8px; color: var(--text); }
-.content h2 { font-size: 24px; margin: 32px 0 12px; color: var(--text); padding-bottom: 8px; border-bottom: 1px solid var(--border); }
-.content h3 { font-size: 18px; margin: 24px 0 8px; color: var(--text); }
-.content p { margin-bottom: 16px; color: var(--text-dim); }
-.content ul, .content ol { margin: 0 0 16px 24px; color: var(--text-dim); }
-.content li { margin-bottom: 4px; }
-.content a { color: var(--accent); text-decoration: none; }
-.content a:hover { text-decoration: underline; }
-
-.content code {
-    background: rgba(110,118,129,0.2);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 13px;
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+@media (max-width: 1000px) {
+    .content {
+        max-width: 100vw;
+        padding: 32px 6vw;
+    }
 }
 
-.content pre {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    overflow-x: auto;
-    margin-bottom: 16px;
-}
-
-.content pre code { background: none; padding: 0; font-size: 13px; color: var(--text); }
-
-/* Command card */
-.cmd-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 16px;
-}
-
-.cmd-card .cmd-name {
-    font-family: monospace;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--green);
-    margin-bottom: 8px;
-}
-
-.cmd-card .cmd-desc { color: var(--text-dim); font-size: 14px; }
-
-/* Stats bar */
-.stats-bar {
-    display: flex;
-    gap: 24px;
-    margin: 24px 0;
-    padding: 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-}
-
-.stat { text-align: center; }
-.stat .num { font-size: 28px; font-weight: 700; color: var(--accent); }
-.stat .label { font-size: 12px; color: var(--text-dim); text-transform: uppercase; }
-
-/* Responsive */
 @media (max-width: 768px) {
-    .sidebar { display: none; }
-    .content { margin-left: 0; padding: 24px 16px; }
+    .sidebar { left: 0; top: var(--header-height); width: 78vw; max-width: 330px; }
+    .content { margin-left: 0; padding: 22px 3vw; }
 }
+
+/* Table of Contents */
+.toc-panel {
+    position: fixed;
+    right: min(12px, 2vw);
+    top: calc(var(--header-height) + 30px);
+    width: var(--toc-width);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px 12px 18px;
+    font-size: 15px;
+    color: var(--text-dim);
+    max-height: 60vh;
+    overflow-y: auto;
+    z-index: 1010;
+    box-shadow: 0 6px 24px 0 rgba(0,0,0,0.10);
+    display: none;
+}
+.toc-panel.visible { display: block; }
+
+.toc-panel ul { list-style: none; margin: 0; padding: 0; }
+.toc-panel li { margin-bottom: 6px; }
+.toc-panel a { color: var(--accent); text-decoration: none; transition: color .14s; }
+.toc-panel a:hover, .toc-panel a.active { color: var(--accent-hover); text-decoration: underline; }
+.toc-title { font-size: 13px; color: var(--text-dim); font-weight: 700; margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.8px; }
+
+@media (max-width: 1200px) { .toc-panel { display: none !important; } }
+
+/* Breadcrumbs */
+.breadcrumbs {
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: var(--text-dim);
+}
+.breadcrumbs a { color: var(--accent); text-decoration: none; margin-right: 4px; }
+.breadcrumbs span { margin-right: 4px; }
+.breadcrumbs .crumb-sep { margin-right: 6px; color: var(--border); }
+
+/* Footer */
+.footer {
+    text-align: center;
+    color: var(--text-dim);
+    border-top: 1px solid var(--border);
+    margin-top: 44px;
+    padding: 23px 0 10px 0;
+    font-size: 15px;
+    background: var(--surface);
+    min-height: 46px;
+}
+.footer a { color: var(--accent); margin: 0 10px; }
+
+/* Copy button */
+.copy-btn {
+    float: right;
+    position: relative;
+    top: -5px;
+    right: 2px;
+    padding: 1px 12px;
+    font-size: 15px;
+    background: var(--surface);
+    color: var(--accent);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 2;
+    opacity: 0.7;
+    transition: opacity .13s, background .13s;
+}
+.copy-btn:hover { opacity: 1; background: var(--accent); color: var(--bg); }
+
+/* Hero section & grid (index) */
+.hero {
+    width: 100%;
+    padding: 54px 0 38px 0;
+    min-height: 240px;
+    text-align: center;
+    background: linear-gradient(90deg, #58a6ff 16%, #79c0ff 86%, #bc8cff 100%);
+    color: #10152f;
+    font-family: inherit;
+    margin-bottom: 30px;
+}
+.hero .hero-title {
+    font-size: 2.4em;
+    font-weight: 800;
+    letter-spacing: -1.0px;
+    margin-bottom: 13px;
+    color: #10152f;
+}
+.hero .hero-desc {
+    max-width: 480px;
+    margin: 0 auto 24px auto;
+    font-size: 1.18em;
+    color: #293653;
+}
+.hero .get-started {
+    display: inline-block;
+    background: #10152f;
+    color: #fff;
+    border-radius: 24px;
+    padding: 15px 42px;
+    font-size: 1.03em;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 3px 10px 0 rgba(88, 166, 255, 0.12);
+    transition: background .15s;
+    margin-top: 16px;
+}
+.hero .get-started:hover { background: #293653; color: #fff; }
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 26px;
+    margin: 28px 0 32px 0;
+    width: 100%;
+}
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 20px 18px 20px;
+    box-shadow: 0 8px 22px 0 rgba(88, 166, 255, 0.09);
+    color: var(--text);
+    transition: transform .13s, box-shadow .13s;
+    font-size: 1.095em;
+}
+.card strong { color: var(--accent); }
+.card:hover { transform: translateY(-6px) scale(1.012); box-shadow: 0 3px 26px 0 rgba(88, 166, 255, 0.21); }
+
+/* Back to top */
+.back-to-top {
+    position: fixed;
+    bottom: 38px;
+    right: 36px;
+    width: 44px;
+    height: 44px;
+    background: var(--surface);
+    color: var(--accent);
+    border: 1.5px solid var(--border);
+    border-radius: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .14s, background .13s;
+    z-index: 2001;
+}
+.back-to-top.visible {
+    opacity: 0.87;
+    pointer-events: auto;
+}
+.back-to-top:hover { background: var(--accent); color: var(--bg); }
+
 """
 
 
@@ -235,13 +385,13 @@ def get_commands():
 
 
 def markdown_to_html(md: str) -> str:
-    """Minimal markdown → HTML converter."""
+    """Minimal markdown → HTML converter with code copy buttons."""
     lines = md.split('\n')
     html = []
     in_code = False
     in_list = False
-
-    for line in lines:
+    code_block_number = 0
+    for i, line in enumerate(lines):
         # Code blocks
         if line.strip().startswith('```'):
             if in_code:
@@ -249,19 +399,18 @@ def markdown_to_html(md: str) -> str:
                 in_code = False
             else:
                 lang = line.strip().replace('```', '')
-                html.append(f'<pre><code class="lang-{lang}">')
+                code_block_number += 1
+                btn_html = f'<button class="copy-btn" onclick="copyCodeBlock(this)" aria-label="Copy code">Copy</button>'
+                html.append(f'<pre>{btn_html}<code class="lang-{lang}" id="codeblock-{code_block_number}">')
                 in_code = True
             continue
-
         if in_code:
             html.append(line.replace('<', '&lt;').replace('>', '&gt;'))
             continue
-
         # Close list if non-list line
         if in_list and not line.strip().startswith('- ') and not line.strip().startswith('* ') and line.strip():
             html.append('</ul>')
             in_list = False
-
         # Headers
         if line.startswith('#### '):
             html.append(f'<h4>{line[5:]}</h4>')
@@ -298,12 +447,10 @@ def markdown_to_html(md: str) -> str:
             content = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', content)
             content = re.sub(r'\[([^\]]+)\]\(([^)]+)\)', r'<a href="\2">\1</a>', content)
             html.append(f'<p>{content}</p>')
-
     if in_list:
         html.append('</ul>')
     if in_code:
         html.append('</code></pre>')
-
     return '\n'.join(html)
 
 
@@ -340,8 +487,54 @@ def count_tools():
     return 0
 
 
+def build_breadcrumbs(page_id: str, sidebar_items: list) -> str:
+    mapping = {
+        'index': [],
+        'quickstart': [('index', 'Home')],
+        'commands': [('index', 'Home'),],
+        'cli-core': [('index', 'Home'), ('commands', 'Reference')],
+        'cli-project': [('index', 'Home'), ('commands', 'Reference')],
+        'cli-ai': [('index', 'Home'), ('commands', 'Reference')],
+        'cli-git': [('index', 'Home'), ('commands', 'Reference')],
+        'cli-devops': [('index', 'Home'), ('commands', 'Reference')],
+        'architecture': [('index', 'Home'),],
+        'changelog': [('index', 'Home')],
+    }
+    label_map = {i['id']: i['label'].replace('🏠 ','').replace('⌨️ ','').replace('🚀 ','').replace('🏗️ ','').replace('📝 ','') for i in sidebar_items}
+    trail = mapping.get(page_id, [('index', 'Home')])
+    crumbs = ['<span><a href="index.html">Home</a></span>']
+    for pid, _ in trail:
+        if pid == 'index': continue
+        crumbs.append('<span class="crumb-sep">›</span>')
+        crumbs.append(f'<span><a href="{pid}.html">{label_map.get(pid,pid.title())}</a></span>')
+    if page_id != 'index':
+        crumbs.append('<span class="crumb-sep">›</span>')
+        crumbs.append(f'<span>{label_map.get(page_id, page_id.title())}</span>')
+    return '<nav class="breadcrumbs">' + ''.join(crumbs) + '</nav>'
+
+def extract_h2s(content_html: str) -> list:
+    pattern = r'<h2 id="([^"]+)">(.+?)</h2>'
+    return re.findall(pattern, content_html)
+
+def build_toc_panel(h2s: list) -> str:
+    if len(h2s) < 2:
+        return ''
+    toc = '<div class="toc-panel visible"><div class="toc-title">On this page</div><ul>'
+    for aid, title in h2s:
+        toc += f'<li><a href="#{aid}">{title}</a></li>'
+    toc += '</ul></div>'
+    return toc
+
+
+def build_footer(version: str) -> str:
+    return f'''<footer class="footer">
+        &copy; {datetime.now().year} MyWork-AI &bull;
+        <a href="https://github.com/openclaw-ai/mywork-ai" target="_blank">GitHub</a>
+        <span> | v{version} | </span>
+        Built with <a href="https://github.com/openclaw-ai/mywork-ai" target="_blank">MyWork-AI</a>
+    </footer>'''
+
 def build_page(page_id: str, title: str, content_html: str, sidebar_items: list, version: str) -> str:
-    """Build a full HTML page."""
     sidebar_html = ""
     current_section = ""
     for item in sidebar_items:
@@ -350,37 +543,122 @@ def build_page(page_id: str, title: str, content_html: str, sidebar_items: list,
             sidebar_html += f'<div class="section-title">{current_section}</div>\n'
         active = ' class="active"' if item['id'] == page_id else ''
         sidebar_html += f'<a href="{item["id"]}.html"{active}>{item["label"]}</a>\n'
-
-    return f"""<!DOCTYPE html>
+    favicon_svg = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><rect width='128' height='128' fill='%230d1117'/><text x='50%' y='56%' text-anchor='middle' fill='%2358a6ff' font-family='monospace' font-size='70' font-weight='bold' dy='.3em'>MW</text></svg>"
+    breadcrumbs = build_breadcrumbs(page_id, sidebar_items)
+    h2s = extract_h2s(content_html)
+    toc_panel = build_toc_panel(h2s)
+    footer_html = build_footer(version)
+    return f'''<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{title} — MyWork-AI Docs</title>
+<link rel="icon" type="image/svg+xml" href="{favicon_svg}" />
 <style>{SITE_CSS}</style>
 </head>
 <body>
 <div class="header">
+    <button class="hamburger" id="hamburger" aria-label="Open menu">&#9776;</button>
     <h1>MyWork-AI <span>Docs</span></h1>
     <span class="version">v{version}</span>
     <input class="search" type="text" placeholder="Search docs..." id="search">
 </div>
-<nav class="sidebar">
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+<nav class="sidebar sidebar-mobile-hidden" id="sidebar">
 {sidebar_html}
 </nav>
 <main class="content">
+{breadcrumbs}
 {content_html}
 </main>
+{toc_panel}
+{footer_html}
+<button class="back-to-top" id="backToTop" title="Back to top">&#8593;</button>
 <script>
-document.getElementById('search').addEventListener('input', function(e) {{
+// Fade-in transition
+window.addEventListener('DOMContentLoaded', function () {{ document.body.classList.add('fade-in'); }});
+
+// Mobile sidebar hamburger toggle
+const hamburger = document.getElementById('hamburger');
+const sidebar = document.getElementById('sidebar');
+const backdrop = document.getElementById('sidebar-backdrop');
+function openSidebar() {{ sidebar.classList.remove('sidebar-mobile-hidden'); sidebar.classList.add('sidebar-mobile-visible'); backdrop.classList.add('visible'); }}
+function closeSidebar() {{ sidebar.classList.add('sidebar-mobile-hidden'); sidebar.classList.remove('sidebar-mobile-visible'); backdrop.classList.remove('visible'); }}
+hamburger.addEventListener('click', openSidebar);
+backdrop.addEventListener('click', closeSidebar);
+window.addEventListener('resize', function() {{ if(window.innerWidth > 768) closeSidebar(); }});
+
+// Keyboard shortcut to focus search
+window.addEventListener('keydown', function(e) {{
+    if ((e.ctrlKey && e.key==='k') || e.key==='/') {{
+        if(document.activeElement !== document.getElementById('search')) {{
+            e.preventDefault();
+            document.getElementById('search').focus();
+        }}
+    }}
+}});
+// Search filter
+const searchInput = document.getElementById('search');
+searchInput.addEventListener('input', function(e) {{
     const q = e.target.value.toLowerCase();
     document.querySelectorAll('.content h2, .content h3, .content p, .content .cmd-card').forEach(el => {{
         el.style.display = el.textContent.toLowerCase().includes(q) || !q ? '' : 'none';
     }});
 }});
+
+// Smooth-scroll anchor offset for fixed header
+function scrollIfAnchor() {{
+    if(location.hash.length > 1) {{
+        var el = document.getElementById(location.hash.slice(1));
+        if(el) {{
+            var y = el.getBoundingClientRect().top + window.pageYOffset - 64;
+            window.scrollTo({{top:y,behavior:'smooth'}});
+        }}
+    }}
+}}
+window.addEventListener('hashchange', scrollIfAnchor, false);
+window.addEventListener('DOMContentLoaded', scrollIfAnchor);
+
+// Copy code blocks
+function copyCodeBlock(btn) {{
+    var code = btn.parentElement.querySelector('code');
+    if(!code) return;
+    var text = code.innerText;
+    navigator.clipboard.writeText(text).then(function() {{
+        btn.textContent = 'Copied!';
+        setTimeout(() => {{ btn.textContent = 'Copy'; }}, 1600);
+    }});
+}}
+
+// Back to top button
+const backToTop = document.getElementById('backToTop');
+window.addEventListener('scroll', function() {{
+    if(window.scrollY > 170) backToTop.classList.add('visible');
+    else backToTop.classList.remove('visible');
+}});
+backToTop.addEventListener('click', function() {{
+    window.scrollTo({{ top:0, behavior:'smooth' }});
+}});
+
+// TOC highlight
+if(document.querySelector('.toc-panel')) {{
+    let tocLinks = document.querySelectorAll('.toc-panel a');
+    function tocHighlight() {{
+        let lastActive = null;
+        tocLinks.forEach(function(link) {{
+            var target = document.getElementById(link.hash.substr(1));
+            if (target && window.scrollY+66>=target.offsetTop) lastActive = link;
+            link.classList.remove('active');
+        }});
+        if(lastActive) lastActive.classList.add('active');
+    }}
+    window.addEventListener('scroll', tocHighlight);
+    tocHighlight();
+}}
 </script>
 </body>
-</html>"""
+</html>'''
 
 
 def build_site(output_dir: str = "docs_site"):
@@ -409,36 +687,31 @@ def build_site(output_dir: str = "docs_site"):
     ]
 
     # ── Index page ──
-    stats_html = f"""
-    <h1>MyWork-AI Documentation</h1>
-    <p>The AI-Powered Development Framework — build complete apps from idea to deployment.</p>
-    <div class="stats-bar">
+    hero_html = f'''
+      <section class="hero">
+        <div class="hero-title">AI-Powered Development Framework</div>
+        <div class="hero-desc">Build, test, deploy, &amp; orchestrate apps — from idea to production — with pure Python &amp; AI superpowers. <br> Save days per project with seamless automation.</div>
+        <a href="quickstart.html" class="get-started">Get Started &rarr;</a>
+      </section>
+      <div class="grid">
+        <div class="card"><strong>Unified CLI</strong> for scaffolding, management, health, &amp; orchestration across all your projects.<br><code>mw new</code>, <code>mw health</code>, <code>mw dashboard</code></div>
+        <div class="card"><strong>AI Integration</strong> at every stage: code review, bug fixes, docs, tests &mdash; all accessible via <code>mw ai</code></div>
+        <div class="card"><strong>Auto Testing</strong>: run, detect, and generate tests with one command. <code>mw test</code></div>
+        <div class="card"><strong>Smart Git</strong>: automatic commit/message, branch, undo &mdash; <code>mw git commit</code></div>
+        <div class="card"><strong>Deployment</strong>: <code>mw deploy</code> to Vercel, Railway, Docker, more.</div>
+        <div class="card"><strong>Plugin System</strong>: extend with <code>mw plugin</code> for custom logic/tools</div>
+        <div class="card"><strong>Knowledge Brain</strong>: AI learns your patterns, stores lessons with <code>mw brain</code></div>
+        <div class="card"><strong>Web Dashboard</strong>: <code>mw serve</code> offers full browser UI</div>
+      </div>
+      <div class="stats-bar">
         <div class="stat"><div class="num">48+</div><div class="label">Commands</div></div>
         <div class="stat"><div class="num">{n_tools}</div><div class="label">Modules</div></div>
         <div class="stat"><div class="num">{n_tests}</div><div class="label">Test Files</div></div>
         <div class="stat"><div class="num">v{version}</div><div class="label">Version</div></div>
-    </div>
-    <h2>What is MyWork-AI?</h2>
-    <p>MyWork-AI (<code>mw</code>) is a unified CLI framework that brings together project scaffolding,
-    AI-assisted development, automated testing, linting, deployment, and knowledge management
-    into a single tool.</p>
-    <h2>Key Features</h2>
-    <ul>
-    <li><strong>Project Scaffolding</strong> — <code>mw new</code> creates projects from 6+ templates</li>
-    <li><strong>AI Assistant</strong> — <code>mw ai</code> for code review, fixes, refactoring, docs</li>
-    <li><strong>Smart Git</strong> — <code>mw git commit</code> auto-generates commit messages</li>
-    <li><strong>Universal Testing</strong> — <code>mw test</code> auto-detects your test framework</li>
-    <li><strong>Deployment</strong> — <code>mw deploy</code> to Vercel, Railway, Render, Docker</li>
-    <li><strong>CI/CD Generation</strong> — <code>mw ci</code> generates GitHub Actions / GitLab CI</li>
-    <li><strong>Plugin System</strong> — <code>mw plugin</code> for extensibility</li>
-    <li><strong>Knowledge Brain</strong> — <code>mw brain</code> stores and retrieves lessons</li>
-    <li><strong>Web Dashboard</strong> — <code>mw serve</code> for a browser-based UI</li>
-    </ul>
-    <h2>Install</h2>
-    <pre><code>pip install mywork-ai
-mw setup</code></pre>
-    """
-    (out / "index.html").write_text(build_page("index", "Home", stats_html, sidebar, version))
+      </div>
+      <div style="text-align:center; margin-top:28px; color:var(--text-dim);">Install: <code>pip install mywork-ai</code> &nbsp; | &nbsp; <a href="quickstart.html">Quick Start</a></div>
+    '''
+    (out / "index.html").write_text(build_page("index", "Home", hero_html, sidebar, version))
 
     # ── Quick Start page ──
     qs_html = """
