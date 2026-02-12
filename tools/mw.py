@@ -3113,6 +3113,11 @@ def _cmd_serve_wrapper(args: List[str] = None) -> int:
     from tools.web_dashboard import cmd_serve
     return cmd_serve(args or [])
 
+def _cmd_run_wrapper(args: List[str] = None) -> int:
+    """Universal task runner."""
+    from tools.task_runner import cmd_run
+    return cmd_run(args or [])
+
 def _cmd_ai_wrapper(args: List[str] = None) -> int:
     """AI assistant command."""
     from tools.ai_assistant import cmd_ai
@@ -5538,7 +5543,7 @@ def cmd_completions(args: List[str] = None) -> int:
         "env", "fix", "git", "guide", "help", "hook", "init", "links", "lint",
         "marketplace", "monitor", "n8n", "new", "open", "perf", "plugin",
         "projects", "prompt-enhance", "release", "remember", "report", "scan",
-        "search", "sec", "security", "serve", "setup", "stats", "status", "test",
+        "run", "search", "sec", "security", "serve", "setup", "stats", "status", "test",
         "update", "version", "web", "wf", "workflow",
     ]
     # Subcommands per command
@@ -5559,6 +5564,7 @@ def cmd_completions(args: List[str] = None) -> int:
         "hook": ["install", "uninstall", "list", "run", "create"],
         "security": ["scan", "audit", "secrets", "deps"],
         "release": ["patch", "minor", "major", "status", "--dry-run"],
+        "run": ["add", "rm"],
         "completions": ["bash", "zsh", "fish", "install"],
     }
 
@@ -5737,6 +5743,7 @@ def main() -> None:
         "docs": lambda: cmd_docs(args),
         "ci": lambda: cmd_ci(args),
         "release": lambda: cmd_release(args),
+        "run": lambda: _cmd_run_wrapper(args),
         "deploy": lambda: cmd_deploy(args),
         "monitor": lambda: cmd_monitor(args),
         "env": lambda: cmd_env(args),
