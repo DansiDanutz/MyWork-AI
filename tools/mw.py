@@ -82,6 +82,7 @@ Code Review & Quality Commands:
     mw review --staged       Review staged changes
     mw docs generate <proj>  Generate AI documentation for project
     mw health <project>      Score project health (0-100)
+    mw release <patch|minor|major>                        Version bump + changelog + tag
     mw deploy <proj> --platform <vercel|railway|render>  Deploy project
 
 Examples:
@@ -2443,6 +2444,163 @@ Examples:
     elif dry_run:
         print(f"{Colors.BLUE}💡 Run 'mw clean' without --dry-run to actually clean{Colors.ENDC}")
     
+    return 0
+
+
+def cmd_release(args: List[str] = None) -> int:
+    """Automate releases: version bump, changelog, git tag, and optional publish.
+
+    Usage:
+        mw release patch              # 1.0.0 → 1.0.1
+        mw release minor              # 1.0.0 → 1.1.0
+        mw release major              # 1.0.0 → 2.0.0
+        mw release <version>          # Set explicit version (e.g. 2.5.0)
+        mw release --dry-run patch    # Preview without changes
+        mw release status             # Show current version and unreleased changes
+    """
+    import re as _re
+    import subprocess as _sp
+
+    args = args or []
+    dry_run = "--dry-run" in args
+    args = [a for a in args if a != "--dry-run"]
+    bump = args[0] if args else "status"
+
+    def _run(cmd, **kw):
+        return _sp.run(cmd, capture_output=True, text=True, timeout=10, **kw)
+
+    def _get_version(path="."):
+        """Read version from pyproject.toml or package.json."""
+        pp = os.path.join(path, "pyproject.toml")
+        pj = os.path.join(path, "package.json")
+        if os.path.exists(pp):
+            for line in open(pp):
+                m = _re.match(r'^version\s*=\s*["\']([^"\']+)', line)
+                if m:
+                    return m.group(1), "pyproject.toml"
+        if os.path.exists(pj):
+            import json as _j
+            data = _j.load(open(pj))
+            return data.get("version", "0.0.0"), "package.json"
+        return "0.0.0", None
+
+    def _set_version(new_ver, source_file, path="."):
+        """Write new version to the source file."""
+        fp = os.path.join(path, source_file)
+        content = open(fp).read()
+        if source_file == "pyproject.toml":
+            content = _re.sub(r'(version\s*=\s*["\'])[\d.]+', f'\\g<1>{new_ver}', content, count=1)
+        elif source_file == "package.json":
+            content = _re.sub(r'("version"\s*:\s*")[\d.]+', f'\\g<1>{new_ver}', content, count=1)
+        open(fp, 'w').write(content)
+
+    def _bump_version(current, bump_type):
+        parts = current.split(".")
+        parts = [int(p) for p in parts[:3]] + [0] * (3 - len(parts[:3]))
+        if bump_type == "major":
+            return f"{parts[0]+1}.0.0"
+        elif bump_type == "minor":
+            return f"{parts[0]}.{parts[1]+1}.0"
+        elif bump_type == "patch":
+            return f"{parts[0]}.{parts[1]}.{parts[2]+1}"
+        else:
+            return bump_type  # Explicit version
+
+    def _get_unreleased_commits():
+        """Get commits since last tag."""
+        r = _run(["git", "describe", "--tags", "--abbrev=0"], cwd=".")
+        last_tag = r.stdout.strip() if r.returncode == 0 else ""
+        range_spec = f"{last_tag}..HEAD" if last_tag else "HEAD"
+        r = _run(["git", "log", range_spec, "--pretty=format:%s (%an)"], cwd=".")
+        return [l for l in r.stdout.strip().split("\n") if l.strip()]
+
+    def _categorize_commits(commits):
+        cats = {"feat": [], "fix": [], "docs": [], "refactor": [], "test": [], "other": []}
+        for c in commits:
+            matched = False
+            for prefix in ["feat", "fix", "docs", "refactor", "test"]:
+                if c.lower().startswith(prefix):
+                    cats[prefix].append(c)
+                    matched = True
+                    break
+            if not matched:
+                cats["other"].append(c)
+        return cats
+
+    current_ver, source = _get_version()
+
+    if bump == "status" or bump == "help" or bump == "--help":
+        print(f"\n{Colors.BOLD}📦 Release Status{Colors.ENDC}")
+        print(f"  Current version: {Colors.BLUE}v{current_ver}{Colors.ENDC}")
+        print(f"  Version source:  {source or 'not found'}")
+        commits = _get_unreleased_commits()
+        print(f"  Unreleased commits: {len(commits)}")
+        if commits:
+            cats = _categorize_commits(commits)
+            for cat, items in cats.items():
+                if items:
+                    print(f"    {cat}: {len(items)}")
+            print(f"\n  {Colors.YELLOW}💡 Run 'mw release patch|minor|major' to release{Colors.ENDC}")
+        else:
+            print(f"  {Colors.GREEN}✅ No unreleased changes{Colors.ENDC}")
+        return 0
+
+    if not source:
+        print(f"{Colors.RED}❌ No version file found (pyproject.toml or package.json){Colors.ENDC}")
+        return 1
+
+    new_ver = _bump_version(current_ver, bump)
+    commits = _get_unreleased_commits()
+    cats = _categorize_commits(commits)
+
+    print(f"\n{Colors.BOLD}🚀 Release: v{current_ver} → v{new_ver}{Colors.ENDC}")
+    print(f"  Commits: {len(commits)}")
+    if dry_run:
+        print(f"  {Colors.YELLOW}(DRY RUN - no changes will be made){Colors.ENDC}")
+
+    # Generate changelog entry
+    from datetime import datetime as _dt
+    date_str = _dt.now().strftime("%Y-%m-%d")
+    changelog_entry = f"\n## [{new_ver}] - {date_str}\n"
+    section_map = {"feat": "### ✨ Features", "fix": "### 🐛 Bug Fixes", "docs": "### 📚 Documentation",
+                   "refactor": "### ♻️ Refactoring", "test": "### 🧪 Tests", "other": "### 📦 Other"}
+    for cat, title in section_map.items():
+        if cats.get(cat):
+            changelog_entry += f"\n{title}\n"
+            for c in cats[cat]:
+                changelog_entry += f"- {c}\n"
+
+    print(f"\n{Colors.ENDC}Changelog entry:{Colors.ENDC}")
+    print(changelog_entry)
+
+    if dry_run:
+        print(f"{Colors.YELLOW}Dry run complete. No changes made.{Colors.ENDC}")
+        return 0
+
+    # 1. Update version
+    _set_version(new_ver, source)
+    print(f"  {Colors.GREEN}✅ Updated {source} → v{new_ver}{Colors.ENDC}")
+
+    # 2. Update CHANGELOG.md
+    cl_path = "CHANGELOG.md"
+    if os.path.exists(cl_path):
+        content = open(cl_path).read()
+        # Insert after first heading
+        if "## [" in content:
+            content = content.replace("\n## [", f"\n{changelog_entry}\n## [", 1)
+        else:
+            content += changelog_entry
+        open(cl_path, 'w').write(content)
+        print(f"  {Colors.GREEN}✅ Updated CHANGELOG.md{Colors.ENDC}")
+
+    # 3. Git commit and tag
+    _run(["git", "add", "-A"])
+    _run(["git", "commit", "-m", f"release: v{new_ver}"])
+    _run(["git", "tag", "-a", f"v{new_ver}", "-m", f"Release v{new_ver}"])
+    print(f"  {Colors.GREEN}✅ Git commit + tag v{new_ver}{Colors.ENDC}")
+
+    print(f"\n  {Colors.YELLOW}💡 Push with: git push && git push --tags{Colors.ENDC}")
+    print(f"  {Colors.YELLOW}💡 Publish:   pip install build && python -m build && twine upload dist/*{Colors.ENDC}")
     return 0
 
 
@@ -5375,6 +5533,7 @@ def main() -> None:
         "analytics": lambda: cmd_analytics_wrapper(args),
         "docs": lambda: cmd_docs(args),
         "ci": lambda: cmd_ci(args),
+        "release": lambda: cmd_release(args),
         "deploy": lambda: cmd_deploy(args),
         "monitor": lambda: cmd_monitor(args),
         "env": lambda: cmd_env(args),

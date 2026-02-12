@@ -4,6 +4,55 @@ All notable changes to MyWork-AI will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
+
+## [2.1.0] - 2026-02-12
+
+### ✨ Features
+- feat: add mw plugin - extensible plugin system with install/uninstall/create/security-scan (21 tests) (Memo)
+- feat: add mw db - universal database management (status, tables, schema, query, migrate, seed, export, backup/restore) with 33 tests (Memo)
+- feat: add mw api - FastAPI project scaffolder with auto CRUD generation (14 tests) (Memo)
+- feat: add mw bench - project performance benchmarking with history tracking, comparison, and CI mode (21 tests) (Memo)
+- feat: multi-provider AI assistant - support DeepSeek, Gemini, OpenAI + interactive chat mode (Memo)
+- feat: add mw serve - web dashboard with project overview, git log, brain stats, command runner (17 tests) (Memo)
+- feat: add mw perf - project performance analyzer (deps, files, code quality, startup time, score) (15 tests) (Memo)
+- feat: add mw audit - comprehensive project quality report card (10 tests) (Memo)
+- feat: add mw hook - git hooks management with install, remove, create, run, status (19 tests) (Memo)
+- feat: add mw git - smart git operations with auto-commit, branch, diff, stash, undo, cleanup (18 tests, 317 total) (Memo)
+- feat: add mw security - security scanner with secrets, patterns, deps, gitignore checks (18 tests, 299 total) (Memo)
+- feat: add mw ai - AI assistant with ask/explain/fix/refactor/test/commit (24 tests, 281 total) (Memo)
+- feat: add mw config - configuration management (15 tests, 257 total) (Memo)
+- feat: add mw env - environment variable management (23 tests, 242 total) (Memo)
+- feat: add mw ci - CI/CD pipeline generator (16 tests, 219 total) (Memo)
+- feat: add mw plugin - extensible plugin system (17 tests, 203 total) (Memo)
+- feat: add mw deploy + mw monitor commands (11 tests, 186 total) (Memo)
+- feat: add mw test (universal test runner) and mw workflow commands (6 tests, 175 total) (Memo)
+- feat: add mw docs - auto documentation generator (12 tests, 169 total) (Memo)
+- feat: add mw analytics - project insights, complexity, security, git trends (8 tests) (Memo)
+- feat: add mw version command with -v/--version flags (Memo)
+- feat: Phase 9 brain quality scoring, dedupe, provenance tracking (16 new tests, 149 total) (Memo)
+- feat: Phase 8 credits ledger - payments, escrow, refunds, reconciliation (Memo)
+- feat: massive UX enhancement - landing page, ecosystem docs, CLI improvements, all live app links (Memo)
+
+### 🐛 Bug Fixes
+- fix: repair test_ai_assistant.py - update imports and mocks for _get_provider_key signature (Memo)
+- fix: escape quoting in pre-commit hook template (Memo)
+- fix: resolve all test failures - 133/133 passing (Memo)
+- fix: repair scaffold.py syntax errors - fix mobile template brace nesting (Memo)
+
+### 📚 Documentation
+- docs: update STATE.md with mw env addition (Memo)
+- docs: update STATE.md with mw ci addition (Memo)
+- docs: update STATE.md with mw test/workflow additions (Memo)
+- docs: update STATE.md with new test count (84) (Memo)
+- docs: professional README, CHANGELOG v2.0.0, world-class repo structure (Memo)
+
+### 🧪 Tests
+- test: add 9 brain tests for deprecate, delete, cleanup, filtering, and validation (Memo)
+
+### 📦 Other
+- security: remove hardcoded API keys from ai_review.py and ai_docs.py, use env vars (Memo)
+- Phase 9: Add semantic search, deduplication, quality scoring & provenance tracking (Memo)
+
 ## [2.0.0] - 2026-02-10
 
 ### 🚀 Major Release — Production Ready
