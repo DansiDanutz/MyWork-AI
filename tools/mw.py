@@ -3957,6 +3957,185 @@ def cmd_snapshot(args: List[str] = None) -> int:
     return 0
 
 
+def cmd_recap(args: List[str] = None) -> int:
+    """Generate a productivity recap (daily/weekly/custom).
+
+    Usage:
+        mw recap                  # Today's recap
+        mw recap --week           # This week's recap
+        mw recap --since "3 days ago"  # Custom period
+        mw recap --all            # All projects
+        mw recap --json           # JSON output
+    """
+    import json as json_mod
+    import re as re_mod
+
+    period = "today"
+    since_arg = "midnight"
+    json_output = False
+    all_projects = False
+
+    if args:
+        i = 0
+        while i < len(args):
+            if args[i] == "--week":
+                period = "week"
+                since_arg = "7 days ago"
+                i += 1
+            elif args[i] == "--since" and i + 1 < len(args):
+                period = "custom"
+                since_arg = args[i + 1]
+                i += 2
+            elif args[i] == "--json":
+                json_output = True
+                i += 1
+            elif args[i] == "--all":
+                all_projects = True
+                i += 1
+            elif args[i] in ("--help", "-h"):
+                print("mw recap — Productivity Recap")
+                print("=" * 40)
+                print("Usage:")
+                print("    mw recap                  Today's recap")
+                print("    mw recap --week           This week's recap")
+                print('    mw recap --since "3 days ago"  Custom period')
+                print("    mw recap --all            Include all project dirs")
+                print("    mw recap --json           JSON output")
+                return 0
+            else:
+                i += 1
+
+    def _run_recap(cmd: str, cwd: str = None) -> str:
+        try:
+            r = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=10, cwd=cwd)
+            return r.stdout.strip()
+        except Exception:
+            return ""
+
+    # Determine project directories to scan
+    fw_root = Path(__file__).parent.parent
+    project_dirs = [str(fw_root)]
+    if all_projects:
+        pdir = fw_root / "projects"
+        if pdir.exists():
+            for p in pdir.iterdir():
+                if p.is_dir() and (p / ".git").exists():
+                    project_dirs.append(str(p))
+
+    recap = {
+        "period": period,
+        "since": since_arg,
+        "projects": [],
+        "totals": {"commits": 0, "files_changed": 0, "insertions": 0, "deletions": 0, "authors": set()},
+    }
+
+    for pdir_path in project_dirs:
+        if not Path(pdir_path, ".git").exists():
+            continue
+        pname = Path(pdir_path).name
+
+        commits_raw = _run_recap(f'git log --oneline --since="{since_arg}" 2>/dev/null', cwd=pdir_path)
+        commits = [l for l in commits_raw.split("\n") if l.strip()] if commits_raw else []
+        num_commits = len(commits)
+
+        if num_commits == 0:
+            continue
+
+        shortstat = _run_recap(f'git log --since="{since_arg}" --shortstat --format="" 2>/dev/null', cwd=pdir_path)
+        files_changed = 0
+        insertions = 0
+        deletions = 0
+        for line in shortstat.split("\n"):
+            line = line.strip()
+            if not line:
+                continue
+            m_files = re_mod.search(r"(\d+) files? changed", line)
+            m_ins = re_mod.search(r"(\d+) insertions?\(\+\)", line)
+            m_del = re_mod.search(r"(\d+) deletions?\(-\)", line)
+            if m_files:
+                files_changed += int(m_files.group(1))
+            if m_ins:
+                insertions += int(m_ins.group(1))
+            if m_del:
+                deletions += int(m_del.group(1))
+
+        authors_raw = _run_recap(f'git log --since="{since_arg}" --format="%an" 2>/dev/null', cwd=pdir_path)
+        authors = list(set(a.strip() for a in authors_raw.split("\n") if a.strip())) if authors_raw else []
+
+        top_files_raw = _run_recap(
+            f'git log --since="{since_arg}" --name-only --format="" 2>/dev/null | sort | uniq -c | sort -rn | head -5',
+            cwd=pdir_path,
+        )
+        top_files = []
+        if top_files_raw:
+            for line in top_files_raw.split("\n"):
+                line = line.strip()
+                if line:
+                    parts = line.split(None, 1)
+                    if len(parts) == 2:
+                        top_files.append({"count": int(parts[0]), "file": parts[1]})
+
+        proj_data = {
+            "name": pname,
+            "commits": num_commits,
+            "commit_messages": [c.split(" ", 1)[1] if " " in c else c for c in commits[:10]],
+            "files_changed": files_changed,
+            "insertions": insertions,
+            "deletions": deletions,
+            "authors": authors,
+            "top_files": top_files,
+        }
+        recap["projects"].append(proj_data)
+        recap["totals"]["commits"] += num_commits
+        recap["totals"]["files_changed"] += files_changed
+        recap["totals"]["insertions"] += insertions
+        recap["totals"]["deletions"] += deletions
+        recap["totals"]["authors"].update(authors)
+
+    recap["totals"]["authors"] = list(recap["totals"]["authors"])
+
+    if json_output:
+        print(json_mod.dumps(recap, indent=2))
+        return 0
+
+    # Pretty print
+    period_label = {"today": "Today", "week": "This Week", "custom": f'Since "{since_arg}"'}.get(period, period)
+
+    print(f"\n  {Colors.BOLD}📊 Productivity Recap — {period_label}{Colors.ENDC}")
+    print(f"  {'━' * 45}")
+
+    if not recap["projects"]:
+        print(f"\n  {Colors.DIM}No commits found for this period.{Colors.ENDC}\n")
+        return 0
+
+    t = recap["totals"]
+    print(f"\n  {Colors.GREEN}📈 Totals:{Colors.ENDC}")
+    print(f"     Commits:    {t['commits']}")
+    print(f"     Files:      {t['files_changed']} changed")
+    print(f"     Lines:      {Colors.GREEN}+{t['insertions']}{Colors.ENDC} / {Colors.RED}-{t['deletions']}{Colors.ENDC}")
+    net = t["insertions"] - t["deletions"]
+    print(f"     Net:        {'+' if net >= 0 else ''}{net} lines")
+    if t["authors"]:
+        print(f"     Authors:    {', '.join(t['authors'])}")
+
+    for proj in recap["projects"]:
+        print(f"\n  {Colors.BLUE}📁 {proj['name']}{Colors.ENDC} — {proj['commits']} commits")
+        print(f"     {Colors.GREEN}+{proj['insertions']}{Colors.ENDC} / {Colors.RED}-{proj['deletions']}{Colors.ENDC} across {proj['files_changed']} files")
+
+        if proj["commit_messages"]:
+            print(f"     Recent:")
+            for msg in proj["commit_messages"][:5]:
+                print(f"       • {msg}")
+
+        if proj["top_files"]:
+            print(f"     Hot files:")
+            for tf in proj["top_files"][:3]:
+                print(f"       {tf['count']}× {tf['file']}")
+
+    print(f"\n  {'━' * 45}\n")
+    return 0
+
+
 def cmd_version() -> int:
     """Show framework version, Python version, and platform info."""
     import platform
@@ -6292,6 +6471,7 @@ def main() -> None:
         "deps": lambda: cmd_deps(args),
         "dependencies": lambda: cmd_deps(args),
         "completions": lambda: cmd_completions(args),
+        "recap": lambda: cmd_recap(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),

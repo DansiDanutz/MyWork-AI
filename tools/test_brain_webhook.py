@@ -34,7 +34,7 @@ test_event = {
 }
 
 
-def test_brain_webhook(webhook_url: str, allow_prod: bool) -> bool:
+def run_brain_webhook_test(webhook_url: str, allow_prod: bool) -> bool:
     """Test the Brain ingestion endpoint."""
     if webhook_url.startswith("https://mywork-ai-production.up.railway.app") and not allow_prod:
         print("Refusing to send test data to production by default.")
@@ -92,5 +92,5 @@ if __name__ == "__main__":
     resolved_url = _resolve_webhook_url(args.url)
     allow_prod = args.prod or _env_bool("ALLOW_PROD_WEBHOOK_TEST")
 
-    success = test_brain_webhook(resolved_url, allow_prod)
+    success = run_brain_webhook_test(resolved_url, allow_prod)
     exit(0 if success else 1)
