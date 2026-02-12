@@ -1,0 +1,64 @@
+{
+  "workflow_file": "/tmp/pytest-of-Memo1981/pytest-106/test_execute_workflow_real0/test-workflow.yaml",
+  "execution_time": "2026-02-12T04:09:01.999363",
+  "success": true,
+  "dry_run": false,
+  "variables": {
+    "MYWORK_ROOT": "/home/Memo1981/MyWork-AI",
+    "PROJECTS_DIR": "/home/Memo1981/MyWork-AI/projects",
+    "WORKFLOW_DIR": "/tmp/pytest-of-Memo1981/pytest-106/test_execute_workflow_real0",
+    "TIMESTAMP": "2026-02-12T04:09:01.992529",
+    "PROJECT": "test-app",
+    "ENV": "staging"
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "Echo Hello",
+      "command": "echo hello",
+      "status": "success",
+      "start_time": "2026-02-12T04:09:01.993340",
+      "end_time": "2026-02-12T04:09:01.995661",
+      "duration_seconds": 0.002321,
+      "exit_code": 0,
+      "output": "hello\n",
+      "error": ""
+    },
+    {
+      "index": 1,
+      "name": "Echo Project",
+      "command": "echo ${PROJECT}",
+      "status": "success",
+      "start_time": "2026-02-12T04:09:01.995782",
+      "end_time": "2026-02-12T04:09:01.997540",
+      "duration_seconds": 0.001758,
+      "exit_code": 0,
+      "output": "test-app\n",
+      "error": ""
+    },
+    {
+      "index": 2,
+      "name": "Conditional Step",
+      "command": "echo only-in-prod",
+      "status": "skipped",
+      "start_time": null,
+      "end_time": null,
+      "duration_seconds": 0.0,
+      "exit_code": null,
+      "output": "",
+      "error": ""
+    },
+    {
+      "index": 3,
+      "name": "Always Run",
+      "command": "echo always",
+      "status": "success",
+      "start_time": "2026-02-12T04:09:01.997643",
+      "end_time": "2026-02-12T04:09:01.999137",
+      "duration_seconds": 0.001494,
+      "exit_code": 0,
+      "output": "always\n",
+      "error": ""
+    }
+  ]
+}

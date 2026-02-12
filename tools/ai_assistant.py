@@ -406,7 +406,7 @@ def cmd_ai(args: List[str] = None) -> int:
     """
     args = args or []
 
-    if not args:
+    if not args or args[0] in ("-h", "--help", "help"):
         print(f"""
 {BOLD}{CYAN}🤖 MyWork AI Assistant{RESET}
 

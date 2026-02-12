@@ -108,6 +108,12 @@ import subprocess
 from pathlib import Path
 from typing import List, Optional, Dict, Any
 
+# Ensure the framework root is on sys.path so `from tools.X` imports work
+# regardless of the current working directory.
+_FRAMEWORK_ROOT = str(Path(__file__).resolve().parent.parent)
+if _FRAMEWORK_ROOT not in sys.path:
+    sys.path.insert(0, _FRAMEWORK_ROOT)
+
 try:
     import yaml
 except ImportError:  # pragma: no cover - optional dependency
@@ -572,6 +578,18 @@ def cmd_projects() -> None:
     args: Optional[List[str]] = None
     if len(sys.argv) > 2:
         args = sys.argv[2:]
+
+    if args and args[0] in {"-h", "--help", "help"}:
+        print("Usage: mw projects [subcommand]")
+        print()
+        print("Subcommands:")
+        print("  (none)        List all projects")
+        print("  scan          Refresh project registry")
+        print("  export        Export project data")
+        print("  stats         Show project statistics")
+        print("  list          List projects from registry")
+        print("  health <name> Show project health report")
+        return 0
 
     if args and args[0] in {"scan", "export", "stats", "list"}:
         return run_tool("project_registry", args)

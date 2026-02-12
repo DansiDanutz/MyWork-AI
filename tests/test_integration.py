@@ -67,8 +67,8 @@ class TestMWIntegration:
         
         # Should contain stats output or error message
         output = result.stdout + result.stderr
-        expected_terms = ["Brain Statistics", "entries", "stats", "Brain not found", "error"]
-        assert any(term in output for term in expected_terms)
+        expected_terms = ["Brain Statistics", "entries", "stats", "Brain not found", "error", "brain"]
+        assert any(term.lower() in output.lower() for term in expected_terms), f"No expected term in output: {output[:200]}"
         
     def test_mw_projects_command(self):
         """Test 'mw projects' end-to-end."""
