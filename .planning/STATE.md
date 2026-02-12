@@ -35,6 +35,9 @@ Date: 2026-02-10
 - **Security audit**: 0 critical, 5 low-risk remaining
 
 ### Recent Changes (2026-02-12)
+- Added `mw migrate` — database migration manager (init, create, up, down, status, history, reset)
+- SQLite support with auto-detection from env vars
+- 22 new tests → **303 total passing**
 - Added docstrings to all 16 undocumented functions in mw.py (100% docstring coverage)
 - Functions covered: _parse_scalar, _simple_yaml_load, _safe_load_yaml, _load_project_meta, stat_line, _run (3x), _bump_version, _categorize_commits, _load, _save, _is_git (2x), _mask, _get_mywork_root
 
