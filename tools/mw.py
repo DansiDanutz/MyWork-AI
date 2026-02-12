@@ -25,6 +25,7 @@ Commands:
     links           Show all useful framework links
     api             Start REST API server (programmatic access)
     serve           Start web dashboard (browser UI for mw)
+    demo            Live demo showcasing all framework features
     tour            Interactive feature tour (2 min onboarding)
 
 Project Commands:
@@ -3372,6 +3373,12 @@ def _cmd_serve_wrapper(args: List[str] = None) -> int:
     return cmd_serve(args or [])
 
 
+def _cmd_demo_wrapper(args: List[str] = None) -> int:
+    """Launch interactive demo."""
+    from tools.demo import main as demo_main
+    demo_main(args or [])
+    return 0
+
 def _cmd_tour_wrapper(args: List[str] = None) -> int:
     """Launch interactive tour."""
     from tools.tour import cmd_tour
@@ -6470,7 +6477,7 @@ def cmd_completions(args: List[str] = None) -> int:
         "marketplace", "monitor", "n8n", "new", "open", "perf", "plugin",
         "projects", "prompt-enhance", "release", "remember", "report", "scan",
         "run", "search", "sec", "security", "serve", "setup", "stats", "status", "test",
-        "tour", "update", "version", "web", "wf", "workflow",
+        "demo", "tour", "update", "version", "web", "wf", "workflow",
     ]
     # Subcommands per command
     subcmds = {
@@ -6692,6 +6699,7 @@ def main() -> None:
         "performance": lambda: run_tool("perf_analyzer", args),
         "api": lambda: _cmd_api_wrapper(args),
         "serve": lambda: _cmd_serve_wrapper(args),
+        "demo": lambda: _cmd_demo_wrapper(args),
         "tour": lambda: _cmd_tour_wrapper(args),
         "web": lambda: _cmd_serve_wrapper(args),
         "db": lambda: _cmd_db_wrapper(args),
