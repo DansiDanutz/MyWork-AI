@@ -2917,6 +2917,12 @@ def _cmd_bench_wrapper(args: List[str] = None) -> int:
     return mod.cmd_bench(args or [])
 
 
+def _cmd_db_wrapper(args: List[str] = None) -> int:
+    """Database management command."""
+    from tools.db_manager import cmd_db
+    return cmd_db(args or [])
+
+
 def _cmd_serve_wrapper(args: List[str] = None) -> int:
     """Launch web dashboard."""
     from tools.web_dashboard import cmd_serve
@@ -5390,6 +5396,8 @@ def main() -> None:
         "performance": lambda: run_tool("perf_analyzer", args),
         "serve": lambda: _cmd_serve_wrapper(args),
         "web": lambda: _cmd_serve_wrapper(args),
+        "db": lambda: _cmd_db_wrapper(args),
+        "database": lambda: _cmd_db_wrapper(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),
