@@ -64,6 +64,21 @@ GSD_PATH = Path.home() / ".claude" / "commands" / "gsd"
 N8N_SKILLS_PATH = Path.home() / ".claude" / "skills" / "n8n-skills"
 
 
+def _is_server_mode() -> bool:
+    """Detect if running on a headless server (no Claude Desktop).
+    
+    Returns True if GSD/AutoForge/n8n are not expected to be installed.
+    """
+    # If .claude directory doesn't exist at all, we're in server mode
+    claude_dir = Path.home() / ".claude"
+    if not claude_dir.exists():
+        return True
+    # If DISPLAY is not set and we're on Linux, likely a headless server
+    if sys.platform == "linux" and not os.environ.get("DISPLAY"):
+        return True
+    return False
+
+
 class HealthCheckLock:
     """Context manager for preventing concurrent health check runs."""
 
@@ -198,10 +213,18 @@ class HealthChecker:
 
     def run_all(self) -> List[CheckResult]:
         """Run all health checks."""
-        self.check_gsd()
-        self.check_autoforge()
+        server = _is_server_mode()
+        if not server:
+            self.check_gsd()
+            self.check_autoforge()
+            self.check_n8n()
+        else:
+            self.add_result(CheckResult(
+                name="Environment",
+                status=Status.OK,
+                message="Server mode detected — skipping desktop-only checks (GSD, AutoForge, n8n)",
+            ))
         self.check_git_integrity()
-        self.check_n8n()
         self.check_projects()
         self.check_api_keys()
         self.check_dependencies()
@@ -211,9 +234,16 @@ class HealthChecker:
 
     def run_quick(self) -> List[CheckResult]:
         """Run quick status checks only."""
-        self.check_gsd(quick=True)
-        self.check_autoforge(quick=True)
-        self.check_n8n(quick=True)
+        if not _is_server_mode():
+            self.check_gsd(quick=True)
+            self.check_autoforge(quick=True)
+            self.check_n8n(quick=True)
+        else:
+            self.add_result(CheckResult(
+                name="Environment",
+                status=Status.OK,
+                message="Server mode — desktop checks skipped",
+            ))
         return self.results
 
     def check_gsd(self, quick: bool = False):

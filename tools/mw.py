@@ -85,6 +85,9 @@ Code Review & Quality Commands:
     mw review --staged       Review staged changes
     mw docs generate <proj>  Generate AI documentation for project
     mw health <project>      Score project health (0-100)
+    mw snapshot               Capture project metrics snapshot (LoC, tests, deps, git)
+    mw snapshot history       Show snapshot history over time
+    mw snapshot compare       Compare last two snapshots
     mw release <patch|minor|major>                        Version bump + changelog + tag
     mw deploy <proj> --platform <vercel|railway|render>  Deploy project
 
@@ -3745,6 +3748,181 @@ echo "✅ {hook_name} passed"
         return 1
 
 
+def cmd_snapshot(args: List[str] = None) -> int:
+    """Capture a project health snapshot for trend tracking.
+
+    Usage:
+        mw snapshot [project_path]       Capture snapshot of current or given project
+        mw snapshot history [project]    Show snapshot history
+        mw snapshot compare              Compare last two snapshots
+
+    Captures: lines of code, file count, test count, git stats, dependencies, complexity.
+    Snapshots are stored in .mw/snapshots/ for historical comparison.
+    """
+    import datetime
+    import glob
+
+    args = args or []
+    sub = args[0] if args else "capture"
+
+    if sub in ["--help", "-h"]:
+        print(cmd_snapshot.__doc__)
+        return 0
+
+    # Determine project path
+    if sub == "history":
+        project_path = Path(args[1]) if len(args) > 1 else Path.cwd()
+        snap_dir = project_path / ".mw" / "snapshots"
+        if not snap_dir.exists():
+            print(f"No snapshots found in {project_path}")
+            return 1
+        snaps = sorted(snap_dir.glob("*.json"))
+        print(f"{Colors.BOLD}📸 Snapshot History ({len(snaps)} snapshots){Colors.ENDC}")
+        print("=" * 50)
+        for s in snaps[-10:]:
+            try:
+                data = json.loads(s.read_text())
+                ts = data.get("timestamp", "?")[:19]
+                loc = data.get("lines_of_code", 0)
+                files = data.get("file_count", 0)
+                tests = data.get("test_count", "?")
+                print(f"  {ts}  |  {loc:>6} LoC  |  {files:>4} files  |  {tests} tests")
+            except Exception:
+                pass
+        return 0
+
+    if sub == "compare":
+        project_path = Path(args[1]) if len(args) > 1 else Path.cwd()
+        snap_dir = project_path / ".mw" / "snapshots"
+        snaps = sorted(snap_dir.glob("*.json")) if snap_dir.exists() else []
+        if len(snaps) < 2:
+            print("Need at least 2 snapshots to compare. Run 'mw snapshot' first.")
+            return 1
+        old = json.loads(snaps[-2].read_text())
+        new = json.loads(snaps[-1].read_text())
+        print(f"{Colors.BOLD}📊 Snapshot Comparison{Colors.ENDC}")
+        print("=" * 55)
+        for key in ["lines_of_code", "file_count", "test_count", "dependency_count", "git_commits"]:
+            o = old.get(key, 0) or 0
+            n = new.get(key, 0) or 0
+            diff = n - o
+            arrow = f"{Colors.GREEN}↑{diff}{Colors.ENDC}" if diff > 0 else (f"{Colors.RED}↓{abs(diff)}{Colors.ENDC}" if diff < 0 else "→0")
+            label = key.replace("_", " ").title()
+            print(f"  {label:<20}  {o:>8}  →  {n:>8}  {arrow}")
+        return 0
+
+    # Default: capture snapshot
+    project_path = Path(sub) if sub != "capture" and not sub.startswith("-") else Path.cwd()
+    if not project_path.exists():
+        project_path = Path.cwd()
+
+    print(f"{Colors.BOLD}📸 Capturing project snapshot...{Colors.ENDC}")
+
+    snapshot = {
+        "timestamp": datetime.datetime.now().isoformat(),
+        "project": project_path.name,
+        "lines_of_code": 0,
+        "file_count": 0,
+        "test_count": 0,
+        "dependency_count": 0,
+        "git_commits": 0,
+        "git_branch": "",
+        "file_types": {},
+    }
+
+    # Count lines and files by type
+    skip_dirs = {'.git', 'node_modules', '__pycache__', 'venv', 'env', '.venv', 'dist', 'build', '.next'}
+    code_exts = {'.py', '.js', '.jsx', '.ts', '.tsx', '.vue', '.rb', '.go', '.rs', '.java', '.c', '.cpp', '.h'}
+
+    for root, dirs, files in os.walk(project_path):
+        dirs[:] = [d for d in dirs if d not in skip_dirs]
+        for f in files:
+            ext = Path(f).suffix.lower()
+            if ext in code_exts:
+                fp = Path(root) / f
+                try:
+                    lines = len(fp.read_text(errors='ignore').splitlines())
+                    snapshot["lines_of_code"] += lines
+                    snapshot["file_count"] += 1
+                    snapshot["file_types"][ext] = snapshot["file_types"].get(ext, 0) + 1
+                except Exception:
+                    pass
+
+    # Count tests
+    try:
+        test_files = list(project_path.rglob("test_*.py")) + list(project_path.rglob("*_test.py"))
+        test_files += list(project_path.rglob("*.test.ts")) + list(project_path.rglob("*.test.tsx"))
+        test_files += list(project_path.rglob("*.test.js")) + list(project_path.rglob("*.spec.*"))
+        snapshot["test_count"] = len(test_files)
+    except Exception:
+        pass
+
+    # Count dependencies
+    pkg_json = project_path / "package.json"
+    req_txt = project_path / "requirements.txt"
+    pyproject = project_path / "pyproject.toml"
+    deps = 0
+    if pkg_json.exists():
+        try:
+            pkg = json.loads(pkg_json.read_text())
+            deps += len(pkg.get("dependencies", {})) + len(pkg.get("devDependencies", {}))
+        except Exception:
+            pass
+    if req_txt.exists():
+        try:
+            deps += sum(1 for l in req_txt.read_text().splitlines() if l.strip() and not l.startswith('#'))
+        except Exception:
+            pass
+    if pyproject.exists():
+        try:
+            in_deps = False
+            for line in pyproject.read_text().splitlines():
+                if 'dependencies' in line and '[' in line:
+                    in_deps = True
+                elif in_deps and line.strip().startswith(']'):
+                    in_deps = False
+                elif in_deps and line.strip().startswith('"'):
+                    deps += 1
+        except Exception:
+            pass
+    snapshot["dependency_count"] = deps
+
+    # Git info
+    try:
+        result = subprocess.run(['git', 'rev-list', '--count', 'HEAD'], cwd=project_path, capture_output=True, text=True, timeout=5)
+        if result.returncode == 0:
+            snapshot["git_commits"] = int(result.stdout.strip())
+        result = subprocess.run(['git', 'branch', '--show-current'], cwd=project_path, capture_output=True, text=True, timeout=5)
+        if result.returncode == 0:
+            snapshot["git_branch"] = result.stdout.strip()
+    except Exception:
+        pass
+
+    # Save snapshot
+    snap_dir = project_path / ".mw" / "snapshots"
+    snap_dir.mkdir(parents=True, exist_ok=True)
+    ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    snap_file = snap_dir / f"snapshot_{ts}.json"
+    snap_file.write_text(json.dumps(snapshot, indent=2))
+
+    # Display
+    print(f"\n{Colors.BLUE}{'=' * 50}{Colors.ENDC}")
+    print(f"  📁 Project:      {snapshot['project']}")
+    print(f"  📝 Lines of Code: {snapshot['lines_of_code']:,}")
+    print(f"  📄 Code Files:    {snapshot['file_count']}")
+    print(f"  🧪 Test Files:    {snapshot['test_count']}")
+    print(f"  📦 Dependencies:  {snapshot['dependency_count']}")
+    print(f"  🔀 Git Commits:   {snapshot['git_commits']}")
+    print(f"  🌿 Branch:        {snapshot['git_branch']}")
+    if snapshot["file_types"]:
+        top = sorted(snapshot["file_types"].items(), key=lambda x: -x[1])[:5]
+        types_str = ", ".join(f"{ext}({n})" for ext, n in top)
+        print(f"  📊 Top Types:     {types_str}")
+    print(f"{Colors.BLUE}{'=' * 50}{Colors.ENDC}")
+    print(f"  💾 Saved to: {snap_file}")
+    return 0
+
+
 def cmd_version() -> int:
     """Show framework version, Python version, and platform info."""
     import platform
@@ -5770,6 +5948,8 @@ def main() -> None:
         "web": lambda: _cmd_serve_wrapper(args),
         "db": lambda: _cmd_db_wrapper(args),
         "database": lambda: _cmd_db_wrapper(args),
+        "snapshot": lambda: cmd_snapshot(args),
+        "snap": lambda: cmd_snapshot(args),
         "completions": lambda: cmd_completions(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
