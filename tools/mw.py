@@ -125,6 +125,7 @@ try:
 except ImportError:
 
     def _get_mywork_root() -> Path:
+        """Resolve the MyWork-AI root directory from env or script location."""
         if env_root := os.environ.get("MYWORK_ROOT"):
             return Path(env_root)
         script_dir = Path(__file__).resolve().parent
@@ -623,6 +624,7 @@ def cmd_projects() -> None:
             registry = None
 
     def _parse_scalar(value: str):
+        """Parse a YAML scalar string into its Python equivalent (bool, str)."""
         if value.startswith(('"', "'")) and value.endswith(('"', "'")):
             return value[1:-1]
         lowered = value.lower()
@@ -633,6 +635,7 @@ def cmd_projects() -> None:
         return value
 
     def _simple_yaml_load(text: str) -> dict:
+        """Load a simple YAML document without external dependencies."""
         data = {}
         lines = text.splitlines()
         i = 0
@@ -682,6 +685,7 @@ def cmd_projects() -> None:
         return data
 
     def _safe_load_yaml(path: Path) -> dict:
+        """Safely load a YAML file, returning empty dict on any error."""
         if not path.exists():
             return {}
         try:
@@ -692,6 +696,7 @@ def cmd_projects() -> None:
             return {}
 
     def _load_project_meta(project_path: Path) -> dict:
+        """Load project metadata from registry or project.yaml fallback."""
         if registry:
             return registry.get("projects", {}).get(project_path.name, {})
         metadata_path = project_path / "project.yaml"
@@ -2318,6 +2323,7 @@ Examples:
     
     # Display stats in a nice format
     def stat_line(icon, label, value, color=Colors.GREEN):
+        """Format a single stats line with icon, label, value, and color."""
         return f"   {icon} {Colors.BOLD}{label}:{Colors.ENDC} {color}{value}{Colors.ENDC}"
     
     print(stat_line("📁", "Total Projects", stats['projects']))
@@ -2485,6 +2491,7 @@ def cmd_release(args: List[str] = None) -> int:
     bump = args[0] if args else "status"
 
     def _run(cmd, **kw):
+        """Run a subprocess command with captured output and 10s timeout."""
         return _sp.run(cmd, capture_output=True, text=True, timeout=10, **kw)
 
     def _get_version(path="."):
@@ -2513,6 +2520,7 @@ def cmd_release(args: List[str] = None) -> int:
         open(fp, 'w').write(content)
 
     def _bump_version(current, bump_type):
+        """Bump a semver version string by the given type (major/minor/patch)."""
         parts = current.split(".")
         parts = [int(p) for p in parts[:3]] + [0] * (3 - len(parts[:3]))
         if bump_type == "major":
@@ -2533,6 +2541,7 @@ def cmd_release(args: List[str] = None) -> int:
         return [l for l in r.stdout.strip().split("\n") if l.strip()]
 
     def _categorize_commits(commits):
+        """Group commit messages by conventional-commit prefix."""
         cats = {"feat": [], "fix": [], "docs": [], "refactor": [], "test": [], "other": []}
         for c in commits:
             matched = False
@@ -3151,6 +3160,7 @@ def cmd_config(args: List[str] = None) -> int:
     }
 
     def _load() -> dict:
+        """Load config from disk, falling back to defaults on error."""
         if config_file.exists():
             try:
                 return _json.loads(config_file.read_text())
@@ -3159,6 +3169,7 @@ def cmd_config(args: List[str] = None) -> int:
         return dict(DEFAULTS)
 
     def _save(cfg: dict):
+        """Persist configuration dict to ~/.mywork/config.json."""
         config_dir.mkdir(parents=True, exist_ok=True)
         config_file.write_text(_json.dumps(cfg, indent=2) + "\n")
 
@@ -3319,10 +3330,12 @@ def cmd_git(args: List[str] = None) -> int:
     rest = args[1:] if len(args) > 1 else []
 
     def _run(cmd, capture=True):
+        """Run a shell command and return stdout or exit code."""
         r = _sp.run(cmd, shell=True, capture_output=capture, text=True)
         return r.stdout.strip() if capture else r.returncode
 
     def _is_git():
+        """Check if the current directory is inside a git repo."""
         return _run("git rev-parse --is-inside-work-tree") == "true"
 
     if not _is_git():
@@ -3489,10 +3502,12 @@ def cmd_hook(args: List[str] = None) -> int:
     rest = args[1:] if len(args) > 1 else []
 
     def _run(cmd, capture=True):
+        """Run a shell command and return stdout or exit code."""
         r = _sp.run(cmd, shell=True, capture_output=capture, text=True)
         return r.stdout.strip() if capture else r.returncode
 
     def _is_git():
+        """Check if the current directory is inside a git repo."""
         return _run("git rev-parse --is-inside-work-tree") == "true"
 
     if not _is_git():
@@ -4489,6 +4504,7 @@ def cmd_env(args: List[str] = None) -> int:
         path.write_text("\n".join(lines) + "\n")
 
     def _mask(value: str) -> str:
+        """Mask a secret value, showing only first/last 2 chars."""
         if len(value) <= 4:
             return "****"
         return value[:2] + "*" * (len(value) - 4) + value[-2:]
