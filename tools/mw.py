@@ -23,6 +23,7 @@ Commands:
     ecosystem       Show all live app URLs and ecosystem overview
     marketplace     Open marketplace information and links
     links           Show all useful framework links
+    api             Start REST API server (programmatic access)
     serve           Start web dashboard (browser UI for mw)
 
 Project Commands:
@@ -3123,6 +3124,24 @@ def _cmd_db_wrapper(args: List[str] = None) -> int:
     return cmd_db(args or [])
 
 
+def _cmd_api_wrapper(args: List[str] = None) -> int:
+    """Launch REST API server."""
+    args = args or []
+    host = "0.0.0.0"
+    port = 8420
+    for i, a in enumerate(args):
+        if a == "--host" and i + 1 < len(args):
+            host = args[i + 1]
+        elif a == "--port" and i + 1 < len(args):
+            try:
+                port = int(args[i + 1])
+            except ValueError:
+                pass
+    from tools.api_server import serve
+    serve(host, port)
+    return 0
+
+
 def _cmd_serve_wrapper(args: List[str] = None) -> int:
     """Launch web dashboard."""
     from tools.web_dashboard import cmd_serve
@@ -6037,7 +6056,7 @@ def cmd_completions(args: List[str] = None) -> int:
         "ai", "analytics", "api", "audit", "af", "autoforge", "backup", "bench",
         "brain", "cd", "cfg", "changelog", "check", "ci", "clean", "completions", "config",
         "credits", "dashboard", "db", "deploy", "docs", "doctor", "ecosystem",
-        "env", "fix", "git", "guide", "help", "hook", "init", "links", "lint",
+        "api", "env", "fix", "git", "guide", "help", "hook", "init", "links", "lint",
         "marketplace", "monitor", "n8n", "new", "open", "perf", "plugin",
         "projects", "prompt-enhance", "release", "remember", "report", "scan",
         "run", "search", "sec", "security", "serve", "setup", "stats", "status", "test",
@@ -6261,6 +6280,7 @@ def main() -> None:
         "benchmark": lambda: _cmd_bench_wrapper(args),
         "perf": lambda: run_tool("perf_analyzer", args),
         "performance": lambda: run_tool("perf_analyzer", args),
+        "api": lambda: _cmd_api_wrapper(args),
         "serve": lambda: _cmd_serve_wrapper(args),
         "web": lambda: _cmd_serve_wrapper(args),
         "db": lambda: _cmd_db_wrapper(args),
