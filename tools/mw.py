@@ -3094,6 +3094,9 @@ def print_help() -> None:
 
 def cmd_docs(args: list) -> int:
     """Auto-generate documentation for a project."""
+    if args and args[0] == "site":
+        from tools.docs_site import cmd_docs_site
+        return cmd_docs_site(args[1:])
     from doc_generator import run_docs
     return run_docs(args) or 0
 
