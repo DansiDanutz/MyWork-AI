@@ -5498,6 +5498,175 @@ def cmd_audit(args: List[str] = None) -> int:
     return 0
 
 
+def cmd_completions(args: List[str] = None) -> int:
+    """Generate shell completion scripts.
+
+    Usage:
+        mw completions bash    # Bash completions
+        mw completions zsh     # Zsh completions
+        mw completions fish    # Fish completions
+        mw completions install # Auto-install for current shell
+
+    Setup:
+        eval "$(mw completions bash)"          # Add to ~/.bashrc
+        eval "$(mw completions zsh)"           # Add to ~/.zshrc
+        mw completions fish > ~/.config/fish/completions/mw.fish
+    """
+    args = args or []
+
+    # All top-level commands (excluding flags)
+    top_cmds = [
+        "ai", "analytics", "api", "audit", "af", "autoforge", "backup", "bench",
+        "brain", "cd", "cfg", "changelog", "ci", "clean", "completions", "config",
+        "credits", "dashboard", "db", "deploy", "docs", "doctor", "ecosystem",
+        "env", "fix", "git", "guide", "help", "hook", "init", "links", "lint",
+        "marketplace", "monitor", "n8n", "new", "open", "perf", "plugin",
+        "projects", "prompt-enhance", "release", "remember", "report", "scan",
+        "search", "sec", "security", "serve", "setup", "stats", "status", "test",
+        "update", "version", "web", "wf", "workflow",
+    ]
+    # Subcommands per command
+    subcmds = {
+        "ai": ["ask", "explain", "fix", "refactor", "test", "commit", "chat", "providers", "models"],
+        "brain": ["search", "add", "stats", "export", "list", "delete", "cleanup"],
+        "git": ["status", "commit", "log", "branch", "diff", "push", "pull", "stash", "undo", "amend", "cleanup"],
+        "projects": ["scan", "export", "stats", "list", "health"],
+        "env": ["list", "get", "set", "rm", "diff", "validate", "export", "init"],
+        "config": ["list", "get", "set", "reset", "rm", "path"],
+        "deploy": ["vercel", "railway", "render", "docker"],
+        "plugin": ["install", "uninstall", "enable", "disable", "list", "create", "scan"],
+        "ci": ["github", "gitlab", "status"],
+        "lint": ["scan", "stats", "watch"],
+        "af": ["start", "stop", "pause", "resume", "status", "progress", "list", "ui", "service"],
+        "test": ["--coverage", "--watch", "--verbose"],
+        "db": ["status", "tables", "schema", "query", "migrate", "seed", "export", "backup", "restore"],
+        "hook": ["install", "uninstall", "list", "run", "create"],
+        "security": ["scan", "audit", "secrets", "deps"],
+        "release": ["patch", "minor", "major", "status", "--dry-run"],
+        "completions": ["bash", "zsh", "fish", "install"],
+    }
+
+    if not args or args[0] in ("-h", "--help", "help"):
+        print(f"{Colors.BOLD}🐚 Shell Completions{Colors.ENDC}")
+        print("=" * 50)
+        print()
+        print("Generate tab-completion scripts for your shell.")
+        print()
+        print(f"{Colors.BOLD}Usage:{Colors.ENDC}")
+        print('  eval "$(mw completions bash)"   # Bash (add to ~/.bashrc)')
+        print('  eval "$(mw completions zsh)"    # Zsh  (add to ~/.zshrc)')
+        print("  mw completions fish > ~/.config/fish/completions/mw.fish")
+        print("  mw completions install          # Auto-install for current shell")
+        return 0
+
+    shell = args[0].lower()
+
+    if shell == "bash":
+        cmds_str = " ".join(top_cmds)
+        # Build case statements for subcommands
+        cases = []
+        for cmd, subs in sorted(subcmds.items()):
+            cases.append(f'        {cmd}) COMPREPLY=( $(compgen -W "{" ".join(subs)}" -- "$cur") ) ;;')
+        case_block = "\n".join(cases)
+        print(f"""_mw_completions() {{
+    local cur prev commands
+    cur="${{COMP_WORDS[COMP_CWORD]}}"
+    prev="${{COMP_WORDS[COMP_CWORD-1]}}"
+    commands="{cmds_str}"
+
+    if [[ $COMP_CWORD -eq 1 ]]; then
+        COMPREPLY=( $(compgen -W "$commands" -- "$cur") )
+        return 0
+    fi
+
+    case "$prev" in
+{case_block}
+        *) COMPREPLY=() ;;
+    esac
+}}
+complete -F _mw_completions mw""")
+        return 0
+
+    elif shell == "zsh":
+        cmds_str = " ".join(top_cmds)
+        cases = []
+        for cmd, subs in sorted(subcmds.items()):
+            subs_str = " ".join(subs)
+            cases.append(f"        {cmd}) _values 'subcommand' {subs_str} ;;")
+        case_block = "\n".join(cases)
+        print(f"""#compdef mw
+_mw() {{
+    local -a commands
+    commands=({cmds_str})
+
+    if (( CURRENT == 2 )); then
+        _describe 'command' commands
+        return
+    fi
+
+    case "$words[2]" in
+{case_block}
+    esac
+}}
+_mw""")
+        return 0
+
+    elif shell == "fish":
+        lines = [f"# Fish completions for mw"]
+        lines.append("complete -c mw -e  # Clear existing")
+        for cmd in top_cmds:
+            desc = cmd.replace("-", " ").title()
+            lines.append(f'complete -c mw -n "__fish_use_subcommand" -a "{cmd}" -d "{desc}"')
+        for cmd, subs in sorted(subcmds.items()):
+            for sub in subs:
+                lines.append(f'complete -c mw -n "__fish_seen_subcommand_from {cmd}" -a "{sub}"')
+        print("\n".join(lines))
+        return 0
+
+    elif shell == "install":
+        # Detect shell and install
+        current_shell = os.environ.get("SHELL", "")
+        home = Path.home()
+
+        if "zsh" in current_shell:
+            rc = home / ".zshrc"
+            line = 'eval "$(mw completions zsh)"'
+        elif "fish" in current_shell:
+            comp_dir = home / ".config" / "fish" / "completions"
+            comp_dir.mkdir(parents=True, exist_ok=True)
+            comp_file = comp_dir / "mw.fish"
+            # Generate and write fish completions
+            import io
+            old_stdout = sys.stdout
+            sys.stdout = io.StringIO()
+            cmd_completions(["fish"])
+            content = sys.stdout.getvalue()
+            sys.stdout = old_stdout
+            comp_file.write_text(content)
+            print(f"{Colors.GREEN}✅ Fish completions installed to {comp_file}{Colors.ENDC}")
+            print("   Restart your shell or run: source ~/.config/fish/config.fish")
+            return 0
+        else:
+            rc = home / ".bashrc"
+            line = 'eval "$(mw completions bash)"'
+
+        # Check if already installed
+        if rc.exists() and line in rc.read_text():
+            print(f"{Colors.YELLOW}⚠️  Completions already installed in {rc}{Colors.ENDC}")
+            return 0
+
+        with open(rc, "a") as f:
+            f.write(f"\n# MyWork CLI completions\n{line}\n")
+        print(f"{Colors.GREEN}✅ Completions installed in {rc}{Colors.ENDC}")
+        print(f"   Run: source {rc}")
+        return 0
+
+    else:
+        print(f"{Colors.RED}❌ Unknown shell: {shell}{Colors.ENDC}")
+        print("   Supported: bash, zsh, fish, install")
+        return 1
+
+
 def main() -> None:
     """Main entry point."""
     if len(sys.argv) < 2:
@@ -5575,6 +5744,7 @@ def main() -> None:
         "web": lambda: _cmd_serve_wrapper(args),
         "db": lambda: _cmd_db_wrapper(args),
         "database": lambda: _cmd_db_wrapper(args),
+        "completions": lambda: cmd_completions(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),
