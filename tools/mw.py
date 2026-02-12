@@ -3111,6 +3111,12 @@ def _cmd_bench_wrapper(args: List[str] = None) -> int:
     return mod.cmd_bench(args or [])
 
 
+def _cmd_migrate_wrapper(args: List[str] = None) -> int:
+    """Database migration management."""
+    from tools.migrate import cmd_migrate
+    return cmd_migrate(args or [])
+
+
 def _cmd_db_wrapper(args: List[str] = None) -> int:
     """Database management command."""
     from tools.db_manager import cmd_db
@@ -6252,6 +6258,8 @@ def main() -> None:
         "web": lambda: _cmd_serve_wrapper(args),
         "db": lambda: _cmd_db_wrapper(args),
         "database": lambda: _cmd_db_wrapper(args),
+        "migrate": lambda: _cmd_migrate_wrapper(args),
+        "migration": lambda: _cmd_migrate_wrapper(args),
         "snapshot": lambda: cmd_snapshot(args),
         "snap": lambda: cmd_snapshot(args),
         "deps": lambda: cmd_deps(args),
