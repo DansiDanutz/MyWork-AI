@@ -34,6 +34,10 @@ Date: 2026-02-10
 - **Simulation engine**: 5/5 scenarios pass
 - **Security audit**: 0 critical, 5 low-risk remaining
 
+### Recent Changes (2026-02-12)
+- Added docstrings to all 16 undocumented functions in mw.py (100% docstring coverage)
+- Functions covered: _parse_scalar, _simple_yaml_load, _safe_load_yaml, _load_project_meta, stat_line, _run (3x), _bump_version, _categorize_commits, _load, _save, _is_git (2x), _mask, _get_mywork_root
+
 ### Recent Changes (2026-02-11)
 - Added `mw test` — universal test runner (auto-detects Python/Node/Rust/Go/Ruby, supports --coverage, --watch, --verbose)
 - Added `mw workflow` / `mw wf` — exposes workflow engine via CLI
