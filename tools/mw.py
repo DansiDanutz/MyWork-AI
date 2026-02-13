@@ -6760,6 +6760,12 @@ def cmd_selftest(args: List[str] = None) -> int:
     return 0 if critical_failed == 0 else 1
 
 
+def _cmd_metrics(args: List[str] = None) -> int:
+    """Code metrics dashboard — LOC, complexity, quality score."""
+    from metrics import cmd_metrics
+    return cmd_metrics(args)
+
+
 def cmd_upgrade(args: List[str] = None) -> int:
     """Self-upgrade MyWork-AI from GitHub or PyPI.
 
@@ -7171,6 +7177,8 @@ def main() -> None:
         "context": lambda: _cmd_context_wrapper(args),
         "ctx": lambda: _cmd_context_wrapper(args),
         "todos": lambda: cmd_todo(args),
+        "metrics": lambda: _cmd_metrics(args),
+        "stats": lambda: _cmd_metrics(args),
         "upgrade": lambda: cmd_upgrade(args),
         "update-cli": lambda: cmd_upgrade(args),
         "version": lambda: cmd_version(),
