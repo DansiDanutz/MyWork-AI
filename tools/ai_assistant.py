@@ -725,6 +725,12 @@ Output the complete file content only. No markdown, no explanations."""
     return 0
 
 
+def _cmd_ai_optimize(args: List[str]) -> int:
+    """Delegate to ai_optimize module."""
+    from tools.ai_optimize import cmd_optimize
+    return cmd_optimize(args)
+
+
 def cmd_ai(args: List[str] = None) -> int:
     """AI Assistant — inline AI help for developers.
 
@@ -758,6 +764,7 @@ def cmd_ai(args: List[str] = None) -> int:
     mw ai review [--staged] [--branch main]  {DIM}AI code review of changes{RESET}
     mw ai doc <file> [--readme]              {DIM}Generate documentation{RESET}
     mw ai changelog [--since "1 week ago"]   {DIM}Generate changelog from commits{RESET}
+    mw ai optimize <file|dir>                {DIM}Find performance optimizations{RESET}
 
 {BOLD}Interactive:{RESET}
     mw ai chat                               {DIM}Start interactive chat session{RESET}
@@ -788,6 +795,8 @@ def cmd_ai(args: List[str] = None) -> int:
         "review": cmd_ai_review,
         "doc": cmd_ai_doc,
         "changelog": cmd_ai_changelog,
+        "optimize": _cmd_ai_optimize,
+        "perf": _cmd_ai_optimize,
     }
 
     if subcmd in subcmds:
