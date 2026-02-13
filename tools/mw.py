@@ -4363,7 +4363,7 @@ def cmd_recap(args: List[str] = None) -> int:
     print(f"  {'━' * 45}")
 
     if not recap["projects"]:
-        print(f"\n  {Colors.DIM}No commits found for this period.{Colors.ENDC}\n")
+        print(f"\n  {Colors.ENDC}No commits found for this period.{Colors.ENDC}\n")
         return 0
 
     t = recap["totals"]
@@ -4391,6 +4391,147 @@ def cmd_recap(args: List[str] = None) -> int:
                 print(f"       {tf['count']}× {tf['file']}")
 
     print(f"\n  {'━' * 45}\n")
+    return 0
+
+
+def cmd_todo(args: List[str] = None) -> int:
+    """Scan project files for TODO/FIXME/HACK/XXX comments.
+
+    Usage:
+        mw todo [path] [--tag TAG] [--json] [--stats]
+
+    Scans Python, JS/TS, Go, Rust, Ruby, Shell, and config files for
+    actionable comments. Defaults to current directory.
+    """
+    import re as _re
+
+    args = args or []
+    if args and args[0] in ("--help", "-h"):
+        print("""
+Todo Scanner — Find actionable comments in your codebase
+=========================================================
+Usage:
+    mw todo [path]        Scan path (default: current dir)
+    mw todo --tag FIXME   Filter by specific tag
+    mw todo --stats       Show summary counts only
+    mw todo --json        Output as JSON
+
+Tags scanned: TODO, FIXME, HACK, XXX, NOTE, OPTIMIZE, REFACTOR
+""")
+        return 0
+
+    scan_path = Path(".")
+    filter_tag = None
+    json_mode = False
+    stats_only = False
+
+    i = 0
+    while i < len(args):
+        if args[i] == "--tag" and i + 1 < len(args):
+            filter_tag = args[i + 1].upper()
+            i += 2
+        elif args[i] == "--json":
+            json_mode = True
+            i += 1
+        elif args[i] == "--stats":
+            stats_only = True
+            i += 1
+        elif not args[i].startswith("-"):
+            scan_path = Path(args[i])
+            i += 1
+        else:
+            i += 1
+
+    if not scan_path.exists():
+        print(f"{Colors.RED}✗ Path not found: {scan_path}{Colors.ENDC}")
+        return 1
+
+    TAGS = ["TODO", "FIXME", "HACK", "XXX", "NOTE", "OPTIMIZE", "REFACTOR"]
+    EXTENSIONS = {
+        ".py", ".js", ".ts", ".jsx", ".tsx", ".go", ".rs", ".rb",
+        ".sh", ".bash", ".zsh", ".yaml", ".yml", ".toml", ".cfg",
+        ".c", ".cpp", ".h", ".hpp", ".java", ".kt", ".swift",
+        ".css", ".scss", ".html", ".md",
+    }
+    SKIP_DIRS = {
+        ".git", "node_modules", "__pycache__", ".venv", "venv",
+        "dist", "build", ".tox", ".mypy_cache", ".pytest_cache",
+        "target", ".next", "coverage",
+    }
+
+    pattern = _re.compile(
+        r"#\s*(" + "|".join(TAGS) + r")\b[:\s]*(.*)|//\s*(" + "|".join(TAGS) + r")\b[:\s]*(.*)|/\*\s*(" + "|".join(TAGS) + r")\b[:\s]*(.*)",
+        _re.IGNORECASE,
+    )
+
+    results = []
+    tag_counts: dict = {}
+
+    for root_dir, dirs, files in os.walk(scan_path):
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
+        for fname in files:
+            fpath = Path(root_dir) / fname
+            if fpath.suffix.lower() not in EXTENSIONS:
+                continue
+            try:
+                lines = fpath.read_text(errors="ignore").splitlines()
+            except (OSError, PermissionError):
+                continue
+            for line_no, line in enumerate(lines, 1):
+                m = pattern.search(line)
+                if m:
+                    # Extract tag and text from whichever group matched
+                    tag = (m.group(1) or m.group(3) or m.group(5) or "").upper()
+                    text = (m.group(2) or m.group(4) or m.group(6) or "").strip()
+                    if filter_tag and tag != filter_tag:
+                        continue
+                    tag_counts[tag] = tag_counts.get(tag, 0) + 1
+                    results.append({
+                        "file": str(fpath),
+                        "line": line_no,
+                        "tag": tag,
+                        "text": text,
+                    })
+
+    if json_mode:
+        print(json.dumps({"total": len(results), "by_tag": tag_counts, "items": results}, indent=2))
+        return 0
+
+    if stats_only:
+        print(f"{Colors.BOLD}{Colors.BLUE}📋 Todo Stats{Colors.ENDC}")
+        print(f"{'=' * 40}")
+        total = 0
+        tag_colors = {"FIXME": Colors.RED, "HACK": Colors.YELLOW, "XXX": Colors.RED, "TODO": Colors.BLUE}
+        for tag in sorted(tag_counts, key=lambda t: -tag_counts[t]):
+            c = tag_colors.get(tag, Colors.ENDC)
+            cnt = tag_counts[tag]
+            total += cnt
+            print(f"  {c}{tag:12s}{Colors.ENDC} {cnt}")
+        print(f"{'─' * 40}")
+        print(f"  {'Total':12s} {total}")
+        return 0
+
+    if not results:
+        print(f"{Colors.GREEN}✅ No TODO/FIXME comments found — clean codebase!{Colors.ENDC}")
+        return 0
+
+    print(f"{Colors.BOLD}{Colors.BLUE}📋 Found {len(results)} actionable comments{Colors.ENDC}")
+    print(f"{'=' * 60}")
+
+    tag_colors = {"FIXME": Colors.RED, "HACK": Colors.YELLOW, "XXX": Colors.RED, "TODO": Colors.BLUE}
+    current_file = None
+    for item in results:
+        if item["file"] != current_file:
+            current_file = item["file"]
+            print(f"\n{Colors.BOLD}{current_file}{Colors.ENDC}")
+        c = tag_colors.get(item["tag"], Colors.ENDC)
+        print(f"  {Colors.ENDC}L{item['line']:>4d}{Colors.ENDC}  {c}{item['tag']:7s}{Colors.ENDC} {item['text']}")
+
+    print(f"\n{'─' * 60}")
+    for tag in sorted(tag_counts, key=lambda t: -tag_counts[t]):
+        c = tag_colors.get(tag, Colors.ENDC)
+        print(f"  {c}{tag}{Colors.ENDC}: {tag_counts[tag]}", end="  ")
+    print(f"\n  Total: {len(results)}")
     return 0
 
 
@@ -6616,7 +6757,7 @@ def cmd_completions(args: List[str] = None) -> int:
         "marketplace", "monitor", "n8n", "new", "open", "perf", "plugin",
         "projects", "prompt-enhance", "release", "remember", "report", "scan",
         "run", "search", "sec", "security", "selftest", "serve", "setup", "stats", "status", "test",
-        "demo", "tour", "update", "verify", "version", "web", "wf", "workflow",
+        "demo", "todo", "todos", "tour", "update", "verify", "version", "web", "wf", "workflow",
     ]
     # Subcommands per command
     subcmds = {
@@ -6856,6 +6997,8 @@ def main() -> None:
         "self-test": lambda: cmd_selftest(args),
         "verify": lambda: cmd_selftest(args),
         "recap": lambda: cmd_recap(args),
+        "todo": lambda: cmd_todo(args),
+        "todos": lambda: cmd_todo(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),
