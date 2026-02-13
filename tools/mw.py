@@ -3341,6 +3341,16 @@ def cmd_docs(args: list) -> int:
     return run_docs(args) or 0
 
 
+def _cmd_watch_wrapper(args: List[str] = None) -> int:
+    """Smart file watcher with auto-test."""
+    watch_path = Path(__file__).parent / "watch.py"
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("watch", watch_path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod.main(args or [])
+
+
 def _cmd_bench_wrapper(args: List[str] = None) -> int:
     """Project benchmarking."""
     bench_path = Path(__file__).parent / "bench.py"
@@ -7015,6 +7025,7 @@ def main() -> None:
         "verify": lambda: cmd_selftest(args),
         "recap": lambda: cmd_recap(args),
         "todo": lambda: cmd_todo(args),
+        "watch": lambda: _cmd_watch_wrapper(args),
         "context": lambda: _cmd_context_wrapper(args),
         "ctx": lambda: _cmd_context_wrapper(args),
         "todos": lambda: cmd_todo(args),
