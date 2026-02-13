@@ -4909,8 +4909,101 @@ def cmd_ci(args: List[str] = None) -> int:
         print(f"   4. Validate: {Colors.BOLD}mw ci validate{Colors.ENDC}\n")
         return 0
     
+    elif sub == "status":
+        # Check GitHub Actions workflow status via API
+        import subprocess as _sp, json as _json
+        proj_path = args[1] if len(args) > 1 and not args[1].startswith("-") else "."
+        
+        # Detect GitHub repo from git remote
+        try:
+            remote = _sp.check_output(["git", "-C", proj_path, "remote", "get-url", "origin"],
+                                       stderr=_sp.DEVNULL).decode().strip()
+        except Exception:
+            print(f"{Colors.RED}❌ Not a git repo or no remote configured{Colors.ENDC}")
+            return 1
+        
+        # Parse owner/repo from remote URL
+        owner_repo = None
+        if "github.com" in remote:
+            # SSH or HTTPS
+            parts = remote.replace(".git", "").split("github.com")[-1].lstrip(":/").split("/")
+            if len(parts) >= 2:
+                owner_repo = f"{parts[0]}/{parts[1]}"
+        
+        if not owner_repo:
+            print(f"{Colors.RED}❌ Could not detect GitHub repo from remote: {remote}{Colors.ENDC}")
+            return 1
+        
+        print(f"\n{Colors.BOLD}🔄 GitHub Actions Status — {owner_repo}{Colors.ENDC}\n")
+        
+        # Fetch latest workflow runs (public API, no auth needed for public repos)
+        import urllib.request
+        gh_token = os.environ.get("GITHUB_TOKEN", "")
+        headers = {"Accept": "application/vnd.github+json", "User-Agent": "mw-cli"}
+        if gh_token:
+            headers["Authorization"] = f"Bearer {gh_token}"
+        
+        url = f"https://api.github.com/repos/{owner_repo}/actions/runs?per_page=10"
+        req = urllib.request.Request(url, headers=headers)
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                data = _json.loads(resp.read().decode())
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                print(f"{Colors.YELLOW}⚠️  No GitHub Actions found (repo may be private — set GITHUB_TOKEN){Colors.ENDC}")
+            else:
+                print(f"{Colors.RED}❌ GitHub API error: {e.code}{Colors.ENDC}")
+            return 1
+        except Exception as e:
+            print(f"{Colors.RED}❌ Failed to reach GitHub API: {e}{Colors.ENDC}")
+            return 1
+        
+        runs = data.get("workflow_runs", [])
+        if not runs:
+            print(f"  {Colors.YELLOW}No workflow runs found.{Colors.ENDC}")
+            print(f"  Set up CI with: {Colors.BOLD}mw ci generate{Colors.ENDC}")
+            return 0
+        
+        status_icons = {
+            "completed": {"success": f"{Colors.GREEN}✅ passed", "failure": f"{Colors.RED}❌ failed",
+                          "cancelled": f"{Colors.YELLOW}⚠️  cancelled", "skipped": f"{Colors.YELLOW}⏭️  skipped"},
+            "in_progress": f"{Colors.BLUE}🔄 running",
+            "queued": f"{Colors.YELLOW}⏳ queued",
+            "waiting": f"{Colors.YELLOW}⏳ waiting",
+        }
+        
+        # Group by workflow name, show latest of each
+        seen = {}
+        for run in runs:
+            wf = run.get("name", "unknown")
+            if wf not in seen:
+                seen[wf] = run
+        
+        for wf, run in seen.items():
+            status = run.get("status", "unknown")
+            conclusion = run.get("conclusion", "")
+            branch = run.get("head_branch", "?")
+            sha = run.get("head_sha", "?")[:7]
+            created = run.get("created_at", "?")[:19].replace("T", " ")
+            
+            if status == "completed":
+                icon = status_icons["completed"].get(conclusion, f"{Colors.YELLOW}❓ {conclusion}")
+            else:
+                icon = status_icons.get(status, f"❓ {status}")
+            
+            print(f"  {Colors.BOLD}{wf}{Colors.ENDC}")
+            print(f"    Status:  {icon}{Colors.ENDC}")
+            print(f"    Branch:  {branch} ({sha})")
+            print(f"    Time:    {created}")
+            print(f"    URL:     {run.get('html_url', 'N/A')}")
+            print()
+        
+        total = data.get("total_count", len(runs))
+        print(f"  {Colors.BLUE}Total runs: {total} | Showing latest per workflow{Colors.ENDC}\n")
+        return 0
+    
     print(f"{Colors.RED}❌ Unknown ci subcommand: {sub}{Colors.ENDC}")
-    print(f"   Usage: mw ci [generate|validate|templates]")
+    print(f"   Usage: mw ci [generate|validate|templates|status]")
     return 1
 
 

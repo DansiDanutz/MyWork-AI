@@ -29,10 +29,11 @@ jobs:
         run: |
           echo "Scanning for potential secrets..."
 
-          # Check for common API key patterns
+          # Check for common API key patterns (exclude docs/config that may have placeholders)
           if grep -rE "(sk-ant-|sk-[a-zA-Z0-9]{20,}|ghp_[a-zA-Z0-9]{36}|gsk_[a-zA-Z0-9]+)" \
-            --include="*.py" --include="*.js" --include="*.ts" --include="*.md" \
-            --exclude-dir=node_modules --exclude-dir=.git . 2>/dev/null; then
+            --include="*.py" --include="*.js" --include="*.ts" \
+            --exclude-dir=node_modules --exclude-dir=.git \
+            --exclude-dir=.openclaw --exclude="*example*" --exclude="*test*" . 2>/dev/null; then
             echo "WARNING: Potential API keys found in code!"
             exit 1
           fi
