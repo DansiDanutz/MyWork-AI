@@ -731,6 +731,12 @@ def _cmd_ai_optimize(args: List[str]) -> int:
     return cmd_optimize(args)
 
 
+def _cmd_ai_refactor_static(args: List[str]) -> int:
+    """Delegate to ai_refactor module (AST-based, no API key needed)."""
+    from tools.ai_refactor import main as refactor_main
+    return refactor_main(args)
+
+
 def cmd_ai(args: List[str] = None) -> int:
     """AI Assistant — inline AI help for developers.
 
@@ -797,6 +803,8 @@ def cmd_ai(args: List[str] = None) -> int:
         "changelog": cmd_ai_changelog,
         "optimize": _cmd_ai_optimize,
         "perf": _cmd_ai_optimize,
+        "refactor-static": _cmd_ai_refactor_static,
+        "lint-deep": _cmd_ai_refactor_static,
     }
 
     if subcmd in subcmds:
