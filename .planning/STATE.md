@@ -35,6 +35,7 @@ Date: 2026-02-10
 - **Security audit**: 0 critical, 5 low-risk remaining
 
 ### Recent Changes (2026-02-13)
+- Added `mw context` / `mw ctx` — smart context builder for AI coding assistants (20 tests)
 - Added `mw todo` — codebase TODO/FIXME/HACK/XXX scanner with --tag filter, --json, --stats
 - Supports 20+ file extensions, skips build dirs, groups by file with line numbers
 - 9 new tests → all passing
