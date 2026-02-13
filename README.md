@@ -13,11 +13,12 @@
 
 ### The AI-Powered Development Framework
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)](CHANGELOG.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python 3.11+](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)](https://www.python.org)
-[![Tests](https://img.shields.io/badge/tests-336%20passing-brightgreen.svg)](tests/)
+[![Python 3.9+](https://img.shields.io/badge/Python-3.9+-3776AB?logo=python&logoColor=white)](https://www.python.org)
+[![Tests](https://img.shields.io/badge/tests-676%20passing-brightgreen.svg)](tests/)
 [![Security](https://img.shields.io/badge/security-audited-green.svg)](reports/)
+[![Self-Test](https://img.shields.io/badge/selftest-8%2F8%20✓-brightgreen.svg)](tests/test_selftest.py)
 
 **Build complete applications from idea to marketplace in minutes, not months.**
 
@@ -66,13 +67,19 @@ pip install mywork-ai
 mw setup
 ```
 
-### 2. Create Your First Project (20 seconds)
+### 2. Verify Installation (5 seconds)
+```bash
+mw selftest              # Verify everything works
+mw selftest --json       # CI-friendly output
+```
+
+### 3. Create Your First Project (20 seconds)
 ```bash
 mw prompt-enhance "build a SaaS invoice tool with Stripe payments"
 mw new invoice-app fullstack
 ```
 
-### 3. Start Building (20 seconds)
+### 4. Start Building (20 seconds)
 ```bash
 cd projects/invoice-app
 mw af start invoice-app  # Let AutoForge build it
