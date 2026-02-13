@@ -4394,6 +4394,23 @@ def cmd_recap(args: List[str] = None) -> int:
     return 0
 
 
+def _cmd_context_wrapper(args: List[str] = None) -> int:
+    """Smart context builder for AI coding assistants."""
+    try:
+        from tools.context_builder import main as context_main
+        return context_main(args or [])
+    except ImportError:
+        try:
+            # Try relative import for installed package
+            script_dir = os.path.dirname(os.path.abspath(__file__))
+            sys.path.insert(0, os.path.dirname(script_dir))
+            from tools.context_builder import main as context_main
+            return context_main(args or [])
+        except ImportError:
+            print(f"{Colors.RED}❌ context_builder.py not found{Colors.ENDC}")
+            return 1
+
+
 def cmd_todo(args: List[str] = None) -> int:
     """Scan project files for TODO/FIXME/HACK/XXX comments.
 
@@ -6998,6 +7015,8 @@ def main() -> None:
         "verify": lambda: cmd_selftest(args),
         "recap": lambda: cmd_recap(args),
         "todo": lambda: cmd_todo(args),
+        "context": lambda: _cmd_context_wrapper(args),
+        "ctx": lambda: _cmd_context_wrapper(args),
         "todos": lambda: cmd_todo(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
