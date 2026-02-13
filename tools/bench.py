@@ -1,395 +1,269 @@
 #!/usr/bin/env python3
 """
-mw bench — Project Performance Benchmarking
-============================================
-Measures, tracks, and compares project performance metrics over time.
+mw bench — Code benchmarking tool.
+
+Benchmark Python functions, scripts, or shell commands with statistical analysis.
+Measures execution time, memory usage, and provides comparison reports.
 
 Usage:
-    mw bench                    Run all benchmarks for current project
-    mw bench run                Same as above
-    mw bench history            Show benchmark history
-    mw bench compare [ref]      Compare current vs previous (or git ref)
-    mw bench ci                 CI-friendly output (exit 1 if regression)
+    mw bench <file>::<function>         Benchmark a Python function
+    mw bench --cmd "<command>"          Benchmark a shell command
+    mw bench --compare <a> <b>          Compare two benchmarks
+    mw bench --runs <N>                 Number of iterations (default: 10)
+    mw bench --warmup <N>              Warmup runs (default: 2)
+    mw bench --output json|md|table    Output format (default: table)
+    mw bench history                    Show past benchmark results
+    mw bench baseline <name>            Save current run as baseline
+    mw bench vs-baseline <name>         Compare against saved baseline
 """
 
-import json
-import os
-import subprocess
 import sys
+import os
 import time
-from datetime import datetime
-from pathlib import Path
-from typing import Dict, List, Optional
+import json
+import statistics
+import subprocess
+import importlib.util
+import traceback
+import resource
 
-# ANSI colors
-BOLD = "\033[1m"
-DIM = "\033[2m"
-RED = "\033[91m"
-GREEN = "\033[92m"
-YELLOW = "\033[93m"
-CYAN = "\033[96m"
-RESET = "\033[0m"
+BENCH_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.bench')
 
 
-def _detect_project_type(project_dir: str) -> str:
-    """Detect project type from files."""
-    p = Path(project_dir)
-    if (p / "package.json").exists():
-        return "node"
-    if (p / "pyproject.toml").exists() or (p / "setup.py").exists():
-        return "python"
-    if (p / "Cargo.toml").exists():
-        return "rust"
-    if (p / "go.mod").exists():
-        return "go"
-    return "unknown"
+def ensure_dir():
+    os.makedirs(BENCH_DIR, exist_ok=True)
 
 
-def _time_command(cmd: List[str], cwd: str, timeout: int = 120) -> Optional[float]:
-    """Run a command and return elapsed seconds, or None if failed."""
+def get_memory_mb():
+    """Get current memory usage in MB."""
     try:
-        start = time.monotonic()
-        result = subprocess.run(
-            cmd, cwd=cwd, capture_output=True, text=True, timeout=timeout
-        )
-        elapsed = time.monotonic() - start
-        if result.returncode == 0:
-            return round(elapsed, 3)
-        return None
-    except (subprocess.TimeoutExpired, FileNotFoundError):
-        return None
-
-
-def _count_files(project_dir: str) -> Dict[str, int]:
-    """Count source files by type."""
-    counts = {}
-    p = Path(project_dir)
-    skip = {".git", "node_modules", "__pycache__", ".venv", "venv", "dist", "build", ".next", "target"}
-    for f in p.rglob("*"):
-        if any(s in f.parts for s in skip):
-            continue
-        if f.is_file():
-            ext = f.suffix.lower()
-            if ext in (".py", ".js", ".ts", ".tsx", ".jsx", ".rs", ".go", ".java", ".rb"):
-                counts[ext] = counts.get(ext, 0) + 1
-    return counts
-
-
-def _get_dir_size_mb(path: str, skip: set = None) -> float:
-    """Get directory size in MB, skipping certain dirs."""
-    skip = skip or {".git", "node_modules", "__pycache__", ".venv", "target"}
-    total = 0
-    for f in Path(path).rglob("*"):
-        if any(s in f.parts for s in skip):
-            continue
-        if f.is_file():
-            total += f.stat().st_size
-    return round(total / (1024 * 1024), 2)
-
-
-def _get_dep_count(project_dir: str, ptype: str) -> int:
-    """Count dependencies."""
-    p = Path(project_dir)
-    if ptype == "node":
-        pkg = p / "package.json"
-        if pkg.exists():
-            try:
-                data = json.loads(pkg.read_text())
-                deps = len(data.get("dependencies", {}))
-                dev = len(data.get("devDependencies", {}))
-                return deps + dev
-            except Exception:
-                pass
-    elif ptype == "python":
-        req = p / "requirements.txt"
-        if req.exists():
-            return len([l for l in req.read_text().splitlines() if l.strip() and not l.startswith("#")])
-    return 0
-
-
-def _bench_history_path(project_dir: str) -> Path:
-    """Get path for benchmark history file."""
-    return Path(project_dir) / ".bench_history.json"
-
-
-def _load_history(project_dir: str) -> List[dict]:
-    """Load benchmark history."""
-    hp = _bench_history_path(project_dir)
-    if hp.exists():
-        try:
-            return json.loads(hp.read_text())
-        except Exception:
-            pass
-    return []
-
-
-def _save_history(project_dir: str, history: List[dict]):
-    """Save benchmark history."""
-    hp = _bench_history_path(project_dir)
-    hp.write_text(json.dumps(history, indent=2))
-
-
-def _get_git_ref(project_dir: str) -> str:
-    """Get current git short hash."""
-    try:
-        r = subprocess.run(
-            ["git", "rev-parse", "--short", "HEAD"],
-            cwd=project_dir, capture_output=True, text=True
-        )
-        return r.stdout.strip() if r.returncode == 0 else "unknown"
+        ru = resource.getrusage(resource.RUSAGE_CHILDREN)
+        return ru.ru_maxrss / 1024  # Convert KB to MB on Linux
     except Exception:
-        return "unknown"
+        return 0.0
 
 
-def run_benchmarks(project_dir: str = ".") -> dict:
-    """Run all benchmarks and return results."""
-    project_dir = os.path.abspath(project_dir)
-    ptype = _detect_project_type(project_dir)
-    results = {
-        "timestamp": datetime.now().isoformat(),
-        "git_ref": _get_git_ref(project_dir),
-        "project_type": ptype,
-        "metrics": {}
+def bench_function(file_path, func_name, runs=10, warmup=2):
+    """Benchmark a Python function."""
+    spec = importlib.util.spec_from_file_location("bench_module", file_path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+
+    func = getattr(mod, func_name)
+    
+    # Warmup
+    for _ in range(warmup):
+        func()
+    
+    times = []
+    for _ in range(runs):
+        start = time.perf_counter_ns()
+        func()
+        elapsed = (time.perf_counter_ns() - start) / 1_000_000  # ms
+        times.append(elapsed)
+    
+    return analyze(times, f"{os.path.basename(file_path)}::{func_name}")
+
+
+def bench_command(cmd, runs=10, warmup=2):
+    """Benchmark a shell command."""
+    # Warmup
+    for _ in range(warmup):
+        subprocess.run(cmd, shell=True, capture_output=True)
+    
+    times = []
+    for _ in range(runs):
+        start = time.perf_counter_ns()
+        result = subprocess.run(cmd, shell=True, capture_output=True)
+        elapsed = (time.perf_counter_ns() - start) / 1_000_000  # ms
+        times.append(elapsed)
+    
+    return analyze(times, cmd[:60])
+
+
+def analyze(times, label):
+    """Statistical analysis of timing results."""
+    return {
+        'label': label,
+        'runs': len(times),
+        'mean_ms': round(statistics.mean(times), 3),
+        'median_ms': round(statistics.median(times), 3),
+        'min_ms': round(min(times), 3),
+        'max_ms': round(max(times), 3),
+        'stdev_ms': round(statistics.stdev(times), 3) if len(times) > 1 else 0,
+        'p95_ms': round(sorted(times)[int(len(times) * 0.95)], 3) if len(times) >= 5 else round(max(times), 3),
+        'times': [round(t, 3) for t in times],
+        'timestamp': time.strftime('%Y-%m-%dT%H:%M:%S'),
     }
-    m = results["metrics"]
-
-    # File counts
-    m["file_counts"] = _count_files(project_dir)
-    m["total_source_files"] = sum(m["file_counts"].values())
-
-    # Project size
-    m["project_size_mb"] = _get_dir_size_mb(project_dir)
-
-    # Dependency count
-    m["dependency_count"] = _get_dep_count(project_dir, ptype)
-
-    # Lines of code (fast count)
-    try:
-        skip = {".git", "node_modules", "__pycache__", ".venv", "venv", "dist", "build", ".next", "target"}
-        loc = 0
-        exts = {".py", ".js", ".ts", ".tsx", ".jsx", ".rs", ".go"}
-        for f in Path(project_dir).rglob("*"):
-            if any(s in f.parts for s in skip):
-                continue
-            if f.is_file() and f.suffix.lower() in exts:
-                loc += len(f.read_text(errors="ignore").splitlines())
-        m["lines_of_code"] = loc
-    except Exception:
-        m["lines_of_code"] = 0
-
-    # Test speed
-    if ptype == "python":
-        m["test_time_s"] = _time_command(
-            [sys.executable, "-m", "pytest", "-q", "--tb=no", "-x"], project_dir, timeout=60
-        )
-    elif ptype == "node":
-        if (Path(project_dir) / "package.json").exists():
-            pkg = json.loads((Path(project_dir) / "package.json").read_text())
-            if "test" in pkg.get("scripts", {}):
-                m["test_time_s"] = _time_command(["npm", "test", "--", "--passWithNoTests"], project_dir, timeout=60)
-
-    # Build time (node only)
-    if ptype == "node":
-        pkg_path = Path(project_dir) / "package.json"
-        if pkg_path.exists():
-            pkg = json.loads(pkg_path.read_text())
-            if "build" in pkg.get("scripts", {}):
-                m["build_time_s"] = _time_command(["npm", "run", "build"], project_dir, timeout=120)
-
-    # Import/startup time
-    if ptype == "python":
-        m["import_time_s"] = _time_command(
-            [sys.executable, "-c", "import tools.mw"], project_dir, timeout=10
-        )
-
-    return results
 
 
-def _format_delta(current, previous, unit="", lower_is_better=True):
-    """Format a delta comparison."""
-    if current is None or previous is None:
-        return ""
-    diff = current - previous
-    pct = (diff / previous * 100) if previous != 0 else 0
-    if abs(pct) < 1:
-        return f" {DIM}(no change){RESET}"
-    arrow = "↑" if diff > 0 else "↓"
-    color = (RED if lower_is_better else GREEN) if diff > 0 else (GREEN if lower_is_better else RED)
-    return f" {color}{arrow} {abs(pct):.1f}%{RESET}"
+def format_table(result):
+    """Format as pretty table."""
+    lines = []
+    lines.append(f"\n\033[1m⏱  Benchmark: {result['label']}\033[0m")
+    lines.append("=" * 50)
+    lines.append(f"  Runs:       {result['runs']}")
+    lines.append(f"  Mean:       {result['mean_ms']:.3f} ms")
+    lines.append(f"  Median:     {result['median_ms']:.3f} ms")
+    lines.append(f"  Min:        {result['min_ms']:.3f} ms")
+    lines.append(f"  Max:        {result['max_ms']:.3f} ms")
+    lines.append(f"  Stdev:      {result['stdev_ms']:.3f} ms")
+    lines.append(f"  P95:        {result['p95_ms']:.3f} ms")
+    
+    # Visual bar chart of runs
+    if len(result['times']) <= 20:
+        lines.append(f"\n  Distribution:")
+        max_t = max(result['times'])
+        for i, t in enumerate(result['times']):
+            bar_len = int((t / max_t) * 30) if max_t > 0 else 0
+            bar = '█' * bar_len
+            lines.append(f"    Run {i+1:2d}: {bar} {t:.3f}ms")
+    
+    lines.append("")
+    return '\n'.join(lines)
 
 
-def cmd_bench(args: List[str] = None) -> int:
-    """Main bench command."""
-    args = args or []
-
-    if not args or args[0] == "run":
-        return _cmd_run(args[1:] if args and args[0] == "run" else args)
-    elif args[0] == "history":
-        return _cmd_history(args[1:])
-    elif args[0] == "compare":
-        return _cmd_compare(args[1:])
-    elif args[0] == "ci":
-        return _cmd_ci(args[1:])
-    elif args[0] in ("--help", "-h", "help"):
-        print(__doc__)
-        return 0
-    else:
-        return _cmd_run(args)
-
-
-def _cmd_run(args: List[str] = None) -> int:
-    """Run benchmarks and display results."""
-    project_dir = args[0] if args else "."
-    print(f"\n{BOLD}{CYAN}⚡ Running benchmarks...{RESET}\n")
-
-    results = run_benchmarks(project_dir)
-    m = results["metrics"]
-
-    # Save to history
-    history = _load_history(project_dir)
-    prev = history[-1]["metrics"] if history else {}
-    history.append(results)
-    # Keep last 50 entries
-    if len(history) > 50:
-        history = history[-50:]
-    _save_history(project_dir, history)
-
-    # Display
-    print(f"  {BOLD}Project type:{RESET}  {results['project_type']}")
-    print(f"  {BOLD}Git ref:{RESET}       {results['git_ref']}")
-    print(f"  {BOLD}Timestamp:{RESET}     {results['timestamp'][:19]}")
-    print()
-
-    print(f"  {BOLD}📊 Metrics:{RESET}")
-    print(f"    Source files:    {m['total_source_files']}{_format_delta(m['total_source_files'], prev.get('total_source_files'), lower_is_better=False)}")
-    print(f"    Lines of code:   {m['lines_of_code']:,}{_format_delta(m['lines_of_code'], prev.get('lines_of_code'), lower_is_better=False)}")
-    print(f"    Project size:    {m['project_size_mb']} MB{_format_delta(m['project_size_mb'], prev.get('project_size_mb'))}")
-    print(f"    Dependencies:    {m['dependency_count']}{_format_delta(m['dependency_count'], prev.get('dependency_count'))}")
-
-    if m.get("test_time_s") is not None:
-        print(f"    Test time:       {m['test_time_s']:.2f}s{_format_delta(m['test_time_s'], prev.get('test_time_s'))}")
-    if m.get("build_time_s") is not None:
-        print(f"    Build time:      {m['build_time_s']:.2f}s{_format_delta(m['build_time_s'], prev.get('build_time_s'))}")
-    if m.get("import_time_s") is not None:
-        print(f"    Import time:     {m['import_time_s']:.3f}s{_format_delta(m['import_time_s'], prev.get('import_time_s'))}")
-
-    if m.get("file_counts"):
-        print(f"\n  {BOLD}📁 Files by type:{RESET}")
-        for ext, count in sorted(m["file_counts"].items(), key=lambda x: -x[1]):
-            print(f"    {ext:8s} {count}")
-
-    print(f"\n  {GREEN}✅ Benchmark saved ({len(history)} total entries){RESET}\n")
-    return 0
-
-
-def _cmd_history(args: List[str] = None) -> int:
-    """Show benchmark history."""
-    project_dir = args[0] if args else "."
-    history = _load_history(project_dir)
-
-    if not history:
-        print(f"\n  {YELLOW}No benchmark history found. Run: mw bench{RESET}\n")
-        return 0
-
-    print(f"\n{BOLD}{CYAN}📈 Benchmark History ({len(history)} entries){RESET}\n")
-    print(f"  {'Date':<20s} {'Ref':<10s} {'Files':>6s} {'LOC':>8s} {'Size':>8s} {'Tests':>8s}")
-    print(f"  {'─'*20} {'─'*10} {'─'*6} {'─'*8} {'─'*8} {'─'*8}")
-
-    for entry in history[-15:]:
-        m = entry["metrics"]
-        ts = entry["timestamp"][:16]
-        ref = entry.get("git_ref", "?")[:8]
-        files = str(m.get("total_source_files", "?"))
-        loc = f"{m.get('lines_of_code', 0):,}"
-        size = f"{m.get('project_size_mb', 0):.1f}MB"
-        test_t = f"{m['test_time_s']:.2f}s" if m.get("test_time_s") else "—"
-        print(f"  {ts:<20s} {ref:<10s} {files:>6s} {loc:>8s} {size:>8s} {test_t:>8s}")
-
-    print()
-    return 0
-
-
-def _cmd_compare(args: List[str] = None) -> int:
-    """Compare current vs previous benchmark."""
-    project_dir = "."
-    history = _load_history(project_dir)
-
-    if len(history) < 2:
-        print(f"\n  {YELLOW}Need at least 2 benchmark runs to compare. Run: mw bench{RESET}\n")
-        return 0
-
-    curr = history[-1]["metrics"]
-    prev = history[-2]["metrics"]
-
-    print(f"\n{BOLD}{CYAN}🔍 Benchmark Comparison{RESET}")
-    print(f"  {DIM}Previous: {history[-2].get('git_ref', '?')} ({history[-2]['timestamp'][:16]}){RESET}")
-    print(f"  {DIM}Current:  {history[-1].get('git_ref', '?')} ({history[-1]['timestamp'][:16]}){RESET}\n")
-
-    metrics = [
-        ("Source files", "total_source_files", False),
-        ("Lines of code", "lines_of_code", False),
-        ("Project size (MB)", "project_size_mb", True),
-        ("Dependencies", "dependency_count", True),
-        ("Test time (s)", "test_time_s", True),
-        ("Build time (s)", "build_time_s", True),
-        ("Import time (s)", "import_time_s", True),
+def format_md(result):
+    """Format as markdown."""
+    lines = [
+        f"## Benchmark: {result['label']}",
+        f"",
+        f"| Metric | Value |",
+        f"|--------|-------|",
+        f"| Runs | {result['runs']} |",
+        f"| Mean | {result['mean_ms']:.3f} ms |",
+        f"| Median | {result['median_ms']:.3f} ms |",
+        f"| Min | {result['min_ms']:.3f} ms |",
+        f"| Max | {result['max_ms']:.3f} ms |",
+        f"| Stdev | {result['stdev_ms']:.3f} ms |",
+        f"| P95 | {result['p95_ms']:.3f} ms |",
     ]
-
-    for label, key, lower_better in metrics:
-        c = curr.get(key)
-        p = prev.get(key)
-        if c is None and p is None:
-            continue
-        c_str = f"{c:,.2f}" if isinstance(c, float) else str(c or "—")
-        p_str = f"{p:,.2f}" if isinstance(p, float) else str(p or "—")
-        delta = _format_delta(c, p, lower_is_better=lower_better)
-        print(f"  {label:<22s}  {p_str:>10s} → {c_str:>10s}{delta}")
-
-    print()
-    return 0
+    return '\n'.join(lines)
 
 
-def _cmd_ci(args: List[str] = None) -> int:
-    """CI mode — exit 1 if significant regressions detected."""
-    project_dir = "."
-    results = run_benchmarks(project_dir)
-    history = _load_history(project_dir)
+def compare_results(a, b):
+    """Compare two benchmark results."""
+    diff = ((b['mean_ms'] - a['mean_ms']) / a['mean_ms']) * 100
+    faster = "faster" if diff < 0 else "slower"
+    lines = []
+    lines.append(f"\n\033[1m📊 Comparison\033[0m")
+    lines.append("=" * 50)
+    lines.append(f"  A: {a['label']} — {a['mean_ms']:.3f}ms avg")
+    lines.append(f"  B: {b['label']} — {b['mean_ms']:.3f}ms avg")
+    lines.append(f"  Δ: {abs(diff):.1f}% {faster}")
+    if diff < -10:
+        lines.append(f"  \033[92m✅ B is significantly faster!\033[0m")
+    elif diff > 10:
+        lines.append(f"  \033[91m⚠️  B is significantly slower!\033[0m")
+    else:
+        lines.append(f"  \033[93m≈ Results are comparable\033[0m")
+    return '\n'.join(lines)
 
-    if len(history) < 2:
-        history.append(results)
-        _save_history(project_dir, history)
-        print("BENCH_OK: First run, no comparison available")
-        return 0
 
-    prev = history[-1]["metrics"]
-    curr = results["metrics"]
-    history.append(results)
-    _save_history(project_dir, history)
+def save_baseline(name, result):
+    """Save benchmark result as a named baseline."""
+    ensure_dir()
+    path = os.path.join(BENCH_DIR, f"baseline_{name}.json")
+    with open(path, 'w') as f:
+        json.dump(result, f, indent=2)
+    print(f"✅ Baseline '{name}' saved to {path}")
 
-    regressions = []
-    # Check test time regression > 20%
-    if curr.get("test_time_s") and prev.get("test_time_s"):
-        pct = (curr["test_time_s"] - prev["test_time_s"]) / prev["test_time_s"] * 100
-        if pct > 20:
-            regressions.append(f"Test time regressed {pct:.1f}% ({prev['test_time_s']:.2f}s → {curr['test_time_s']:.2f}s)")
 
-    # Check build time regression > 20%
-    if curr.get("build_time_s") and prev.get("build_time_s"):
-        pct = (curr["build_time_s"] - prev["build_time_s"]) / prev["build_time_s"] * 100
-        if pct > 20:
-            regressions.append(f"Build time regressed {pct:.1f}%")
+def load_baseline(name):
+    """Load a saved baseline."""
+    path = os.path.join(BENCH_DIR, f"baseline_{name}.json")
+    if not os.path.exists(path):
+        print(f"❌ No baseline '{name}' found")
+        sys.exit(1)
+    with open(path) as f:
+        return json.load(f)
 
-    # Check project size grew > 30%
-    if curr.get("project_size_mb") and prev.get("project_size_mb"):
-        pct = (curr["project_size_mb"] - prev["project_size_mb"]) / prev["project_size_mb"] * 100
-        if pct > 30:
-            regressions.append(f"Project size grew {pct:.1f}%")
 
-    if regressions:
-        print(f"BENCH_FAIL: {len(regressions)} regression(s) detected:")
-        for r in regressions:
-            print(f"  ❌ {r}")
-        return 1
+def show_history():
+    """Show all saved baselines."""
+    ensure_dir()
+    baselines = [f for f in os.listdir(BENCH_DIR) if f.startswith('baseline_')]
+    if not baselines:
+        print("No saved baselines. Use: mw bench baseline <name>")
+        return
+    print(f"\n\033[1m📋 Saved Baselines\033[0m")
+    print("=" * 50)
+    for f in sorted(baselines):
+        with open(os.path.join(BENCH_DIR, f)) as fh:
+            data = json.load(fh)
+        name = f.replace('baseline_', '').replace('.json', '')
+        print(f"  {name:20s} — {data['mean_ms']:.3f}ms avg ({data['runs']} runs, {data.get('timestamp', '?')})")
 
-    print("BENCH_OK: No significant regressions")
-    return 0
+
+def show_help():
+    print(__doc__)
+
+
+def main():
+    args = sys.argv[1:]
+    
+    if not args or args[0] in ('-h', '--help', 'help'):
+        show_help()
+        return
+    
+    if args[0] == 'history':
+        show_history()
+        return
+    
+    runs = 10
+    warmup = 2
+    fmt = 'table'
+    cmd = None
+    target = None
+    baseline_name = None
+    vs_baseline = None
+    
+    i = 0
+    while i < len(args):
+        if args[i] == '--runs' and i + 1 < len(args):
+            runs = int(args[i + 1]); i += 2
+        elif args[i] == '--warmup' and i + 1 < len(args):
+            warmup = int(args[i + 1]); i += 2
+        elif args[i] == '--output' and i + 1 < len(args):
+            fmt = args[i + 1]; i += 2
+        elif args[i] == '--cmd' and i + 1 < len(args):
+            cmd = args[i + 1]; i += 2
+        elif args[i] == 'baseline' and i + 1 < len(args):
+            baseline_name = args[i + 1]; i += 2
+        elif args[i] == 'vs-baseline' and i + 1 < len(args):
+            vs_baseline = args[i + 1]; i += 2
+        elif '::' in args[i]:
+            target = args[i]; i += 1
+        else:
+            i += 1
+    
+    # Run benchmark
+    if cmd:
+        result = bench_command(cmd, runs, warmup)
+    elif target and '::' in target:
+        file_path, func_name = target.split('::', 1)
+        result = bench_function(file_path, func_name, runs, warmup)
+    else:
+        print("❌ Specify a target: mw bench <file>::<func> or mw bench --cmd '<command>'")
+        sys.exit(1)
+    
+    # Output
+    if fmt == 'json':
+        print(json.dumps(result, indent=2))
+    elif fmt == 'md':
+        print(format_md(result))
+    else:
+        print(format_table(result))
+    
+    # Save baseline if requested
+    if baseline_name:
+        save_baseline(baseline_name, result)
+    
+    # Compare against baseline if requested
+    if vs_baseline:
+        baseline = load_baseline(vs_baseline)
+        print(compare_results(baseline, result))
+
+
+if __name__ == '__main__':
+    main()

@@ -3359,7 +3359,9 @@ def _cmd_bench_wrapper(args: List[str] = None) -> int:
     spec = importlib.util.spec_from_file_location("bench", bench_path)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    return mod.cmd_bench(args or [])
+    sys.argv = ['mw-bench'] + (args or [])
+    mod.main()
+    return 0
 
 
 def _cmd_migrate_wrapper(args: List[str] = None) -> int:
