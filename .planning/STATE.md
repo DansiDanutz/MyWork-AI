@@ -34,6 +34,11 @@ Date: 2026-02-10
 - **Simulation engine**: 5/5 scenarios pass
 - **Security audit**: 0 critical, 5 low-risk remaining
 
+### Recent Changes (2026-02-13)
+- Added `mw todo` — codebase TODO/FIXME/HACK/XXX scanner with --tag filter, --json, --stats
+- Supports 20+ file extensions, skips build dirs, groups by file with line numbers
+- 9 new tests → all passing
+
 ### Recent Changes (2026-02-12)
 - Added `mw check` — quality gate command (lint + test + types + security + git checks)
 - Supports --quick, --json, --pre-commit hook install
