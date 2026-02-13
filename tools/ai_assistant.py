@@ -561,6 +561,170 @@ Group related commits, write user-friendly descriptions (not raw commit messages
     return 0
 
 
+def cmd_ai_generate(args: List[str]) -> int:
+    """Generate a complete file from a natural language description.
+
+    Usage:
+        mw ai generate <filename> "description of what to build"
+        mw ai generate api.py "FastAPI CRUD for users with JWT auth"
+        mw ai generate components/Modal.tsx "React modal with close on ESC and backdrop click"
+        mw ai generate --dry-run schema.sql "PostgreSQL schema for e-commerce"
+    """
+    if not args or args[0] in ("-h", "--help"):
+        print(f"""
+{BOLD}{CYAN}🛠️  mw ai generate — Generate Files from Description{RESET}
+
+{BOLD}Usage:{RESET}
+    mw ai generate <filename> "description"
+    mw ai generate --dry-run <filename> "description"
+
+{BOLD}Examples:{RESET}
+    mw ai generate api.py "FastAPI REST API for blog posts with CRUD"
+    mw ai generate src/utils/cache.ts "LRU cache with TTL support"
+    mw ai generate Dockerfile "Multi-stage build for Python FastAPI app"
+    mw ai generate schema.prisma "E-commerce data model with users, products, orders"
+    mw ai generate --dry-run config.yaml "Kubernetes deployment for 3 replicas"
+
+{BOLD}Options:{RESET}
+    --dry-run     Print generated code without writing to file
+    --model X     Use specific model (deepseek, claude, gpt4, gemini)
+
+{BOLD}Supported:{RESET} Any file type — Python, TypeScript, SQL, YAML, Docker, Terraform, etc.
+""")
+        return 0
+
+    dry_run = "--dry-run" in args
+    args = [a for a in args if a != "--dry-run"]
+
+    # Parse --model
+    provider_name = None
+    model = None
+    filtered = []
+    i = 0
+    while i < len(args):
+        if args[i] == "--model" and i + 1 < len(args):
+            model_shortcut = args[i + 1]
+            model_map = {
+                "deepseek": ("openrouter", "deepseek/deepseek-chat"),
+                "claude": ("openrouter", "anthropic/claude-sonnet-4-20250514"),
+                "gpt4": ("openrouter", "openai/gpt-4.1"),
+                "gemini": ("openrouter", "google/gemini-2.5-flash"),
+                "gemini-pro": ("openrouter", "google/gemini-2.5-pro"),
+                "kimi": ("openrouter", "moonshotai/kimi-k2"),
+                "llama": ("openrouter", "meta-llama/llama-4-maverick"),
+            }
+            if model_shortcut in model_map:
+                provider_name, model = model_map[model_shortcut]
+            else:
+                provider_name = "openrouter"
+                model = model_shortcut
+            i += 2
+        else:
+            filtered.append(args[i])
+            i += 1
+    args = filtered
+
+    if len(args) < 2:
+        print(f"{RED}❌ Usage: mw ai generate <filename> \"description\"{RESET}")
+        print(f"   Example: mw ai generate api.py \"FastAPI CRUD for users\"")
+        return 1
+
+    filename = args[0]
+    description = " ".join(args[1:])
+    ext = Path(filename).suffix.lstrip(".")
+
+    # Detect language from extension
+    lang_map = {
+        "py": "Python", "js": "JavaScript", "ts": "TypeScript", "tsx": "TypeScript React",
+        "jsx": "JavaScript React", "rs": "Rust", "go": "Go", "rb": "Ruby",
+        "java": "Java", "kt": "Kotlin", "swift": "Swift", "cs": "C#",
+        "sql": "SQL", "prisma": "Prisma", "yaml": "YAML", "yml": "YAML",
+        "toml": "TOML", "json": "JSON", "md": "Markdown", "sh": "Bash",
+        "dockerfile": "Dockerfile", "tf": "Terraform", "hcl": "HCL",
+        "html": "HTML", "css": "CSS", "scss": "SCSS", "vue": "Vue",
+        "svelte": "Svelte",
+    }
+    # Handle Dockerfile specially
+    base = Path(filename).name.lower()
+    if base in ("dockerfile", "docker-compose.yml", "docker-compose.yaml"):
+        lang = "Docker"
+    else:
+        lang = lang_map.get(ext, ext.upper() if ext else "text")
+
+    # Build context from existing project files
+    context_files = []
+    cwd = Path.cwd()
+    # Check for project config files to understand the stack
+    for cfg in ["package.json", "pyproject.toml", "Cargo.toml", "go.mod", "requirements.txt"]:
+        cfg_path = cwd / cfg
+        if cfg_path.exists():
+            try:
+                content = cfg_path.read_text()[:500]
+                context_files.append(f"--- {cfg} ---\n{content}")
+            except Exception:
+                pass
+
+    context = ""
+    if context_files:
+        context = "\n\nProject context (existing config files):\n" + "\n".join(context_files)
+
+    system = f"""You are an expert {lang} developer. Generate a complete, production-ready file.
+Rules:
+- Output ONLY the file content, no markdown fences, no explanations
+- Include proper imports, types, error handling, and documentation
+- Follow best practices and conventions for {lang}
+- Add helpful inline comments for complex logic
+- Make it production-ready, not a toy example"""
+
+    prompt = f"""Generate a complete {lang} file: {filename}
+
+Description: {description}{context}
+
+Output the complete file content only. No markdown, no explanations."""
+
+    print(f"\n{BOLD}🛠️  Generating: {CYAN}{filename}{RESET}")
+    print(f"   {DIM}Language: {lang} | Description: {description[:60]}{'...' if len(description) > 60 else ''}{RESET}\n")
+
+    call_kwargs = {"prompt": prompt, "system": system}
+    if model:
+        call_kwargs["model"] = model
+    if provider_name:
+        call_kwargs["provider_name"] = provider_name
+    result = _call_llm(**call_kwargs)
+
+    if not result or result.startswith(RED):
+        print(result or f"{RED}❌ No response from AI{RESET}")
+        return 1
+
+    # Strip markdown fences if AI included them anyway
+    lines = result.strip().split("\n")
+    if lines[0].startswith("```"):
+        lines = lines[1:]
+    if lines and lines[-1].strip() == "```":
+        lines = lines[:-1]
+    content = "\n".join(lines) + "\n"
+
+    if dry_run:
+        print(f"{BOLD}📋 Generated ({len(content)} chars, {len(lines)} lines):{RESET}\n")
+        print(content)
+        return 0
+
+    # Create parent directories if needed
+    filepath = Path(filename)
+    if filepath.parent != Path("."):
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+
+    filepath.write_text(content)
+    print(f"   {GREEN}✅ Written to {filename} ({len(content)} chars, {len(lines)} lines){RESET}")
+
+    # Make shell scripts executable
+    if ext in ("sh", "bash") or base.startswith("Makefile"):
+        os.chmod(filename, 0o755)
+        print(f"   {DIM}Made executable (chmod +x){RESET}")
+
+    return 0
+
+
 def cmd_ai(args: List[str] = None) -> int:
     """AI Assistant — inline AI help for developers.
 
@@ -584,6 +748,7 @@ def cmd_ai(args: List[str] = None) -> int:
 
 {BOLD}Commands:{RESET}
     mw ai ask "question"                    {DIM}Ask a coding question{RESET}
+    mw ai generate <file> "description"     {DIM}Generate a complete file from description{RESET}
     mw ai explain <file> [--lines 10-50]    {DIM}Explain code{RESET}
     mw ai fix <file> [--error "msg"]         {DIM}Fix bugs in code{RESET}
     mw ai fix --diff                         {DIM}Review git diff for issues{RESET}
@@ -610,6 +775,8 @@ def cmd_ai(args: List[str] = None) -> int:
 
     subcmds = {
         "ask": cmd_ai_ask,
+        "generate": cmd_ai_generate,
+        "gen": cmd_ai_generate,
         "explain": cmd_ai_explain,
         "fix": cmd_ai_fix,
         "refactor": cmd_ai_refactor,
