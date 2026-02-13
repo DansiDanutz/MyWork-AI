@@ -6472,6 +6472,125 @@ def cmd_deps(args: List[str] = None) -> int:
         return 0
 
 
+def cmd_selftest(args: List[str] = None) -> int:
+    """Quick smoke test to verify framework installation.
+
+    Usage:
+        mw selftest          # Run all checks (~5 seconds)
+        mw selftest --quick  # Core checks only (~2 seconds)
+        mw selftest --json   # Output as JSON (for CI)
+    """
+    import time
+    args = args or []
+    quick = "--quick" in args
+    as_json = "--json" in args
+
+    results = []
+    t_start = time.time()
+
+    def check(name: str, fn, critical: bool = True):
+        t0 = time.time()
+        try:
+            ok, detail = fn()
+            elapsed = time.time() - t0
+            results.append({"name": name, "ok": ok, "detail": detail, "time": elapsed, "critical": critical})
+        except Exception as e:
+            elapsed = time.time() - t0
+            results.append({"name": name, "ok": False, "detail": str(e), "time": elapsed, "critical": critical})
+
+    # 1. Core imports
+    def check_imports():
+        failures = []
+        for mod in ["tools.mw", "tools.brain", "tools.config", "tools.health_check",
+                     "tools.scaffold", "tools.workflow_engine", "tools.ai_assistant"]:
+            try:
+                __import__(mod)
+            except Exception as e:
+                failures.append(f"{mod}: {e}")
+        if failures:
+            return False, f"Failed: {', '.join(failures)}"
+        return True, "7 core modules OK"
+    check("Core imports", check_imports)
+
+    # 2. Config system
+    def check_config():
+        from tools.config import get_mywork_root, ensure_directories
+        root = get_mywork_root()
+        return True, f"Root: {root}"
+    check("Config system", check_config)
+
+    # 3. CLI dispatch
+    def check_cli():
+        import subprocess
+        r = subprocess.run([sys.executable, "-m", "tools.mw", "version"],
+                           capture_output=True, text=True, timeout=5,
+                           cwd=os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        return r.returncode == 0, r.stdout.strip()[:80] or r.stderr.strip()[:80]
+    check("CLI dispatch", check_cli)
+
+    # 4. Brain (knowledge vault)
+    def check_brain():
+        from tools.brain import BrainManager
+        b = BrainManager()
+        count = len(b.entries) if hasattr(b, 'entries') else 0
+        return True, f"{count} entries"
+    check("Brain vault", check_brain, critical=False)
+
+    if not quick:
+        # 5. Project registry
+        def check_projects():
+            from tools.config import list_projects
+            projects = list_projects()
+            return True, f"{len(projects)} projects"
+        check("Project registry", check_projects, critical=False)
+
+        # 6. Scaffold templates
+        def check_scaffold():
+            from tools.scaffold import TEMPLATES
+            return len(TEMPLATES) > 0, f"{len(TEMPLATES)} templates"
+        check("Scaffold templates", check_scaffold, critical=False)
+
+        # 7. Workflow engine
+        def check_workflows():
+            from tools.workflow_engine import WorkflowEngine
+            engine = WorkflowEngine()
+            return True, "Engine initialized"
+        check("Workflow engine", check_workflows, critical=False)
+
+        # 8. Plugin system
+        def check_plugins():
+            from tools.plugin_manager import load_registry
+            reg = load_registry()
+            count = len(reg.get("plugins", {})) if isinstance(reg, dict) else 0
+            return True, f"{count} plugins"
+        check("Plugin system", check_plugins, critical=False)
+
+    total_time = time.time() - t_start
+    passed = sum(1 for r in results if r["ok"])
+    failed = sum(1 for r in results if not r["ok"])
+    critical_failed = sum(1 for r in results if not r["ok"] and r["critical"])
+
+    if as_json:
+        import json
+        print(json.dumps({"passed": passed, "failed": failed, "time": round(total_time, 2),
+                           "ok": critical_failed == 0, "checks": results}, indent=2))
+        return 0 if critical_failed == 0 else 1
+
+    print(f"\n{Colors.BOLD}🔬 MyWork-AI Self-Test{Colors.ENDC}")
+    print("=" * 50)
+    for r in results:
+        icon = "✅" if r["ok"] else ("❌" if r["critical"] else "⚠️")
+        time_str = f"{r['time']:.2f}s"
+        print(f"  {icon} {r['name']:.<30} {r['detail'][:35]:.<35} {time_str}")
+    print("=" * 50)
+    if critical_failed == 0:
+        print(f"  {Colors.GREEN}✅ All checks passed!{Colors.ENDC} ({passed}/{len(results)} in {total_time:.2f}s)")
+    else:
+        print(f"  {Colors.RED}❌ {critical_failed} critical failure(s){Colors.ENDC} ({passed}/{len(results)} passed)")
+    print()
+    return 0 if critical_failed == 0 else 1
+
+
 def cmd_completions(args: List[str] = None) -> int:
     """Generate shell completion scripts.
 
@@ -6496,8 +6615,8 @@ def cmd_completions(args: List[str] = None) -> int:
         "api", "env", "fix", "git", "guide", "help", "hook", "init", "links", "lint",
         "marketplace", "monitor", "n8n", "new", "open", "perf", "plugin",
         "projects", "prompt-enhance", "release", "remember", "report", "scan",
-        "run", "search", "sec", "security", "serve", "setup", "stats", "status", "test",
-        "demo", "tour", "update", "version", "web", "wf", "workflow",
+        "run", "search", "sec", "security", "selftest", "serve", "setup", "stats", "status", "test",
+        "demo", "tour", "update", "verify", "version", "web", "wf", "workflow",
     ]
     # Subcommands per command
     subcmds = {
@@ -6733,6 +6852,9 @@ def main() -> None:
         "deps": lambda: cmd_deps(args),
         "dependencies": lambda: cmd_deps(args),
         "completions": lambda: cmd_completions(args),
+        "selftest": lambda: cmd_selftest(args),
+        "self-test": lambda: cmd_selftest(args),
+        "verify": lambda: cmd_selftest(args),
         "recap": lambda: cmd_recap(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
