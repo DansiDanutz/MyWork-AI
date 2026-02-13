@@ -13,6 +13,7 @@ Commands:
     setup           First-time setup wizard for new users
     guide           Interactive workflow guide and tutorial
     update          Check and apply updates (GSD, AutoForge, n8n)
+    upgrade         Self-upgrade MyWork-AI (from GitHub or PyPI)
     search <query>  Search module registry for reusable code
     new <name>      Create a new project (see: mw new --help)
     prompt-enhance  Enhance rough prompts for GSD planning
@@ -6759,6 +6760,147 @@ def cmd_selftest(args: List[str] = None) -> int:
     return 0 if critical_failed == 0 else 1
 
 
+def cmd_upgrade(args: List[str] = None) -> int:
+    """Self-upgrade MyWork-AI from GitHub or PyPI.
+
+    Usage:
+        mw upgrade              # Upgrade to latest from GitHub
+        mw upgrade --check      # Check if update available (no install)
+        mw upgrade --pypi       # Upgrade from PyPI instead of GitHub
+        mw upgrade --version X  # Upgrade to specific version
+    """
+    import subprocess as _sp
+    args = args or []
+
+    if "--help" in args or "-h" in args:
+        print(f"""
+{Colors.BOLD}⬆️  MyWork-AI Upgrade{Colors.ENDC}
+{'=' * 50}
+
+Usage:
+    mw upgrade              Upgrade to latest from GitHub (default)
+    mw upgrade --check      Check for updates without installing
+    mw upgrade --pypi       Upgrade from PyPI
+    mw upgrade --version X  Install specific version
+
+Examples:
+    mw upgrade              # Pull latest + reinstall
+    mw upgrade --check      # Just check what's new
+""")
+        return 0
+
+    check_only = "--check" in args
+    use_pypi = "--pypi" in args
+    target_version = None
+    if "--version" in args:
+        idx = args.index("--version")
+        if idx + 1 < len(args):
+            target_version = args[idx + 1]
+
+    # Get current version
+    install_dir = Path(__file__).resolve().parent.parent
+    current_ver = "unknown"
+    try:
+        toml_path = install_dir / "pyproject.toml"
+        if toml_path.exists():
+            for line in toml_path.read_text().splitlines():
+                if line.strip().startswith('version'):
+                    current_ver = line.split('"')[1]
+                    break
+    except Exception:
+        pass
+
+    print(f"\n{Colors.BOLD}⬆️  MyWork-AI Upgrade{Colors.ENDC}")
+    print(f"{'=' * 50}")
+    print(f"   Current version: {Colors.BLUE}v{current_ver}{Colors.ENDC}")
+    print(f"   Install path:    {install_dir}\n")
+
+    if use_pypi:
+        if check_only:
+            print(f"   🔍 Checking PyPI for updates...")
+            r = _sp.run([sys.executable, "-m", "pip", "index", "versions", "mywork-ai"],
+                       capture_output=True, text=True)
+            print(f"   {r.stdout.strip()}" if r.returncode == 0 else f"   ⚠️  Could not check PyPI")
+            return 0
+        print(f"   📦 Upgrading from PyPI...")
+        cmd = [sys.executable, "-m", "pip", "install", "--upgrade", "mywork-ai", "--break-system-packages"]
+        if target_version:
+            cmd[-1] = f"mywork-ai=={target_version}"
+            cmd.append("--break-system-packages")
+        r = _sp.run(cmd, capture_output=True, text=True)
+        if r.returncode == 0:
+            print(f"   {Colors.GREEN}✅ Upgraded successfully!{Colors.ENDC}")
+            # Show new version
+            _sp.run([sys.executable, "-m", "pip", "show", "mywork-ai"], capture_output=False)
+        else:
+            print(f"   {Colors.RED}❌ Upgrade failed:{Colors.ENDC}")
+            print(f"   {r.stderr.strip()[:200]}")
+        return r.returncode
+
+    # GitHub upgrade (default)
+    git_dir = install_dir / ".git"
+    if not git_dir.exists():
+        print(f"   {Colors.RED}❌ Not a git repo. Use --pypi to upgrade from PyPI.{Colors.ENDC}")
+        return 1
+
+    # Fetch latest
+    print(f"   🔍 Fetching latest from GitHub...")
+    _sp.run(["git", "fetch", "--tags"], cwd=install_dir, capture_output=True)
+
+    # Check if behind
+    r = _sp.run(["git", "rev-list", "--count", "HEAD..origin/main"],
+                cwd=install_dir, capture_output=True, text=True)
+    behind = int(r.stdout.strip()) if r.returncode == 0 and r.stdout.strip().isdigit() else 0
+
+    if behind == 0:
+        print(f"   {Colors.GREEN}✅ Already up to date (v{current_ver}){Colors.ENDC}")
+        return 0
+
+    # Show what's new
+    r = _sp.run(["git", "log", "--oneline", "HEAD..origin/main"],
+                cwd=install_dir, capture_output=True, text=True)
+    commits = r.stdout.strip().splitlines()[:10]
+    print(f"   📋 {behind} new commit(s):")
+    for c in commits:
+        print(f"      {c}")
+    if behind > 10:
+        print(f"      ... and {behind - 10} more")
+
+    if check_only:
+        print(f"\n   Run {Colors.BOLD}mw upgrade{Colors.ENDC} to install updates.")
+        return 0
+
+    # Pull and reinstall
+    print(f"\n   ⬇️  Pulling updates...")
+    r = _sp.run(["git", "pull", "--ff-only"], cwd=install_dir, capture_output=True, text=True)
+    if r.returncode != 0:
+        print(f"   {Colors.YELLOW}⚠️  Fast-forward failed, trying rebase...{Colors.ENDC}")
+        r = _sp.run(["git", "pull", "--rebase"], cwd=install_dir, capture_output=True, text=True)
+        if r.returncode != 0:
+            print(f"   {Colors.RED}❌ Pull failed. Resolve conflicts manually.{Colors.ENDC}")
+            return 1
+
+    # Reinstall
+    print(f"   📦 Reinstalling...")
+    r = _sp.run([sys.executable, "-m", "pip", "install", "-e", ".", "--break-system-packages"],
+                cwd=install_dir, capture_output=True, text=True)
+    if r.returncode == 0:
+        # Get new version
+        new_ver = current_ver
+        try:
+            for line in (install_dir / "pyproject.toml").read_text().splitlines():
+                if line.strip().startswith('version'):
+                    new_ver = line.split('"')[1]
+                    break
+        except Exception:
+            pass
+        print(f"\n   {Colors.GREEN}✅ Upgraded: v{current_ver} → v{new_ver}{Colors.ENDC}")
+        print(f"   {Colors.BLUE}Run 'mw doctor' to verify everything works.{Colors.ENDC}")
+    else:
+        print(f"   {Colors.RED}❌ Reinstall failed: {r.stderr.strip()[:200]}{Colors.ENDC}")
+    return r.returncode
+
+
 def cmd_completions(args: List[str] = None) -> int:
     """Generate shell completion scripts.
 
@@ -6784,7 +6926,7 @@ def cmd_completions(args: List[str] = None) -> int:
         "marketplace", "monitor", "n8n", "new", "open", "perf", "plugin",
         "projects", "prompt-enhance", "release", "remember", "report", "scan",
         "run", "search", "sec", "security", "selftest", "serve", "setup", "stats", "status", "test",
-        "demo", "todo", "todos", "tour", "update", "verify", "version", "web", "wf", "workflow",
+        "demo", "todo", "todos", "tour", "update", "upgrade", "verify", "version", "web", "wf", "workflow",
     ]
     # Subcommands per command
     subcmds = {
@@ -7029,6 +7171,8 @@ def main() -> None:
         "context": lambda: _cmd_context_wrapper(args),
         "ctx": lambda: _cmd_context_wrapper(args),
         "todos": lambda: cmd_todo(args),
+        "upgrade": lambda: cmd_upgrade(args),
+        "update-cli": lambda: cmd_upgrade(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),
