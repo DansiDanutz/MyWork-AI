@@ -6760,6 +6760,11 @@ def cmd_selftest(args: List[str] = None) -> int:
     return 0 if critical_failed == 0 else 1
 
 
+def _cmd_depgraph(args: List[str] = None) -> int:
+    """Run dependency graph analyzer."""
+    return run_tool("depgraph", args or [])
+
+
 def _cmd_metrics(args: List[str] = None) -> int:
     """Code metrics dashboard — LOC, complexity, quality score."""
     from metrics import cmd_metrics
@@ -7179,6 +7184,8 @@ def main() -> None:
         "todos": lambda: cmd_todo(args),
         "metrics": lambda: _cmd_metrics(args),
         "stats": lambda: _cmd_metrics(args),
+        "depgraph": lambda: _cmd_depgraph(args),
+        "dep-graph": lambda: _cmd_depgraph(args),
         "upgrade": lambda: cmd_upgrade(args),
         "update-cli": lambda: cmd_upgrade(args),
         "version": lambda: cmd_version(),
