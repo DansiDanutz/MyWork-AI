@@ -3433,6 +3433,12 @@ def _cmd_pair_wrapper(args: List[str] = None) -> int:
     return cmd_pair(args or [])
 
 
+def _cmd_secrets_wrapper(args: List[str] = None) -> int:
+    """Secrets vault management command."""
+    from tools.secrets_vault import cmd_secrets
+    return cmd_secrets(args or [])
+
+
 def _cmd_plugin_wrapper(args: List[str] = None) -> int:
     """Plugin management command."""
     from tools.plugin_manager import cmd_plugin
@@ -6936,7 +6942,7 @@ def cmd_completions(args: List[str] = None) -> int:
         "api", "env", "fix", "git", "guide", "help", "hook", "init", "links", "lint",
         "marketplace", "monitor", "n8n", "new", "open", "perf", "plugin",
         "projects", "prompt-enhance", "release", "remember", "report", "scan",
-        "run", "search", "sec", "security", "selftest", "serve", "setup", "stats", "status", "test",
+        "run", "search", "sec", "secrets", "security", "selftest", "serve", "setup", "stats", "status", "test",
         "demo", "todo", "todos", "tour", "update", "upgrade", "verify", "version", "web", "wf", "workflow",
     ]
     # Subcommands per command
@@ -6956,6 +6962,7 @@ def cmd_completions(args: List[str] = None) -> int:
         "test": ["--coverage", "--watch", "--verbose"],
         "db": ["status", "tables", "schema", "query", "migrate", "seed", "export", "backup", "restore"],
         "hook": ["install", "uninstall", "list", "run", "create"],
+        "secrets": ["set", "get", "list", "delete", "inject", "export", "import", "audit", "rotate"],
         "security": ["scan", "audit", "secrets", "deps"],
         "release": ["patch", "minor", "major", "status", "--dry-run"],
         "run": ["add", "rm"],
@@ -7147,6 +7154,8 @@ def main() -> None:
         "cfg": lambda: cmd_config(args),
         "ai": lambda: _cmd_ai_wrapper(args),
         "pair": lambda: _cmd_pair_wrapper(args),
+        "secrets": lambda: _cmd_secrets_wrapper(args),
+        "vault": lambda: _cmd_secrets_wrapper(args),
         "security": lambda: cmd_security(args),
         "sec": lambda: cmd_security(args),
         "git": lambda: cmd_git(args),
