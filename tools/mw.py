@@ -7401,6 +7401,134 @@ Examples:
     return 0 if critical_failed == 0 else 1
 
 
+def cmd_doctor(args: List[str] = None) -> int:
+    """Project doctor — diagnose common issues and suggest fixes."""
+    import subprocess as _sp
+    proj = (args[0] if args else None) or os.path.basename(os.getcwd())
+    print(f"\n{Colors.BOLD}🩺 Project Doctor — {proj}{Colors.ENDC}")
+    print("=" * 50)
+
+    issues = []
+    warnings = []
+    ok_items = []
+
+    # 1. Check for TODO/FIXME/HACK in code
+    try:
+        r = _sp.run(["grep", "-rn", "--include=*.py", "--include=*.ts", "--include=*.tsx",
+                      "--include=*.js", "-E", "TODO|FIXME|HACK|XXX", "."],
+                     capture_output=True, text=True, timeout=10)
+        count = len(r.stdout.strip().split("\n")) if r.stdout.strip() else 0
+        if count > 20:
+            warnings.append(f"⚠️  {count} TODO/FIXME/HACK markers in code")
+        elif count > 0:
+            ok_items.append(f"✅ {count} TODO markers (manageable)")
+        else:
+            ok_items.append("✅ No TODO/FIXME markers")
+    except Exception:
+        pass
+
+    # 2. Check for large files in git
+    try:
+        r = _sp.run(["find", ".", "-not", "-path", "./.git/*", "-not", "-path", "./node_modules/*",
+                      "-not", "-path", "./.venv/*", "-type", "f", "-size", "+1M"],
+                     capture_output=True, text=True, timeout=10)
+        large = [f for f in r.stdout.strip().split("\n") if f]
+        if large:
+            warnings.append(f"⚠️  {len(large)} files over 1MB: {', '.join(large[:3])}")
+        else:
+            ok_items.append("✅ No oversized files")
+    except Exception:
+        pass
+
+    # 3. Check for .py files without corresponding test
+    try:
+        py_files = set()
+        test_files = set()
+        for root, _, files in os.walk("."):
+            if ".git" in root or "node_modules" in root or "__pycache__" in root:
+                continue
+            for f in files:
+                if f.endswith(".py"):
+                    if f.startswith("test_") or f.endswith("_test.py"):
+                        test_files.add(f.replace("test_", "").replace("_test", ""))
+                    elif f != "__init__.py" and f != "conftest.py":
+                        py_files.add(f)
+        untested = py_files - test_files
+        coverage_pct = ((len(py_files) - len(untested)) / len(py_files) * 100) if py_files else 100
+        if coverage_pct < 50:
+            issues.append(f"❌ Only {coverage_pct:.0f}% of modules have test files ({len(untested)} untested)")
+        elif coverage_pct < 80:
+            warnings.append(f"⚠️  {coverage_pct:.0f}% test file coverage ({len(untested)} modules without tests)")
+        else:
+            ok_items.append(f"✅ {coverage_pct:.0f}% modules have test files")
+    except Exception:
+        pass
+
+    # 4. Check git status (uncommitted changes)
+    try:
+        r = _sp.run(["git", "status", "--porcelain"], capture_output=True, text=True, timeout=5)
+        dirty = len([l for l in r.stdout.strip().split("\n") if l.strip()])
+        if dirty > 10:
+            warnings.append(f"⚠️  {dirty} uncommitted changes in working tree")
+        elif dirty > 0:
+            ok_items.append(f"✅ {dirty} minor uncommitted changes")
+        else:
+            ok_items.append("✅ Clean working tree")
+    except Exception:
+        pass
+
+    # 5. Check for circular imports (simple heuristic)
+    try:
+        r = _sp.run(["python3", "-c", "import tools.mw"], capture_output=True, text=True, timeout=10)
+        if "circular" in r.stderr.lower() or "import error" in r.stderr.lower():
+            issues.append("❌ Possible circular import detected")
+        else:
+            ok_items.append("✅ No circular import issues")
+    except Exception:
+        pass
+
+    # 6. Check Python version compatibility
+    try:
+        import sys
+        v = sys.version_info
+        if v >= (3, 10):
+            ok_items.append(f"✅ Python {v.major}.{v.minor}.{v.micro} (modern)")
+        else:
+            warnings.append(f"⚠️  Python {v.major}.{v.minor} — consider upgrading to 3.10+")
+    except Exception:
+        pass
+
+    # 7. Check for stale branches
+    try:
+        r = _sp.run(["git", "branch", "--merged"], capture_output=True, text=True, timeout=5)
+        merged = [b.strip() for b in r.stdout.strip().split("\n") if b.strip() and not b.strip().startswith("*") and b.strip() != "main"]
+        if merged:
+            warnings.append(f"⚠️  {len(merged)} merged branches can be deleted: {', '.join(merged[:3])}")
+        else:
+            ok_items.append("✅ No stale merged branches")
+    except Exception:
+        pass
+
+    # Print results
+    for item in issues:
+        print(f"  {item}")
+    for item in warnings:
+        print(f"  {item}")
+    for item in ok_items:
+        print(f"  {item}")
+
+    print()
+    total = len(issues) + len(warnings) + len(ok_items)
+    if issues:
+        print(f"  {Colors.RED}🔴 {len(issues)} critical issues need attention{Colors.ENDC}")
+    elif warnings:
+        print(f"  {Colors.YELLOW}🟡 {len(warnings)} warnings, {len(ok_items)} checks passed{Colors.ENDC}")
+    else:
+        print(f"  {Colors.GREEN}🟢 All {total} checks passed — project looks healthy!{Colors.ENDC}")
+    print()
+    return 1 if issues else 0
+
+
 def _cmd_env(args: List[str] = None) -> int:
     """Environment variable manager — audit, compare, template, secrets scan."""
     return run_tool("env_manager", args or [])
@@ -7828,6 +7956,8 @@ def main() -> None:
         "bench": lambda: _cmd_bench_wrapper(args),
         "profile": lambda: _cmd_profile_wrapper(args),
         "benchmark": lambda: _cmd_bench_wrapper(args),
+        "doctor": lambda: cmd_doctor(args),
+        "diagnose": lambda: cmd_doctor(args),
         "perf": lambda: run_tool("perf_analyzer", args),
         "performance": lambda: run_tool("perf_analyzer", args),
         "api": lambda: _cmd_api_wrapper(args),
