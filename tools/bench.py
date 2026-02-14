@@ -210,6 +210,12 @@ def main():
         show_history()
         return
     
+    if args[0] == 'self':
+        # Benchmark the mw CLI itself
+        from tools.benchmark import cmd_benchmark
+        sys.exit(cmd_benchmark(args[1:]))
+        return
+    
     runs = 10
     warmup = 2
     fmt = 'table'
