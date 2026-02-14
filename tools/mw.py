@@ -6289,7 +6289,7 @@ def cmd_audit(args: List[str] = None) -> int:
     has_requirements = (project_path / "requirements.txt").exists()
     has_pyproject = (project_path / "pyproject.toml").exists()
     has_lock = any((project_path / lf).exists() for lf in
-                   ["package-lock.json", "yarn.lock", "pnpm-lock.yaml", "poetry.lock", "Pipfile.lock"])
+                   ["package-lock.json", "yarn.lock", "pnpm-lock.yaml", "poetry.lock", "Pipfile.lock", "requirements.lock", "uv.lock"])
 
     if not (has_pkg_json or has_requirements or has_pyproject):
         dep_score = 5
@@ -6888,7 +6888,7 @@ def cmd_health(args: List[str] = None) -> int:
     dep_score = 0
     dep_detail = []
     dep_files = ["requirements.txt", "pyproject.toml", "package.json", "Cargo.toml", "go.mod"]
-    lock_files = ["requirements.lock.txt", "poetry.lock", "Pipfile.lock", "package-lock.json", "yarn.lock", "pnpm-lock.yaml", "Cargo.lock", "go.sum"]
+    lock_files = ["requirements.lock", "requirements.lock.txt", "poetry.lock", "Pipfile.lock", "package-lock.json", "yarn.lock", "pnpm-lock.yaml", "Cargo.lock", "go.sum", "uv.lock"]
     if any(os.path.exists(f) for f in dep_files):
         dep_score += 8
         dep_detail.append("✅ Dependencies declared")
