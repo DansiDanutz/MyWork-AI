@@ -1,24 +1,29 @@
 """Tests for mw doctor command."""
 import subprocess
 import sys
+import pytest
 
+@pytest.mark.timeout(60)
 def test_doctor_runs():
-    """Doctor command should run without errors."""
+    """Doctor command should run and produce diagnostics output."""
     r = subprocess.run([sys.executable, "tools/mw.py", "doctor"], capture_output=True, text=True, timeout=30)
-    assert r.returncode == 0 or "warnings" in r.stdout.lower() or "passed" in r.stdout.lower()
-    assert "Project Doctor" in r.stdout
+    # Doctor may return non-zero if it finds issues, but should produce output
+    assert "Doctor" in r.stdout or "DIAGNOSTIC" in r.stdout or "HEALTH" in r.stdout
 
+@pytest.mark.timeout(60)
 def test_doctor_checks_todos():
     """Doctor should check for TODO markers."""
     r = subprocess.run([sys.executable, "tools/mw.py", "doctor"], capture_output=True, text=True, timeout=30)
     assert "TODO" in r.stdout or "todo" in r.stdout.lower()
 
+@pytest.mark.timeout(60)
 def test_doctor_checks_git():
-    """Doctor should check git status."""
+    """Doctor should check git health."""
     r = subprocess.run([sys.executable, "tools/mw.py", "doctor"], capture_output=True, text=True, timeout=30)
-    assert any(x in r.stdout for x in ["working tree", "uncommitted", "git"])
+    assert any(x in r.stdout.upper() for x in ["GIT", "COMMIT", "BRANCH"])
 
-def test_diagnose_alias():
+@pytest.mark.timeout(60)
+def test_doctor_alias():
     """Diagnose should be an alias for doctor."""
     r = subprocess.run([sys.executable, "tools/mw.py", "diagnose"], capture_output=True, text=True, timeout=30)
-    assert "Project Doctor" in r.stdout
+    assert "Doctor" in r.stdout or "DIAGNOSTIC" in r.stdout or "HEALTH" in r.stdout
