@@ -431,7 +431,7 @@ Examples:
 
 def cmd_new(args: List[str]) -> int:
     """Create new project."""
-    if not args or (len(args) == 1 and args[0] in ["--help", "-h"]):
+    if len(args) == 1 and args[0] in ["--help", "-h"]:
         print("""
 New Project Commands — Project Scaffolding
 ==========================================
@@ -461,6 +461,15 @@ Examples:
     mw new website nextjs           # Create Next.js project
 """)
         return 0
+    
+    if not args:
+        print(f"{Colors.RED}❌ Error: Project name is required{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Usage: mw new <project-name> [template]{Colors.ENDC}")
+        print(f"{Colors.BLUE}Examples:{Colors.ENDC}")
+        print(f"   mw new my-app")
+        print(f"   mw new api-server fastapi")
+        print(f"   mw new website nextjs")
+        return 1
     
     if args[0] in ["--help", "-h"]:
         return 0  # Help already shown above
@@ -1561,26 +1570,52 @@ Examples:
     return 0
 
 
-def cmd_marketplace_info(args: Optional[List[str]] = None) -> None:
-    """Open marketplace information and links."""
-    if args and (args[0] in ["--help", "-h"]):
+def cmd_marketplace(args: Optional[List[str]] = None) -> None:
+    """Marketplace commands - publish, browse, install, and info."""
+    if not args or args[0] in ["--help", "-h"]:
         print("""
-Marketplace Commands — Buy & Sell Projects
-==========================================
+Marketplace Commands — Publish, Browse & Install Projects
+=========================================================
 Usage:
-    mw marketplace                  Show marketplace information and links
-    mw marketplace --help           Show this help message
+    mw marketplace <subcommand> [options]
 
-Description:
-    Provides detailed information about the MyWork-AI marketplace including
-    how to buy/sell projects, pricing, and direct links to all marketplace
-    services.
-
+Subcommands:
+    info                            Show marketplace information and links
+    publish                         Publish current project to marketplace
+    browse [--category <cat>]       Browse available marketplace products
+    install <product-id>            Download and install a marketplace product
+    status                          Check marketplace connectivity
+    
 Examples:
-    mw marketplace                  # Show marketplace overview
+    mw marketplace info             # Show marketplace overview and links
+    mw marketplace publish          # Publish current project (interactive)
+    mw marketplace browse           # Browse all available products
+    mw marketplace browse --category=tools  # Browse tools category
+    mw marketplace install c54f73f4 # Install a specific product
+    mw marketplace status           # Check marketplace API status
 """)
         return 0
     
+    subcommand = args[0].lower()
+    
+    if subcommand == "info":
+        return _cmd_marketplace_info(args[1:] if len(args) > 1 else [])
+    elif subcommand == "publish":
+        return _cmd_marketplace_publish(args[1:] if len(args) > 1 else [])
+    elif subcommand == "browse":
+        return _cmd_marketplace_browse(args[1:] if len(args) > 1 else [])
+    elif subcommand == "install":
+        return _cmd_marketplace_install(args[1:] if len(args) > 1 else [])
+    elif subcommand == "status":
+        return _cmd_marketplace_status(args[1:] if len(args) > 1 else [])
+    else:
+        print(f"{Colors.RED}Unknown subcommand: {subcommand}{Colors.ENDC}")
+        print(f"Run {color('mw marketplace --help', Colors.BOLD)} for available commands")
+        return 1
+
+
+def _cmd_marketplace_info(args: Optional[List[str]] = None) -> None:
+    """Show marketplace information and links."""
     print(f"""
 {Colors.BOLD}{Colors.GREEN}🛒 MyWork-AI Marketplace{Colors.ENDC}
 {Colors.GREEN}{'=' * 40}{Colors.ENDC}
@@ -1651,6 +1686,487 @@ Earn from 5 levels of referrals:
 {Colors.GREEN}💡 Pro tip: Use 'mw ecosystem' to see how marketplace connects with other services{Colors.ENDC}
 """)
     return 0
+
+
+def _cmd_marketplace_status(args: Optional[List[str]] = None) -> None:
+    """Check marketplace API connectivity."""
+    import requests
+    
+    backend_url = "https://mywork-ai-production.up.railway.app"
+    frontend_url = "https://frontend-hazel-ten-17.vercel.app"
+    
+    print(f"{Colors.BOLD}🔍 Marketplace Status Check{Colors.ENDC}")
+    print("=" * 40)
+    
+    # Test backend health
+    try:
+        response = requests.get(f"{backend_url}/health", timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            print(f"✅ Backend API: {Colors.GREEN}Healthy{Colors.ENDC}")
+            print(f"   Version: {data.get('version', 'unknown')}")
+            print(f"   Service: {data.get('service', 'unknown')}")
+        else:
+            print(f"❌ Backend API: {Colors.RED}Error {response.status_code}{Colors.ENDC}")
+    except Exception as e:
+        print(f"❌ Backend API: {Colors.RED}Connection failed ({e}){Colors.ENDC}")
+    
+    # Test backend products
+    try:
+        response = requests.get(f"{backend_url}/api/products", timeout=10)
+        if response.status_code == 200:
+            data = response.json()
+            product_count = data.get('total', 0)
+            print(f"✅ Products API: {Colors.GREEN}Working{Colors.ENDC} ({product_count} products)")
+        else:
+            print(f"❌ Products API: {Colors.RED}Error {response.status_code}{Colors.ENDC}")
+    except Exception as e:
+        print(f"❌ Products API: {Colors.RED}Failed ({e}){Colors.ENDC}")
+    
+    # Test frontend
+    try:
+        response = requests.get(frontend_url, timeout=10)
+        if response.status_code == 200:
+            print(f"✅ Frontend: {Colors.GREEN}Online{Colors.ENDC}")
+        else:
+            print(f"❌ Frontend: {Colors.RED}Error {response.status_code}{Colors.ENDC}")
+    except Exception as e:
+        print(f"❌ Frontend: {Colors.RED}Connection failed ({e}){Colors.ENDC}")
+    
+    print(f"\n{Colors.BLUE}🔗 URLs:{Colors.ENDC}")
+    print(f"   Backend:  {backend_url}")
+    print(f"   Frontend: {frontend_url}")
+
+
+def _cmd_marketplace_browse(args: Optional[List[str]] = None) -> None:
+    """Browse marketplace products."""
+    import requests
+    
+    backend_url = "https://mywork-ai-production.up.railway.app"
+    category_filter = None
+    
+    # Parse arguments
+    if args:
+        for arg in args:
+            if arg.startswith("--category="):
+                category_filter = arg.split("=", 1)[1]
+            elif arg == "--help" or arg == "-h":
+                print("""
+Browse Marketplace Products
+===========================
+Usage:
+    mw marketplace browse [options]
+
+Options:
+    --category=<category>    Filter by category (tools, templates, components, etc.)
+    --help, -h               Show this help
+
+Examples:
+    mw marketplace browse                    # Browse all products
+    mw marketplace browse --category=tools   # Browse tools only
+""")
+                return 0
+    
+    print(f"{Colors.BOLD}🛒 Marketplace Products{Colors.ENDC}")
+    print("=" * 40)
+    
+    try:
+        url = f"{backend_url}/api/products"
+        if category_filter:
+            url += f"?category={category_filter}"
+        
+        response = requests.get(url, timeout=15)
+        if response.status_code != 200:
+            print(f"{Colors.RED}❌ Failed to fetch products: HTTP {response.status_code}{Colors.ENDC}")
+            return 1
+        
+        data = response.json()
+        products = data.get('products', [])
+        total = data.get('total', 0)
+        
+        if not products:
+            if category_filter:
+                print(f"No products found in category '{category_filter}'")
+            else:
+                print("No products available")
+            return 0
+        
+        print(f"Found {total} product(s)" + (f" in category '{category_filter}'" if category_filter else ""))
+        print()
+        
+        for product in products:
+            product_id = product.get('id', 'unknown')[:8]
+            title = product.get('title', 'Untitled')
+            price = product.get('price', 0)
+            category = product.get('category', 'uncategorized')
+            description = product.get('short_description', product.get('description', ''))
+            rating = product.get('rating_average', 0)
+            sales = product.get('sales', 0)
+            
+            # Truncate description
+            if len(description) > 100:
+                description = description[:97] + "..."
+            
+            print(f"{Colors.BOLD}{Colors.BLUE}📦 {title}{Colors.ENDC}")
+            print(f"   ID: {color(product_id, Colors.YELLOW)}")
+            print(f"   Price: {color(f'${price}', Colors.GREEN)} | Category: {category}")
+            print(f"   Rating: {'⭐' * int(rating)} ({rating:.1f}) | Sales: {sales}")
+            print(f"   {description}")
+            
+            if product.get('demo_url'):
+                print(f"   🔗 Demo: {color(product['demo_url'], Colors.BLUE)}")
+            
+            print()
+        
+        print(f"{Colors.BLUE}💡 To install a product:{Colors.ENDC}")
+        print(f"   mw marketplace install <product-id>")
+        print(f"{Colors.BLUE}💡 To view in browser:{Colors.ENDC}")
+        print(f"   Visit: https://frontend-hazel-ten-17.vercel.app")
+        
+    except Exception as e:
+        print(f"{Colors.RED}❌ Error browsing marketplace: {e}{Colors.ENDC}")
+        return 1
+
+
+def _cmd_marketplace_install(args: Optional[List[str]] = None) -> None:
+    """Install a marketplace product."""
+    if not args or args[0] in ["--help", "-h"]:
+        print("""
+Install Marketplace Product
+===========================
+Usage:
+    mw marketplace install <product-id> [options]
+
+Arguments:
+    product-id               Product ID or slug to install
+
+Options:
+    --dir=<directory>        Install to specific directory (default: ./product-name)
+    --help, -h               Show this help
+
+Examples:
+    mw marketplace install c54f73f4         # Install product by ID
+    mw marketplace install sportsai-app    # Install by slug
+    mw marketplace install abc123 --dir=my-project  # Install to custom directory
+
+Note: Currently requires manual authentication via the web interface.
+For now, this will show you the download information and guide you through the process.
+""")
+        return 0
+    
+    import requests
+    
+    product_id = args[0]
+    backend_url = "https://mywork-ai-production.up.railway.app"
+    
+    print(f"{Colors.BOLD}📦 Installing Product: {product_id}{Colors.ENDC}")
+    print("=" * 40)
+    
+    try:
+        # First, find the product
+        response = requests.get(f"{backend_url}/api/products", timeout=10)
+        if response.status_code != 200:
+            print(f"{Colors.RED}❌ Failed to fetch products: HTTP {response.status_code}{Colors.ENDC}")
+            return 1
+        
+        data = response.json()
+        products = data.get('products', [])
+        
+        # Find matching product
+        product = None
+        for p in products:
+            if (p.get('id', '').startswith(product_id) or 
+                p.get('slug', '') == product_id or
+                product_id.lower() in p.get('title', '').lower()):
+                product = p
+                break
+        
+        if not product:
+            print(f"{Colors.RED}❌ Product not found: {product_id}{Colors.ENDC}")
+            print(f"{Colors.BLUE}💡 Try 'mw marketplace browse' to see available products{Colors.ENDC}")
+            return 1
+        
+        # Display product info
+        title = product.get('title', 'Unknown')
+        price = product.get('price', 0)
+        description = product.get('short_description', '')
+        
+        print(f"{Colors.BOLD}{Colors.GREEN}✅ Found: {title}{Colors.ENDC}")
+        print(f"Price: ${price}")
+        print(f"Description: {description}")
+        print()
+        
+        # For now, guide user to web interface
+        print(f"{Colors.YELLOW}🔄 Manual Installation Required{Colors.ENDC}")
+        print("Full automated installation is coming soon!")
+        print()
+        print(f"{Colors.BOLD}To install this product:{Colors.ENDC}")
+        print(f"1. Visit: {color('https://frontend-hazel-ten-17.vercel.app', Colors.BLUE)}")
+        print(f"2. Sign in with your account")
+        print(f"3. Search for: {color(title, Colors.BOLD)}")
+        print(f"4. Purchase and download the source code")
+        print()
+        
+        if product.get('demo_url'):
+            print(f"{Colors.BLUE}🔗 Live Demo: {product['demo_url']}{Colors.ENDC}")
+        
+        if product.get('documentation_url'):
+            print(f"{Colors.BLUE}📖 Documentation: {product['documentation_url']}{Colors.ENDC}")
+        
+        print(f"\n{Colors.GREEN}💡 Coming soon: Direct CLI installation with authentication!{Colors.ENDC}")
+        
+    except Exception as e:
+        print(f"{Colors.RED}❌ Error installing product: {e}{Colors.ENDC}")
+        return 1
+
+
+def _cmd_marketplace_publish(args: Optional[List[str]] = None) -> None:
+    """Publish current project to marketplace."""
+    import requests
+    import json
+    import os
+    import zipfile
+    import tempfile
+    from pathlib import Path
+    
+    if args and (args[0] in ["--help", "-h"]):
+        print("""
+Publish Project to Marketplace
+==============================
+Usage:
+    mw marketplace publish [options]
+
+Options:
+    --name=<name>            Project name (default: current directory name)
+    --price=<price>          Price in dollars (required)
+    --category=<category>    Category (tools, templates, components, etc.)
+    --description=<text>     Short description (or use --interactive)
+    --interactive            Interactive mode (recommended)
+    --help, -h               Show this help
+
+Examples:
+    mw marketplace publish --interactive     # Guided setup (recommended)
+    mw marketplace publish --name="My App" --price=99 --category=tools
+
+Note: You must be signed in to the marketplace web interface first.
+This command packages your project and guides you through the upload process.
+""")
+        return 0
+    
+    # Check if we're in a project directory
+    current_dir = Path.cwd()
+    if not any(file.exists() for file in [current_dir / "package.json", current_dir / "requirements.txt", 
+                                         current_dir / "Cargo.toml", current_dir / "go.mod"]):
+        print(f"{Colors.YELLOW}⚠️  Warning: No project files detected in current directory{Colors.ENDC}")
+        confirm = input("Continue anyway? (y/n): ").strip().lower()
+        if confirm != 'y':
+            return 0
+    
+    # Parse arguments
+    interactive = "--interactive" in args if args else True
+    project_name = current_dir.name
+    price = None
+    category = None
+    description = None
+    
+    if args:
+        for arg in args:
+            if arg.startswith("--name="):
+                project_name = arg.split("=", 1)[1]
+            elif arg.startswith("--price="):
+                try:
+                    price = float(arg.split("=", 1)[1])
+                except ValueError:
+                    print(f"{Colors.RED}❌ Invalid price format{Colors.ENDC}")
+                    return 1
+            elif arg.startswith("--category="):
+                category = arg.split("=", 1)[1]
+            elif arg.startswith("--description="):
+                description = arg.split("=", 1)[1]
+    
+    print(f"{Colors.BOLD}🚀 Publishing to MyWork Marketplace{Colors.ENDC}")
+    print("=" * 40)
+    
+    # Interactive mode
+    if interactive or not all([price, category, description]):
+        print(f"{Colors.BLUE}📝 Project Information{Colors.ENDC}")
+        
+        if not project_name:
+            project_name = input("Project name: ").strip() or current_dir.name
+        else:
+            print(f"Project name: {color(project_name, Colors.BOLD)}")
+        
+        if not price:
+            while not price:
+                try:
+                    price_input = input("Price (USD): $").strip()
+                    price = float(price_input)
+                    break
+                except ValueError:
+                    print(f"{Colors.RED}Please enter a valid number{Colors.ENDC}")
+        else:
+            print(f"Price: ${price}")
+        
+        if not category:
+            categories = ["tools", "templates", "components", "ai", "web", "mobile", "blockchain", "other"]
+            print("\nAvailable categories:")
+            for i, cat in enumerate(categories, 1):
+                print(f"  {i}. {cat}")
+            
+            while not category:
+                try:
+                    choice = input("Select category (number or name): ").strip()
+                    if choice.isdigit() and 1 <= int(choice) <= len(categories):
+                        category = categories[int(choice) - 1]
+                    elif choice.lower() in categories:
+                        category = choice.lower()
+                    else:
+                        print(f"{Colors.RED}Invalid choice{Colors.ENDC}")
+                except ValueError:
+                    print(f"{Colors.RED}Invalid choice{Colors.ENDC}")
+        else:
+            print(f"Category: {category}")
+        
+        if not description:
+            print("\nShort description (1-2 sentences):")
+            description = input("> ").strip()
+        else:
+            print(f"Description: {description}")
+    
+    # Create project package
+    print(f"\n{Colors.BLUE}📦 Creating project package...{Colors.ENDC}")
+    
+    try:
+        # Create temporary zip file
+        with tempfile.NamedTemporaryFile(suffix='.zip', delete=False) as tmp_file:
+            zip_path = tmp_file.name
+        
+        # Exclude common directories and files
+        exclude_patterns = {
+            'node_modules', '.git', '__pycache__', '.venv', 'venv', 'env',
+            'dist', 'build', '.next', '.nuxt', 'target', 'vendor',
+            '.DS_Store', '*.pyc', '*.log', '.env', '.env.local'
+        }
+        
+        with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
+            for root, dirs, files in os.walk(current_dir):
+                # Filter directories
+                dirs[:] = [d for d in dirs if d not in exclude_patterns]
+                
+                for file in files:
+                    if file not in exclude_patterns and not any(file.endswith(ext) for ext in ['.pyc', '.log']):
+                        file_path = Path(root) / file
+                        relative_path = file_path.relative_to(current_dir)
+                        zipf.write(file_path, relative_path)
+        
+        zip_size = os.path.getsize(zip_path) / 1024 / 1024  # MB
+        print(f"✅ Package created: {zip_size:.2f} MB")
+        
+        # Generate marketplace listing info
+        listing_info = {
+            "title": project_name,
+            "description": description,
+            "short_description": description[:100] + "..." if len(description) > 100 else description,
+            "category": category,
+            "price": int(price),
+            "license_type": "MIT",
+            "tech_stack": _detect_tech_stack(current_dir),
+            "requirements": _detect_requirements(current_dir),
+        }
+        
+        print(f"\n{Colors.BOLD}{Colors.GREEN}✅ Ready to publish!{Colors.ENDC}")
+        print(f"Package: {zip_path}")
+        print(f"Details: {json.dumps(listing_info, indent=2)}")
+        
+        print(f"\n{Colors.YELLOW}🔄 Manual Upload Required{Colors.ENDC}")
+        print("Full automated publishing is coming soon!")
+        print()
+        print(f"{Colors.BOLD}To complete the publication:{Colors.ENDC}")
+        print(f"1. Visit: {color('https://frontend-hazel-ten-17.vercel.app', Colors.BLUE)}")
+        print(f"2. Sign in to your account")
+        print(f"3. Click 'Publish Project' or 'List Product'")
+        print(f"4. Upload the package file: {color(zip_path, Colors.YELLOW)}")
+        print(f"5. Fill in the details (copy from above)")
+        print()
+        print(f"{Colors.GREEN}💡 Keep this package file until upload is complete!{Colors.ENDC}")
+        
+    except Exception as e:
+        print(f"{Colors.RED}❌ Error creating package: {e}{Colors.ENDC}")
+        return 1
+
+
+def _detect_tech_stack(project_dir: Path) -> list:
+    """Detect technology stack from project files."""
+    tech_stack = []
+    
+    if (project_dir / "package.json").exists():
+        tech_stack.extend(["Node.js", "JavaScript"])
+        try:
+            with open(project_dir / "package.json") as f:
+                package = json.load(f)
+                deps = {**package.get('dependencies', {}), **package.get('devDependencies', {})}
+                
+                if any(dep.startswith('react') for dep in deps):
+                    tech_stack.append("React")
+                if 'next' in deps:
+                    tech_stack.append("Next.js")
+                if 'vue' in deps:
+                    tech_stack.append("Vue.js")
+                if 'express' in deps:
+                    tech_stack.append("Express")
+        except:
+            pass
+    
+    if (project_dir / "requirements.txt").exists() or (project_dir / "pyproject.toml").exists():
+        tech_stack.extend(["Python"])
+        try:
+            req_file = project_dir / "requirements.txt"
+            if req_file.exists():
+                content = req_file.read_text()
+                if 'django' in content.lower():
+                    tech_stack.append("Django")
+                if 'flask' in content.lower():
+                    tech_stack.append("Flask")
+                if 'fastapi' in content.lower():
+                    tech_stack.append("FastAPI")
+        except:
+            pass
+    
+    if (project_dir / "Cargo.toml").exists():
+        tech_stack.append("Rust")
+    
+    if (project_dir / "go.mod").exists():
+        tech_stack.append("Go")
+    
+    return tech_stack
+
+
+def _detect_requirements(project_dir: Path) -> str:
+    """Detect system requirements."""
+    requirements = []
+    
+    if (project_dir / "package.json").exists():
+        try:
+            with open(project_dir / "package.json") as f:
+                package = json.load(f)
+                engines = package.get('engines', {})
+                if 'node' in engines:
+                    requirements.append(f"Node.js {engines['node']}")
+                else:
+                    requirements.append("Node.js 18+")
+        except:
+            requirements.append("Node.js 18+")
+    
+    if (project_dir / "requirements.txt").exists():
+        requirements.append("Python 3.8+")
+    
+    if (project_dir / "Cargo.toml").exists():
+        requirements.append("Rust 1.70+")
+    
+    if (project_dir / "go.mod").exists():
+        requirements.append("Go 1.19+")
+    
+    return ", ".join(requirements) if requirements else "See documentation"
 
 
 def cmd_links(args: Optional[List[str]] = None) -> None:
@@ -8975,7 +9491,7 @@ def cmd_completions(args: List[str] = None) -> int:
     # All top-level commands (excluding flags)
     top_cmds = [
         "ai", "analytics", "api", "audit", "af", "autoforge", "backup", "bench",
-        "brain", "cd", "cfg", "changelog", "check", "ci", "clean", "completions", "config",
+        "brain", "cd", "cfg", "changelog", "check", "ci", "clean", "completion", "completions", "config",
         "credits", "dashboard", "db", "deploy", "docs", "doctor", "ecosystem",
         "api", "env", "fix", "git", "guide", "help", "hook", "init", "insights", "links", "lint",
         "marketplace", "monitor", "n8n", "new", "open", "perf", "plugin",
@@ -9179,7 +9695,7 @@ def main() -> None:
         "guide": lambda: cmd_guide(args),
         "prompt-enhance": lambda: cmd_prompt_enhance(args),
         "ecosystem": lambda: cmd_ecosystem(args),
-        "marketplace": lambda: cmd_marketplace_info(args),
+        "marketplace": lambda: cmd_marketplace(args),
         "links": lambda: cmd_links(args),
         "remember": lambda: cmd_brain(["add"] + args),  # Shortcut
         "init": lambda: cmd_init(args),
@@ -9240,6 +9756,7 @@ def main() -> None:
         "health": lambda: cmd_health(args),
         "score": lambda: cmd_health(args),
         "completions": lambda: cmd_completions(args),
+        "completion": lambda: cmd_completions(args),  # Alias for completions
         "selftest": lambda: cmd_selftest(args),
         "self-test": lambda: cmd_selftest(args),
         "verify": lambda: cmd_selftest(args),
