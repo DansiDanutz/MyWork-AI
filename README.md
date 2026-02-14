@@ -77,6 +77,7 @@ MyWork-AI provides a complete development ecosystem:
 
 Experience MyWork-AI in action:
 
+- **[📖 Documentation](https://docssite-igkwv43c5-irises-projects-ce549f63.vercel.app)** - Complete CLI reference & guides
 - **[Marketplace](https://frontend-hazel-ten-17.vercel.app)** - Buy/sell complete projects
 - **[Task Tracker Demo](https://task-tracker-pi-one.vercel.app)** - AI-generated app example
 

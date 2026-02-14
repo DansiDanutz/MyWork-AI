@@ -1,0 +1,17 @@
+{
+  "project_name": "my-first-app",
+  "created_at": "2026-02-14 16:11:10.980195+00:00",
+  "mywork_version": "2.1.0",
+  "version": "1.0.0",
+  "type": "unknown",
+  "framework": null,
+  "package_manager": null,
+  "brain_enabled": true,
+  "autoforge_enabled": true,
+  "detected": {
+    "has_tests": false,
+    "has_ci": false,
+    "has_docker": false,
+    "has_git": false
+  }
+}
