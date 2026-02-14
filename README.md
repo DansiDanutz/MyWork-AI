@@ -6,13 +6,13 @@
 ![Python Version](https://img.shields.io/pypi/pyversions/mywork-ai?style=for-the-badge&logo=python&logoColor=white)
 ![Downloads](https://img.shields.io/pypi/dm/mywork-ai?style=for-the-badge&color=blue)
 ![License](https://img.shields.io/github/license/dansidanutz/MyWork-AI?style=for-the-badge)
-![Tests](https://img.shields.io/badge/tests-1032%20passing-brightgreen?style=for-the-badge)
+![Tests](https://img.shields.io/badge/tests-96%20passing-brightgreen?style=for-the-badge)
 
 **🤖 AI-Powered Development Framework**
 
 *The complete CLI toolkit for modern developers*
 
-[📖 Documentation](https://docssite-igkwv43c5-irises-projects-ce549f63.vercel.app) • [🚀 Quick Start](#-quick-start) • [🔧 Commands](#-command-reference) • [💡 Examples](#-examples)
+[🚀 Quick Start](#-quick-start) • [🔧 Commands](#-command-reference) • [💡 Examples](#-examples) • [🛒 Marketplace](https://frontend-hazel-ten-17.vercel.app)
 
 </div>
 
@@ -40,7 +40,7 @@ cd my-app
 mw doctor
 ```
 
-**That's it! You now have access to 53+ AI-powered development commands.**
+**That's it! You now have access to 78 AI-powered development commands.**
 
 ---
 
@@ -84,6 +84,12 @@ mw doctor
 - **Multi-platform Deploy**: `mw deploy` - Vercel, Railway, Docker
 - **Environment Management**: `mw env` - Audit and manage env vars
 - **Migration Tools**: `mw migrate` - Database migration manager
+
+### ⚡ **Workflow Automation (n8n)**
+- **One-command Setup**: `mw n8n setup` - Install n8n (Docker or npm)
+- **Workflow Management**: `mw n8n import/export/list` - Full lifecycle
+- **Validation**: `mw n8n test` - Validate workflows before deploy
+- **Marketplace Ready**: Build automations and sell them
 
 ### 📈 **Analytics & Insights**
 - **Performance Benchmarks**: `mw bench` - Code performance profiling
@@ -139,17 +145,31 @@ mw profile       # Command execution profiling
 ```
 
 <details>
-<summary><strong>📋 All 53 Commands</strong> (click to expand)</summary>
+<summary><strong>📋 All 78 Commands</strong> (click to expand)</summary>
 
 ```bash
 # Core
-mw init, mw doctor, mw health, mw check, mw deploy, mw test
+mw init, mw setup, mw doctor, mw health, mw check, mw deploy, mw test
 
 # AI & Code Generation  
 mw ai generate, mw ai refactor, mw ai review, mw ai optimize, mw context
 
+# Project Planning (GSD)
+mw gsd new, mw gsd status, mw gsd progress, mw gsd quick
+
+# Automation (n8n Integration)
+mw n8n setup, mw n8n status, mw n8n list, mw n8n import, mw n8n export
+mw n8n activate, mw n8n exec, mw n8n test, mw n8n config
+
+# AutoForge (Autonomous Coding)
+mw af start, mw af status, mw af queue
+
+# Marketplace
+mw marketplace browse, mw marketplace publish, mw marketplace install
+mw marketplace status, mw marketplace info
+
 # Project Analysis
-mw metrics, mw insights, mw depgraph, mw test-coverage, mw tree, mw todo
+mw metrics, mw insights, mw depgraph, mw test-coverage, mw tree, mw stats
 
 # Security & Quality
 mw scan security, mw secrets, mw deps audit, mw env audit, mw badge
@@ -160,11 +180,17 @@ mw ci status, mw ci generate, mw migrate, mw watch, mw profile
 # Git & Collaboration  
 mw git summary, mw git standup, mw git contributors, mw changelog
 
+# Knowledge & Learning
+mw brain search, mw brain add, mw brain stats
+
 # Documentation & Tools
 mw docs generate, mw docs site, mw tour, mw demo, mw upgrade
 
+# Workflows (WAT Framework)
+mw workflow run, mw workflow list
+
 # Advanced Features
-mw api, mw pair, mw bench, mw snapshot, mw plugin, mw selftest
+mw api, mw pair, mw bench, mw plugin, mw selftest, mw release
 ```
 
 </details>
@@ -253,7 +279,7 @@ mw selftest  # Runs 8 diagnostic checks
 - ⚡ **<2s average** command execution time
 - 🛡️ **Zero critical** vulnerabilities in generated code  
 - 📈 **95%+ test coverage** on all generated projects
-- 🏆 **1032 automated tests** ensure reliability
+- 🏆 **96 automated tests** ensure reliability
 - 🚀 **10x faster** development cycles vs traditional tools
 
 ---
@@ -283,7 +309,7 @@ mw scan security
 
 ### **vs Cursor IDE**
 - ✅ **CLI-first**: Works with any editor
-- ✅ **Complete toolkit**: 53+ commands vs editor integration
+- ✅ **Complete toolkit**: 78 commands vs editor integration
 - ✅ **Project analysis**: Health scoring, metrics, insights
 - ✅ **Free**: No subscription required
 
@@ -306,8 +332,9 @@ mw scan security
 - **[📖 Getting Started Guide](docs/quickstart.md)**
 - **[🔧 Complete CLI Reference](docs/cli-reference.md)**  
 - **[🤖 AI Features Guide](docs/ai-features.md)**
-- **[🚀 Deployment Guide](docs/deployment.md)**
-- **[❓ FAQ & Troubleshooting](FAQ.md)**
+- **[🚀 Deployment Guide](DEPLOYMENT_GUIDE.md)**
+- **[🔄 Changelog](CHANGELOG.md)**
+- **[🛒 Marketplace](https://frontend-hazel-ten-17.vercel.app)**
 
 ---
 
@@ -321,7 +348,6 @@ MyWork-AI is open source software licensed under the **[MIT License](LICENSE)**.
 
 - **🐛 Issues**: [GitHub Issues](https://github.com/dansidanutz/MyWork-AI/issues)
 - **💬 Discussions**: [GitHub Discussions](https://github.com/dansidanutz/MyWork-AI/discussions)  
-- **📧 Email**: dan@mywork.ai
 - **🔒 Security**: [Security Policy](SECURITY.md)
 
 ---
@@ -330,8 +356,8 @@ MyWork-AI is open source software licensed under the **[MIT License](LICENSE)**.
 
 **⭐ Star us on GitHub if MyWork-AI helps you build faster!**
 
-[⭐ **Star on GitHub**](https://github.com/dansidanutz/MyWork-AI) • [🐦 **Follow on Twitter**](https://twitter.com/mywork_ai) • [💼 **LinkedIn**](https://linkedin.com/company/mywork-ai)
+[⭐ **Star on GitHub**](https://github.com/DansiDanutz/MyWork-AI)
 
-*Built with ❤️ by the MyWork-AI team*
+*Built with ❤️ by DansiDanutz*
 
 </div>
