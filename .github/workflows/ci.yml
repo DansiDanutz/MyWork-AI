@@ -28,8 +28,9 @@ jobs:
 
       - name: Lint with ruff
         run: |
-          ruff check . --select=E9,F63,F7,F82 --output-format=text
-          ruff check . --exit-zero --line-length=127 --output-format=text --statistics
+          ruff check . --select=E9,F63,F7,F82 --output-format=concise
+          ruff check . --exit-zero --line-length=127 --output-format=concise --statistics
 
       - name: Test with pytest
-        run: pytest --cov --cov-report=xml -v || true
+        run: pytest --cov --cov-report=xml -v --timeout=30
+        timeout-minutes: 10

@@ -104,7 +104,6 @@ jobs:
           echo "Checking that sensitive files are not tracked..."
 
           SENSITIVE_PATTERNS=(
-            ".env"
             ".mcp.json"
             "brain_data.json"
             "module_registry.json"
@@ -119,5 +118,11 @@ jobs:
               exit 1
             fi
           done
+
+          # Check for .env files (exclude .env.example and .env.production)
+          if git ls-files | grep '\.env$' | grep -v '\.env\.example$' | grep -v '\.env\.production$' | grep -q .; then
+            echo "ERROR: .env file found in git!"
+            exit 1
+          fi
 
           echo "All sensitive patterns properly ignored."
