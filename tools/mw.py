@@ -253,9 +253,17 @@ def run_tool(tool_name: str, args: List[str] = None) -> int:
     Returns:
         Exit code from the tool (0 for success, non-zero for error)
     """
-    # Try to import and run as module first (pip install scenario)
     try:
         import importlib
+        import signal
+        
+        # Set up timeout for hanging tools
+        def timeout_handler(signum, frame):
+            raise TimeoutError(f"Tool {tool_name} timed out after 30 seconds")
+        
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(30)  # 30 second timeout
+        
         module_name = tool_name
         
         # Try importing from current package
@@ -269,10 +277,23 @@ def run_tool(tool_name: str, args: List[str] = None) -> int:
                 # Fall back to file-based execution for development
                 tool_path = TOOLS_DIR / f"{tool_name}.py"
                 if not tool_path.exists():
-                    print(f"{Colors.RED}Tool not found: {tool_name}{Colors.ENDC}")
+                    print(f"{Colors.RED}❌ Error: Tool '{tool_name}' not found{Colors.ENDC}")
+                    print(f"{Colors.YELLOW}💡 Try: mw help{Colors.ENDC}")
+                    signal.alarm(0)  # Cancel timeout
                     return 1
-                cmd = [sys.executable, str(tool_path)] + (args or [])
-                return subprocess.call(cmd)
+                try:
+                    cmd = [sys.executable, str(tool_path)] + (args or [])
+                    result = subprocess.run(cmd, timeout=30, capture_output=True, text=True)
+                    if result.returncode != 0 and result.stderr:
+                        print(f"{Colors.RED}❌ Error: {result.stderr.strip()}{Colors.ENDC}")
+                        print(f"{Colors.YELLOW}💡 Try: mw {tool_name} --help{Colors.ENDC}")
+                    signal.alarm(0)  # Cancel timeout
+                    return result.returncode
+                except subprocess.TimeoutExpired:
+                    print(f"{Colors.RED}❌ Error: Tool '{tool_name}' timed out{Colors.ENDC}")
+                    print(f"{Colors.YELLOW}💡 Try: mw status for a quick health check{Colors.ENDC}")
+                    signal.alarm(0)  # Cancel timeout
+                    return 1
         
         # Execute the module's main function
         if hasattr(module, 'main'):
@@ -282,17 +303,36 @@ def run_tool(tool_name: str, args: List[str] = None) -> int:
                 # Set sys.argv to mimic command line execution
                 sys.argv = [f"{tool_name}.py"] + (args or [])
                 result = module.main()
+                signal.alarm(0)  # Cancel timeout
                 return result if result is not None else 0
             except SystemExit as e:
+                signal.alarm(0)  # Cancel timeout
                 return e.code if e.code is not None else 0
+            except TimeoutError as e:
+                print(f"{Colors.RED}❌ Error: {e}{Colors.ENDC}")
+                print(f"{Colors.YELLOW}💡 Try: mw status for a quick health check{Colors.ENDC}")
+                return 1
             finally:
                 # Restore original sys.argv
                 sys.argv = original_argv
         else:
-            print(f"{Colors.RED}Tool {tool_name} does not have a main() function{Colors.ENDC}")
+            print(f"{Colors.RED}❌ Error: Tool {tool_name} does not have a main() function{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Try: mw help{Colors.ENDC}")
+            signal.alarm(0)  # Cancel timeout
             return 1
+            
+    except TimeoutError as e:
+        print(f"{Colors.RED}❌ Error: {e}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Try: mw status for a quick health check{Colors.ENDC}")
+        return 1
+    except KeyboardInterrupt:
+        print(f"\n{Colors.YELLOW}⚠️ Interrupted by user{Colors.ENDC}")
+        signal.alarm(0)  # Cancel timeout
+        return 1
     except Exception as e:
-        print(f"{Colors.RED}Error running tool {tool_name}: {e}{Colors.ENDC}")
+        print(f"{Colors.RED}❌ Error running tool {tool_name}: {e}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Try: mw {tool_name} --help{Colors.ENDC}")
+        signal.alarm(0)  # Cancel timeout
         return 1
 
 
@@ -447,17 +487,35 @@ def cmd_scan() -> int:
 
 def cmd_fix() -> int:
     """Auto-fix issues."""
-    return run_tool("health_check", ["fix"])
+    try:
+        print(f"{Colors.BLUE}🔧 Running auto-fix...{Colors.ENDC}")
+        return run_tool("health_check", ["fix"])
+    except Exception as e:
+        print(f"{Colors.RED}❌ Error: Failed to run auto-fix{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Try: mw status{Colors.ENDC}")
+        return 1
 
 
 def cmd_report() -> int:
     """Generate health report."""
-    return run_tool("health_check", ["report"])
+    try:
+        print(f"{Colors.BLUE}📊 Generating health report...{Colors.ENDC}")
+        return run_tool("health_check", ["report"])
+    except Exception as e:
+        print(f"{Colors.RED}❌ Error: Failed to generate report{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Try: mw status{Colors.ENDC}")
+        return 1
 
 
 def cmd_doctor() -> int:
     """Full system diagnostics."""
-    return run_tool("health_check")
+    try:
+        print(f"{Colors.BLUE}🩺 Running full system diagnostics...{Colors.ENDC}")
+        return run_tool("health_check")
+    except Exception as e:
+        print(f"{Colors.RED}❌ Error: Failed to run diagnostics{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Try: mw status{Colors.ENDC}")
+        return 1
 
 
 def cmd_dashboard(args: Optional[List[str]] = None) -> None:
@@ -3597,6 +3655,15 @@ def cmd_config(args: List[str] = None) -> int:
             print("❌ Usage: mw config set <key> <value>")
             return 1
         key, value = args[1], " ".join(args[2:])
+        
+        # Validate key exists in DEFAULTS
+        if key not in DEFAULTS:
+            print(f"{Colors.RED}❌ Error: Unknown configuration key '{key}'{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Valid keys are:{Colors.ENDC}")
+            for valid_key in sorted(DEFAULTS.keys()):
+                print(f"   {valid_key}")
+            return 1
+        
         # Type coercion
         if value.lower() in ("true", "yes", "1"):
             value = True
@@ -5129,6 +5196,35 @@ def cmd_deploy(args: List[str] = None) -> int:
         mw deploy --list                   # List recent deployments
     """
     args = args or []
+    print(f"DEBUG: deploy function called with args: {args}")
+    
+    # Check for help flag first
+    if "--help" in args or "-h" in args:
+        print(f"\n{Colors.BOLD}🚀 MyWork Deploy{Colors.ENDC}")
+        print(f"{'─' * 50}")
+        print("Deploy projects to cloud platforms with zero config.")
+        print()
+        print(f"{Colors.BOLD}Usage:{Colors.ENDC}")
+        print("  mw deploy                          Deploy current directory")
+        print("  mw deploy <project>                Deploy named project") 
+        print("  mw deploy --platform <name>        Specify platform")
+        print("  mw deploy --prod                   Production deploy")
+        print("  mw deploy --preview                Preview deploy")
+        print("  mw deploy --status                 Check deployment status")
+        print("  mw deploy --list                   List recent deployments")
+        print("  mw deploy --dry-run                Preview what would be deployed")
+        print()
+        print(f"{Colors.BOLD}Platforms:{Colors.ENDC}")
+        print("  vercel      Vercel (Node.js, static sites)")
+        print("  railway     Railway (Python, Node.js)")
+        print("  render      Render (web services)")
+        print("  docker      Docker containerized deploy")
+        print()
+        print(f"{Colors.BOLD}Examples:{Colors.ENDC}")
+        print("  mw deploy --platform vercel --prod")
+        print("  mw deploy my-api --platform railway")
+        print("  mw deploy frontend --dry-run")
+        return 0
     
     # Parse flags
     platform = None
@@ -5138,6 +5234,7 @@ def cmd_deploy(args: List[str] = None) -> int:
     list_deploys = False
     project_name = None
     token = None
+    dry_run = False
     
     i = 0
     while i < len(args):
@@ -5156,6 +5253,9 @@ def cmd_deploy(args: List[str] = None) -> int:
         elif args[i] == "--list":
             list_deploys = True
             i += 1
+        elif args[i] == "--dry-run":
+            dry_run = True
+            i += 1
         elif args[i] == "--token" and i + 1 < len(args):
             token = args[i + 1]
             i += 2
@@ -5164,6 +5264,27 @@ def cmd_deploy(args: List[str] = None) -> int:
             i += 1
         else:
             i += 1
+    
+    # Handle status and list commands early
+    if show_status:
+        print(f"{Colors.BLUE}📊 Deployment Status{Colors.ENDC}")
+        print(f"{'─' * 50}")
+        print(f"{Colors.YELLOW}⚠️  Status checking not yet implemented{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Use platform-specific tools:{Colors.ENDC}")
+        print(f"   • vercel --prod ls")
+        print(f"   • railway status")
+        print(f"   • docker ps")
+        return 0
+        
+    if list_deploys:
+        print(f"{Colors.BLUE}📋 Recent Deployments{Colors.ENDC}")
+        print(f"{'─' * 50}")
+        print(f"{Colors.YELLOW}⚠️  Deployment history not yet implemented{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Use platform dashboards:{Colors.ENDC}")
+        print(f"   • https://vercel.com/dashboard")
+        print(f"   • https://railway.app/")
+        print(f"   • https://render.com/")
+        return 0
     
     # Detect project directory
     project_dir = os.getcwd()
@@ -5205,13 +5326,35 @@ def cmd_deploy(args: List[str] = None) -> int:
         elif os.path.exists(os.path.join(project_dir, "requirements.txt")) or os.path.exists(os.path.join(project_dir, "pyproject.toml")):
             platform = "railway"  # Default for Python
         else:
-            print(f"{Colors.RED}❌ Could not auto-detect platform. Use --platform <vercel|railway|render|docker>{Colors.ENDC}")
+            print(f"{Colors.RED}❌ Could not auto-detect platform{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Specify platform explicitly:{Colors.ENDC}")
+            print(f"   mw deploy --platform vercel     # For Node.js/React/Next.js")
+            print(f"   mw deploy --platform railway    # For Python/FastAPI") 
+            print(f"   mw deploy --platform render     # Web services")
+            print(f"   mw deploy --platform docker     # Containerized apps")
+            print(f"\n{Colors.YELLOW}💡 Or add config files:{Colors.ENDC}")
+            print(f"   • vercel.json (Vercel)")
+            print(f"   • railway.toml (Railway)")
+            print(f"   • render.yaml (Render)")
+            print(f"   • Dockerfile (Docker)")
             return 1
     
     print(f"  📁 Project: {Colors.GREEN}{os.path.basename(project_dir)}{Colors.ENDC}")
     print(f"  📍 Path: {project_dir}")
     print(f"  🎯 Platform: {Colors.BLUE}{platform}{Colors.ENDC}")
     print(f"  🏷️  Mode: {'Production' if prod else 'Preview'}")
+    
+    # Handle dry-run mode
+    if dry_run:
+        print(f"  {Colors.YELLOW}🔍 Mode: DRY RUN (preview only){Colors.ENDC}")
+        print()
+        print(f"{Colors.YELLOW}📋 Would deploy with these settings:{Colors.ENDC}")
+        print(f"   Platform: {platform}")
+        print(f"   Environment: {'Production' if prod else 'Preview'}")
+        print(f"   Directory: {project_dir}")
+        print(f"\n{Colors.GREEN}✅ Dry run complete. Use without --dry-run to deploy.{Colors.ENDC}")
+        return 0
+        
     print()
     
     # Pre-deploy checks
@@ -7110,9 +7253,34 @@ def cmd_selftest(args: List[str] = None) -> int:
         mw selftest          # Run all checks (~5 seconds)
         mw selftest --quick  # Core checks only (~2 seconds)
         mw selftest --json   # Output as JSON (for CI)
+        mw selftest --help   # Show this help message
     """
     import time
     args = args or []
+    
+    # Handle help request
+    if "--help" in args or "-h" in args:
+        print("""
+Selftest Commands — Framework Self-Diagnostics
+==============================================
+Usage:
+    mw selftest                     Run all framework checks (~5 seconds)
+    mw selftest --quick            Core checks only (~2 seconds)
+    mw selftest --json             Output as JSON (for CI)
+    mw selftest --help             Show this help message
+
+Description:
+    Performs comprehensive smoke tests to verify framework installation
+    and core functionality. Checks imports, configuration, tools, and
+    basic system health.
+
+Examples:
+    mw selftest                     # Full diagnostic
+    mw selftest --quick             # Quick check
+    mw selftest --json              # JSON output for scripts
+""")
+        return 0
+    
     quick = "--quick" in args
     as_json = "--json" in args
 
@@ -7559,7 +7727,7 @@ _mw""")
 
 
 def main() -> None:
-    """Main entry point."""
+    """Main entry point with global exception handling."""
     if len(sys.argv) < 2:
         print_help()
         sys.exit(0)
@@ -7692,66 +7860,88 @@ def main() -> None:
         "--help": lambda: print_help() or 0,
     }
 
-    if command in commands:
-        sys.exit(commands[command]() or 0)
-    else:
-        # Try to find similar commands (fuzzy matching)
-        def levenshtein_distance(s1, s2):
-            """Calculate edit distance between two strings."""
-            if len(s1) < len(s2):
-                return levenshtein_distance(s2, s1)
-            if len(s2) == 0:
-                return len(s1)
-            previous_row = list(range(len(s2) + 1))
-            for i, c1 in enumerate(s1):
-                current_row = [i + 1]
-                for j, c2 in enumerate(s2):
-                    insertions = previous_row[j + 1] + 1
-                    deletions = current_row[j] + 1
-                    substitutions = previous_row[j] + (c1 != c2)
-                    current_row.append(min(insertions, deletions, substitutions))
-                previous_row = current_row
-            return previous_row[-1]
-        
-        # Find similar commands
-        similar_commands = []
-        for cmd in commands.keys():
-            if cmd.startswith('-'):  # Skip help flags
-                continue
-            distance = levenshtein_distance(command, cmd)
-            if distance <= 2:  # Allow up to 2 character differences
-                similar_commands.append((cmd, distance))
-        
-        # Sort by similarity and take top 3
-        similar_commands.sort(key=lambda x: x[1])
-        suggestions = [cmd for cmd, _ in similar_commands[:3]]
-        
-        # Try running as plugin before showing error
-        try:
-            from tools.plugin_manager import run_plugin
-            if run_plugin(command, args):
-                sys.exit(0)
-        except Exception:
-            pass
-        
-        print(f"{Colors.RED}❌ Unknown command: {command}{Colors.ENDC}")
-        
-        if suggestions:
-            print(f"{Colors.YELLOW}💡 Did you mean:{Colors.ENDC}")
-            for suggestion in suggestions:
-                print(f"   {Colors.GREEN}mw {suggestion}{Colors.ENDC}")
+    try:
+        if command in commands:
+            sys.exit(commands[command]() or 0)
         else:
-            # If no similar commands, suggest most common ones
-            common_commands = ["new", "status", "dashboard", "projects", "brain", "af", "setup"]
-            print(f"{Colors.YELLOW}💡 Popular commands to try:{Colors.ENDC}")
-            for cmd in common_commands[:3]:
-                print(f"   {Colors.GREEN}mw {cmd}{Colors.ENDC}")
-        
-        print(f"\n{Colors.BLUE}📚 For help:{Colors.ENDC}")
-        print(f"   {color('mw help', Colors.BOLD)}           # All available commands")
-        print(f"   {color('mw setup', Colors.BOLD)}          # First-time setup")
-        print(f"   {color('mw guide', Colors.BOLD)}          # Interactive tutorial")
-        print(f"   {color('mw ecosystem', Colors.BOLD)}      # View ecosystem")
+            # Try to find similar commands (fuzzy matching)
+            def levenshtein_distance(s1, s2):
+                """Calculate edit distance between two strings."""
+                if len(s1) < len(s2):
+                    return levenshtein_distance(s2, s1)
+                if len(s2) == 0:
+                    return len(s1)
+                previous_row = list(range(len(s2) + 1))
+                for i, c1 in enumerate(s1):
+                    current_row = [i + 1]
+                    for j, c2 in enumerate(s2):
+                        insertions = previous_row[j + 1] + 1
+                        deletions = current_row[j] + 1
+                        substitutions = previous_row[j] + (c1 != c2)
+                        current_row.append(min(insertions, deletions, substitutions))
+                    previous_row = current_row
+                return previous_row[-1]
+            
+            # Find similar commands
+            similar_commands = []
+            for cmd in commands.keys():
+                if cmd.startswith('-'):  # Skip help flags
+                    continue
+                distance = levenshtein_distance(command, cmd)
+                if distance <= 2:  # Allow up to 2 character differences
+                    similar_commands.append((cmd, distance))
+            
+            # Sort by similarity and take top 3
+            similar_commands.sort(key=lambda x: x[1])
+            suggestions = [cmd for cmd, _ in similar_commands[:3]]
+            
+            # Try running as plugin before showing error
+            try:
+                from tools.plugin_manager import run_plugin
+                if run_plugin(command, args):
+                    sys.exit(0)
+            except Exception:
+                pass
+            
+            print(f"{Colors.RED}❌ Unknown command: {command}{Colors.ENDC}")
+            
+            if suggestions:
+                print(f"{Colors.YELLOW}💡 Did you mean:{Colors.ENDC}")
+                for suggestion in suggestions:
+                    print(f"   {Colors.GREEN}mw {suggestion}{Colors.ENDC}")
+            else:
+                # If no similar commands, suggest most common ones
+                common_commands = ["new", "status", "dashboard", "projects", "brain", "af", "setup"]
+                print(f"{Colors.YELLOW}💡 Popular commands to try:{Colors.ENDC}")
+                for cmd in common_commands[:3]:
+                    print(f"   {Colors.GREEN}mw {cmd}{Colors.ENDC}")
+            
+            print(f"\n{Colors.BLUE}📚 For help:{Colors.ENDC}")
+            print(f"   {color('mw help', Colors.BOLD)}           # All available commands")
+            print(f"   {color('mw setup', Colors.BOLD)}          # First-time setup")
+            print(f"   {color('mw guide', Colors.BOLD)}          # Interactive tutorial")
+            print(f"   {color('mw ecosystem', Colors.BOLD)}      # View ecosystem")
+            sys.exit(1)
+    
+    except KeyboardInterrupt:
+        print(f"\n{Colors.YELLOW}🛑 Operation interrupted by user{Colors.ENDC}")
+        sys.exit(0)
+    except PermissionError as e:
+        print(f"{Colors.RED}❌ Permission denied: {e}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Try running with different permissions or in a different directory{Colors.ENDC}")
+        sys.exit(1)
+    except FileNotFoundError as e:
+        print(f"{Colors.RED}❌ File not found: {e}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Check that the file exists and the path is correct{Colors.ENDC}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"{Colors.RED}❌ Unexpected error: {e}{Colors.ENDC}")
+        if "--debug" in sys.argv:
+            import traceback
+            print(f"{Colors.BLUE}🐛 Debug traceback:{Colors.ENDC}")
+            traceback.print_exc()
+        else:
+            print(f"{Colors.YELLOW}💡 Run with --debug for full traceback{Colors.ENDC}")
         sys.exit(1)
 
 
