@@ -35,6 +35,11 @@ def scan_secrets(project_path: str, verbose: bool = False) -> list:
     """Scan project for hardcoded secrets."""
     findings = []
     project = Path(project_path)
+    MAX_FILE_SIZE = 512_000  # Skip files > 512KB (likely generated/minified)
+    MAX_LINE_LEN = 2000      # Skip very long lines (avoid regex backtracking)
+    
+    # Pre-compile patterns for speed
+    compiled_patterns = [(re.compile(p, re.IGNORECASE), t) for p, t in SECRET_PATTERNS]
     
     for root, dirs, files in os.walk(project):
         dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
@@ -47,18 +52,22 @@ def scan_secrets(project_path: str, verbose: bool = False) -> list:
                 continue
             
             try:
+                if fpath.stat().st_size > MAX_FILE_SIZE:
+                    continue
                 content = fpath.read_text(errors='ignore')
             except (PermissionError, OSError):
                 continue
             
             for line_num, line in enumerate(content.splitlines(), 1):
-                # Skip comments and noqa lines
+                # Skip comments, noqa lines, and overly long lines
+                if len(line) > MAX_LINE_LEN:
+                    continue
                 stripped = line.strip()
                 if stripped.startswith('#') or stripped.startswith('//') or '# noqa: security' in line:
                     continue
                 
-                for pattern, secret_type in SECRET_PATTERNS:
-                    matches = re.finditer(pattern, line, re.IGNORECASE)
+                for regex, secret_type in compiled_patterns:
+                    matches = regex.finditer(line)
                     for match in matches:
                         rel_path = str(fpath.relative_to(project))
                         secret_value = match.group(0)
