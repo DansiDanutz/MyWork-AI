@@ -9323,6 +9323,12 @@ def _cmd_tree(args: List[str] = None) -> int:
     return cmd_tree(args or [])
 
 
+def _cmd_deps_audit(args: List[str] = None) -> int:
+    """Dependency security audit — scan for vulnerabilities and outdated packages."""
+    from tools.deps_audit import cmd_deps_audit
+    return cmd_deps_audit(args or [])
+
+
 def _cmd_depgraph(args: List[str] = None) -> int:
     """Run dependency graph analyzer."""
     return run_tool("depgraph", args or [])
@@ -9942,6 +9948,9 @@ def main() -> None:
         "time": lambda: cmd_time(args),
         "timer": lambda: cmd_time(args),
         "track": lambda: cmd_time(args),
+        "deps": lambda: _cmd_deps_audit(args),
+        "deps-audit": lambda: _cmd_deps_audit(args),
+        "audit": lambda: _cmd_deps_audit(args),
         "depgraph": lambda: _cmd_depgraph(args),
         "dep-graph": lambda: _cmd_depgraph(args),
         "env": lambda: _cmd_env(args),
