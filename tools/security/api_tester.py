@@ -441,7 +441,7 @@ def main():
     print(f"Found {len(findings)} security issues")
     
     # Save results
-    repo_path = "/home/Memo1981/MyWork-AI"
+    repo_path = Path(__file__).parent.parent.parent
     output_dir = Path(repo_path) / "tools" / "security"
     output_dir.mkdir(parents=True, exist_ok=True)
     

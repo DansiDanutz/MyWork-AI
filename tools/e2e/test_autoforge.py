@@ -15,7 +15,11 @@ from pathlib import Path
 from typing import Dict, List, Any, Optional
 
 class AutoForgeIntegrationTester:
-    def __init__(self, project_root: str = "/home/Memo1981/MyWork-AI"):
+    def __init__(self, project_root: str = None):
+        if project_root is None:
+            # Try to find project root dynamically
+            script_dir = Path(__file__).parent.parent.parent
+            project_root = str(script_dir)
         self.project_root = Path(project_root)
         self.autoforge_api = self.project_root / "tools" / "autoforge_api.py"
         self.autocoder_api = self.project_root / "tools" / "autocoder_api.py"  # Backwards compatibility
@@ -347,7 +351,7 @@ def main():
     report = tester.run_all_tests()
     
     # Save report to file
-    report_file = Path("/home/Memo1981/MyWork-AI/tools/e2e/autoforge_test_results.json")
+    report_file = Path(__file__).parent / "autoforge_test_results.json"
     with open(report_file, "w") as f:
         json.dump(report, f, indent=2)
     

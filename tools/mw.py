@@ -253,13 +253,47 @@ def run_tool(tool_name: str, args: List[str] = None) -> int:
     Returns:
         Exit code from the tool (0 for success, non-zero for error)
     """
-    tool_path = TOOLS_DIR / f"{tool_name}.py"
-    if not tool_path.exists():
-        print(f"{Colors.RED}Tool not found: {tool_name}{Colors.ENDC}")
+    # Try to import and run as module first (pip install scenario)
+    try:
+        import importlib
+        module_name = tool_name
+        
+        # Try importing from current package
+        try:
+            module = importlib.import_module(module_name)
+        except ImportError:
+            # Try importing with tools prefix
+            try:
+                module = importlib.import_module(f"tools.{module_name}")
+            except ImportError:
+                # Fall back to file-based execution for development
+                tool_path = TOOLS_DIR / f"{tool_name}.py"
+                if not tool_path.exists():
+                    print(f"{Colors.RED}Tool not found: {tool_name}{Colors.ENDC}")
+                    return 1
+                cmd = [sys.executable, str(tool_path)] + (args or [])
+                return subprocess.call(cmd)
+        
+        # Execute the module's main function
+        if hasattr(module, 'main'):
+            # Store original sys.argv to restore later
+            original_argv = sys.argv[:]
+            try:
+                # Set sys.argv to mimic command line execution
+                sys.argv = [f"{tool_name}.py"] + (args or [])
+                result = module.main()
+                return result if result is not None else 0
+            except SystemExit as e:
+                return e.code if e.code is not None else 0
+            finally:
+                # Restore original sys.argv
+                sys.argv = original_argv
+        else:
+            print(f"{Colors.RED}Tool {tool_name} does not have a main() function{Colors.ENDC}")
+            return 1
+    except Exception as e:
+        print(f"{Colors.RED}Error running tool {tool_name}: {e}{Colors.ENDC}")
         return 1
-
-    cmd = [sys.executable, str(tool_path)] + (args or [])
-    return subprocess.call(cmd)
 
 
 def cmd_status(args: Optional[List[str]] = None) -> int:
@@ -5147,7 +5181,7 @@ def cmd_deploy(args: List[str] = None) -> int:
             except Exception:
                 pass
         # Also check common locations
-        for base in [os.path.expanduser("~"), "/home/Memo1981"]:
+        for base in [os.path.expanduser("~")]:
             candidate = os.path.join(base, project_name)
             if os.path.isdir(candidate):
                 project_dir = candidate
@@ -5712,7 +5746,7 @@ def cmd_monitor(args: List[str] = None) -> int:
                    glob.glob(os.path.expanduser("~/*/.mw-deploys.json"))
     
     # Also check common project locations
-    for base in [os.path.expanduser("~"), "/home/Memo1981"]:
+    for base in [os.path.expanduser("~")]:
         for item in os.listdir(base):
             deploy_file = os.path.join(base, item, ".mw-deploys.json")
             if os.path.exists(deploy_file) and deploy_file not in deploy_files:

@@ -105,7 +105,7 @@ class InfrastructureScanner:
             '/etc/shadow',
             '/etc/ssh/sshd_config',
             '/home/*/.ssh',
-            '/root/.ssh',
+            os.path.expanduser('~/.ssh'),
             self.repo_path / '.env',
             self.repo_path / '.env.local',
         ]
