@@ -34,6 +34,11 @@ Date: 2026-02-10
 - **Simulation engine**: 5/5 scenarios pass
 - **Security audit**: 0 critical, 5 low-risk remaining
 
+### Recent Changes (2026-02-14)
+- Added `mw tree` — smart project tree visualizer with git status indicators, file icons, .gitignore awareness
+- Supports --depth, --all, --dirs, --filter, --size, --json flags
+- 15 new tests → all passing
+
 ### Recent Changes (2026-02-13)
 - Added `mw context` / `mw ctx` — smart context builder for AI coding assistants (20 tests)
 - Added `mw todo` — codebase TODO/FIXME/HACK/XXX scanner with --tag filter, --json, --stats
