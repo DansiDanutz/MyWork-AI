@@ -7125,6 +7125,11 @@ def cmd_selftest(args: List[str] = None) -> int:
     return 0 if critical_failed == 0 else 1
 
 
+def _cmd_env(args: List[str] = None) -> int:
+    """Environment variable manager — audit, compare, template, secrets scan."""
+    return run_tool("env_manager", args or [])
+
+
 def _cmd_depgraph(args: List[str] = None) -> int:
     """Run dependency graph analyzer."""
     return run_tool("depgraph", args or [])
@@ -7557,6 +7562,7 @@ def main() -> None:
         "stats": lambda: _cmd_metrics(args),
         "depgraph": lambda: _cmd_depgraph(args),
         "dep-graph": lambda: _cmd_depgraph(args),
+        "env": lambda: _cmd_env(args),
         "upgrade": lambda: cmd_upgrade(args),
         "update-cli": lambda: cmd_upgrade(args),
         "version": lambda: cmd_version(),
