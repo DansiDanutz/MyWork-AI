@@ -6,6 +6,37 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 
 
+
+## [2.3.2] - 2026-02-14
+
+### ✨ Features
+- feat: add mw deps audit — dependency security scanner (Memo)
+- feat: add GSD command + register af/autoforge/gsd/plan in dispatcher (Memo)
+- feat: add 'mw time' developer time tracking command (Memo)
+- feat: add mw doctor command — diagnose common project issues (4 tests) (Memo)
+
+### 🐛 Bug Fixes
+- Fix: Add mw completion alias for shell autocompletion (Memo)
+- Fix: Add mw completion alias for shell completions (Memo)
+- fix: cmd_doctor + cmd_deploy + error handling improvements (Memo)
+- fix: resolve security scanner hanging due to regex backtracking (Memo)
+- fix: resolve 3 critical UX issues in MyWork-AI (Memo)
+- fix: update doctor tests to match new output format and increase test timeout (Memo)
+- fix: security — remove tests_backup from git, add noqa:security to scanner patterns (Memo)
+
+### 📚 Documentation
+- Docs: Add first-time UX sprint test reports (Memo)
+
+### 📦 Other
+- release: v2.3.1 — GSD, enhanced setup/tour, marketplace, templates (Memo)
+- Enhanced setup and tour integration (Memo)
+- 🚀 RELEASE v2.3.0: Professional README + Enhanced PyPI Metadata (Memo)
+- Add comprehensive user journey test report (Memo)
+- Enhanced CI/CD: Add PyPI publishing workflow and setup documentation (Memo)
+- Deploy documentation site to Vercel and update README (Memo)
+- Clean up README: Remove dead URLs (Analytics Dashboard, Website) (Memo)
+- Enhance mw doctor with comprehensive diagnostics (Memo)
+
 ## [2.3.0] - 2026-02-14
 
 ### ✨ Features
