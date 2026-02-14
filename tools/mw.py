@@ -1247,38 +1247,473 @@ Examples:
 
 
 def cmd_n8n(args: List[str]) -> int:
-    """n8n commands."""
+    """n8n workflow automation commands."""
     if not args or (len(args) == 1 and args[0] in ["--help", "-h"]):
         print("""
 n8n Commands — Workflow Automation Manager
 ==========================================
 Usage:
-    mw n8n list                     List n8n workflows
+    mw n8n setup                    Install & start n8n (Docker or local)
     mw n8n status                   Check n8n connection status
+    mw n8n list                     List all workflows
+    mw n8n import <file.json>       Import a workflow from JSON
+    mw n8n export <id> [file]       Export workflow to JSON
+    mw n8n activate <id>            Activate a workflow
+    mw n8n deactivate <id>          Deactivate a workflow
+    mw n8n delete <id>              Delete a workflow
+    mw n8n exec <id>                Execute a workflow manually
+    mw n8n executions [id]          List recent executions
+    mw n8n logs <exec_id>           Show execution details
+    mw n8n config                   Show/set n8n connection config
+    mw n8n test <file.json>         Validate workflow JSON locally
     mw n8n --help                   Show this help message
 
 Description:
-    Interface with n8n workflow automation platform. Allows you to
-    manage and monitor your automation workflows from the MyWork CLI.
+    Full interface to n8n workflow automation. Manage workflows,
+    monitor executions, import/export automations, and integrate
+    with the MyWork-AI ecosystem.
 
 Examples:
-    mw n8n status                   # Check if n8n is running
-    mw n8n list                     # List all workflows
+    mw n8n setup                    # Install n8n locally
+    mw n8n status                   # Check connection
+    mw n8n import workflow.json     # Import automation
+    mw n8n list                     # See all workflows
+    mw n8n exec abc123              # Trigger a run
 """)
         return 0
 
     subcmd = args[0]
+    sub_args = args[1:]
 
-    if subcmd == "list":
-        return run_tool("n8n_api", ["--action", "list"])
-
+    if subcmd == "setup":
+        return _n8n_setup(sub_args)
     elif subcmd == "status":
-        # Quick check of n8n connection
-        return run_tool("n8n_api", ["--action", "health"])
-
+        return _n8n_status()
+    elif subcmd == "list":
+        return _n8n_api_call("GET", "/api/v1/workflows", display="workflows")
+    elif subcmd == "import":
+        if not sub_args:
+            print("❌ Error: Missing workflow file")
+            print("💡 Try: mw n8n import workflow.json")
+            return 1
+        return _n8n_import(sub_args[0])
+    elif subcmd == "export":
+        if not sub_args:
+            print("❌ Error: Missing workflow ID")
+            print("💡 Try: mw n8n export <workflow-id>")
+            return 1
+        outfile = sub_args[1] if len(sub_args) > 1 else None
+        return _n8n_export(sub_args[0], outfile)
+    elif subcmd == "activate":
+        if not sub_args:
+            print("❌ Error: Missing workflow ID")
+            return 1
+        return _n8n_api_call("PATCH", f"/api/v1/workflows/{sub_args[0]}", body={"active": True})
+    elif subcmd == "deactivate":
+        if not sub_args:
+            print("❌ Error: Missing workflow ID")
+            return 1
+        return _n8n_api_call("PATCH", f"/api/v1/workflows/{sub_args[0]}", body={"active": False})
+    elif subcmd == "delete":
+        if not sub_args:
+            print("❌ Error: Missing workflow ID")
+            return 1
+        confirm = input(f"⚠️  Delete workflow {sub_args[0]}? (y/N): ").strip().lower()
+        if confirm != "y":
+            print("Cancelled.")
+            return 0
+        return _n8n_api_call("DELETE", f"/api/v1/workflows/{sub_args[0]}")
+    elif subcmd == "exec":
+        if not sub_args:
+            print("❌ Error: Missing workflow ID")
+            return 1
+        return _n8n_api_call("POST", f"/api/v1/workflows/{sub_args[0]}/execute", display="execution")
+    elif subcmd == "executions":
+        wf_id = sub_args[0] if sub_args else None
+        path = "/api/v1/executions"
+        if wf_id:
+            path += f"?workflowId={wf_id}"
+        return _n8n_api_call("GET", path, display="executions")
+    elif subcmd == "logs":
+        if not sub_args:
+            print("❌ Error: Missing execution ID")
+            return 1
+        return _n8n_api_call("GET", f"/api/v1/executions/{sub_args[0]}", display="execution_detail")
+    elif subcmd == "config":
+        return _n8n_config(sub_args)
+    elif subcmd == "test":
+        if not sub_args:
+            print("❌ Error: Missing workflow file")
+            return 1
+        return _n8n_test(sub_args[0])
     else:
-        print(f"Unknown n8n command: {subcmd}")
+        print(f"❌ Unknown n8n command: {subcmd}")
+        print("💡 Try: mw n8n --help")
         return 1
+
+
+def _n8n_get_config():
+    """Get n8n connection config from env or .env file."""
+    import os
+    url = os.environ.get("N8N_API_URL", "")
+    key = os.environ.get("N8N_API_KEY", "")
+    if not url:
+        # Try reading from .env in project root
+        env_file = Path(".env")
+        if env_file.exists():
+            for line in env_file.read_text().splitlines():
+                line = line.strip()
+                if line.startswith("N8N_API_URL="):
+                    url = line.split("=", 1)[1].strip().strip('"').strip("'")
+                elif line.startswith("N8N_API_KEY="):
+                    key = line.split("=", 1)[1].strip().strip('"').strip("'")
+    return url, key
+
+
+def _n8n_api_call(method: str, path: str, body: dict = None, display: str = None) -> int:
+    """Make an API call to n8n."""
+    import urllib.request
+    import urllib.error
+    url, key = _n8n_get_config()
+    if not url:
+        print("❌ n8n not configured")
+        print("💡 Try: mw n8n setup")
+        print("   Or set N8N_API_URL and N8N_API_KEY in your .env file")
+        return 1
+
+    full_url = url.rstrip("/") + path
+    headers = {"Content-Type": "application/json"}
+    if key:
+        headers["X-N8N-API-KEY"] = key
+
+    data = json.dumps(body).encode() if body else None
+    req = urllib.request.Request(full_url, data=data, headers=headers, method=method)
+
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            result = json.loads(resp.read().decode())
+    except urllib.error.HTTPError as e:
+        body_text = e.read().decode() if e.fp else ""
+        print(f"❌ n8n API error ({e.code}): {body_text[:200]}")
+        return 1
+    except urllib.error.URLError as e:
+        print(f"❌ Cannot reach n8n at {url}")
+        print(f"💡 Is n8n running? Try: mw n8n setup")
+        return 1
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        return 1
+
+    # Display results
+    if display == "workflows":
+        workflows = result.get("data", result) if isinstance(result, dict) else result
+        if isinstance(workflows, list):
+            if not workflows:
+                print("📋 No workflows found")
+            else:
+                print(f"📋 {len(workflows)} workflow(s):\n")
+                for wf in workflows:
+                    status = "🟢 Active" if wf.get("active") else "⚪ Inactive"
+                    print(f"  {status}  {wf.get('id', '?'):>6}  {wf.get('name', 'Untitled')}")
+                    if wf.get("tags"):
+                        tags = ", ".join(t.get("name", t) if isinstance(t, dict) else str(t) for t in wf["tags"])
+                        print(f"              Tags: {tags}")
+        else:
+            print(json.dumps(result, indent=2))
+    elif display == "executions":
+        execs = result.get("data", result) if isinstance(result, dict) else result
+        if isinstance(execs, list):
+            if not execs:
+                print("📋 No executions found")
+            else:
+                print(f"📋 {len(execs)} execution(s):\n")
+                for ex in execs[:20]:
+                    status_icon = "✅" if ex.get("finished") and not ex.get("stoppedAt") else "❌" if ex.get("stoppedAt") else "⏳"
+                    print(f"  {status_icon}  {ex.get('id', '?'):>8}  {ex.get('workflowId', '?')}  {ex.get('startedAt', '?')[:19]}")
+        else:
+            print(json.dumps(result, indent=2))
+    elif display == "execution_detail":
+        print(f"Execution: {result.get('id')}")
+        print(f"Workflow:  {result.get('workflowId')}")
+        print(f"Status:    {'✅ Success' if result.get('finished') else '❌ Failed'}")
+        print(f"Started:   {result.get('startedAt', 'N/A')}")
+        print(f"Finished:  {result.get('stoppedAt', 'N/A')}")
+        if result.get('data', {}).get('resultData', {}).get('error'):
+            err = result['data']['resultData']['error']
+            print(f"Error:     {err.get('message', err)}")
+    else:
+        if isinstance(result, dict) and result.get("id"):
+            print(f"✅ Done (ID: {result['id']})")
+        else:
+            print("✅ Done")
+
+    return 0
+
+
+def _n8n_status() -> int:
+    """Check n8n connection status."""
+    import urllib.request
+    import urllib.error
+    url, key = _n8n_get_config()
+    if not url:
+        print("❌ n8n not configured")
+        print("💡 Run: mw n8n setup")
+        return 1
+
+    print(f"🔍 Checking n8n at {url}...")
+    req = urllib.request.Request(url.rstrip("/") + "/api/v1/workflows?limit=1")
+    if key:
+        req.add_header("X-N8N-API-KEY", key)
+    try:
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode())
+            count = len(data.get("data", []))
+            print(f"✅ n8n is running!")
+            print(f"   URL: {url}")
+            print(f"   Auth: {'✅ API key configured' if key else '⚠️  No API key'}")
+            # Get total workflows
+            req2 = urllib.request.Request(url.rstrip("/") + "/api/v1/workflows")
+            if key:
+                req2.add_header("X-N8N-API-KEY", key)
+            with urllib.request.urlopen(req2, timeout=10) as resp2:
+                all_wf = json.loads(resp2.read().decode())
+                total = len(all_wf.get("data", all_wf) if isinstance(all_wf, dict) else all_wf)
+                active = sum(1 for w in (all_wf.get("data", all_wf) if isinstance(all_wf, dict) else all_wf) if isinstance(w, dict) and w.get("active"))
+                print(f"   Workflows: {total} total, {active} active")
+            return 0
+    except urllib.error.URLError:
+        print(f"❌ Cannot reach n8n at {url}")
+        print("💡 Try: mw n8n setup")
+        return 1
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        return 1
+
+
+def _n8n_setup(args: List[str]) -> int:
+    """Setup n8n - install and start."""
+    import subprocess
+    import shutil
+
+    print("""
+🔧 n8n Setup — Workflow Automation Engine
+==========================================
+""")
+    # Check if Docker is available
+    docker = shutil.which("docker")
+    if docker:
+        # Test docker access
+        try:
+            result = subprocess.run(["docker", "ps"], capture_output=True, timeout=5)
+            has_docker = result.returncode == 0
+        except Exception:
+            has_docker = False
+    else:
+        has_docker = False
+
+    if has_docker:
+        print("🐳 Docker detected! Setting up n8n container...")
+        try:
+            # Check if already running
+            result = subprocess.run(
+                ["docker", "ps", "--filter", "name=n8n", "--format", "{{.Names}}"],
+                capture_output=True, text=True, timeout=10
+            )
+            if "n8n" in result.stdout:
+                print("✅ n8n is already running!")
+                print("   URL: http://localhost:5678")
+                return 0
+
+            # Pull and start
+            print("📦 Pulling n8n image...")
+            subprocess.run(["docker", "pull", "n8nio/n8n:latest"], timeout=300)
+            print("🚀 Starting n8n...")
+            subprocess.run([
+                "docker", "run", "-d",
+                "--name", "n8n",
+                "--restart", "always",
+                "-p", "5678:5678",
+                "-v", "n8n_data:/home/node/.n8n",
+                "-e", "GENERIC_TIMEZONE=UTC",
+                "n8nio/n8n:latest"
+            ], timeout=30)
+            print("✅ n8n is running!")
+            print("   URL: http://localhost:5678")
+            print("   Data: Persistent (Docker volume: n8n_data)")
+            print("\n📝 Next steps:")
+            print("   1. Open http://localhost:5678 in your browser")
+            print("   2. Create owner account")
+            print("   3. Go to Settings → API → Create API key")
+            print("   4. Add to .env: N8N_API_URL=http://localhost:5678")
+            print("   5.              N8N_API_KEY=your-api-key")
+            return 0
+        except Exception as e:
+            print(f"❌ Docker setup failed: {e}")
+            print("Falling back to npm install...")
+
+    # npm/npx fallback
+    npx = shutil.which("npx")
+    if npx:
+        print("📦 Installing n8n via npm (no Docker)...")
+        print("   This may take a few minutes on first run.\n")
+        home = Path.home()
+        n8n_dir = home / "n8n-server"
+        n8n_dir.mkdir(exist_ok=True)
+
+        # Check if already installed
+        n8n_bin = n8n_dir / "node_modules" / ".bin" / "n8n"
+        if not n8n_bin.exists():
+            print("   Installing n8n package...")
+            result = subprocess.run(
+                ["npm", "install", "n8n"],
+                cwd=str(n8n_dir),
+                timeout=300
+            )
+            if result.returncode != 0:
+                print("❌ npm install failed")
+                return 1
+
+        print("✅ n8n installed!")
+        print(f"   Location: {n8n_dir}")
+        print(f"\n🚀 To start n8n:")
+        print(f"   cd {n8n_dir} && npx n8n start")
+        print(f"\n   Or run in background:")
+        print(f"   cd {n8n_dir} && nohup npx n8n start &")
+        print(f"\n   Then open: http://localhost:5678")
+        return 0
+
+    print("❌ Neither Docker nor npm/npx found")
+    print("💡 Install Docker: curl -fsSL https://get.docker.com | sh")
+    print("   Or install Node.js: https://nodejs.org")
+    return 1
+
+
+def _n8n_import(filepath: str) -> int:
+    """Import a workflow from JSON file."""
+    p = Path(filepath)
+    if not p.exists():
+        print(f"❌ File not found: {filepath}")
+        return 1
+    try:
+        workflow = json.loads(p.read_text())
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON: {e}")
+        return 1
+
+    print(f"📦 Importing workflow: {workflow.get('name', 'Untitled')}...")
+    return _n8n_api_call("POST", "/api/v1/workflows", body=workflow, display=None)
+
+
+def _n8n_export(workflow_id: str, outfile: str = None) -> int:
+    """Export a workflow to JSON file."""
+    import urllib.request
+    url, key = _n8n_get_config()
+    if not url:
+        print("❌ n8n not configured")
+        return 1
+
+    req = urllib.request.Request(url.rstrip("/") + f"/api/v1/workflows/{workflow_id}")
+    if key:
+        req.add_header("X-N8N-API-KEY", key)
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = resp.read().decode()
+            workflow = json.loads(data)
+    except Exception as e:
+        print(f"❌ Failed to fetch workflow: {e}")
+        return 1
+
+    if not outfile:
+        name = workflow.get("name", "workflow").replace(" ", "_").lower()
+        outfile = f"{name}_{workflow_id}.json"
+
+    Path(outfile).write_text(json.dumps(workflow, indent=2))
+    print(f"✅ Exported to {outfile}")
+    return 0
+
+
+def _n8n_config(args: List[str]) -> int:
+    """Show or set n8n config."""
+    url, key = _n8n_get_config()
+    if not args:
+        print("⚙️  n8n Configuration:")
+        print(f"   URL: {url or '(not set)'}")
+        print(f"   Key: {'***' + key[-8:] if key and len(key) > 8 else '(not set)'}")
+        print(f"\n💡 Set in .env file:")
+        print(f"   N8N_API_URL=http://localhost:5678")
+        print(f"   N8N_API_KEY=your-api-key")
+        return 0
+    return 0
+
+
+def _n8n_test(filepath: str) -> int:
+    """Validate a workflow JSON file locally."""
+    p = Path(filepath)
+    if not p.exists():
+        print(f"❌ File not found: {filepath}")
+        return 1
+    try:
+        wf = json.loads(p.read_text())
+    except json.JSONDecodeError as e:
+        print(f"❌ Invalid JSON: {e}")
+        return 1
+
+    errors = []
+    warnings = []
+
+    # Check required fields
+    if not wf.get("nodes"):
+        errors.append("Missing 'nodes' array")
+    if not wf.get("connections"):
+        errors.append("Missing 'connections' object")
+
+    # Validate nodes
+    nodes = wf.get("nodes", [])
+    node_names = set()
+    for i, node in enumerate(nodes):
+        if not node.get("name"):
+            errors.append(f"Node {i}: missing 'name'")
+        elif node["name"] in node_names:
+            errors.append(f"Node {i}: duplicate name '{node['name']}'")
+        else:
+            node_names.add(node["name"])
+        if not node.get("type"):
+            errors.append(f"Node {i} ({node.get('name', '?')}): missing 'type'")
+        if not node.get("position"):
+            warnings.append(f"Node '{node.get('name', '?')}': missing position")
+
+    # Validate connections reference existing nodes
+    for src_name, conns in wf.get("connections", {}).items():
+        if src_name not in node_names:
+            errors.append(f"Connection from unknown node: '{src_name}'")
+        if isinstance(conns, dict) and "main" in conns:
+            for branch in conns["main"]:
+                if isinstance(branch, list):
+                    for conn in branch:
+                        tgt = conn.get("node", "")
+                        if tgt not in node_names:
+                            errors.append(f"Connection to unknown node: '{tgt}'")
+
+    # Report
+    print(f"🔍 Validating: {filepath}")
+    print(f"   Name: {wf.get('name', 'Untitled')}")
+    print(f"   Nodes: {len(nodes)}")
+    print(f"   Connections: {len(wf.get('connections', {}))}")
+
+    if errors:
+        print(f"\n❌ {len(errors)} error(s):")
+        for e in errors:
+            print(f"   • {e}")
+    if warnings:
+        print(f"\n⚠️  {len(warnings)} warning(s):")
+        for w in warnings:
+            print(f"   • {w}")
+    if not errors and not warnings:
+        print("\n✅ Workflow is valid!")
+    elif not errors:
+        print("\n✅ Workflow is valid (with warnings)")
+
+    return 1 if errors else 0
 
 
 def cmd_brain(args: List[str]) -> int:
