@@ -6754,6 +6754,258 @@ def cmd_deps(args: List[str] = None) -> int:
         return 0
 
 
+def cmd_health(args: List[str] = None) -> int:
+    """Project health score — instant quality assessment (0-100).
+
+    Usage:
+        mw health              # Score current project
+        mw health --json       # Output as JSON
+        mw health --verbose    # Show detailed breakdown
+    """
+    import glob
+    args = args or []
+    as_json = "--json" in args
+    verbose = "--verbose" in args or "-v" in args
+
+    cwd = os.getcwd()
+    scores = {}
+    details = {}
+
+    # 1. README/Documentation (0-15)
+    doc_score = 0
+    doc_detail = []
+    if os.path.exists("README.md"):
+        size = os.path.getsize("README.md")
+        if size > 2000:
+            doc_score += 10
+            doc_detail.append("✅ README.md (detailed)")
+        elif size > 200:
+            doc_score += 6
+            doc_detail.append("⚠️ README.md (short)")
+        else:
+            doc_score += 2
+            doc_detail.append("⚠️ README.md (stub)")
+    else:
+        doc_detail.append("❌ No README.md")
+    if any(os.path.exists(f) for f in ["docs", "CONTRIBUTING.md", "CHANGELOG.md"]):
+        doc_score += 5
+        doc_detail.append("✅ Extra docs found")
+    scores["Documentation"] = min(doc_score, 15)
+    details["Documentation"] = doc_detail
+
+    # 2. Tests (0-20)
+    test_score = 0
+    test_detail = []
+    test_dirs = ["tests", "test", "__tests__", "spec"]
+    has_tests = any(os.path.isdir(d) for d in test_dirs)
+    if has_tests:
+        test_files = []
+        for d in test_dirs:
+            if os.path.isdir(d):
+                test_files.extend(glob.glob(f"{d}/**/*test*", recursive=True))
+                test_files.extend(glob.glob(f"{d}/**/test_*", recursive=True))
+        test_files = list(set(f for f in test_files if os.path.isfile(f)))
+        if len(test_files) > 20:
+            test_score = 20
+            test_detail.append(f"✅ {len(test_files)} test files (excellent)")
+        elif len(test_files) > 10:
+            test_score = 15
+            test_detail.append(f"✅ {len(test_files)} test files (good)")
+        elif len(test_files) > 3:
+            test_score = 10
+            test_detail.append(f"⚠️ {len(test_files)} test files (basic)")
+        else:
+            test_score = 5
+            test_detail.append(f"⚠️ {len(test_files)} test files (minimal)")
+    else:
+        test_detail.append("❌ No test directory")
+    # Check for CI config
+    ci_files = [".github/workflows", ".gitlab-ci.yml", "Jenkinsfile", ".circleci"]
+    if any(os.path.exists(f) for f in ci_files):
+        test_score = min(test_score + 3, 20)
+        test_detail.append("✅ CI/CD configured")
+    scores["Testing"] = test_score
+    details["Testing"] = test_detail
+
+    # 3. Dependencies (0-15)
+    dep_score = 0
+    dep_detail = []
+    dep_files = ["requirements.txt", "pyproject.toml", "package.json", "Cargo.toml", "go.mod"]
+    lock_files = ["requirements.lock.txt", "poetry.lock", "Pipfile.lock", "package-lock.json", "yarn.lock", "pnpm-lock.yaml", "Cargo.lock", "go.sum"]
+    if any(os.path.exists(f) for f in dep_files):
+        dep_score += 8
+        dep_detail.append("✅ Dependencies declared")
+    else:
+        dep_detail.append("❌ No dependency file")
+    if any(os.path.exists(f) for f in lock_files):
+        dep_score += 7
+        dep_detail.append("✅ Lock file present")
+    else:
+        dep_detail.append("⚠️ No lock file")
+    scores["Dependencies"] = min(dep_score, 15)
+    details["Dependencies"] = dep_detail
+
+    # 4. Code Quality (0-15)
+    qual_score = 0
+    qual_detail = []
+    lint_configs = [".eslintrc", ".eslintrc.js", ".eslintrc.json", "ruff.toml", ".flake8", ".pylintrc", "tox.ini", ".prettierrc", "biome.json"]
+    if any(os.path.exists(f) for f in lint_configs):
+        qual_score += 8
+        qual_detail.append("✅ Linter configured")
+    # Check pyproject.toml for tool configs
+    if os.path.exists("pyproject.toml"):
+        with open("pyproject.toml") as fh:
+            content = fh.read()
+        if "ruff" in content or "flake8" in content or "mypy" in content or "pylint" in content:
+            qual_score += 8
+            qual_detail.append("✅ Linter in pyproject.toml")
+    if not qual_detail:
+        qual_detail.append("⚠️ No linter config")
+    type_configs = ["tsconfig.json", "mypy.ini", "py.typed"]
+    if any(os.path.exists(f) for f in type_configs) or (os.path.exists("pyproject.toml") and "mypy" in open("pyproject.toml").read()):
+        qual_score += 7
+        qual_detail.append("✅ Type checking configured")
+    else:
+        qual_detail.append("⚠️ No type checking")
+    scores["Code Quality"] = min(qual_score, 15)
+    details["Code Quality"] = qual_detail
+
+    # 5. Git hygiene (0-10)
+    git_score = 0
+    git_detail = []
+    if os.path.exists(".git"):
+        git_score += 3
+        git_detail.append("✅ Git initialized")
+        if os.path.exists(".gitignore"):
+            git_score += 4
+            git_detail.append("✅ .gitignore present")
+        else:
+            git_detail.append("⚠️ No .gitignore")
+        # Check for conventional commits (look at recent messages)
+        import subprocess as _sp
+        try:
+            r = _sp.run(["git", "log", "--oneline", "-10"], capture_output=True, text=True, timeout=5)
+            if r.returncode == 0 and r.stdout:
+                lines = r.stdout.strip().split("\n")
+                conventional = sum(1 for l in lines if any(l.split(" ", 1)[-1].startswith(p) for p in ["feat:", "fix:", "docs:", "chore:", "refactor:", "test:", "ci:"]))
+                if conventional >= 5:
+                    git_score += 3
+                    git_detail.append("✅ Conventional commits")
+                elif conventional >= 2:
+                    git_score += 1
+                    git_detail.append("⚠️ Some conventional commits")
+        except Exception:
+            pass
+    else:
+        git_detail.append("❌ Not a git repo")
+    scores["Git"] = min(git_score, 10)
+    details["Git"] = git_detail
+
+    # 6. Security (0-10)
+    sec_score = 0
+    sec_detail = []
+    dangerous_patterns = [".env", "secrets.json", "credentials.json"]
+    if os.path.exists(".gitignore"):
+        gitignore = open(".gitignore").read()
+        if ".env" in gitignore:
+            sec_score += 5
+            sec_detail.append("✅ .env in .gitignore")
+        else:
+            sec_detail.append("⚠️ .env not in .gitignore")
+    sec_configs = ["SECURITY.md", ".github/SECURITY.md", "security.txt"]
+    if any(os.path.exists(f) for f in sec_configs):
+        sec_score += 5
+        sec_detail.append("✅ Security policy")
+    else:
+        sec_detail.append("⚠️ No SECURITY.md")
+    scores["Security"] = min(sec_score, 10)
+    details["Security"] = sec_detail
+
+    # 7. Structure (0-15)
+    struct_score = 0
+    struct_detail = []
+    if os.path.exists("LICENSE") or os.path.exists("LICENSE.md"):
+        struct_score += 5
+        struct_detail.append("✅ LICENSE file")
+    else:
+        struct_detail.append("⚠️ No LICENSE")
+    # Check for source directory structure
+    src_dirs = ["src", "lib", "tools", "app", "pkg", "cmd"]
+    if any(os.path.isdir(d) for d in src_dirs):
+        struct_score += 5
+        struct_detail.append("✅ Organized source directory")
+    else:
+        struct_detail.append("⚠️ No src/ directory")
+    # Check for config files (editor, formatter)
+    editor_configs = [".editorconfig", ".vscode", ".idea"]
+    if any(os.path.exists(f) for f in editor_configs):
+        struct_score += 5
+        struct_detail.append("✅ Editor config")
+    scores["Structure"] = min(struct_score, 15)
+    details["Structure"] = struct_detail
+
+    # Calculate total
+    total = sum(scores.values())
+    max_score = 100
+
+    # Grade
+    if total >= 90:
+        grade, color, emoji = "A+", "\033[92m", "🏆"
+    elif total >= 80:
+        grade, color, emoji = "A", "\033[92m", "🌟"
+    elif total >= 70:
+        grade, color, emoji = "B", "\033[93m", "👍"
+    elif total >= 60:
+        grade, color, emoji = "C", "\033[93m", "📝"
+    elif total >= 50:
+        grade, color, emoji = "D", "\033[91m", "⚠️"
+    else:
+        grade, color, emoji = "F", "\033[91m", "🔴"
+
+    if as_json:
+        import json as _json
+        print(_json.dumps({"score": total, "grade": grade, "categories": scores, "details": details}, indent=2))
+        return 0
+
+    # Display
+    print(f"\n{color}{'═' * 50}\033[0m")
+    print(f"  {emoji} Project Health Score: {color}{total}/{max_score} (Grade: {grade})\033[0m")
+    print(f"{color}{'═' * 50}\033[0m\n")
+
+    # Bar chart
+    for cat, score in scores.items():
+        max_cat = {"Documentation": 15, "Testing": 20, "Dependencies": 15, "Code Quality": 15, "Git": 10, "Security": 10, "Structure": 15}[cat]
+        pct = int((score / max_cat) * 20)
+        bar = "█" * pct + "░" * (20 - pct)
+        cat_color = "\033[92m" if score >= max_cat * 0.7 else "\033[93m" if score >= max_cat * 0.4 else "\033[91m"
+        print(f"  {cat:15s} {cat_color}{bar}\033[0m {score}/{max_cat}")
+        if verbose:
+            for d in details.get(cat, []):
+                print(f"                   {d}")
+
+    # Top recommendations
+    print(f"\n{'─' * 50}")
+    recs = []
+    if scores["Testing"] < 10:
+        recs.append("Add more tests (mw test --init)")
+    if scores["Documentation"] < 8:
+        recs.append("Improve README.md")
+    if scores["Code Quality"] < 8:
+        recs.append("Add a linter config (mw lint)")
+    if scores["Security"] < 5:
+        recs.append("Add SECURITY.md and check .gitignore")
+    if scores["Git"] < 5:
+        recs.append("Use conventional commits (feat:, fix:, etc.)")
+    if recs:
+        print(f"  💡 Top improvements:")
+        for r in recs[:3]:
+            print(f"     → {r}")
+    else:
+        print(f"  🎉 Great project health! Keep it up.")
+    print()
+    return 0
+
+
 def cmd_selftest(args: List[str] = None) -> int:
     """Quick smoke test to verify framework installation.
 
@@ -7289,6 +7541,8 @@ def main() -> None:
         "snap": lambda: cmd_snapshot(args),
         "deps": lambda: cmd_deps(args),
         "dependencies": lambda: cmd_deps(args),
+        "health": lambda: cmd_health(args),
+        "score": lambda: cmd_health(args),
         "completions": lambda: cmd_completions(args),
         "selftest": lambda: cmd_selftest(args),
         "self-test": lambda: cmd_selftest(args),
