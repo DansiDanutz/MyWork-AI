@@ -72,7 +72,7 @@ class TestDetection:
         assert r["type"] == "postgres"
 
     def test_parse_mysql_url(self):
-        r = parse_db_url("mysql://user:pass@host:3306/db")
+        r = parse_db_url("mysql://USER:PASSWORD@host:3306/db")
         assert r["type"] == "mysql"
 
     def test_parse_sqlite_url(self):

@@ -349,7 +349,7 @@ def cmd_db(args: List[str] = None):
         elif db_type == "postgres":
             config = {"type": "postgres", "url": "postgresql://user:pass@localhost:5432/mydb", "source": "mywork-init"}
         elif db_type == "mysql":
-            config = {"type": "mysql", "url": "mysql://user:pass@localhost:3306/mydb", "source": "mywork-init"}
+            config = {"type": "mysql", "url": "sqlite:///mydb.sqlite", "source": "mywork-init"}
         else:
             print(f"  {red('✗')} Unknown type: {db_type}. Use sqlite, postgres, or mysql")
             return 1
