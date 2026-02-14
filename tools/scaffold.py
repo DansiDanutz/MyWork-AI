@@ -4739,10 +4739,14 @@ def create_structure(path: Path, structure: Dict[str, Any], context: Dict[str, s
             formatted_content = content
             for key, value in context.items():
                 formatted_content = formatted_content.replace("{" + key + "}", value)
+            
+            # FIXED: Convert double braces back to single braces for JSON/Python dicts
+            formatted_content = formatted_content.replace("{{", "{").replace("}}", "}")
+            
             item_path.write_text(formatted_content)
 
 
-def create_project(name: str, template: str = "basic") -> bool:
+def create_project(name: str, template: str = "basic", use_current_dir: bool = False) -> bool:
     """Create a new project from template."""
     # Validate template
     if template not in TEMPLATES:
@@ -4761,8 +4765,13 @@ def create_project(name: str, template: str = "basic") -> bool:
         print(f"   Examples: my-app, api-server, todo-list")
         return False
 
+    # FIXED: Use current directory instead of global PROJECTS_DIR
+    if use_current_dir:
+        project_path = Path.cwd() / name
+    else:
+        project_path = PROJECTS_DIR / name
+
     # Check for existing project
-    project_path = PROJECTS_DIR / name
     if project_path.exists():
         print(f"❌ Project already exists: {project_path}")
         print(f"   Choose a different name or delete the existing project")
@@ -4817,7 +4826,10 @@ def create_project(name: str, template: str = "basic") -> bool:
         print(f"   Run 'mw setup' to configure your API keys and environment.")
 
     print(f"\n   Next steps:")
-    print(f"   1. cd projects/{name}")
+    if use_current_dir:
+        print(f"   1. cd {name}")
+    else:
+        print(f"   1. cd projects/{name}")
     print(f"   2. Review .planning/PROJECT.md")
     print(f"   3. Run /gsd:plan-phase 1")
 
@@ -4846,12 +4858,13 @@ def main():
 
     if command == "new":
         if len(sys.argv) < 3:
-            print("Usage: python scaffold.py new <name> [template]")
+            print("Usage: python scaffold.py new <name> [template] [--current-dir]")
             sys.exit(1)
 
         name = sys.argv[2]
-        template = sys.argv[3] if len(sys.argv) > 3 else "basic"
-        success = create_project(name, template)
+        template = sys.argv[3] if len(sys.argv) > 3 and not sys.argv[3].startswith('--') else "basic"
+        use_current_dir = "--current-dir" in sys.argv
+        success = create_project(name, template, use_current_dir)
         if not success:
             sys.exit(1)
 

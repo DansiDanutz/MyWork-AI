@@ -477,7 +477,7 @@ Examples:
         if not validate_input(template, "template name", max_length=50):
             return 1
         
-    return run_tool("scaffold", ["new"] + args)
+    return run_tool("scaffold", ["new"] + args + ["--current-dir"])
 
 
 def cmd_scan() -> int:
@@ -1821,17 +1821,29 @@ Examples:
         env_file.write_text(env_content)
         print(f"{Colors.GREEN}✅ Basic .env file created{Colors.ENDC}")
     
-    print(f"\n{Colors.BOLD}Step 3: Planning Directory Check{Colors.ENDC}")
+    print(f"\n{Colors.BOLD}Step 3: Workspace Configuration{Colors.ENDC}")
     print("=" * 40)
     
-    planning_dir = MYWORK_ROOT / ".planning"
+    # Configure current directory as workspace
+    current_dir = Path.cwd()
+    planning_dir = current_dir / ".planning"
+    
+    print(f"🏠 Configuring workspace: {current_dir}")
+    
     if planning_dir.exists():
         print(f"{Colors.GREEN}✅ .planning directory exists{Colors.ENDC}")
     else:
-        print(f"{Colors.YELLOW}⚠️  Creating .planning directory{Colors.ENDC}")
+        print(f"{Colors.YELLOW}⚠️  Creating .planning directory in current workspace{Colors.ENDC}")
         planning_dir.mkdir(exist_ok=True)
         (planning_dir / "config").mkdir(exist_ok=True)
         print(f"{Colors.GREEN}✅ .planning directory created{Colors.ENDC}")
+    
+    # Also ensure framework planning directory exists
+    framework_planning_dir = MYWORK_ROOT / ".planning"
+    if not framework_planning_dir.exists():
+        print(f"{Colors.YELLOW}⚠️  Creating framework .planning directory{Colors.ENDC}")
+        framework_planning_dir.mkdir(exist_ok=True)
+        (framework_planning_dir / "config").mkdir(exist_ok=True)
     
     print(f"\n{Colors.BOLD}Step 4: Quick Health Check{Colors.ENDC}")
     print("=" * 40)
