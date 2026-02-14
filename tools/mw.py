@@ -3284,8 +3284,8 @@ Supported:
     print(f"🔧 Running: {cmd}")
     print("─" * 50)
     
-    result = os.system(cmd)
-    return_code = result >> 8 if os.name != 'nt' else result
+    completed = subprocess.run(cmd, shell=True)
+    return_code = completed.returncode
     
     print("─" * 50)
     if return_code == 0:
@@ -3328,8 +3328,8 @@ Workflows are YAML files with steps. See docs for format.
         return 1
     
     cmd = f"python3 {engine} " + " ".join(args)
-    result = os.system(cmd)
-    return result >> 8 if os.name != 'nt' else result
+    completed = subprocess.run(cmd, shell=True)
+    return completed.returncode
 
 
 def cmd_analytics_wrapper(args: List[str] = None) -> int:
@@ -6164,7 +6164,7 @@ if __name__ == "__main__":
                 port = args[i + 1]
         print(f"\n{Colors.GREEN}🚀 Starting API server on port {port}...{Colors.ENDC}")
         print(f"  📖 Docs: http://localhost:{port}/docs")
-        os.system(f"python run.py --port {port}")
+        subprocess.run(f"python run.py --port {port}", shell=True)
         return 0
 
     elif subcmd == "routes":

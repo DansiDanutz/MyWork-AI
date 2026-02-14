@@ -112,7 +112,7 @@ def test_audit_no_readme(capsys, tmp_path):
 
 def test_audit_secret_detection(capsys, tmp_path):
     """Test secret pattern detection in non-quick mode."""
-    (tmp_path / "config.py").write_text('api_key = "sk-abcdefghijklmnopqrstuvwxyz1234567890ABCD"\n')
+    (tmp_path / "config.py").write_text('api_key = "FAKE-TEST-KEY-NOT-REAL-0000000000000000"\n')
     (tmp_path / "README.md").write_text("# test\n")
     result = cmd_audit([str(tmp_path), "--json"])
     assert result == 0

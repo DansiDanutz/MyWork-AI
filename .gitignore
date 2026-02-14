@@ -58,6 +58,10 @@ logs/
 cache/
 .cache/
 *.cache
+simulation_workspace/
+exports/
+backups/
+.bench_history.json
 
 # ============================================
 # BRAIN DATA (may contain sensitive context)

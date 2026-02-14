@@ -78,7 +78,7 @@ class MarketplaceE2ETester:
                 method=method,
                 url=url,
                 timeout=self.timeout,
-                verify=False,  # Skip SSL verification for testing
+                verify=True,  # SSL verification enabled
                 allow_redirects=True,
                 headers={
                     'User-Agent': 'MyWork-AI E2E Tester'
