@@ -5196,7 +5196,6 @@ def cmd_deploy(args: List[str] = None) -> int:
         mw deploy --list                   # List recent deployments
     """
     args = args or []
-    print(f"DEBUG: deploy function called with args: {args}")
     
     # Check for help flag first
     if "--help" in args or "-h" in args:
@@ -5311,20 +5310,32 @@ def cmd_deploy(args: List[str] = None) -> int:
     print(f"\n{Colors.BOLD}🚀 MyWork Deploy{Colors.ENDC}")
     print(f"{'─' * 50}")
     
-    # Auto-detect platform if not specified
+    # Auto-detect platform if not specified (priority-based detection)
     if not platform:
-        if os.path.exists(os.path.join(project_dir, "vercel.json")):
-            platform = "vercel"
-        elif os.path.exists(os.path.join(project_dir, "railway.json")) or os.path.exists(os.path.join(project_dir, "railway.toml")):
-            platform = "railway"
-        elif os.path.exists(os.path.join(project_dir, "render.yaml")):
-            platform = "render"
-        elif os.path.exists(os.path.join(project_dir, "Dockerfile")):
+        # Check project type first (language takes priority over config files)
+        is_python = (os.path.exists(os.path.join(project_dir, "pyproject.toml")) or 
+                     os.path.exists(os.path.join(project_dir, "requirements.txt")) or
+                     os.path.exists(os.path.join(project_dir, "setup.py")))
+        is_nodejs = os.path.exists(os.path.join(project_dir, "package.json"))
+        has_docker = os.path.exists(os.path.join(project_dir, "Dockerfile"))
+        
+        # Platform-specific config files
+        has_vercel = os.path.exists(os.path.join(project_dir, "vercel.json"))
+        has_railway = (os.path.exists(os.path.join(project_dir, "railway.json")) or 
+                       os.path.exists(os.path.join(project_dir, "railway.toml")))
+        has_render = os.path.exists(os.path.join(project_dir, "render.yaml"))
+        
+        # Priority detection logic
+        if has_docker:
             platform = "docker"
-        elif os.path.exists(os.path.join(project_dir, "package.json")):
-            platform = "vercel"  # Default for Node.js
-        elif os.path.exists(os.path.join(project_dir, "requirements.txt")) or os.path.exists(os.path.join(project_dir, "pyproject.toml")):
-            platform = "railway"  # Default for Python
+        elif has_railway:
+            platform = "railway"
+        elif has_render:
+            platform = "render"
+        elif is_python:
+            platform = "railway"  # Railway is best for Python projects
+        elif has_vercel or is_nodejs:
+            platform = "vercel"  # Vercel for Node.js/static sites
         else:
             print(f"{Colors.RED}❌ Could not auto-detect platform{Colors.ENDC}")
             print(f"{Colors.YELLOW}💡 Specify platform explicitly:{Colors.ENDC}")
