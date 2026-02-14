@@ -4243,6 +4243,12 @@ def _cmd_serve_wrapper(args: List[str] = None) -> int:
     return cmd_serve(args or [])
 
 
+def _cmd_webdash(args: List[str] = None) -> int:
+    """Generate static HTML project health dashboard."""
+    from tools.html_report import main as webdash_main
+    return webdash_main(args or [])
+
+
 def _cmd_demo_wrapper(args: List[str] = None) -> int:
     """Launch interactive demo."""
     from tools.demo import main as demo_main
@@ -9961,6 +9967,8 @@ def main() -> None:
         "autoforge": lambda: cmd_autoforge(args),
         "gsd": lambda: cmd_gsd(args),
         "plan": lambda: cmd_gsd(args),
+        "webdash": lambda: _cmd_webdash(args),
+        "html-report": lambda: _cmd_webdash(args),
         "version": lambda: cmd_version(),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(),
