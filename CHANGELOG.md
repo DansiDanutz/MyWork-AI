@@ -5,6 +5,26 @@ All notable changes to MyWork-AI will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 
+## [2.2.0] - 2026-02-14
+
+### 🐛 Bug Fixes - Production Ready Package
+- **CRITICAL:** Fix pip install entry points - `mw status`, `mw doctor` now work when installed from PyPI
+- **CRITICAL:** Rewrite run_tool() function to support both development and pip-installed scenarios  
+- **PACKAGING:** Add comprehensive MANIFEST.in to include all necessary files in PyPI package
+- **PACKAGING:** Fix module import resolution for pip-installed packages vs development environment
+- **PACKAGING:** Entry points (`mw --help`, `mw status`, `mw doctor`) now work correctly after `pip install mywork-ai`
+
+### 📦 Package Improvements
+- feat: Add proper MANIFEST.in for comprehensive file inclusion in PyPI packages
+- fix: Module import strategy now works for both development (file-based) and production (pip-installed) scenarios
+- test: Verified `pip install mywork-ai` works correctly from PyPI in clean virtual environment
+- docs: Package is now truly production-ready for PyPI distribution
+
+### 🧪 Testing
+- test: Validated all key entry points work after pip installation
+- test: Confirmed `mw --help`, `mw status`, `mw doctor` function correctly in pip-installed environment
+
+
 ## [2.1.0] - 2026-02-12
 
 ### ✨ Features
