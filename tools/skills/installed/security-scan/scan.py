@@ -176,8 +176,8 @@ class SecurityScanner:
         print("🔍 Scanning code patterns...")
         
         code_patterns = [
-            (r'eval\s*\(.*\)', 'critical', 'Use of eval() - code injection risk'),  # noqa: W605
-            (r'exec\s*\(.*\)', 'critical', 'Use of exec() - code injection risk'),  # noqa: W605
+            (r'eval\s*\(.*\)', 'critical', 'Use of eval() - code injection risk'),  # noqa: W605  # noqa: security
+            (r'exec\s*\(.*\)', 'critical', 'Use of exec() - code injection risk'),  # noqa: W605  # noqa: security
             (r'subprocess\.call\([^)]*shell\s*=\s*True', 'high', 'Shell injection risk'),
             (r'os\.system\s*\(', 'high', 'Command injection risk'),
             (r'input\s*\(.*\).*eval', 'critical', 'User input passed to eval'),

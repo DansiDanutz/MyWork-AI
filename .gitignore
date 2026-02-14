@@ -262,3 +262,6 @@ bower_components/
 *.mov
 docs_site/
 .vercel
+
+# Backup test files
+tests_backup/
