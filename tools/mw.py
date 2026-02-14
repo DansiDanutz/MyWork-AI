@@ -3814,6 +3814,52 @@ def cmd_git(args: List[str] = None) -> int:
         print(f"🧹 Cleaned up {deleted} merged branches")
         return 0
 
+    elif sub == "standup":
+        for label, since, until in [("Today", "midnight", ""), ("Yesterday", "yesterday.midnight", "--until=midnight")]:
+            log = _run(f"git log --oneline --all --since={since} {until}").strip()
+            commits = [l for l in log.split('\n') if l.strip()] if log else []
+            print(f"\n📅 {label} ({len(commits)} commits):")
+            for c in commits[:15]:
+                print(f"  • {c}")
+            if not commits:
+                print("  (no commits)")
+        return 0
+
+    elif sub == "contributors":
+        log = _run("git shortlog -sn --all --no-merges")
+        if not log:
+            print("No commits found.")
+            return 1
+        print("👥 Contributors\n" + "─" * 40)
+        for line in log.split('\n')[:20]:
+            line = line.strip()
+            if line:
+                parts = line.split('\t', 1)
+                count = parts[0].strip()
+                name = parts[1] if len(parts) > 1 else "unknown"
+                bar = "█" * min(int(count) // 5, 30)
+                print(f"  {name:30s} {count:>5s} {bar}")
+        return 0
+
+    elif sub == "summary":
+        branch = _run("git branch --show-current") or "detached"
+        total = _run("git rev-list --count HEAD") or "0"
+        branches = len([b for b in _run("git branch --list").split('\n') if b.strip()])
+        tags = len([t for t in _run("git tag --list").split('\n') if t.strip()])
+        last_tag = _run("git describe --tags --abbrev=0 2>/dev/null") or "none"
+        files = len([f for f in _run("git ls-files").split('\n') if f.strip()])
+        dirty = len([s for s in _run("git status --porcelain").split('\n') if s.strip()])
+        print("📊 Repository Summary")
+        print("─" * 45)
+        print(f"  🌿 Branch:    {branch}")
+        print(f"  📝 Commits:   {total}")
+        print(f"  🌳 Branches:  {branches}")
+        print(f"  🏷️  Tags:      {tags}")
+        print(f"  📦 Last tag:  {last_tag}")
+        print(f"  📄 Files:     {files}")
+        print(f"  {'🔴' if dirty else '🟢'} Dirty:     {dirty} changes")
+        return 0
+
     else:
         # Pass through to git
         _run(f"git {sub} {' '.join(rest)}", capture=False)
