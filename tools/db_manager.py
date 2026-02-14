@@ -285,7 +285,8 @@ def seed_database(db: SQLiteDB, seed_file: str = None, project_path: str = "."):
     
     if not seed_file or not Path(seed_file).exists():
         print(f"  {red('✗')} No seed file found. Create one at .mywork/seeds/seed.json")
-        print(f"  {dim('Format: {\"table_name\": [{\"col\": \"val\", ...}, ...]}')}") 
+        fmt_example = '{"table_name": [{"col": "val", ...}, ...]}'
+        print(f"  {dim('Format: ' + fmt_example)}") 
         return False
     
     if seed_file.endswith(".json"):

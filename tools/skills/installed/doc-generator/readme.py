@@ -94,7 +94,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
         f.write(readme_content)
     
     print(f"✅ README generated: {readme_path}")
-    print(f"📊 Generated {len(readme_content.split('\\n'))} lines of documentation")
+    line_count = len(readme_content.split('\n'))
+    print(f"📊 Generated {line_count} lines of documentation")
     
     return 0
 

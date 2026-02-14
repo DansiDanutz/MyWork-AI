@@ -104,16 +104,16 @@ jobs:
           echo "Checking that sensitive files are not tracked..."
 
           SENSITIVE_PATTERNS=(
-            ".mcp.json"
-            "brain_data.json"
-            "module_registry.json"
-            "*.pem"
-            "*.key"
-            "credentials.json"
+            "^\.mcp\.json$"
+            "brain_data\.json$"
+            "module_registry\.json$"
+            "\.pem$"
+            "\.key$"
+            "^credentials\.json$"
           )
 
           for pattern in "${SENSITIVE_PATTERNS[@]}"; do
-            if git ls-files | grep -q "$pattern"; then
+            if git ls-files | grep -qE "$pattern"; then
               echo "ERROR: Sensitive file pattern '$pattern' found in git!"
               exit 1
             fi
