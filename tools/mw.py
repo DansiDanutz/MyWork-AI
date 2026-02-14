@@ -3461,8 +3461,9 @@ def _cmd_secrets_wrapper(args: List[str] = None) -> int:
 
 def _cmd_plugin_wrapper(args: List[str] = None) -> int:
     """Plugin management command."""
-    from tools.plugin_manager import cmd_plugin
-    return cmd_plugin(args or [])
+    from tools.plugin_manager import main as plugin_main
+    plugin_main(args or [])
+    return 0
 
 
 def cmd_config(args: List[str] = None) -> int:
@@ -7660,6 +7661,14 @@ def main() -> None:
         # Sort by similarity and take top 3
         similar_commands.sort(key=lambda x: x[1])
         suggestions = [cmd for cmd, _ in similar_commands[:3]]
+        
+        # Try running as plugin before showing error
+        try:
+            from tools.plugin_manager import run_plugin
+            if run_plugin(command, args):
+                sys.exit(0)
+        except Exception:
+            pass
         
         print(f"{Colors.RED}❌ Unknown command: {command}{Colors.ENDC}")
         
