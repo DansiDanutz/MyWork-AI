@@ -11,6 +11,8 @@
 
 # MyWork-AI
 
+![CI/CD](https://github.com/dansidanutz/MyWork-AI/workflows/CI/CD%20Pipeline/badge.svg)
+![Security](https://github.com/dansidanutz/MyWork-AI/workflows/Security%20Scan/badge.svg)
 ![Version](https://img.shields.io/badge/version-2.1.0-blue?style=flat-square)
 ![Python](https://img.shields.io/badge/python-%3E%3D3.9-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Tests](https://img.shields.io/badge/tests-1032%20passing-brightgreen?style=flat-square)
@@ -76,7 +78,6 @@ MyWork-AI provides a complete development ecosystem:
 Experience MyWork-AI in action:
 
 - **[Marketplace](https://frontend-hazel-ten-17.vercel.app)** - Buy/sell complete projects
-- **[Analytics Dashboard](https://ai-dashboard-pi-seven.vercel.app)** - Project insights
 - **[Task Tracker Demo](https://task-tracker-pi-one.vercel.app)** - AI-generated app example
 
 ## 📖 Usage Examples
@@ -219,6 +220,6 @@ MyWork-AI is open source software licensed under the [MIT License](LICENSE).
 
 **Built with ❤️ by the MyWork-AI team**
 
-[Website](https://mywork-ai.dev) • [Documentation](docs/) • [Marketplace](https://frontend-hazel-ten-17.vercel.app) • [Support](https://github.com/yourusername/MyWork-AI/issues)
+[Documentation](docs/) • [Marketplace](https://frontend-hazel-ten-17.vercel.app) • [Support](https://github.com/yourusername/MyWork-AI/issues)
 
 </div>
