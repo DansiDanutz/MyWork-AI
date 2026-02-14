@@ -3155,6 +3155,10 @@ def cmd_test(args: List[str] = None) -> int:
 
     args = args or []
     
+    if args and args[0] == "doctor":
+        # Run test doctor to find hanging/broken tests
+        return run_tool("test_doctor", args[1:])
+    
     if args and args[0] in ["--help", "-h"]:
         print("""
 🧪 mw test — Universal Test Runner
