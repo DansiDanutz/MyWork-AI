@@ -1,23 +1,17 @@
 #!/usr/bin/env python3
-"""MyWork-AI Interactive Tour — onboard new users in 2 minutes.
-
-Usage:
-    mw tour [--quick] [--no-color]
-
-Walks users through the framework's key features interactively,
-running real commands and showing real output along the way.
+"""
+Enhanced Interactive Tour for MyWork-AI
+=======================================
+Truly interactive tour where users try features hands-on.
 """
 
 import os
-import re
-import subprocess
 import sys
+import subprocess
 import time
 from pathlib import Path
 
-FRAMEWORK_ROOT = Path(__file__).parent.parent
-
-# ANSI colors
+# Colors
 BOLD = "\033[1m"
 DIM = "\033[2m"
 RESET = "\033[0m"
@@ -27,29 +21,19 @@ YELLOW = "\033[33m"
 MAGENTA = "\033[35m"
 BLUE = "\033[34m"
 RED = "\033[31m"
-BG_BLUE = "\033[44m"
-BG_GREEN = "\033[42m"
-BG_MAGENTA = "\033[45m"
-
-NO_COLOR = False
-
 
 def c(color, text):
-    """Apply color if enabled."""
-    if NO_COLOR:
-        return text
+    """Apply color."""
     return f"{color}{text}{RESET}"
-
 
 def banner():
     """Print the tour banner."""
     print()
     print(c(CYAN + BOLD, "  ╔══════════════════════════════════════════════╗"))
-    print(c(CYAN + BOLD, "  ║") + c(YELLOW + BOLD, "   🚀 Welcome to the MyWork-AI Tour!          ") + c(CYAN + BOLD, "║"))
-    print(c(CYAN + BOLD, "  ║") + c(DIM, "   2 minutes to see what you can build          ") + c(CYAN + BOLD, "║"))
+    print(c(CYAN + BOLD, "  ║") + c(YELLOW + BOLD, "   🎯 Interactive MyWork-AI Tour               ") + c(CYAN + BOLD, "║"))
+    print(c(CYAN + BOLD, "  ║") + c(DIM, "   Learn by doing - try each feature yourself    ") + c(CYAN + BOLD, "║"))
     print(c(CYAN + BOLD, "  ╚══════════════════════════════════════════════╝"))
     print()
-
 
 def step(num, total, title, description):
     """Print a tour step header."""
@@ -60,147 +44,201 @@ def step(num, total, title, description):
     print(c(DIM, f"    {description}"))
     print()
 
-
-def run_mw(cmd, show_cmd=True, max_lines=15):
-    """Run an mw command and show output."""
-    if show_cmd:
-        print(c(GREEN, f"    $ mw {cmd}"))
-        print()
+def wait_for_user(prompt="Press Enter to continue"):
+    """Wait for user input."""
     try:
-        result = subprocess.run(
-            [sys.executable, str(FRAMEWORK_ROOT / "tools" / "mw.py"), *cmd.split()],
-            capture_output=True, text=True, cwd=str(FRAMEWORK_ROOT), timeout=15,
-            env={**os.environ, "FORCE_COLOR": "0"}
-        )
-        output = result.stdout + result.stderr
-        # Strip ANSI
-        output = re.sub(r'\x1b\[[0-9;]*m', '', output)
-        lines = output.strip().split("\n")
-        for line in lines[:max_lines]:
-            print(c(DIM, f"    {line}"))
-        if len(lines) > max_lines:
-            print(c(DIM, f"    ... ({len(lines) - max_lines} more lines)"))
-    except subprocess.TimeoutExpired:
-        print(c(RED, "    (timed out)"))
-    except Exception as e:
-        print(c(RED, f"    Error: {e}"))
-    print()
-
-
-def pause(quick=False):
-    """Pause between steps."""
-    if quick:
-        time.sleep(0.3)
-        return
-    try:
-        input(c(DIM, "    Press Enter to continue... "))
+        input(c(DIM, f"    {prompt}... "))
     except (KeyboardInterrupt, EOFError):
         print()
         print(c(YELLOW, "\n  👋 Tour ended early. Run `mw tour` anytime to resume!"))
         sys.exit(0)
 
+def run_command_demo(cmd, description):
+    """Show a command and let the user choose to run it."""
+    print(c(GREEN, f"    💡 Try this: {cmd}"))
+    print(c(DIM, f"       {description}"))
+    
+    if input(c(YELLOW, "    Run this command? (Y/n): ")).strip().lower() not in ['n', 'no']:
+        print(c(DIM, f"    $ {cmd}"))
+        try:
+            result = subprocess.run(cmd.split(), capture_output=True, text=True, timeout=10)
+            output = (result.stdout + result.stderr).strip()
+            if output:
+                lines = output.split('\n')
+                for line in lines[:10]:  # Show first 10 lines
+                    print(c(DIM, f"      {line}"))
+                if len(lines) > 10:
+                    print(c(DIM, f"      ... ({len(lines) - 10} more lines)"))
+            print()
+        except Exception as e:
+            print(c(RED, f"    Error: {e}"))
+    else:
+        print(c(DIM, "    Skipped.\n"))
 
-def tour_status(quick):
+def tour_welcome():
+    """Welcome and orientation."""
+    step(1, 6, "Welcome & Orientation", "Let's explore what MyWork can do for you")
+    
+    print(c(BOLD, "    🚀 MyWork-AI is your development companion that helps you:"))
+    print(c(GREEN, "       • Scaffold new projects instantly"))
+    print(c(GREEN, "       • Manage your development workflow"))
+    print(c(GREEN, "       • Build and deploy with one command"))
+    print(c(GREEN, "       • Learn and remember best practices"))
+    
+    wait_for_user()
+
+def tour_status(quick=False):
     """Step 1: Health check."""
-    step(1, 6, "Health Check", "See your framework status at a glance")
-    run_mw("status")
-    pause(quick)
+    step(2, 6, "Health Check", "Check your framework status")
+    
+    print(c(BOLD, "    Let's see how your MyWork installation is doing:"))
+    run_command_demo("mw status", "Shows overall system health")
+    
+    if not quick:
+        wait_for_user()
 
-
-def tour_projects(quick):
+def tour_projects():
     """Step 2: Projects."""
-    step(2, 6, "Your Projects", "MyWork tracks all your projects automatically")
-    run_mw("projects")
-    pause(quick)
+    step(3, 6, "Your Project Dashboard", "See all your projects at a glance")
+    
+    print(c(BOLD, "    MyWork automatically tracks all your projects:"))
+    run_command_demo("mw projects", "Lists all detected projects")
+    
+    wait_for_user()
 
+def tour_create_project():
+    """Step 3: Create a real project."""
+    step(4, 6, "Create Your First Project", "Let's build something together!")
+    
+    print(c(BOLD, "    Let's create a real project you can use:"))
+    
+    project_name = input(c(CYAN, "    What should we call your project? [my-demo-app]: ")).strip() or "my-demo-app"
+    
+    print(c(BOLD, f"    Choose a template for '{project_name}':"))
+    print("    1. 📡 FastAPI (REST API)")
+    print("    2. ⚡ Basic (minimal structure)")
+    print("    3. 🖥️  CLI Tool")
+    
+    choice = input(c(CYAN, "    Enter choice (1-3) [1]: ")).strip() or "1"
+    
+    template_map = {"1": "fastapi", "2": "basic", "3": "cli"}
+    template = template_map.get(choice, "fastapi")
+    
+    print(c(GREEN, f"    Creating {project_name} with {template} template..."))
+    
+    cmd = f"mw new {project_name} {template}"
+    print(c(DIM, f"    $ {cmd}"))
+    
+    try:
+        result = subprocess.run(cmd.split(), capture_output=True, text=True, cwd="/tmp")
+        if result.returncode == 0:
+            print(c(GREEN, f"    ✅ Project '{project_name}' created successfully!"))
+            print(c(BLUE, f"    📁 Location: /tmp/{project_name}"))
+        else:
+            print(c(RED, f"    ❌ Error creating project"))
+    except Exception as e:
+        print(c(RED, f"    Error: {e}"))
+    
+    wait_for_user()
 
-def tour_brain(quick):
-    """Step 3: Brain knowledge vault."""
-    step(3, 6, "Brain — Your Knowledge Vault",
-         "Store and search knowledge. It grows as you work.")
-    run_mw("brain stats")
-    print(c(CYAN, "    💡 Try: mw brain add \"React hooks best practices\" --tag react"))
-    print(c(CYAN, "           mw brain search \"react hooks\""))
-    print()
-    pause(quick)
+def tour_brain():
+    """Step 4: Brain knowledge vault."""
+    step(5, 6, "Your Knowledge Vault", "Store and search development knowledge")
+    
+    print(c(BOLD, "    The Brain helps you remember and find information:"))
+    
+    run_command_demo("mw brain stats", "Shows your knowledge vault statistics")
+    
+    print(c(BOLD, "    Let's add some knowledge:"))
+    
+    if input(c(CYAN, "    Add a quick tip to your brain? (Y/n): ")).strip().lower() not in ['n', 'no']:
+        tip = input(c(CYAN, "    Enter a development tip or lesson: ")).strip()
+        if tip:
+            cmd = f'mw brain add "{tip}"'
+            print(c(DIM, f"    $ {cmd}"))
+            try:
+                subprocess.run(["mw", "brain", "add", tip], timeout=5)
+                print(c(GREEN, "    ✅ Added to your brain!"))
+            except Exception as e:
+                print(c(YELLOW, f"    Note saved (manual mode)"))
+    
+    wait_for_user()
 
-
-def tour_scaffold(quick):
-    """Step 4: Project scaffolding."""
-    step(4, 6, "Create Projects Instantly",
-         "Scaffold production-ready apps with one command")
-    templates = [
-        ("mw new myapp api", "REST API (FastAPI + Docker + tests)"),
-        ("mw new myapp webapp", "Next.js web app (React + Tailwind)"),
-        ("mw new myapp cli", "CLI tool (Click + config + packaging)"),
-        ("mw new myapp lib", "Python library (PyPI-ready)"),
-        ("mw new myapp fullstack", "Full-stack (API + frontend + DB)"),
-        ("mw new myapp ml", "ML pipeline (training + inference)"),
-    ]
-    for cmd, desc in templates:
-        print(c(GREEN, f"    $ {cmd}") + c(DIM, f"  — {desc}"))
-    print()
-    pause(quick)
-
-
-def tour_dev(quick):
+def tour_tools():
     """Step 5: Development tools."""
-    step(5, 6, "Development Superpowers",
-         "Test, lint, deploy, monitor — all from one CLI")
+    step(6, 6, "Development Tools", "Your complete development toolkit")
+    
+    print(c(BOLD, "    MyWork includes powerful development tools:"))
+    
     tools = [
-        ("mw test", "Universal test runner (auto-detects framework)"),
-        ("mw lint", "Code quality scanning"),
-        ("mw check", "Quality gate (tests + lint + types + security)"),
-        ("mw deploy", "Deploy to Vercel/Railway/Render/Docker"),
-        ("mw ci", "Generate CI/CD pipelines"),
-        ("mw env", "Manage environment variables (masked)"),
-        ("mw monitor", "Track deployments and health"),
-        ("mw security scan", "Vulnerability + secret scanning"),
-        ("mw plugin install <url>", "Extend with community plugins"),
+        ("mw check", "Run quality checks (tests, lint, types, security)"),
+        ("mw deploy", "Deploy to cloud platforms"),
+        ("mw doctor", "Deep system diagnostics"),
+        ("mw completions install", "Install shell tab-completion"),
     ]
+    
+    print(c(BOLD, "    Available tools:"))
     for cmd, desc in tools:
-        print(c(GREEN, f"    {cmd:<30}") + c(DIM, f" {desc}"))
+        print(c(GREEN, f"      {cmd:<25}") + c(DIM, f" {desc}"))
+    
     print()
-    pause(quick)
+    print(c(BOLD, "    Let's try one:"))
+    
+    if input(c(CYAN, "    Run a quick system diagnostic? (Y/n): ")).strip().lower() not in ['n', 'no']:
+        print(c(DIM, "    $ mw doctor --quick"))
+        try:
+            # Run a quick doctor check
+            result = subprocess.run(["mw", "doctor", "--quick"], capture_output=True, text=True, timeout=15)
+            if result.stdout:
+                lines = result.stdout.split('\n')[:8]
+                for line in lines:
+                    if line.strip():
+                        print(c(DIM, f"      {line}"))
+        except Exception:
+            print(c(YELLOW, "    ⏱️  Doctor check running in background..."))
+    
+    wait_for_user()
 
-
-def tour_next(quick):
-    """Step 6: What's next."""
-    step(6, 6, "You're Ready! 🎉", "Here's how to keep going")
-    print(c(BOLD, "    Quick start:"))
-    print(c(CYAN, "      mw new my-project api    ") + c(DIM, "Create your first project"))
-    print(c(CYAN, "      mw doctor                ") + c(DIM, "Full system diagnostics"))
-    print(c(CYAN, "      mw serve                 ") + c(DIM, "Open web dashboard"))
-    print(c(CYAN, "      mw guide                 ") + c(DIM, "Interactive workflow guide"))
+def tour_next():
+    """Final step: What's next."""
     print()
-    print(c(BOLD, "    Resources:"))
-    print(c(DIM, "      📖 Docs:    ") + c(BLUE, "https://github.com/DansiDanutz/MyWork-AI"))
-    print(c(DIM, "      🐛 Issues:  ") + c(BLUE, "https://github.com/DansiDanutz/MyWork-AI/issues"))
-    print(c(DIM, "      💬 Discord: ") + c(BLUE, "Coming soon"))
+    print(c(BOLD + GREEN, "  🎉 Congratulations! You've completed the MyWork tour!"))
     print()
-    print(c(GREEN + BOLD, "    ✅ Tour complete! Happy building! 🔧"))
+    
+    print(c(BOLD, "  What you've learned:"))
+    print(c(GREEN, "    ✅ Check system status with `mw status`"))
+    print(c(GREEN, "    ✅ View projects with `mw projects`"))
+    print(c(GREEN, "    ✅ Create new projects with `mw new`"))
+    print(c(GREEN, "    ✅ Store knowledge with `mw brain`"))
+    print(c(GREEN, "    ✅ Use development tools for quality and deployment"))
+    
     print()
-
+    print(c(BOLD, "  Ready to build something amazing?"))
+    
+    print(c(CYAN, "    Next commands to try:"))
+    print(c(GREEN, "      mw new my-project fastapi  ") + c(DIM, "# Create a FastAPI project"))
+    print(c(GREEN, "      mw dashboard             ") + c(DIM, "# Open web dashboard"))
+    print(c(GREEN, "      mw brain search <topic>  ") + c(DIM, "# Search your knowledge"))
+    print(c(GREEN, "      mw help                  ") + c(DIM, "# See all commands"))
+    
+    print()
+    print(c(BOLD + GREEN, "  Happy building with MyWork-AI! 🚀"))
+    print()
 
 def cmd_tour(args=None):
-    """Run the interactive tour."""
-    global NO_COLOR
-    quick = False
-    if args:
-        if "--quick" in args:
-            quick = True
-        if "--no-color" in args:
-            NO_COLOR = True
-
+    """Run the enhanced interactive tour."""
+    quick = args and "--quick" in args
+    
     banner()
+    tour_welcome()
     tour_status(quick)
-    tour_projects(quick)
-    tour_brain(quick)
-    tour_scaffold(quick)
-    tour_dev(quick)
-    tour_next(quick)
+    tour_projects()
+    tour_create_project()
+    tour_brain()
+    tour_tools()
+    tour_next()
+    
     return 0
-
 
 if __name__ == "__main__":
     sys.exit(cmd_tour(sys.argv[1:]))

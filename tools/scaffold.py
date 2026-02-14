@@ -53,7 +53,41 @@ TEMPLATES = {
                 "ROADMAP.md": "# {name} Roadmap\n\n## Current Milestone: v1.0\n\n### Phase 1: Setup\n- [ ] Initialize project structure\n- [ ] Configure development environment\n\n### Phase 2: Core Features\n- [ ] Feature 1\n- [ ] Feature 2\n",
                 "STATE.md": "# {name} State\n\n## Current Phase\nPhase 1: Setup\n\n## Last Updated\n{date}\n\n## Recent Decisions\n\n## Blockers\nNone\n\n## Next Steps\n1. Define project requirements\n2. Set up development environment\n",
             },
-            "README.md": "# {name}\n\nA new project created with MyWork scaffold.\n\n## Quick Start\n\n```bash\n# Set up your development environment\n```\n",
+            "tests/": {
+                "__init__.py": "",
+                "test_example.py": '''"""
+Sample tests for {name}
+"""
+import unittest
+
+
+class TestExample(unittest.TestCase):
+    """Example test class."""
+    
+    def test_example(self):
+        """Example test case."""
+        self.assertTrue(True)
+        
+    def test_math(self):
+        """Test basic math."""
+        self.assertEqual(2 + 2, 4)
+
+
+if __name__ == "__main__":
+    unittest.main()
+''',
+            },
+            ".env.example": """# {name} Environment Variables
+# Copy this file to .env and configure your values
+
+# API Keys
+# OPENAI_API_KEY=your_openai_key_here
+# OPENROUTER_API_KEY=your_openrouter_key_here
+
+# Environment
+DEBUG=true
+""",
+            "README.md": "# {name}\n\nA new project created with MyWork scaffold.\n\n## Quick Start\n\n```bash\n# Copy environment template\ncp .env.example .env\n\n# Set up your development environment\n# Add your specific setup instructions here\n```\n\n## Testing\n\n```bash\n# Run tests\npython -m pytest tests/\n# Or with unittest\npython -m unittest discover tests/\n```\n",
             ".gitignore": "# Dependencies\nnode_modules/\nvenv/\n.venv/\n\n# Environment\n.env\n.env.local\n\n# Build\ndist/\nbuild/\n.next/\n\n# IDE\n.idea/\n.vscode/\n*.swp\n\n# OS\n.DS_Store\nThumbs.db\n\n# Python\n__pycache__/\n*.pyc\n*.pyo\n",
         },
     },
@@ -152,8 +186,73 @@ source venv/bin/activate 2>/dev/null || python3 -m venv venv && source venv/bin/
 pip install -r requirements.txt -q
 python main.py
 """,
-            "README.md": "# {name}\n\n## Setup\n\n```bash\ncd backend\npython -m venv venv\nsource venv/bin/activate\npip install -r requirements.txt\npython main.py\n```\n\nAPI available at http://localhost:8000\n",
-            ".gitignore": "venv/\n.env\n*.db\n__pycache__/\n*.pyc\n",
+            "tests/": {
+                "__init__.py": "",
+                "test_main.py": '''"""
+Tests for {name} API
+"""
+from fastapi.testclient import TestClient
+from backend.main import app
+
+client = TestClient(app)
+
+
+def test_root():
+    """Test root endpoint."""
+    response = client.get("/")
+    assert response.status_code == 200
+    assert "message" in response.json()
+
+
+def test_health():
+    """Test health endpoint."""
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json()["status"] == "healthy"
+
+
+def test_not_found():
+    """Test 404 handling."""
+    response = client.get("/nonexistent")
+    assert response.status_code == 404
+''',
+                "conftest.py": '''"""
+Test configuration for pytest.
+"""
+import pytest
+from fastapi.testclient import TestClient
+from backend.main import app
+
+
+@pytest.fixture
+def client():
+    """Test client fixture."""
+    return TestClient(app)
+''',
+            },
+            ".env.example": """# {name} API Environment Variables
+# Copy this file to .env and configure your values
+
+# Database
+DATABASE_URL=sqlite:///./app.db
+# For PostgreSQL: DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+
+# API Configuration
+API_HOST=0.0.0.0
+API_PORT=8000
+DEBUG=true
+
+# CORS Origins (comma-separated)
+CORS_ORIGINS=http://localhost:3000,http://localhost:3001
+
+# JWT Secret (for authentication)
+JWT_SECRET=your-secret-key-change-in-production
+
+# API Keys
+OPENAI_API_KEY=your_openai_key_here
+""",
+            "README.md": "# {name}\n\n## Setup\n\n```bash\ncd backend\npython -m venv venv\nsource venv/bin/activate\npip install -r requirements.txt\n\n# Copy and configure environment\ncp .env.example .env\n\n# Run the application\npython main.py\n```\n\nAPI available at http://localhost:8000\n\n## Testing\n\n```bash\n# Install test dependencies\npip install pytest httpx\n\n# Run tests\npython -m pytest tests/\n```\n\n## API Documentation\n\nOpenAPI docs available at:\n- Swagger UI: http://localhost:8000/docs\n- ReDoc: http://localhost:8000/redoc\n",
+            ".gitignore": "venv/\n.env\n*.db\n__pycache__/\n*.pyc\n.pytest_cache/\n",
         },
     },
     "nextjs": {
@@ -4816,6 +4915,22 @@ def create_project(name: str, template: str = "basic", use_current_dir: bool = F
     # Make shell scripts executable
     for script in project_path.rglob("*.sh"):
         script.chmod(0o755)
+
+    # Initialize git repository
+    try:
+        import subprocess
+        subprocess.run(["git", "init", "-q"], cwd=project_path, check=True, 
+                      capture_output=True, text=True)
+        print(f"📦 Git repository initialized")
+        
+        # Add initial commit
+        subprocess.run(["git", "add", "."], cwd=project_path, check=True,
+                      capture_output=True, text=True)
+        subprocess.run(["git", "commit", "-m", f"Initial commit: {template} template"], 
+                      cwd=project_path, check=True, capture_output=True, text=True)
+        print(f"💡 Initial commit created")
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        print(f"⚠️  Could not initialize git repository (git not found or error)")
 
     print(f"✅ Project created at: {project_path}")
 

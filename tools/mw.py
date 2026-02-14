@@ -2414,7 +2414,7 @@ Examples:
 
 
 def cmd_setup(args: Optional[List[str]] = None) -> None:
-    """Setup command for first-time users - interactive configuration wizard."""
+    """Enhanced setup command for first-time users - interactive configuration wizard."""
     if args and (args[0] in ["--help", "-h"]):
         print("""
 Setup Commands — First-Time Setup Guide
@@ -2440,17 +2440,18 @@ Examples:
         return 0
         
     import sys
-    import platform
     import json
+    import platform
+    from datetime import datetime
     from pathlib import Path
-    
+
     def get_input(prompt, default=""):
         """Get user input with optional default."""
         if default:
             response = input(f"{prompt} [{default}]: ").strip()
             return response if response else default
         return input(f"{prompt}: ").strip()
-    
+
     def yes_no(prompt, default=True):
         """Get yes/no input from user."""
         default_str = "Y/n" if default else "y/N"
@@ -2463,7 +2464,7 @@ Examples:
             if response in ['n', 'no']:
                 return False
             print("Please enter 'y' or 'n'")
-    
+
     # ASCII Art Welcome
     print(f"""
 {Colors.BOLD}{Colors.BLUE}
@@ -2481,113 +2482,121 @@ Examples:
 ╚══════════════════════════════════════════════════════════════════════╝
 {Colors.ENDC}
 
-{Colors.BOLD}🚀 Let's get you set up for productive development!{Colors.ENDC}
+{Colors.BOLD}🚀 Let's set up your personalized MyWork environment!{Colors.ENDC}
 """)
     
-    print(f"{Colors.BOLD}Step 1: Python Version Check{Colors.ENDC}")
-    print("=" * 40)
-    
+    # Python version check
     python_version = sys.version_info
-    if python_version >= (3, 11):
-        print(f"{Colors.GREEN}✅ Python {python_version.major}.{python_version.minor}.{python_version.micro} detected (>= 3.11 required){Colors.ENDC}")
-    else:
-        print(f"{Colors.RED}❌ Python {python_version.major}.{python_version.minor}.{python_version.micro} detected{Colors.ENDC}")
-        print(f"{Colors.RED}   MyWork requires Python 3.11 or higher{Colors.ENDC}")
-        print(f"{Colors.YELLOW}   Please upgrade Python before continuing{Colors.ENDC}")
+    if python_version < (3, 9):
+        print(f"{Colors.RED}❌ Python {python_version.major}.{python_version.minor} is too old{Colors.ENDC}")
+        print(f"{Colors.RED}   MyWork requires Python 3.9 or higher{Colors.ENDC}")
         return 1
     
-    print(f"\n{Colors.BOLD}Step 2: Environment File Check{Colors.ENDC}")
-    print("=" * 40)
+    print(f"{Colors.GREEN}✅ Python {python_version.major}.{python_version.minor}.{python_version.micro} looks good!{Colors.ENDC}\n")
     
-    env_file = MYWORK_ROOT / ".env"
-    env_example = MYWORK_ROOT / ".env.example"
+    # Step 1: User Profile
+    print(f"{Colors.BOLD}{Colors.CYAN}👤 Step 1: User Profile{Colors.ENDC}")
+    print("─" * 30)
     
-    if env_file.exists():
-        print(f"{Colors.GREEN}✅ .env file already exists{Colors.ENDC}")
-    elif env_example.exists():
-        print(f"{Colors.YELLOW}⚠️  Creating .env file from template{Colors.ENDC}")
-        env_file.write_text(env_example.read_text())
-        print(f"{Colors.GREEN}✅ .env file created from .env.example{Colors.ENDC}")
-        print(f"{Colors.BLUE}💡 Edit .env to add your API keys and configuration{Colors.ENDC}")
+    user_name = get_input("What's your name?", "Developer")
+    
+    # Step 2: Project preferences  
+    print(f"\n{Colors.BOLD}{Colors.CYAN}🎯 Step 2: Project Preferences{Colors.ENDC}")
+    print("─" * 30)
+    
+    print("What type of projects do you usually build? (select multiple)")
+    print("1. Web APIs (FastAPI, Flask)")
+    print("2. Web Apps (React, Next.js)")  
+    print("3. CLI Tools")
+    print("4. Data Science/ML")
+    print("5. Full-stack applications")
+    
+    project_types = get_input("Enter numbers (e.g., 1,3,5)", "1,2").split(',')
+    project_types = [t.strip() for t in project_types if t.strip()]
+    
+    # Step 3: API Configuration
+    print(f"\n{Colors.BOLD}{Colors.CYAN}🔑 Step 3: AI API Setup{Colors.ENDC}")
+    print("─" * 30)
+    print("MyWork works best with AI assistance. Let's configure your API keys.")
+    
+    api_key = None
+    api_provider = "none"
+    
+    if yes_no("Do you have an OpenRouter API key?", False):
+        api_key = get_input("Enter your OpenRouter API key").strip()
+        if api_key:
+            api_provider = "openrouter"
+    elif yes_no("Do you have an OpenAI API key?", False):
+        api_key = get_input("Enter your OpenAI API key").strip() 
+        if api_key:
+            api_provider = "openai"
     else:
-        print(f"{Colors.YELLOW}⚠️  Creating basic .env file{Colors.ENDC}")
-        env_content = """# MyWork-AI Environment Configuration
-# Add your API keys and settings here
-
-# OpenAI API Key (optional)
-# OPENAI_API_KEY=your_key_here
-
-# Other API keys as needed
-"""
-        env_file.write_text(env_content)
-        print(f"{Colors.GREEN}✅ Basic .env file created{Colors.ENDC}")
+        print(f"{Colors.YELLOW}⏭️  No API key provided - you can add one later in ~/.mywork/config.json{Colors.ENDC}")
     
-    print(f"\n{Colors.BOLD}Step 3: Workspace Configuration{Colors.ENDC}")
-    print("=" * 40)
+    # Step 4: Create ~/.mywork directory and config
+    print(f"\n{Colors.BOLD}{Colors.CYAN}📁 Step 4: Configuration Setup{Colors.ENDC}")
+    print("─" * 30)
     
-    # Configure current directory as workspace
-    current_dir = Path.cwd()
-    planning_dir = current_dir / ".planning"
+    config_dir = Path.home() / ".mywork"
+    config_dir.mkdir(exist_ok=True)
     
-    print(f"🏠 Configuring workspace: {current_dir}")
+    config = {
+        "user": {
+            "name": user_name,
+            "setup_date": datetime.now().isoformat(),
+            "version": "2.0.0"
+        },
+        "preferences": {
+            "project_types": project_types,
+            "default_template": "basic"
+        },
+        "api": {
+            "provider": api_provider,
+            "key": api_key if api_key else ""
+        },
+        "completion_configured": False
+    }
     
-    if planning_dir.exists():
-        print(f"{Colors.GREEN}✅ .planning directory exists{Colors.ENDC}")
-    else:
-        print(f"{Colors.YELLOW}⚠️  Creating .planning directory in current workspace{Colors.ENDC}")
-        planning_dir.mkdir(exist_ok=True)
-        (planning_dir / "config").mkdir(exist_ok=True)
-        print(f"{Colors.GREEN}✅ .planning directory created{Colors.ENDC}")
+    config_file = config_dir / "config.json"
+    config_file.write_text(json.dumps(config, indent=2))
     
-    # Also ensure framework planning directory exists
-    framework_planning_dir = MYWORK_ROOT / ".planning"
-    if not framework_planning_dir.exists():
-        print(f"{Colors.YELLOW}⚠️  Creating framework .planning directory{Colors.ENDC}")
-        framework_planning_dir.mkdir(exist_ok=True)
-        (framework_planning_dir / "config").mkdir(exist_ok=True)
+    print(f"{Colors.GREEN}✅ Configuration saved to {config_file}{Colors.ENDC}")
     
-    print(f"\n{Colors.BOLD}Step 4: Quick Health Check{Colors.ENDC}")
-    print("=" * 40)
+    # Step 5: Shell completions (optional)
+    print(f"\n{Colors.BOLD}{Colors.CYAN}🐚 Step 5: Shell Completions (Optional){Colors.ENDC}")
+    print("─" * 30)
     
-    # Run a basic health check
-    tools_check = []
-    essential_tools = ["brain.py", "health_check.py", "scaffold.py"]
+    if yes_no("Install shell completions for tab-completion?", True):
+        try:
+            # Try to use the existing completions command if available
+            from tools.mw import cmd_completions
+            result = cmd_completions(['install'])
+            if result == 0:
+                config["completion_configured"] = True
+                config_file.write_text(json.dumps(config, indent=2))
+                print(f"{Colors.GREEN}✅ Shell completions installed{Colors.ENDC}")
+        except Exception as e:
+            print(f"{Colors.YELLOW}⚠️  Could not auto-install completions{Colors.ENDC}")
+            print(f"{Colors.BLUE}💡 You can install them later with: mw completions install{Colors.ENDC}")
     
-    for tool in essential_tools:
-        tool_path = TOOLS_DIR / tool
-        if tool_path.exists():
-            tools_check.append(f"{Colors.GREEN}✅ {tool}{Colors.ENDC}")
-        else:
-            tools_check.append(f"{Colors.RED}❌ {tool}{Colors.ENDC}")
-    
-    for check in tools_check:
-        print(f"   {check}")
-    
-    print(f"\n{Colors.BOLD}Step 5: Next Steps{Colors.ENDC}")
-    print("=" * 40)
+    # Final setup complete message
     print(f"""
-{Colors.GREEN}🎉 Setup complete! Here's what to do next:{Colors.ENDC}
+{Colors.BOLD}{Colors.GREEN}🎉 Setup Complete! Welcome to MyWork, {user_name}!{Colors.ENDC}
 
-{Colors.BOLD}1. Explore the framework:{Colors.ENDC}
-   mw dashboard              # See framework overview
-   mw status                 # Check health status
-   mw guide                  # Interactive workflow guide
+{Colors.BOLD}✨ What's next?{Colors.ENDC}
+{Colors.CYAN}1. Take the interactive tour:{Colors.ENDC}
+   {Colors.BOLD}mw tour{Colors.ENDC}                    # Learn key features hands-on
 
-{Colors.BOLD}2. Create your first project:{Colors.ENDC}
-   mw new my-first-app       # Create a basic project
-   mw new api-server fastapi # Create a FastAPI project
+{Colors.CYAN}2. Create your first project:{Colors.ENDC}
+   {Colors.BOLD}mw new my-app{Colors.ENDC}              # Basic project
+   {Colors.BOLD}mw new api-server fastapi{Colors.ENDC}  # FastAPI project
 
-{Colors.BOLD}3. Learn about the Brain:{Colors.ENDC}
-   mw brain --help           # Knowledge management
-   mw brain stats            # See brain statistics
-
-{Colors.BOLD}4. Try AutoForge (optional):{Colors.ENDC}
-   mw af --help              # Autonomous coding assistant
-
-{Colors.BLUE}💡 Run 'mw help' anytime to see all available commands{Colors.ENDC}
-{Colors.BLUE}🔗 Visit the marketplace to share your projects{Colors.ENDC}
-
-{Colors.BOLD}Happy coding with MyWork-AI! 🚀{Colors.ENDC}
+{Colors.CYAN}3. Explore the framework:{Colors.ENDC}
+   {Colors.BOLD}mw dashboard{Colors.ENDC}               # Web dashboard
+   {Colors.BOLD}mw status{Colors.ENDC}                  # Health check
+   
+{Colors.BLUE}📖 Configuration stored in: {config_dir}/{Colors.ENDC}
+{Colors.BLUE}🎯 You're ready to build! Try '{Colors.BOLD}mw tour{Colors.ENDC}{Colors.BLUE}' next{Colors.ENDC}
 """)
     
     return 0
