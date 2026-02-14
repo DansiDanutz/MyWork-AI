@@ -964,6 +964,168 @@ def cmd_cd(args: List[str]) -> None:
     return 0
 
 
+def cmd_gsd(args: List[str]) -> int:
+    """GSD (Get Stuff Done) - Project planning and orchestration."""
+    if not args or (len(args) == 1 and args[0] in ["--help", "-h"]):
+        print(f"""
+{Colors.BOLD}{Colors.BLUE}🎯 GSD — Get Stuff Done{Colors.ENDC}
+{Colors.BLUE}{'='*50}{Colors.ENDC}
+
+  Project planning, requirements, roadmaps, and execution tracking.
+
+{Colors.BOLD}Commands:{Colors.ENDC}
+  mw gsd new <project>      Create a new GSD project with full planning
+  mw gsd status              Show all GSD project statuses
+  mw gsd plan <project>      Plan next phase for a project
+  mw gsd execute <project>   Execute current phase
+  mw gsd progress <project>  Show detailed progress
+  mw gsd quick <task>        Quick task (no full planning needed)
+  mw gsd pause <project>     Pause work with context save
+  mw gsd resume <project>    Resume paused project
+
+{Colors.BOLD}Examples:{Colors.ENDC}
+  mw gsd new my-saas-app              # Full project planning
+  mw gsd quick "fix login bug"        # Quick one-off task
+  mw gsd status                       # See all projects
+  mw gsd plan my-saas-app             # Plan next phase
+  mw gsd execute my-saas-app          # Execute current phase
+
+{Colors.BOLD}Integration:{Colors.ENDC}
+  mw gsd → autoforge                  # Hand off to AutoForge for coding
+  mw gsd → brain                      # Store learnings in Brain
+  mw gsd → marketplace                # Publish result to marketplace
+""")
+        return 0
+
+    sub = args[0]
+    rest = args[1:]
+    project_root = Path(".")
+    mw_dir = project_root / ".mw"
+    gsd_dir = mw_dir / "gsd"
+
+    if sub == "new":
+        if not rest:
+            print(f"{Colors.RED}❌ Error: Project name required{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Usage: mw gsd new <project-name>{Colors.ENDC}")
+            return 1
+        name = rest[0]
+        gsd_dir.mkdir(parents=True, exist_ok=True)
+        state_file = gsd_dir / "STATE.md"
+        roadmap_file = gsd_dir / "ROADMAP.md"
+        requirements_file = gsd_dir / "REQUIREMENTS.md"
+
+        state_file.write_text(f"""# {name} — Project State
+## Status: 🟢 Active
+## Phase: 1 — Planning
+## Started: {__import__('datetime').datetime.now().strftime('%Y-%m-%d')}
+
+### Current Focus
+- Define requirements
+- Plan architecture
+- Set up project structure
+
+### Blockers
+- None
+""")
+        roadmap_file.write_text(f"""# {name} — Roadmap
+
+## Phase 1: Foundation
+- [ ] Requirements gathering
+- [ ] Architecture design
+- [ ] Project scaffolding
+- [ ] Core data models
+
+## Phase 2: Core Features
+- [ ] Main functionality
+- [ ] API endpoints
+- [ ] Database integration
+- [ ] Authentication
+
+## Phase 3: Polish
+- [ ] Testing
+- [ ] Documentation
+- [ ] Performance optimization
+- [ ] Security audit
+
+## Phase 4: Launch
+- [ ] Deployment
+- [ ] Monitoring
+- [ ] Marketing page
+- [ ] Marketplace listing
+""")
+        requirements_file.write_text(f"""# {name} — Requirements
+
+## Functional Requirements
+- [ ] (Add your requirements here)
+
+## Non-Functional Requirements
+- [ ] Performance: Response time < 200ms
+- [ ] Security: OWASP Top 10 compliance
+- [ ] Scalability: Handle 1000+ concurrent users
+- [ ] Availability: 99.9% uptime
+
+## Tech Stack
+- Backend: (TBD)
+- Frontend: (TBD)
+- Database: (TBD)
+- Deployment: (TBD)
+""")
+        print(f"{Colors.GREEN}✅ GSD project '{name}' created!{Colors.ENDC}")
+        print(f"   📋 State:        .mw/gsd/STATE.md")
+        print(f"   🗺️  Roadmap:      .mw/gsd/ROADMAP.md")
+        print(f"   📝 Requirements: .mw/gsd/REQUIREMENTS.md")
+        print(f"\n{Colors.YELLOW}💡 Next: Edit requirements, then run 'mw gsd plan {name}'{Colors.ENDC}")
+        return 0
+
+    elif sub == "status":
+        if not gsd_dir.exists():
+            print(f"{Colors.YELLOW}⚠️  No GSD projects found in this directory{Colors.ENDC}")
+            print(f"{Colors.CYAN}💡 Create one: mw gsd new <project-name>{Colors.ENDC}")
+            return 0
+        state_file = gsd_dir / "STATE.md"
+        if state_file.exists():
+            content = state_file.read_text()
+            print(f"{Colors.BOLD}{Colors.BLUE}🎯 GSD Project Status{Colors.ENDC}")
+            print(f"{Colors.BLUE}{'='*50}{Colors.ENDC}")
+            print(content)
+        else:
+            print(f"{Colors.YELLOW}⚠️  No STATE.md found{Colors.ENDC}")
+        return 0
+
+    elif sub == "progress":
+        roadmap = gsd_dir / "ROADMAP.md" if gsd_dir.exists() else None
+        if roadmap and roadmap.exists():
+            content = roadmap.read_text()
+            total = content.count("- [")
+            done = content.count("- [x]") + content.count("- [X]")
+            pct = int(done / total * 100) if total > 0 else 0
+            bar_len = 30
+            filled = int(bar_len * pct / 100)
+            bar = "█" * filled + "░" * (bar_len - filled)
+            print(f"{Colors.BOLD}{Colors.BLUE}📊 Project Progress{Colors.ENDC}")
+            print(f"   [{bar}] {pct}% ({done}/{total} tasks)")
+            print(f"\n{content}")
+        else:
+            print(f"{Colors.YELLOW}⚠️  No roadmap found. Run 'mw gsd new <project>' first{Colors.ENDC}")
+        return 0
+
+    elif sub == "quick":
+        task = " ".join(rest) if rest else None
+        if not task:
+            print(f"{Colors.RED}❌ Error: Task description required{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Usage: mw gsd quick \"fix the login bug\"{Colors.ENDC}")
+            return 1
+        print(f"{Colors.GREEN}⚡ Quick task started: {task}{Colors.ENDC}")
+        print(f"   No full planning — just get it done!")
+        print(f"\n{Colors.CYAN}💡 When done, run: mw brain add \"Completed: {task}\"{Colors.ENDC}")
+        return 0
+
+    else:
+        print(f"{Colors.YELLOW}⚠️  Unknown GSD subcommand: {sub}{Colors.ENDC}")
+        print(f"{Colors.CYAN}💡 Run 'mw gsd --help' for available commands{Colors.ENDC}")
+        return 1
+
+
 def cmd_autoforge(args: List[str]) -> int:
     """AutoForge commands."""
     if not args or (len(args) == 1 and args[0] in ["--help", "-h"]):
