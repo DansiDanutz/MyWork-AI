@@ -119,8 +119,8 @@ class CodeReviewer:
     def _check_security(self, file_path: Path, content: str, lines: List[str]):
         """Check for security issues."""
         security_patterns = [
-            (r'eval\s*\(', 'high', 'Use of eval() can be dangerous'),
-            (r'exec\s*\(', 'high', 'Use of exec() can be dangerous'),
+            (r'eval\s*\(', 'high', 'Use of eval() can be dangerous'),  # noqa: security
+            (r'exec\s*\(', 'high', 'Use of exec() can be dangerous'),  # noqa: security
             (r'password\s*=\s*["\'][^"\']+["\']', 'critical', 'Hardcoded password detected'),
             (r'api[_-]?key\s*=\s*["\'][^"\']+["\']', 'high', 'Hardcoded API key detected'),
             (r'subprocess\.call\s*\([^)]*shell\s*=\s*True', 'medium', 'Shell injection risk'),

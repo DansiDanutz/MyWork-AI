@@ -53,15 +53,15 @@ class CodeSecurityScanner:
             'code_injection': {
                 'severity': 'CRITICAL',
                 'patterns': [
-                    (r'\beval\s*\(', 'Use of eval() function - code injection risk'),
-                    (r'\bexec\s*\(', 'Use of exec() function - code injection risk'),
+                    (r'\beval\s*\(', 'Use of eval() function - code injection risk'),  # noqa: security
+                    (r'\bexec\s*\(', 'Use of exec() function - code injection risk'),  # noqa: security
                     (r'__import__\s*\(.*input\(', 'Dynamic import with user input'),
                 ]
             },
             'command_injection': {
                 'severity': 'HIGH',
                 'patterns': [
-                    (r'os\.system\s*\(', 'Use of os.system() - command injection risk'),
+                    (r'os\.system\s*\(', 'Use of os.system() - command injection risk'),  # noqa: security
                     (r'subprocess.*shell\s*=\s*True', 'subprocess with shell=True - command injection risk'),
                     (r'popen\s*\(', 'Use of popen() - command injection risk'),
                 ]

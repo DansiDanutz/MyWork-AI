@@ -266,7 +266,7 @@ FastAPI middleware for JWT token validation with session fallback
 
 Usage:
 from shared.middleware.auth import AuthMiddleware
-app.add_middleware(AuthMiddleware, secret="<YOUR_SECRET>")
+app.add_middleware(AuthMiddleware, secret="fake123")
 
 Dependencies:
 

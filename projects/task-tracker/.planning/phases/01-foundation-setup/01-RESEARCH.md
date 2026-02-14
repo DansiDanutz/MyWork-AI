@@ -535,7 +535,7 @@ NODE_ENV="development"
 
 # Server-only variables (no prefix)
 
-AUTH_SECRET="<YOUR_SECRET_HERE>"
+AUTH_SECRET="fake123"
 
 # Client-exposed variables (NEXT_PUBLIC_ prefix)
 

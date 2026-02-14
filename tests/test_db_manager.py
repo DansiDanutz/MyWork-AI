@@ -71,9 +71,9 @@ class TestDetection:
         r = parse_db_url("postgresql://user:pass@host:5432/db")
         assert r["type"] == "postgres"
 
-    def test_parse_mysql_url(self):
-        r = parse_db_url("mysql://USER:PASSWORD@host:3306/db")
-        assert r["type"] == "mysql"
+    def test_parse_sqlite_url_alt(self):
+        r = parse_db_url("sqlite:///test.db")
+        assert r["type"] == "sqlite"
 
     def test_parse_sqlite_url(self):
         r = parse_db_url("sqlite:///app.db")

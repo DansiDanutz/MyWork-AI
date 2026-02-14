@@ -73,7 +73,7 @@ Required for live marketplace:
 
 # Security
 
-ADMIN_SECRET="<YOUR_ADMIN_SECRET>"
+ADMIN_SECRET="fake123"
 ALLOW_ADMIN_SEED=false
 
 # API Keys

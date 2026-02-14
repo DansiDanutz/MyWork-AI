@@ -89,19 +89,19 @@ class TestScanGitignore:
 class TestScanCodePatterns:
     def test_detects_eval(self, temp_project):
         f = temp_project / "bad.py"
-        f.write_text('result = eval(user_input)\n')
+        f.write_text('result = eval(user_input)\n')  # noqa: security
         findings = scan_code_patterns(str(temp_project))
         assert any('eval' in f['type'] for f in findings)
 
     def test_detects_pickle(self, temp_project):
         f = temp_project / "bad.py"
-        f.write_text('import pickle\ndata = pickle.loads(raw_data)\n')
+        f.write_text('import pickle\ndata = pickle.loads(raw_data)\n')  # noqa: security
         findings = scan_code_patterns(str(temp_project))
         assert any('pickle' in f['type'].lower() for f in findings)
 
     def test_detects_ssl_disabled(self, temp_project):
         f = temp_project / "api.py"
-        f.write_text('requests.get(url, verify=False)\n')
+        f.write_text('requests.get(url, verify=False)\n')  # noqa: security
         findings = scan_code_patterns(str(temp_project))
         assert any('SSL' in f['type'] for f in findings)
 

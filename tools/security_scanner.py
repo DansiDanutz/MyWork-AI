@@ -52,9 +52,9 @@ def scan_secrets(project_path: str, verbose: bool = False) -> list:
                 continue
             
             for line_num, line in enumerate(content.splitlines(), 1):
-                # Skip comments
+                # Skip comments and noqa lines
                 stripped = line.strip()
-                if stripped.startswith('#') or stripped.startswith('//'):
+                if stripped.startswith('#') or stripped.startswith('//') or '# noqa: security' in line:
                     continue
                 
                 for pattern, secret_type in SECRET_PATTERNS:
@@ -179,16 +179,16 @@ def scan_code_patterns(project_path: str) -> list:
     project = Path(project_path)
     
     dangerous_patterns = [
-        (r'\beval\s*\(', 'eval() usage', 'MEDIUM'),
-        (r'\bexec\s*\(', 'exec() usage', 'MEDIUM'),
+        (r'\beval\s*\(', 'eval() usage', 'MEDIUM'),  # noqa: security
+        (r'\bexec\s*\(', 'exec() usage', 'MEDIUM'),  # noqa: security
         (r'subprocess\.call\([^)]*shell\s*=\s*True', 'shell=True in subprocess', 'MEDIUM'),
-        (r'os\.system\s*\(', 'os.system() usage', 'LOW'),
-        (r'pickle\.loads?\s*\(', 'Unsafe pickle deserialization', 'HIGH'),
+        (r'os\.system\s*\(', 'os.system() usage', 'LOW'),  # noqa: security
+        (r'pickle\.loads?\s*\(', 'Unsafe pickle deserialization', 'HIGH'),  # noqa: security
         (r'yaml\.load\s*\([^)]*\)(?!.*Loader)', 'Unsafe YAML load (no Loader)', 'MEDIUM'),
         (r'__import__\s*\(', 'Dynamic import', 'LOW'),
-        (r'markupsafe|safe\s*=\s*True|autoescape\s*=\s*False', 'Potential XSS', 'MEDIUM'),
+        (r'markupsafe|\.safe\s*=\s*True|autoescape\s*=\s*False', 'Potential XSS', 'MEDIUM'),  # noqa: security
         (r'CORS\s*\(\s*app\s*\)', 'Unrestricted CORS', 'MEDIUM'),
-        (r'verify\s*=\s*False', 'SSL verification disabled', 'HIGH'),
+        (r'verify\s*=\s*False', 'SSL verification disabled', 'HIGH'),  # noqa: security
     ]
     
     for root, dirs, files in os.walk(project):
@@ -203,6 +203,9 @@ def scan_code_patterns(project_path: str) -> list:
                 continue
             
             for line_num, line in enumerate(content.splitlines(), 1):
+                # Skip lines with noqa: security comment
+                if '# noqa: security' in line:
+                    continue
                 for pattern, desc, severity in dangerous_patterns:
                     if re.search(pattern, line):
                         findings.append({

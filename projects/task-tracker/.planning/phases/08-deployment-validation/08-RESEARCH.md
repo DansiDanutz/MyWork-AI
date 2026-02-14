@@ -171,7 +171,7 @@ return NextResponse.json(
 # .env.local (development)
 
 DATABASE_URL="postgresql://user:pass@localhost:5432/db"
-NEXTAUTH_SECRET="dev-secret"
+NEXTAUTH_SECRET="fake123"
 NEXTAUTH_URL="http://localhost:3000"
 
 # Vercel Environment Variables (production)
