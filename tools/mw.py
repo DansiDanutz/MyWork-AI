@@ -7531,6 +7531,17 @@ def main() -> None:
     if not validate_input(command, "command", max_length=50):
         sys.exit(1)
 
+    def _cmd_badge(badge_args):
+        """Generate project badges (shields.io compatible)."""
+        tool_path = Path(_FRAMEWORK_ROOT) / "tools" / "badge.py"
+        if tool_path.exists():
+            return subprocess.run(
+                [sys.executable, str(tool_path)] + (badge_args or []),
+                cwd=str(_FRAMEWORK_ROOT)
+            ).returncode
+        print("Badge tool not found")
+        return 1
+
     # Command routing
     commands = {
         "dashboard": lambda: cmd_dashboard(args),
@@ -7574,6 +7585,7 @@ def main() -> None:
         "docs": lambda: cmd_docs(args),
         "ci": lambda: cmd_ci(args),
         "release": lambda: cmd_release(args),
+        "badge": lambda: _cmd_badge(args),
         "run": lambda: _cmd_run_wrapper(args),
         "deploy": lambda: cmd_deploy(args),
         "monitor": lambda: cmd_monitor(args),

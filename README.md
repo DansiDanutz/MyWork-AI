@@ -11,6 +11,10 @@
 
 # MyWork-AI
 
+<!-- badges-start -->
+![version](https://img.shields.io/badge/version-v2.1.0-blue?style=flat-square) ![python](https://img.shields.io/badge/python-%3E%3D3.9-3776AB?style=flat-square) ![tests](https://img.shields.io/badge/tests-1006-brightgreen?style=flat-square) ![commands](https://img.shields.io/badge/commands-53-purple?style=flat-square) ![lines of code](https://img.shields.io/badge/lines%20of%20code-49k%2B-informational?style=flat-square) ![license](https://img.shields.io/badge/license-MIT-green?style=flat-square) ![platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey?style=flat-square)
+<!-- badges-end -->
+
 ### The AI-Powered Development Framework
 
 [![Version](https://img.shields.io/badge/version-2.1.0-blue.svg)](CHANGELOG.md)
