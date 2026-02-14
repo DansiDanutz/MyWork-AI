@@ -5373,35 +5373,17 @@ def cmd_deploy(args: List[str] = None) -> int:
         elif has_vercel or is_nodejs:
             platform = "vercel"  # Vercel for Node.js/static sites
         else:
-            print(f"{Colors.RED}❌ Could not auto-detect platform for deployment{Colors.ENDC}")
-            print(f"{Colors.BLUE}📋 Project Analysis:{Colors.ENDC}")
-            if os.path.exists(os.path.join(project_dir, "package.json")):
-                print(f"   • Node.js project detected")
-            if os.path.exists(os.path.join(project_dir, "requirements.txt")) or os.path.exists(os.path.join(project_dir, "pyproject.toml")):
-                print(f"   • Python project detected")
-            if os.path.exists(os.path.join(project_dir, "go.mod")):
-                print(f"   • Go project detected")
-                
-            print(f"\n{Colors.YELLOW}🎯 Recommended platforms:{Colors.ENDC}")
-            if is_nodejs:
-                print(f"   mw deploy --platform vercel     # ⭐ Best for Next.js/React/Vue/static sites")
-                print(f"   mw deploy --platform railway    # Good for Node.js APIs")
-                print(f"   mw deploy --platform render     # Full-stack apps")
-            elif is_python:
-                print(f"   mw deploy --platform railway    # ⭐ Best for FastAPI/Django/Flask")
-                print(f"   mw deploy --platform render     # Web services")
-                print(f"   mw deploy --platform vercel     # Static sites only")
-            else:
-                print(f"   mw deploy --platform railway    # General purpose")
-                print(f"   mw deploy --platform render     # Web services")
-                print(f"   mw deploy --platform docker     # Any containerized app")
-                
-            print(f"\n{Colors.YELLOW}🔧 Quick Setup Guides:{Colors.ENDC}")
-            print(f"   Vercel: Add vercel.json → https://vercel.com/docs/projects/project-configuration")
-            print(f"   Railway: Login → railway login, then railway init")
-            print(f"   Render: Connect Git repo → https://render.com/docs")
-            print(f"   Docker: Add Dockerfile → mw generate dockerfile")
-            print(f"\n{Colors.BLUE}💡 Try: mw deploy --dry-run --platform <name> to preview{Colors.ENDC}")
+            print(f"{Colors.RED}❌ Could not auto-detect platform{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Specify platform explicitly:{Colors.ENDC}")
+            print(f"   mw deploy --platform vercel     # For Node.js/React/Next.js")
+            print(f"   mw deploy --platform railway    # For Python/FastAPI") 
+            print(f"   mw deploy --platform render     # Web services")
+            print(f"   mw deploy --platform docker     # Containerized apps")
+            print(f"\n{Colors.YELLOW}💡 Or add config files:{Colors.ENDC}")
+            print(f"   • vercel.json (Vercel)")
+            print(f"   • railway.toml (Railway)")
+            print(f"   • render.yaml (Render)")
+            print(f"   • Dockerfile (Docker)")
             return 1
     
     print(f"  📁 Project: {Colors.GREEN}{os.path.basename(project_dir)}{Colors.ENDC}")

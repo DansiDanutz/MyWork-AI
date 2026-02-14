@@ -5,14 +5,18 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mywork-ai"
 version = "2.3.0"
-description = "AI-powered development framework with tools, workflows, and brain (knowledge vault)"
+description = "Complete AI-powered development framework with 53+ CLI commands for code generation, project analysis, security scanning, and deployment automation"
 readme = "README.md"
-license = "MIT"
+license = {text = "MIT"}
 requires-python = ">=3.9"
 authors = [
     {name = "Dan Sidanutz", email = "dan@mywork.ai"}
 ]
-keywords = ["ai", "development", "framework", "automation", "claude", "gsd"]
+keywords = [
+    "ai", "artificial-intelligence", "development", "framework", "automation", 
+    "cli", "developer-tools", "code-generation", "devops", "project-management",
+    "security-scanning", "code-analysis", "deployment", "testing", "refactoring"
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Environment :: Console",
@@ -20,11 +24,16 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.10", 
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
     "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: System :: Software Distribution",
+    "Topic :: Utilities",
+    "Typing :: Typed",
 ]
 dependencies = [
     "python-dotenv>=1.0.0",
@@ -60,9 +69,11 @@ mywork = "mw:main"
 
 [project.urls]
 Homepage = "https://github.com/dansidanutz/MyWork-AI"
-Documentation = "https://github.com/dansidanutz/MyWork-AI#readme"
-Repository = "https://github.com/dansidanutz/MyWork-AI.git"
+Documentation = "https://docssite-igkwv43c5-irises-projects-ce549f63.vercel.app"
+Repository = "https://github.com/dansidanutz/MyWork-AI"
 Issues = "https://github.com/dansidanutz/MyWork-AI/issues"
+Changelog = "https://github.com/dansidanutz/MyWork-AI/blob/main/CHANGELOG.md"
+"Live Demo" = "https://frontend-hazel-ten-17.vercel.app"
 
 [tool.setuptools]
 py-modules = [
