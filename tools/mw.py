@@ -7183,6 +7183,12 @@ def _cmd_env(args: List[str] = None) -> int:
     return run_tool("env_manager", args or [])
 
 
+def _cmd_tree(args: List[str] = None) -> int:
+    """Smart project tree with git status, icons, and .gitignore awareness."""
+    from tools.tree_viewer import cmd_tree
+    return cmd_tree(args or [])
+
+
 def _cmd_depgraph(args: List[str] = None) -> int:
     """Run dependency graph analyzer."""
     return run_tool("depgraph", args or [])
@@ -7618,6 +7624,7 @@ def main() -> None:
         "depgraph": lambda: _cmd_depgraph(args),
         "dep-graph": lambda: _cmd_depgraph(args),
         "env": lambda: _cmd_env(args),
+        "tree": lambda: _cmd_tree(args),
         "upgrade": lambda: cmd_upgrade(args),
         "update-cli": lambda: cmd_upgrade(args),
         "version": lambda: cmd_version(),
