@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mywork-ai"
-version = "2.3.2"
+version = "2.3.3"
 description = "Complete AI-powered development framework with 53+ CLI commands for code generation, project analysis, security scanning, and deployment automation"
 readme = "README.md"
 license = {text = "MIT"}
