@@ -8602,6 +8602,174 @@ def _cmd_metrics(args: List[str] = None) -> int:
     return cmd_metrics(args)
 
 
+def cmd_time(args: List[str] = None) -> int:
+    """Developer time tracking — log work sessions per project.
+
+    Usage:
+        mw time start [project]   Start tracking time on a project
+        mw time stop              Stop current session
+        mw time status            Show active session
+        mw time log [days]        Show time log (default: 7 days)
+        mw time report [days]     Weekly summary with charts
+        mw time today             Show today's work breakdown
+
+    Data stored in ~/.mywork/time_tracking.json
+    """
+    import time as _time
+    from datetime import datetime
+
+    args = args or []
+    if args and args[0] in ("--help", "-h"):
+        print(cmd_time.__doc__)
+        return 0
+
+    time_file = Path.home() / ".mywork" / "time_tracking.json"
+    time_file.parent.mkdir(parents=True, exist_ok=True)
+
+    def _load():
+        if time_file.exists():
+            try:
+                return json.loads(time_file.read_text())
+            except Exception:
+                pass
+        return {"sessions": [], "active": None}
+
+    def _save(data):
+        time_file.write_text(json.dumps(data, indent=2))
+
+    def _fmt_duration(seconds):
+        h = int(seconds // 3600)
+        m = int((seconds % 3600) // 60)
+        if h > 0:
+            return f"{h}h {m}m"
+        return f"{m}m"
+
+    sub = args[0] if args else "status"
+
+    if sub == "start":
+        project = args[1] if len(args) > 1 else Path.cwd().name
+        data = _load()
+        if data.get("active"):
+            # Auto-stop previous session
+            sess = data["active"]
+            sess["end"] = _time.time()
+            sess["duration"] = sess["end"] - sess["start"]
+            data["sessions"].append(sess)
+            print(f"  {Colors.YELLOW}⏹  Stopped {sess['project']} ({_fmt_duration(sess['duration'])}){Colors.ENDC}")
+        data["active"] = {
+            "project": project,
+            "start": _time.time(),
+            "date": datetime.now().strftime("%Y-%m-%d"),
+        }
+        _save(data)
+        print(f"{Colors.GREEN}▶  Started tracking: {Colors.BOLD}{project}{Colors.ENDC}")
+        print(f"   {datetime.now().strftime('%H:%M:%S')}")
+        return 0
+
+    elif sub == "stop":
+        data = _load()
+        if not data.get("active"):
+            print(f"{Colors.YELLOW}⚠️  No active session{Colors.ENDC}")
+            return 1
+        sess = data["active"]
+        sess["end"] = _time.time()
+        sess["duration"] = sess["end"] - sess["start"]
+        data["sessions"].append(sess)
+        data["active"] = None
+        _save(data)
+        print(f"{Colors.RED}⏹  Stopped: {Colors.BOLD}{sess['project']}{Colors.ENDC}")
+        print(f"   Duration: {_fmt_duration(sess['duration'])}")
+        return 0
+
+    elif sub == "status":
+        data = _load()
+        if data.get("active"):
+            sess = data["active"]
+            elapsed = _time.time() - sess["start"]
+            print(f"{Colors.GREEN}▶  Active: {Colors.BOLD}{sess['project']}{Colors.ENDC}")
+            print(f"   Elapsed: {_fmt_duration(elapsed)}")
+            print(f"   Started: {datetime.fromtimestamp(sess['start']).strftime('%H:%M:%S')}")
+        else:
+            print(f"{Colors.ENDC}⏸  No active session{Colors.ENDC}")
+            print(f"   Use: mw time start [project]")
+        return 0
+
+    elif sub == "today":
+        data = _load()
+        today = datetime.now().strftime("%Y-%m-%d")
+        today_sessions = [s for s in data["sessions"] if s.get("date") == today]
+        if data.get("active") and data["active"].get("date") == today:
+            active = data["active"].copy()
+            active["duration"] = _time.time() - active["start"]
+            active["_active"] = True
+            today_sessions.append(active)
+
+        if not today_sessions:
+            print(f"{Colors.ENDC}📅 Today: No work logged yet{Colors.ENDC}")
+            return 0
+
+        total = sum(s.get("duration", 0) for s in today_sessions)
+        by_project: dict = {}
+        for s in today_sessions:
+            p = s["project"]
+            by_project[p] = by_project.get(p, 0) + s.get("duration", 0)
+
+        print(f"{Colors.BOLD}{Colors.BLUE}📅 Today — {_fmt_duration(total)}{Colors.ENDC}")
+        print(f"{'─' * 40}")
+        for proj, dur in sorted(by_project.items(), key=lambda x: -x[1]):
+            pct = int(dur / total * 100) if total > 0 else 0
+            bar = "█" * (pct // 5) + "░" * (20 - pct // 5)
+            marker = " ▶" if any(s.get("_active") and s["project"] == proj for s in today_sessions) else ""
+            print(f"  {proj:20s} {_fmt_duration(dur):>8s} {bar} {pct}%{marker}")
+        return 0
+
+    elif sub in ("log", "report"):
+        data = _load()
+        days = int(args[1]) if len(args) > 1 else 7
+        cutoff = _time.time() - (days * 86400)
+        recent = [s for s in data["sessions"] if s.get("start", 0) >= cutoff]
+
+        if not recent:
+            print(f"{Colors.ENDC}📊 No sessions in the last {days} days{Colors.ENDC}")
+            return 0
+
+        by_date: dict = {}
+        by_project: dict = {}
+        for s in recent:
+            d = s.get("date", "unknown")
+            p = s["project"]
+            dur = s.get("duration", 0)
+            by_date[d] = by_date.get(d, 0) + dur
+            by_project[p] = by_project.get(p, 0) + dur
+
+        total = sum(s.get("duration", 0) for s in recent)
+
+        print(f"{Colors.BOLD}{Colors.BLUE}📊 Time Report — Last {days} days{Colors.ENDC}")
+        print(f"{'═' * 50}")
+        print(f"  Total: {Colors.BOLD}{_fmt_duration(total)}{Colors.ENDC} across {len(recent)} sessions")
+        print()
+
+        print(f"{Colors.BOLD}By Project:{Colors.ENDC}")
+        for proj, dur in sorted(by_project.items(), key=lambda x: -x[1]):
+            pct = int(dur / total * 100) if total > 0 else 0
+            bar = "█" * (pct // 4) + "░" * (25 - pct // 4)
+            print(f"  {proj:20s} {_fmt_duration(dur):>8s} {bar} {pct}%")
+
+        print(f"\n{Colors.BOLD}By Day:{Colors.ENDC}")
+        for d in sorted(by_date.keys()):
+            dur = by_date[d]
+            bar_len = min(int(dur / 3600 * 4), 30)
+            bar = "█" * bar_len
+            print(f"  {d}  {_fmt_duration(dur):>8s} {bar}")
+
+        return 0
+
+    else:
+        print(f"{Colors.RED}Unknown subcommand: {sub}{Colors.ENDC}")
+        print("Usage: mw time start|stop|status|today|log|report")
+        return 1
+
+
 def cmd_upgrade(args: List[str] = None) -> int:
     """Self-upgrade MyWork-AI from GitHub or PyPI.
 
@@ -9038,6 +9206,9 @@ def main() -> None:
         "todos": lambda: cmd_todo(args),
         "metrics": lambda: _cmd_metrics(args),
         "stats": lambda: _cmd_metrics(args),
+        "time": lambda: cmd_time(args),
+        "timer": lambda: cmd_time(args),
+        "track": lambda: cmd_time(args),
         "depgraph": lambda: _cmd_depgraph(args),
         "dep-graph": lambda: _cmd_depgraph(args),
         "env": lambda: _cmd_env(args),
