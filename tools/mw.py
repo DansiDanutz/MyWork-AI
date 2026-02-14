@@ -6341,7 +6341,7 @@ if __name__ == "__main__":
                 port = args[i + 1]
         print(f"\n{Colors.GREEN}🚀 Starting API server on port {port}...{Colors.ENDC}")
         print(f"  📖 Docs: http://localhost:{port}/docs")
-        subprocess.run(f"python run.py --port {port}", shell=True)
+        subprocess.run(f"{sys.executable} run.py --port {port}", shell=True)
         return 0
 
     elif subcmd == "routes":
