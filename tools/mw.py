@@ -3191,7 +3191,7 @@ Supported:
         if py_files or has_tests_dir:
             detected = "Python"
             if shutil.which("pytest"):
-                parts = ["pytest"]
+                parts = ["pytest", "--timeout=30"]
                 if coverage:
                     parts.append("--cov=.")
                 if verbose:

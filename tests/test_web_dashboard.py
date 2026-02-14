@@ -69,7 +69,7 @@ class TestGetSystemStatus:
         assert isinstance(result, dict)
         assert "python" in result
         assert "framework_version" in result
-        assert result["framework_version"] == "2.0.0"
+        assert result["framework_version"] == "2.1.0"
 
     def test_has_timestamp(self):
         result = get_system_status()
