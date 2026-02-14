@@ -3374,6 +3374,12 @@ def _cmd_profile_wrapper(args: List[str] = None) -> int:
     return 0
 
 
+def _cmd_insights_wrapper(args: List[str] = None) -> int:
+    """Project insights — tech debt, hotspots, coverage analysis."""
+    from tools.project_insights import cmd_insights
+    return cmd_insights(args or [])
+
+
 def _cmd_bench_wrapper(args: List[str] = None) -> int:
     """Project benchmarking."""
     bench_path = Path(__file__).parent / "bench.py"
@@ -7366,7 +7372,7 @@ def cmd_completions(args: List[str] = None) -> int:
         "ai", "analytics", "api", "audit", "af", "autoforge", "backup", "bench",
         "brain", "cd", "cfg", "changelog", "check", "ci", "clean", "completions", "config",
         "credits", "dashboard", "db", "deploy", "docs", "doctor", "ecosystem",
-        "api", "env", "fix", "git", "guide", "help", "hook", "init", "links", "lint",
+        "api", "env", "fix", "git", "guide", "help", "hook", "init", "insights", "links", "lint",
         "marketplace", "monitor", "n8n", "new", "open", "perf", "plugin",
         "profile", "projects", "prompt-enhance", "release", "remember", "report", "scan",
         "run", "search", "sec", "secrets", "security", "selftest", "serve", "setup", "stats", "status", "test",
@@ -7603,6 +7609,7 @@ def main() -> None:
         "g": lambda: cmd_git(args),
         "hook": lambda: cmd_hook(args),
         "hooks": lambda: cmd_hook(args),
+        "insights": lambda: _cmd_insights_wrapper(args),
         "api": lambda: cmd_api(args),
         "audit": lambda: cmd_audit(args),
         "bench": lambda: _cmd_bench_wrapper(args),
