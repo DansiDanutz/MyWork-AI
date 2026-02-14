@@ -30,6 +30,8 @@ extras_require = {
     "dev": [
         "pytest>=7.4.0",
         "pytest-cov>=4.1.0",
+        "pytest-timeout>=2.2.0",
+        "flake8>=6.0.0",
         "black>=23.0.0",
         "ruff>=0.1.0",
         "mypy>=1.7.0",
