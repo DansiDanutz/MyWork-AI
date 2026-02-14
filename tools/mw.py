@@ -3352,6 +3352,18 @@ def _cmd_watch_wrapper(args: List[str] = None) -> int:
     return mod.main(args or [])
 
 
+def _cmd_profile_wrapper(args: List[str] = None) -> int:
+    """Command profiler with CPU, memory, and I/O stats."""
+    profiler_path = Path(__file__).parent / "profiler.py"
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("profiler", profiler_path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    sys.argv = ['mw-profile'] + (args or [])
+    mod.main()
+    return 0
+
+
 def _cmd_bench_wrapper(args: List[str] = None) -> int:
     """Project benchmarking."""
     bench_path = Path(__file__).parent / "bench.py"
@@ -7036,7 +7048,7 @@ def cmd_completions(args: List[str] = None) -> int:
         "credits", "dashboard", "db", "deploy", "docs", "doctor", "ecosystem",
         "api", "env", "fix", "git", "guide", "help", "hook", "init", "links", "lint",
         "marketplace", "monitor", "n8n", "new", "open", "perf", "plugin",
-        "projects", "prompt-enhance", "release", "remember", "report", "scan",
+        "profile", "projects", "prompt-enhance", "release", "remember", "report", "scan",
         "run", "search", "sec", "secrets", "security", "selftest", "serve", "setup", "stats", "status", "test",
         "demo", "todo", "todos", "tour", "update", "upgrade", "verify", "version", "web", "wf", "workflow",
     ]
@@ -7260,6 +7272,7 @@ def main() -> None:
         "api": lambda: cmd_api(args),
         "audit": lambda: cmd_audit(args),
         "bench": lambda: _cmd_bench_wrapper(args),
+        "profile": lambda: _cmd_profile_wrapper(args),
         "benchmark": lambda: _cmd_bench_wrapper(args),
         "perf": lambda: run_tool("perf_analyzer", args),
         "performance": lambda: run_tool("perf_analyzer", args),

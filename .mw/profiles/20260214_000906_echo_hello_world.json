@@ -1,0 +1,16 @@
+{
+  "command": "echo hello world",
+  "exit_code": 0,
+  "wall_time_s": 0.002,
+  "user_cpu_s": 0.001,
+  "sys_cpu_s": 0.001,
+  "max_rss_mb": 30.46,
+  "voluntary_ctx_switches": 1,
+  "involuntary_ctx_switches": 0,
+  "page_faults": 0,
+  "block_input": 0,
+  "block_output": 0,
+  "stdout_lines": 1,
+  "stderr_lines": 0,
+  "timestamp": "2026-02-14T00:09:06"
+}
