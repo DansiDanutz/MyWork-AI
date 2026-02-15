@@ -4732,6 +4732,107 @@ def _cmd_plugin_wrapper(args: List[str] = None) -> int:
     return 0
 
 
+def cmd_benchmark(args: List[str] = None) -> int:
+    """Benchmark mw command performance.
+
+    Usage:
+        mw benchmark                  # Benchmark core commands
+        mw benchmark --all            # Benchmark all safe commands
+        mw benchmark <cmd> [<cmd>...] # Benchmark specific commands
+        mw benchmark --iterations N   # Runs per command (default: 3)
+    """
+    import time as _time
+    import subprocess
+
+    if args and args[0] in ("--help", "-h"):
+        print("""
+Benchmark — Profile mw Command Performance
+============================================
+Usage:
+    mw benchmark                  Benchmark core commands
+    mw benchmark --all            Benchmark all safe commands
+    mw benchmark <cmd> [<cmd>...] Benchmark specific commands
+    mw benchmark --iterations N   Runs per command (default: 3)
+
+Identifies slow commands so you can optimize startup/execution time.
+""")
+        return 0
+
+    iterations = 3
+    # Parse --iterations
+    if args and "--iterations" in args:
+        idx = args.index("--iterations")
+        if idx + 1 < len(args):
+            try:
+                iterations = int(args[idx + 1])
+            except ValueError:
+                pass
+            args = args[:idx] + args[idx + 2:]
+
+    # Safe commands that don't modify anything
+    core_commands = ["version", "status", "selftest", "doctor"]
+    all_safe = ["version", "status", "selftest", "doctor", "projects", "brain stats",
+                "changelog", "config", "health", "deps", "completions"]
+
+    if args and "--all" in args:
+        commands_to_test = all_safe
+    elif args and not args[0].startswith("-"):
+        commands_to_test = args
+    else:
+        commands_to_test = core_commands
+
+    print(f"{Colors.BOLD}⚡ MyWork-AI CLI Benchmark{Colors.ENDC}")
+    print(f"   Iterations per command: {iterations}")
+    print("=" * 55)
+
+    results = []
+    for cmd in commands_to_test:
+        times = []
+        for i in range(iterations):
+            start = _time.perf_counter()
+            try:
+                subprocess.run(
+                    ["python3", "-m", "tools.mw", *cmd.split()],
+                    capture_output=True, timeout=30,
+                    cwd=str(MYWORK_ROOT)
+                )
+            except subprocess.TimeoutExpired:
+                times.append(30.0)
+                continue
+            elapsed = _time.perf_counter() - start
+            times.append(elapsed)
+
+        avg = sum(times) / len(times)
+        mn = min(times)
+        mx = max(times)
+        results.append((cmd, avg, mn, mx))
+
+    # Sort by average time descending
+    results.sort(key=lambda x: x[1], reverse=True)
+
+    print(f"\n{'Command':<20} {'Avg':>8} {'Min':>8} {'Max':>8}  Rating")
+    print("-" * 60)
+    for cmd, avg, mn, mx in results:
+        if avg < 0.5:
+            rating = f"{Colors.GREEN}⚡ fast{Colors.ENDC}"
+        elif avg < 1.5:
+            rating = f"{Colors.YELLOW}🟡 ok{Colors.ENDC}"
+        elif avg < 3.0:
+            rating = f"{Colors.RED}🐢 slow{Colors.ENDC}"
+        else:
+            rating = f"{Colors.RED}🔴 very slow{Colors.ENDC}"
+        print(f"  mw {cmd:<16} {avg:>6.2f}s {mn:>6.2f}s {mx:>6.2f}s  {rating}")
+
+    overall_avg = sum(r[1] for r in results) / len(results) if results else 0
+    print("-" * 60)
+    print(f"  {'Overall avg':<20} {overall_avg:>6.2f}s")
+
+    if results and results[0][1] > 2.0:
+        print(f"\n{Colors.YELLOW}💡 Tip: 'mw {results[0][0]}' is your slowest command ({results[0][1]:.2f}s avg){Colors.ENDC}")
+
+    return 0
+
+
 def cmd_config(args: List[str] = None) -> int:
     """Manage framework configuration.
 
@@ -10406,6 +10507,9 @@ def main() -> None:
         "selftest": lambda: cmd_selftest(args),
         "self-test": lambda: cmd_selftest(args),
         "verify": lambda: cmd_selftest(args),
+        "benchmark": lambda: cmd_benchmark(args),
+        "bench": lambda: cmd_benchmark(args),
+        "perf": lambda: cmd_benchmark(args),
         "recap": lambda: cmd_recap(args),
         "todo": lambda: cmd_todo(args),
         "watch": lambda: _cmd_watch_wrapper(args),
