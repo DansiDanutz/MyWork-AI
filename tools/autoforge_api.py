@@ -455,5 +455,8 @@ Examples:
         print(json.dumps(result, indent=2))
 
 
+# Backwards compatibility alias
+AutoForgeClient = AutoForgeAPI
+
 if __name__ == "__main__":
     main()
