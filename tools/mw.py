@@ -10422,7 +10422,6 @@ def main() -> None:
         "audit": lambda: _cmd_deps_audit(args),
         "depgraph": lambda: _cmd_depgraph(args),
         "dep-graph": lambda: _cmd_depgraph(args),
-        "env": lambda: _cmd_env(args),
         "tree": lambda: _cmd_tree(args),
         "upgrade": lambda: cmd_upgrade(args),
         "update-cli": lambda: cmd_upgrade(args),
