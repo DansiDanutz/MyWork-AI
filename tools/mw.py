@@ -9788,7 +9788,21 @@ def _cmd_depgraph(args: List[str] = None) -> int:
 
 
 def _cmd_metrics(args: List[str] = None) -> int:
-    """Code metrics dashboard — LOC, complexity, quality score."""
+    """Code metrics dashboard — LOC, complexity, quality score.
+
+    Subcommands:
+        mw metrics              Code analysis (LOC, complexity, quality)
+        mw metrics track        Record snapshot & show current tracked metrics
+        mw metrics history      Show tracked metrics history with trends
+        mw metrics chart        ASCII sparkline chart of metrics over time
+    """
+    args = args or []
+    if args and args[0] in ("track", "history", "chart"):
+        from tools.metrics_tracker import cmd_metrics as tracker
+        subcmd = args[0]
+        if subcmd == "track":
+            return tracker(["record"])
+        return tracker([subcmd])
     from metrics import cmd_metrics
     return cmd_metrics(args)
 
@@ -10127,7 +10141,7 @@ def cmd_completions(args: List[str] = None) -> int:
         "marketplace", "monitor", "n8n", "new", "open", "perf", "plugin",
         "profile", "projects", "prompt-enhance", "release", "remember", "report", "scan",
         "run", "search", "sec", "secrets", "security", "selftest", "serve", "setup", "stats", "status", "test",
-        "demo", "todo", "todos", "tour", "update", "upgrade", "verify", "version", "web", "wf", "workflow",
+        "demo", "metrics", "todo", "todos", "tour", "update", "upgrade", "verify", "version", "web", "wf", "workflow",
     ]
     # Subcommands per command
     subcmds = {
@@ -10141,6 +10155,7 @@ def cmd_completions(args: List[str] = None) -> int:
         "plugin": ["install", "uninstall", "enable", "disable", "list", "create", "scan"],
         "pair": ["--path", "--model", "--quiet", "--review", "history"],
         "ci": ["github", "gitlab", "status"],
+        "metrics": ["track", "history", "chart"],
         "lint": ["scan", "stats", "watch"],
         "af": ["start", "stop", "pause", "resume", "status", "progress", "list", "ui", "service"],
         "test": ["--coverage", "--watch", "--verbose"],
@@ -10334,6 +10349,7 @@ def main() -> None:
         "clean": lambda: cmd_clean(args),
         "backup": lambda: cmd_backup(args),
         "changelog": lambda: cmd_changelog(args),
+        "metrics": lambda: _cmd_metrics(args),
         "test": lambda: cmd_test(args),
         "test-coverage": lambda: _cmd_test_coverage(args),
         "workflow": lambda: cmd_workflow(args),
