@@ -110,22 +110,15 @@ def _detect_provider() -> tuple:
     return None, None
 
 
-def _call_llm(prompt: str, system: str = "", model: str = "deepseek/deepseek-chat",
-              provider_name: str = None) -> str:
-    """Call LLM via configurable provider (OpenRouter, DeepSeek, OpenAI, Gemini)."""
+def _call_llm_single(prompt: str, system: str = "", model: str = "deepseek/deepseek-chat",
+                     provider_name: str = None) -> tuple:
+    """Call LLM via a single provider. Returns (success: bool, result: str)."""
     import urllib.request
     import urllib.error
 
-    # Resolve provider
-    if provider_name and provider_name in PROVIDERS:
-        api_key = _get_provider_key(provider_name)
-    else:
-        provider_name, api_key = _detect_provider()
-
+    api_key = _get_provider_key(provider_name)
     if not api_key:
-        return (f"{RED}Error: No API key found. Set one of: "
-                f"OPENROUTER_API_KEY, DEEPSEEK_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY\n"
-                f"Or run: mw config set <provider>_api_key <key>{RESET}")
+        return False, f"No API key for {provider_name}"
 
     prov = PROVIDERS[provider_name]
     if model == "deepseek/deepseek-chat" and provider_name != "openrouter":
@@ -154,12 +147,47 @@ def _call_llm(prompt: str, system: str = "", model: str = "deepseek/deepseek-cha
     try:
         with urllib.request.urlopen(req, timeout=60) as resp:
             data = json.loads(resp.read().decode())
-            return data["choices"][0]["message"]["content"]
+            return True, data["choices"][0]["message"]["content"]
     except urllib.error.HTTPError as e:
         body = e.read().decode() if e.fp else ""
-        return f"{RED}API Error ({e.code}) [{provider_name}]: {body[:200]}{RESET}"
+        return False, f"API Error ({e.code}): {body[:200]}"
     except Exception as e:
-        return f"{RED}Error [{provider_name}]: {e}{RESET}"
+        return False, f"Error: {e}"
+
+
+def _call_llm(prompt: str, system: str = "", model: str = "deepseek/deepseek-chat",
+              provider_name: str = None) -> str:
+    """Call LLM with automatic fallback between providers."""
+    _load_env()
+    
+    # If specific provider requested, try it first
+    if provider_name and provider_name in PROVIDERS:
+        success, result = _call_llm_single(prompt, system, model, provider_name)
+        if success:
+            return result
+        else:
+            print(f"{YELLOW}⚠️  {provider_name} failed: {result}{RESET}")
+    
+    # Try all providers in order
+    provider_order = ["openrouter", "deepseek", "gemini", "openai"]
+    errors = []
+    
+    for provider in provider_order:
+        if provider == provider_name:
+            continue  # Skip if already tried above
+            
+        success, result = _call_llm_single(prompt, system, model, provider)
+        if success:
+            print(f"{GREEN}✅ Using {provider} (fallback){RESET}")
+            return result
+        else:
+            errors.append(f"{provider}: {result}")
+    
+    # All providers failed
+    return (f"{RED}❌ All AI providers failed:\n" + 
+            "\n".join(f"  • {err}" for err in errors) + 
+            f"\n\nSet API keys: OPENROUTER_API_KEY, DEEPSEEK_API_KEY, GEMINI_API_KEY, OPENAI_API_KEY\n"
+            f"Or run: mw config set <provider>_api_key <key>{RESET}")
 
 
 def _read_file(path: str) -> Optional[str]:
