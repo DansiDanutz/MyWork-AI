@@ -5944,6 +5944,18 @@ def cmd_ci(args: List[str] = None) -> int:
     args = args or []
     sub = args[0] if args else "generate"
     
+    # Delegate to ci_status for status/badge subcommands
+    if sub in ("status", "badge"):
+        try:
+            from tools.ci_status import main as ci_status_main
+            return ci_status_main([sub] + args[1:])
+        except ImportError:
+            import importlib.util
+            spec = importlib.util.spec_from_file_location("ci_status", os.path.join(os.path.dirname(__file__), "ci_status.py"))
+            mod = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(mod)
+            return mod.main([sub] + args[1:])
+    
     def _detect_project(path: str) -> dict:
         """Detect project type, language, and tools."""
         info = {"path": os.path.abspath(path), "type": "unknown", "lang": [], "tools": [], "features": []}
