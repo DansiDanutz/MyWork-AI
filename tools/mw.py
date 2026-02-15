@@ -7388,6 +7388,7 @@ def cmd_env(args: List[str] = None) -> int:
         mw env validate               # Check all required vars are set
         mw env export --format=docker # Export as Docker env format
         mw env init                   # Create .env from .env.example
+        mw env audit                  # Security audit for exposed secrets
     """
     args = args or []
     subcommand = args[0] if args else "status"
@@ -7614,9 +7615,97 @@ def cmd_env(args: List[str] = None) -> int:
         print(f"   Edit with: {Colors.BOLD}mw env set KEY=VALUE{Colors.ENDC}")
         return 0
 
+    elif subcommand == "audit":
+        """Security audit of environment variables - check for exposed secrets."""
+        print(f"\n{Colors.BOLD}🔒 Environment Security Audit{Colors.ENDC}\n")
+        
+        if not env_file.exists():
+            print(f"{Colors.RED}❌ No .env file found{Colors.ENDC}")
+            return 1
+        
+        data = _parse_env(env_file)
+        if not data:
+            print(f"{Colors.GREEN}✅ No variables to audit{Colors.ENDC}")
+            return 0
+        
+        # Check for common security issues
+        issues = []
+        warnings = []
+        
+        # 1. Check if .env is in .gitignore
+        gitignore = Path(".gitignore")
+        env_ignored = False
+        if gitignore.exists():
+            gitignore_content = gitignore.read_text()
+            env_ignored = ".env" in gitignore_content or "*.env" in gitignore_content
+        
+        if not env_ignored:
+            issues.append("⚠️  .env is not in .gitignore - secrets could be committed!")
+        
+        # 2. Check for exposed API keys/secrets
+        secret_patterns = [
+            ("API keys", r".*(?:api[_-]?key|apikey).*", ["sk_", "pk_", "rk_"]),
+            ("Tokens", r".*(?:token|secret|password|pwd).*", ["ghp_", "gho_", "github_pat_"]),
+            ("Database URLs", r".*(?:database[_-]?url|db[_-]?url).*", ["postgres://", "mongodb://", "mysql://"]),
+            ("AWS credentials", r".*(?:aws[_-]?access|aws[_-]?secret).*", ["AKIA", "ASIA"]),
+            ("Private keys", r".*(?:private[_-]?key|priv[_-]?key).*", ["-----BEGIN"])
+        ]
+        
+        for key, value in data.items():
+            if not value:  # Skip empty values
+                continue
+                
+            key_lower = key.lower()
+            
+            # Check for placeholder values that should be replaced
+            placeholder_patterns = ["xxxxx", "your-", "change-me", "replace-me", "example", "placeholder"]
+            if any(pattern in value.lower() for pattern in placeholder_patterns):
+                warnings.append(f"🔧 {key}: Contains placeholder value '{value}'")
+                continue
+            
+            # Check for exposed secrets
+            for pattern_name, key_pattern, value_prefixes in secret_patterns:
+                import re
+                if re.match(key_pattern, key_lower):
+                    if any(value.startswith(prefix) for prefix in value_prefixes) or len(value) > 20:
+                        issues.append(f"🚨 {key}: Potential {pattern_name.lower()} exposed (length: {len(value)})")
+        
+        # 3. Check for development vs production keys
+        for key, value in data.items():
+            if value and ("test" in value.lower() or "dev" in value.lower() or "sandbox" in value.lower()):
+                warnings.append(f"🧪 {key}: Appears to be a test/development credential")
+        
+        # Report results
+        total_checked = len([v for v in data.values() if v])  # Non-empty values
+        
+        if not issues and not warnings:
+            print(f"{Colors.GREEN}✅ Security audit passed!{Colors.ENDC}")
+            print(f"   Checked {total_checked} variables, no issues found")
+        else:
+            if issues:
+                print(f"{Colors.RED}🚨 Security Issues Found:{Colors.ENDC}")
+                for issue in issues:
+                    print(f"   {issue}")
+                print()
+            
+            if warnings:
+                print(f"{Colors.YELLOW}⚠️  Warnings:{Colors.ENDC}")
+                for warning in warnings:
+                    print(f"   {warning}")
+                print()
+        
+        # Recommendations
+        print(f"{Colors.BOLD}💡 Security Recommendations:{Colors.ENDC}")
+        print("   • Add .env to .gitignore if not already there")
+        print("   • Use placeholder values in .env.example")
+        print("   • Rotate any exposed credentials immediately")
+        print("   • Consider using a secrets management service")
+        
+        return 1 if issues else 0
+
     else:
         print(f"{Colors.RED}❌ Unknown env subcommand: {subcommand}{Colors.ENDC}")
-        print(f"   Try: mw env list | get | set | rm | diff | validate | export | init")
+        print(f"   Try: mw env list | get | set | rm | diff | validate | export | init | audit")
         return 1
 
 
