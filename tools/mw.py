@@ -798,7 +798,7 @@ Examples:
     
     # Detect project type
     current_dir = Path.cwd()
-    project_type = _detect_project_type(current_dir)
+    project_type = _detect_project_type_simple(current_dir)
     
     print(f"{Colors.YELLOW}📂 Project: {current_dir.name}{Colors.ENDC}")
     print(f"{Colors.BLUE}🔍 Detected type: {project_type}{Colors.ENDC}")
@@ -11901,8 +11901,8 @@ def _check_deploy_readiness(project_path: Path) -> bool:
         return False
 
 
-def _detect_project_type(project_path: Path) -> str:
-    """Detect project type from files and structure."""
+def _detect_project_type_simple(project_path: Path) -> str:
+    """Detect project type from files and structure (returns string label)."""
     if (project_path / "package.json").exists():
         try:
             import json
