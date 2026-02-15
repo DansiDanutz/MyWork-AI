@@ -34,6 +34,11 @@ Date: 2026-02-10
 - **Simulation engine**: 5/5 scenarios pass
 - **Security audit**: 0 critical, 5 low-risk remaining
 
+### Recent Changes (2026-02-15)
+- Enhanced `mw version` with `--check` (checks PyPI for updates) and `--json` output
+- Proper semantic version comparison (no false positives when local > PyPI)
+- 92 tests passing
+
 ### Recent Changes (2026-02-14)
 - Added `mw tree` — smart project tree visualizer with git status indicators, file icons, .gitignore awareness
 - Supports --depth, --all, --dirs, --filter, --size, --json flags
