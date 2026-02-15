@@ -8957,17 +8957,65 @@ Examples:
                 failures.append(f"{mod}: {e}")
         if failures:
             return False, f"Failed: {', '.join(failures)}"
-        return True, "7 core modules OK"
+        return True, f"{len(['tools.mw', 'tools.brain', 'tools.config', 'tools.health_check', 'tools.scaffold', 'tools.workflow_engine', 'tools.ai_assistant'])} core modules OK"
     check("Core imports", check_imports)
 
-    # 2. Config system
+    # 2. System requirements
+    def check_python():
+        version = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}"
+        min_version = (3, 8)
+        if sys.version_info[:2] >= min_version:
+            return True, f"Python {version} (>= 3.8 required)"
+        else:
+            return False, f"Python {version} too old (>= 3.8 required)"
+    check("Python version", check_python)
+
+    # 3. Pip availability
+    def check_pip():
+        import shutil
+        pip_path = shutil.which("pip") or shutil.which("pip3")
+        if pip_path:
+            try:
+                import subprocess
+                result = subprocess.run([pip_path, "--version"], capture_output=True, text=True, timeout=5)
+                if result.returncode == 0:
+                    version = result.stdout.split()[1] if result.stdout else "unknown"
+                    return True, f"pip {version} available"
+                else:
+                    return False, "pip command failed"
+            except Exception as e:
+                return False, f"pip error: {str(e)}"
+        else:
+            return False, "pip not found in PATH"
+    check("Pip package manager", check_pip)
+
+    # 4. Git availability
+    def check_git():
+        import shutil
+        git_path = shutil.which("git")
+        if git_path:
+            try:
+                import subprocess
+                result = subprocess.run([git_path, "--version"], capture_output=True, text=True, timeout=5)
+                if result.returncode == 0:
+                    version = result.stdout.strip().split()[-1] if result.stdout else "unknown"
+                    return True, f"Git {version} available"
+                else:
+                    return False, "git command failed"
+            except Exception as e:
+                return False, f"git error: {str(e)}"
+        else:
+            return False, "git not found in PATH"
+    check("Git version control", check_git)
+
+    # 5. Config system
     def check_config():
         from tools.config import get_mywork_root, ensure_directories
         root = get_mywork_root()
         return True, f"Root: {root}"
     check("Config system", check_config)
 
-    # 3. CLI dispatch
+    # 6. CLI dispatch
     def check_cli():
         import subprocess
         r = subprocess.run([sys.executable, "-m", "tools.mw", "version"],
@@ -8976,7 +9024,7 @@ Examples:
         return r.returncode == 0, r.stdout.strip()[:80] or r.stderr.strip()[:80]
     check("CLI dispatch", check_cli)
 
-    # 4. Brain (knowledge vault)
+    # 7. Brain (knowledge vault)
     def check_brain():
         from tools.brain import BrainManager
         b = BrainManager()
@@ -8985,27 +9033,27 @@ Examples:
     check("Brain vault", check_brain, critical=False)
 
     if not quick:
-        # 5. Project registry
+        # 8. Project registry
         def check_projects():
             from tools.config import list_projects
             projects = list_projects()
             return True, f"{len(projects)} projects"
         check("Project registry", check_projects, critical=False)
 
-        # 6. Scaffold templates
+        # 9. Scaffold templates
         def check_scaffold():
             from tools.scaffold import TEMPLATES
             return len(TEMPLATES) > 0, f"{len(TEMPLATES)} templates"
         check("Scaffold templates", check_scaffold, critical=False)
 
-        # 7. Workflow engine
+        # 10. Workflow engine
         def check_workflows():
             from tools.workflow_engine import WorkflowEngine
             engine = WorkflowEngine()
             return True, "Engine initialized"
         check("Workflow engine", check_workflows, critical=False)
 
-        # 8. Plugin system
+        # 11. Plugin system
         def check_plugins():
             from tools.plugin_manager import load_registry
             reg = load_registry()
