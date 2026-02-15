@@ -4818,6 +4818,806 @@ const styles = StyleSheet.create({{
             ".gitignore": "node_modules/\n.expo/\ndist/\nnpm-debug.*\n*.jks\n*.p8\n*.p12\n*.key\n*.mobileprovision\n*.orig.*\nweb-build/\n.env.*\n",
         },
     },
+    "saas": {
+        "description": "Full SaaS starter with Next.js, Auth, and Stripe",
+        "structure": {
+            ".planning": {
+                "PROJECT.md": "# {name} SaaS\n\n## Vision\nFull-stack SaaS application with payments and authentication.\n\n## Tech Stack\n- Next.js 14 with App Router\n- TypeScript\n- Tailwind CSS\n- Clerk/NextAuth for authentication\n- Stripe for payments\n- Prisma for database\n\n## Goals\n- [ ] Set up authentication\n- [ ] Implement payment system\n- [ ] Create dashboard\n- [ ] Build landing page\n",
+                "ROADMAP.md": "# SaaS Roadmap\n\n## Phase 1: Foundation\n- [ ] Authentication setup\n- [ ] Database schema\n- [ ] Basic UI components\n\n## Phase 2: Core Features\n- [ ] Payment integration\n- [ ] User dashboard\n- [ ] Landing page\n\n## Phase 3: Launch\n- [ ] Pricing tiers\n- [ ] Analytics\n- [ ] Customer support\n",
+                "STATE.md": "# SaaS State\n\n## Current Phase\nPhase 1: Foundation\n\n## Last Updated\n{date}\n\n## Recent Decisions\n- Using Next.js 14 with App Router\n- Clerk for authentication (can switch to NextAuth)\n- Stripe for payments\n- Tailwind for styling\n\n## Next Steps\n1. Set up authentication\n2. Configure database\n3. Implement basic dashboard\n",
+            },
+            "package.json": """{
+  "name": "{name_lower}",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "stripe:listen": "stripe listen --forward-to localhost:3000/api/webhooks/stripe"
+  },
+  "dependencies": {
+    "next": "14.1.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "@clerk/nextjs": "^4.29.9",
+    "stripe": "^14.15.0",
+    "@prisma/client": "^5.9.1",
+    "lucide-react": "^0.316.0",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.10.0",
+    "@types/react": "18.2.0",
+    "@types/react-dom": "18.2.0",
+    "autoprefixer": "10.4.16",
+    "eslint": "8.56.0",
+    "eslint-config-next": "14.1.0",
+    "postcss": "8.4.32",
+    "prisma": "^5.9.1",
+    "tailwindcss": "3.4.1",
+    "typescript": "5.3.3"
+  }
+}""",
+            "tsconfig.json": """{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}""",
+            "tailwind.config.js": """import type { Config } from 'tailwindcss'
+
+const config: Config = {
+  content: [
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+        'gradient-conic':
+          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      },
+    },
+  },
+  plugins: [],
+}
+export default config""",
+            "next.config.js": """/** @type {import('next').NextConfig} */
+const nextConfig = {
+  experimental: {
+    appDir: true,
+  },
+}
+
+module.exports = nextConfig""",
+            ".env.example": """# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/database"
+
+# Clerk Authentication (or NextAuth)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+
+# NextAuth Alternative
+# NEXTAUTH_URL=http://localhost:3000
+# NEXTAUTH_SECRET=your-secret-key
+# GOOGLE_CLIENT_ID=your-google-client-id
+# GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# Stripe
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_...
+
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000""",
+            "prisma": {
+                "schema.prisma": '''// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Clerk integration
+  clerkId String? @unique
+
+  // Subscription
+  stripeCustomerId       String?   @unique
+  stripeSubscriptionId   String?   @unique
+  stripePriceId          String?
+  stripeCurrentPeriodEnd DateTime?
+
+  @@map("users")
+}
+
+model Plan {
+  id          String @id @default(cuid())
+  name        String
+  description String?
+  price       Int    // in cents
+  interval    String // month, year
+  stripePriceId String @unique
+  features    Json?
+  
+  @@map("plans")
+}''',
+            },
+            "middleware.ts": '''import { authMiddleware } from "@clerk/nextjs";
+ 
+export default authMiddleware({
+  // Routes that can be accessed while signed out
+  publicRoutes: ["/", "/pricing", "/api/webhooks/stripe"],
+});
+ 
+export const config = {
+  // Protects all routes including api/trpc routes
+  matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/', '/(api|trpc)(.*)'],
+};''',
+            "lib": {
+                "utils.ts": '''import { type ClassValue, clsx } from "clsx"
+import { twMerge } from "tailwind-merge"
+ 
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}''',
+                "db.ts": '''import { PrismaClient } from '@prisma/client'
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClient | undefined
+}
+
+export const prisma = globalForPrisma.prisma ?? new PrismaClient()
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma''',
+                "stripe.ts": '''import Stripe from 'stripe'
+
+export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2023-10-16',
+})''',
+            },
+            "app": {
+                "layout.tsx": '''import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import { ClerkProvider } from '@clerk/nextjs'
+import './globals.css'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: '{name} - SaaS Starter',
+  description: 'Built with Next.js, Clerk, and Stripe',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <ClerkProvider>
+      <html lang="en">
+        <body className={inter.className}>{children}</body>
+      </html>
+    </ClerkProvider>
+  )
+}''',
+                "page.tsx": '''import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
+import Link from 'next/link'
+
+export default function Home() {
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* Header */}
+      <header className="border-b bg-white/50 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900">{name}</h1>
+          <div className="space-x-4">
+            <Link href="/sign-in">
+              <Button variant="ghost">Sign In</Button>
+            </Link>
+            <Link href="/sign-up">
+              <Button>Get Started</Button>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 py-20 text-center">
+        <h2 className="text-5xl font-bold text-gray-900 mb-6">
+          Welcome to {name}
+        </h2>
+        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          Your SaaS application is ready to launch. Complete with authentication, 
+          payments, and a beautiful dashboard.
+        </p>
+        <div className="space-x-4">
+          <Link href="/sign-up">
+            <Button size="lg">Start Free Trial</Button>
+          </Link>
+          <Link href="/pricing">
+            <Button variant="outline" size="lg">View Pricing</Button>
+          </Link>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="container mx-auto px-4 py-20">
+        <h3 className="text-3xl font-bold text-center mb-12">Everything You Need</h3>
+        <div className="grid md:grid-cols-3 gap-8">
+          <Card className="p-6">
+            <h4 className="text-xl font-semibold mb-3">🔐 Authentication</h4>
+            <p className="text-gray-600">Secure user authentication with Clerk or NextAuth</p>
+          </Card>
+          <Card className="p-6">
+            <h4 className="text-xl font-semibold mb-3">💳 Payments</h4>
+            <p className="text-gray-600">Stripe integration for subscriptions and billing</p>
+          </Card>
+          <Card className="p-6">
+            <h4 className="text-xl font-semibold mb-3">📊 Dashboard</h4>
+            <p className="text-gray-600">Beautiful user dashboard with analytics</p>
+          </Card>
+        </div>
+      </section>
+    </div>
+  )
+}''',
+                "globals.css": '''@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}''',
+                "pricing": {
+                    "page.tsx": '''import { Button } from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
+import Link from 'next/link'
+
+const plans = [
+  {
+    name: 'Starter',
+    price: '$9',
+    interval: 'month',
+    features: [
+      '5 Projects',
+      '10GB Storage',
+      'Email Support',
+      'Basic Analytics'
+    ]
+  },
+  {
+    name: 'Pro',
+    price: '$29',
+    interval: 'month',
+    popular: true,
+    features: [
+      '25 Projects',
+      '100GB Storage',
+      'Priority Support',
+      'Advanced Analytics',
+      'Team Collaboration'
+    ]
+  },
+  {
+    name: 'Enterprise',
+    price: '$99',
+    interval: 'month',
+    features: [
+      'Unlimited Projects',
+      '1TB Storage',
+      '24/7 Phone Support',
+      'Custom Analytics',
+      'Advanced Security',
+      'SLA Guarantee'
+    ]
+  }
+]
+
+export default function PricingPage() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="border-b bg-white">
+        <div className="container mx-auto px-4 py-4">
+          <Link href="/" className="text-2xl font-bold text-gray-900">{name}</Link>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-20">
+        <div className="text-center mb-16">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Simple, Transparent Pricing</h1>
+          <p className="text-xl text-gray-600">Choose the plan that works for you</p>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          {plans.map((plan) => (
+            <Card key={plan.name} className={`p-8 relative ${plan.popular ? 'ring-2 ring-blue-500' : ''}`}>
+              {plan.popular && (
+                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                  <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                    Most Popular
+                  </span>
+                </div>
+              )}
+              <div className="text-center">
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">{plan.name}</h3>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold text-gray-900">{plan.price}</span>
+                  <span className="text-gray-600">/{plan.interval}</span>
+                </div>
+                <ul className="space-y-3 mb-8 text-left">
+                  {plan.features.map((feature) => (
+                    <li key={feature} className="flex items-center">
+                      <span className="text-green-500 mr-3">✓</span>
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Button 
+                  className="w-full" 
+                  variant={plan.popular ? 'default' : 'outline'}
+                >
+                  Get Started
+                </Button>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}''',
+                },
+                "dashboard": {
+                    "page.tsx": '''import { currentUser } from '@clerk/nextjs'
+import { Card } from '@/components/ui/Card'
+import { Button } from '@/components/ui/Button'
+import { redirect } from 'next/navigation'
+
+export default async function DashboardPage() {
+  const user = await currentUser()
+  
+  if (!user) {
+    redirect('/sign-in')
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-white border-b">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+          <div className="flex items-center space-x-4">
+            <span className="text-gray-600">Hello, {user.firstName || 'User'}</span>
+            <Button variant="outline" size="sm">Settings</Button>
+          </div>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Projects</h3>
+            <p className="text-3xl font-bold text-blue-600">12</p>
+            <p className="text-sm text-gray-600">+2 this month</p>
+          </Card>
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Storage Used</h3>
+            <p className="text-3xl font-bold text-green-600">2.4GB</p>
+            <p className="text-sm text-gray-600">of 10GB plan</p>
+          </Card>
+          <Card className="p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Team Members</h3>
+            <p className="text-3xl font-bold text-purple-600">5</p>
+            <p className="text-sm text-gray-600">2 pending invites</p>
+          </Card>
+        </div>
+
+        <Card className="p-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center py-2 border-b">
+              <div>
+                <p className="font-medium">Project "Website Redesign" created</p>
+                <p className="text-sm text-gray-600">2 hours ago</p>
+              </div>
+            </div>
+            <div className="flex justify-between items-center py-2 border-b">
+              <div>
+                <p className="font-medium">Team member invited</p>
+                <p className="text-sm text-gray-600">1 day ago</p>
+              </div>
+            </div>
+            <div className="flex justify-between items-center py-2">
+              <div>
+                <p className="font-medium">Subscription renewed</p>
+                <p className="text-sm text-gray-600">5 days ago</p>
+              </div>
+            </div>
+          </div>
+        </Card>
+      </div>
+    </div>
+  )
+}''',
+                },
+                "sign-in": {
+                    "[[...sign-in]]": {
+                        "page.tsx": '''import { SignIn } from '@clerk/nextjs'
+
+export default function Page() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <SignIn />
+    </div>
+  )
+}''',
+                    },
+                },
+                "sign-up": {
+                    "[[...sign-up]]": {
+                        "page.tsx": '''import { SignUp } from '@clerk/nextjs'
+
+export default function Page() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <SignUp />
+    </div>
+  )
+}''',
+                    },
+                },
+                "api": {
+                    "webhooks": {
+                        "stripe": {
+                            "route.ts": '''import { headers } from 'next/headers'
+import Stripe from 'stripe'
+import { stripe } from '@/lib/stripe'
+import { prisma } from '@/lib/db'
+
+export async function POST(req: Request) {
+  const body = await req.text()
+  const signature = headers().get('Stripe-Signature') as string
+
+  let event: Stripe.Event
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET!
+    )
+  } catch (error: any) {
+    return new Response(`Webhook error: ${error.message}`, { status: 400 })
+  }
+
+  const session = event.data.object as Stripe.Checkout.Session
+
+  if (event.type === 'checkout.session.completed') {
+    const subscription = await stripe.subscriptions.retrieve(
+      session.subscription as string
+    )
+
+    await prisma.user.update({
+      where: {
+        clerkId: session?.metadata?.userId,
+      },
+      data: {
+        stripeSubscriptionId: subscription.id,
+        stripeCustomerId: subscription.customer as string,
+        stripePriceId: subscription.items.data[0].price.id,
+        stripeCurrentPeriodEnd: new Date(
+          subscription.current_period_end * 1000
+        ),
+      },
+    })
+  }
+
+  if (event.type === 'invoice.payment_succeeded') {
+    const subscription = await stripe.subscriptions.retrieve(
+      session.subscription as string
+    )
+
+    await prisma.user.update({
+      where: {
+        stripeSubscriptionId: subscription.id,
+      },
+      data: {
+        stripePriceId: subscription.items.data[0].price.id,
+        stripeCurrentPeriodEnd: new Date(
+          subscription.current_period_end * 1000
+        ),
+      },
+    })
+  }
+
+  return new Response(null, { status: 200 })
+}''',
+                        },
+                    },
+                },
+            },
+            "components": {
+                "ui": {
+                    "Button.tsx": '''import { cn } from '@/lib/utils'
+import { ButtonHTMLAttributes, forwardRef } from 'react'
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'default' | 'outline' | 'ghost'
+  size?: 'sm' | 'default' | 'lg'
+}
+
+const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, variant = 'default', size = 'default', ...props }, ref) => {
+    return (
+      <button
+        className={cn(
+          'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background',
+          {
+            'bg-primary text-primary-foreground hover:bg-primary/90': variant === 'default',
+            'border border-input hover:bg-accent hover:text-accent-foreground': variant === 'outline',
+            'hover:bg-accent hover:text-accent-foreground': variant === 'ghost',
+            'h-9 px-3': size === 'sm',
+            'h-10 py-2 px-4': size === 'default',
+            'h-11 px-8': size === 'lg',
+          },
+          className
+        )}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
+Button.displayName = 'Button'
+
+export { Button }''',
+                    "Card.tsx": '''import { cn } from '@/lib/utils'
+import { HTMLAttributes, forwardRef } from 'react'
+
+interface CardProps extends HTMLAttributes<HTMLDivElement> {}
+
+const Card = forwardRef<HTMLDivElement, CardProps>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        'rounded-lg border bg-card text-card-foreground shadow-sm',
+        className
+      )}
+      {...props}
+    />
+  )
+)
+Card.displayName = 'Card'
+
+export { Card }''',
+                },
+            },
+            "README.md": """# {name} - SaaS Starter
+
+A complete SaaS starter template built with Next.js, TypeScript, Tailwind CSS, Clerk authentication, and Stripe payments.
+
+## Features
+
+- 🔐 **Authentication** - Secure user auth with Clerk (easily switchable to NextAuth)
+- 💳 **Payments** - Stripe integration for subscriptions and billing
+- 📊 **Dashboard** - Beautiful user dashboard with analytics
+- 🎨 **Modern UI** - Tailwind CSS with beautiful components
+- 📱 **Responsive** - Mobile-first responsive design
+- 🔒 **Type Safe** - Built with TypeScript
+- 📝 **Database** - Prisma ORM with PostgreSQL
+
+## Quick Start
+
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+2. **Set up environment variables**
+   ```bash
+   cp .env.example .env.local
+   ```
+   Fill in your Clerk and Stripe API keys.
+
+3. **Set up database**
+   ```bash
+   npm run db:push
+   ```
+
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Set up Stripe webhooks** (for payments)
+   ```bash
+   npm run stripe:listen
+   ```
+
+## Environment Variables
+
+Copy `.env.example` to `.env.local` and fill in:
+
+- **Database**: PostgreSQL connection string
+- **Clerk**: Auth provider keys and URLs
+- **Stripe**: Payment processing keys
+- **App**: Your app URL
+
+## Project Structure
+
+- `/app` - Next.js 14 App Router pages
+- `/components` - Reusable UI components
+- `/lib` - Utility functions and configurations
+- `/prisma` - Database schema and migrations
+
+## Authentication
+
+Using Clerk for authentication. To switch to NextAuth:
+
+1. Remove Clerk dependencies
+2. Install NextAuth
+3. Update `/app/layout.tsx` and middleware
+4. Configure NextAuth providers
+
+## Payments
+
+Stripe integration includes:
+
+- Subscription management
+- Webhook handling
+- Customer portal
+- Usage-based billing ready
+
+## Database
+
+PostgreSQL with Prisma ORM:
+
+- User management
+- Subscription tracking
+- Payment history
+
+## Deployment
+
+Deploy to Vercel, Netlify, or any Next.js compatible platform:
+
+1. Connect your repository
+2. Set environment variables
+3. Deploy!
+
+## Support
+
+- 📖 [Documentation](https://nextjs.org/docs)
+- 🔐 [Clerk Docs](https://clerk.com/docs)
+- 💳 [Stripe Docs](https://stripe.com/docs)
+
+---
+
+Built with ❤️ using MyWork-AI
+""",
+            ".gitignore": """# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Testing
+/coverage
+
+# Next.js
+/.next/
+/out/
+
+# Production
+/build
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env*.local
+.env
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Prisma
+/prisma/db.sqlite
+/prisma/db.sqlite-journal
+
+# IDE
+.vscode/
+.idea/
+""",
+        },
+    },
 }
 
 

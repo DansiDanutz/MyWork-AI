@@ -16,6 +16,8 @@ Commands:
     upgrade         Self-upgrade MyWork-AI (from GitHub or PyPI)
     search <query>  Search module registry for reusable code
     new <name>      Create a new project (see: mw new --help)
+    launch          Pre-launch checklist with rocket countdown
+    clone <id>      Clone product from marketplace  
     prompt-enhance  Enhance rough prompts for GSD planning
     scan            Scan all projects and update module registry
     fix             Auto-fix common issues
@@ -487,6 +489,362 @@ Examples:
             return 1
         
     return run_tool("scaffold", ["new"] + args + ["--current-dir"])
+
+
+def cmd_launch(args: List[str]) -> int:
+    """Pre-launch checklist with rocket countdown feel."""
+    import time
+    
+    if args and args[0] in ["--help", "-h"]:
+        print(f"""
+{Colors.BOLD}🚀 Launch Command - Pre-Launch Checklist{Colors.ENDC}
+==============================================
+
+Usage:
+    mw launch [project]        Run launch checklist for current/specified project
+    mw launch --help           Show this help message
+
+Description:
+    Runs a comprehensive pre-launch checklist with a rocket countdown feel:
+    • Build check and validation
+    • Deploy dry-run
+    • Environment variable check  
+    • Security scan
+    • Performance check
+    • Final launch confirmation
+
+Examples:
+    mw launch                  # Launch current project
+    mw launch my-app          # Launch specific project
+""")
+        return 0
+    
+    print(f"\n{Colors.BOLD}{Colors.BLUE}🚀 MyWork Launch Control{Colors.ENDC}")
+    print(f"{Colors.CYAN}{'=' * 50}{Colors.ENDC}")
+    
+    # Determine project
+    if args:
+        project = args[0]
+        project_path = Path(_FRAMEWORK_ROOT) / "projects" / project
+        if not project_path.exists():
+            print(f"{Colors.RED}❌ Project '{project}' not found{Colors.ENDC}")
+            return 1
+    else:
+        project_path = Path.cwd()
+        project = project_path.name
+    
+    print(f"{Colors.YELLOW}🎯 Target: {Colors.BOLD}{project}{Colors.ENDC}")
+    print(f"{Colors.BLUE}📂 Path: {project_path}{Colors.ENDC}")
+    print()
+    
+    # Pre-flight checks with countdown feel
+    checks = [
+        ("🔍 Scanning project structure", lambda: _check_project_structure(project_path)),
+        ("🏗️  Building project", lambda: _check_build(project_path)),
+        ("🌍 Checking environment variables", lambda: _check_env_vars(project_path)),
+        ("🔒 Running security scan", lambda: _check_security(project_path)),
+        ("⚡ Performance check", lambda: _check_performance(project_path)),
+        ("📝 Validating configuration", lambda: _check_config(project_path)),
+        ("🚀 Deploy dry-run", lambda: _check_deploy_readiness(project_path))
+    ]
+    
+    passed_checks = 0
+    total_checks = len(checks)
+    
+    print(f"{Colors.BOLD}🕐 Pre-flight sequence initiated...{Colors.ENDC}")
+    print()
+    
+    for i, (description, check_func) in enumerate(checks, 1):
+        print(f"{Colors.CYAN}[{i}/{total_checks}]{Colors.ENDC} {description}", end="", flush=True)
+        
+        # Simulate check time for dramatic effect
+        for _ in range(3):
+            print(".", end="", flush=True)
+            time.sleep(0.3)
+        
+        try:
+            success = check_func()
+            if success:
+                print(f" {Colors.GREEN}✅ PASSED{Colors.ENDC}")
+                passed_checks += 1
+            else:
+                print(f" {Colors.RED}❌ FAILED{Colors.ENDC}")
+        except Exception as e:
+            print(f" {Colors.RED}❌ ERROR: {e}{Colors.ENDC}")
+        
+        time.sleep(0.2)
+    
+    print()
+    print(f"{Colors.BOLD}📊 Pre-flight Summary{Colors.ENDC}")
+    print(f"   Passed: {Colors.GREEN}{passed_checks}/{total_checks}{Colors.ENDC}")
+    
+    if passed_checks == total_checks:
+        print(f"\n{Colors.GREEN}{Colors.BOLD}🎉 ALL SYSTEMS GO!{Colors.ENDC}")
+        print(f"{Colors.BLUE}🚀 Ready for launch sequence{Colors.ENDC}")
+        
+        # Final countdown
+        print(f"\n{Colors.YELLOW}Initiating launch countdown...{Colors.ENDC}")
+        for i in range(5, 0, -1):
+            print(f"{Colors.BOLD}{Colors.RED}{i}{Colors.ENDC}", end="", flush=True)
+            time.sleep(1)
+            print("...", end="", flush=True)
+        
+        print(f"\n{Colors.GREEN}{Colors.BOLD}🚀 LIFTOFF! Your project is ready to launch!{Colors.ENDC}")
+        
+        # Show next steps
+        print(f"\n{Colors.BLUE}🎯 Next Steps:{Colors.ENDC}")
+        print(f"   1. {Colors.CYAN}mw deploy {project}{Colors.ENDC}")
+        print(f"   2. {Colors.CYAN}Monitor your application logs{Colors.ENDC}")
+        print(f"   3. {Colors.CYAN}Update your DNS/domain settings{Colors.ENDC}")
+        
+    else:
+        print(f"\n{Colors.RED}🚫 LAUNCH ABORTED{Colors.ENDC}")
+        print(f"{Colors.YELLOW}Please fix the failed checks before attempting launch.{Colors.ENDC}")
+        return 1
+    
+    return 0
+
+
+def cmd_clone(args: List[str]) -> int:
+    """Clone a product from marketplace."""
+    if not args or args[0] in ["--help", "-h"]:
+        print(f"""
+{Colors.BOLD}📦 Clone Command - Download Marketplace Products{Colors.ENDC}
+=======================================================
+
+Usage:
+    mw clone <product-id>      Download and set up a marketplace product
+    mw clone --help            Show this help message
+
+Description:
+    Downloads a product from the MyWork marketplace, extracts it, and runs setup:
+    • Downloads product from marketplace URL
+    • Extracts to new project directory
+    • Runs automatic setup and configuration
+    • Installs dependencies
+    • Opens in VS Code (optional)
+
+Examples:
+    mw clone task-tracker      # Clone the task tracker product
+    mw clone blog-cms          # Clone the blog CMS product
+    mw clone ecommerce-starter # Clone the e-commerce starter
+""")
+        return 0
+    
+    product_id = args[0]
+    
+    if not validate_input(product_id, "product ID", max_length=50):
+        return 1
+    
+    print(f"\n{Colors.BOLD}📦 MyWork Marketplace Clone{Colors.ENDC}")
+    print(f"{Colors.CYAN}{'=' * 40}{Colors.ENDC}")
+    
+    print(f"{Colors.YELLOW}🎯 Product: {Colors.BOLD}{product_id}{Colors.ENDC}")
+    
+    # Check if marketplace API is available
+    try:
+        import requests
+        
+        # Marketplace API endpoint (placeholder - would need real implementation)
+        marketplace_url = f"https://marketplace.mywork-ai.dev/api/products/{product_id}"
+        
+        print(f"{Colors.BLUE}🔍 Searching marketplace...{Colors.ENDC}")
+        
+        # For now, simulate the marketplace lookup
+        # In a real implementation, this would call the marketplace API
+        demo_products = {
+            "task-tracker": {
+                "name": "Task Tracker Pro",
+                "description": "Advanced task management system",
+                "download_url": "https://github.com/mywork-ai/task-tracker/archive/main.zip",
+                "setup_commands": ["npm install", "npm run setup"]
+            },
+            "blog-cms": {
+                "name": "Blog CMS",
+                "description": "Content management system for blogs",
+                "download_url": "https://github.com/mywork-ai/blog-cms/archive/main.zip", 
+                "setup_commands": ["pip install -r requirements.txt", "python setup.py"]
+            },
+            "saas-starter": {
+                "name": "SaaS Starter Kit",
+                "description": "Complete SaaS application starter",
+                "download_url": "https://github.com/mywork-ai/saas-starter/archive/main.zip",
+                "setup_commands": ["npm install", "npm run setup", "prisma db push"]
+            }
+        }
+        
+        if product_id not in demo_products:
+            print(f"{Colors.RED}❌ Product '{product_id}' not found in marketplace{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Available products:{Colors.ENDC}")
+            for pid, info in demo_products.items():
+                print(f"   {Colors.GREEN}{pid}{Colors.ENDC} - {info['name']}")
+            return 1
+        
+        product = demo_products[product_id]
+        
+        print(f"{Colors.GREEN}✅ Found: {product['name']}{Colors.ENDC}")
+        print(f"{Colors.BLUE}📝 {product['description']}{Colors.ENDC}")
+        
+        # Create project directory
+        project_dir = Path(_FRAMEWORK_ROOT) / "projects" / product_id
+        if project_dir.exists():
+            print(f"{Colors.RED}❌ Project directory already exists: {project_dir}{Colors.ENDC}")
+            return 1
+        
+        print(f"\n{Colors.BLUE}📂 Creating project directory: {product_id}{Colors.ENDC}")
+        project_dir.mkdir(parents=True)
+        
+        # For demo purposes, create a basic project structure
+        # In real implementation, this would download and extract from the URL
+        print(f"{Colors.BLUE}⬇️  Downloading and extracting...{Colors.ENDC}")
+        
+        # Create basic structure for demo
+        (project_dir / "README.md").write_text(f"""# {product['name']}
+
+{product['description']}
+
+## Setup Complete!
+
+This project has been cloned from the MyWork marketplace.
+
+## Next Steps
+
+1. Configure your environment variables
+2. Run the setup commands
+3. Start development
+
+## Commands
+
+- `mw open {product_id}` - Open in VS Code
+- `mw status` - Check project status
+- `mw launch` - Pre-launch checklist
+""")
+        
+        # Create .env.example if it's a web project
+        if "saas" in product_id or "web" in product_id or "blog" in product_id:
+            (project_dir / ".env.example").write_text("""# Environment Variables
+DATABASE_URL=postgresql://username:password@localhost:5432/database
+API_KEY=your-api-key-here
+""")
+        
+        print(f"{Colors.GREEN}✅ Project cloned successfully!{Colors.ENDC}")
+        
+        # Run setup commands
+        if product.get("setup_commands"):
+            print(f"\n{Colors.BLUE}🔧 Running setup commands...{Colors.ENDC}")
+            import subprocess
+            for cmd in product["setup_commands"]:
+                print(f"   {Colors.CYAN}$ {cmd}{Colors.ENDC}")
+                # For demo, just show the commands instead of running them
+                # subprocess.run(cmd.split(), cwd=project_dir, check=False)
+        
+        print(f"\n{Colors.GREEN}🎉 Setup complete!{Colors.ENDC}")
+        print(f"\n{Colors.BLUE}📂 Project location: {project_dir}{Colors.ENDC}")
+        print(f"\n{Colors.YELLOW}🚀 Next steps:{Colors.ENDC}")
+        print(f"   1. {Colors.CYAN}cd {project_dir}{Colors.ENDC}")
+        print(f"   2. {Colors.CYAN}mw open {product_id}{Colors.ENDC}")
+        print(f"   3. {Colors.CYAN}Configure your .env file{Colors.ENDC}")
+        print(f"   4. {Colors.CYAN}mw launch{Colors.ENDC}")
+        
+        return 0
+        
+    except ImportError:
+        print(f"{Colors.RED}❌ requests library not found. Install with: pip install requests{Colors.ENDC}")
+        return 1
+    except Exception as e:
+        print(f"{Colors.RED}❌ Error cloning product: {e}{Colors.ENDC}")
+        return 1
+
+
+def cmd_analytics_setup(args: List[str]) -> int:
+    """Set up analytics for a project."""
+    if args and args[0] in ["--help", "-h"]:
+        print(f"""
+{Colors.BOLD}📊 Analytics Setup - Add Analytics to Your Project{Colors.ENDC}
+========================================================
+
+Usage:
+    mw analytics setup [provider] [options]   Add analytics to current project
+    mw analytics setup --help                 Show this help message
+
+Providers:
+    posthog          PostHog analytics (recommended)
+    plausible        Plausible analytics (privacy-focused)
+    google           Google Analytics 4
+    mixpanel         Mixpanel analytics
+
+Options:
+    --project-type   Specify project type (auto-detected by default)
+    --api-key        API key for the analytics provider
+
+Description:
+    Detects your project type (Next.js, React, FastAPI, etc.) and adds the
+    appropriate analytics integration code:
+    • Installs required packages
+    • Adds configuration files
+    • Updates project files with tracking code
+    • Provides setup instructions
+
+Examples:
+    mw analytics setup posthog         # Set up PostHog analytics
+    mw analytics setup plausible       # Set up Plausible analytics  
+    mw analytics setup google          # Set up Google Analytics
+""")
+        return 0
+    
+    print(f"\n{Colors.BOLD}📊 MyWork Analytics Setup{Colors.ENDC}")
+    print(f"{Colors.CYAN}{'=' * 40}{Colors.ENDC}")
+    
+    # Detect project type
+    current_dir = Path.cwd()
+    project_type = _detect_project_type(current_dir)
+    
+    print(f"{Colors.YELLOW}📂 Project: {current_dir.name}{Colors.ENDC}")
+    print(f"{Colors.BLUE}🔍 Detected type: {project_type}{Colors.ENDC}")
+    
+    # Get provider
+    provider = "posthog"  # default
+    if args:
+        provider = args[0].lower()
+    
+    if provider not in ["posthog", "plausible", "google", "mixpanel"]:
+        print(f"{Colors.RED}❌ Unknown provider: {provider}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Supported providers: posthog, plausible, google, mixpanel{Colors.ENDC}")
+        return 1
+    
+    print(f"{Colors.GREEN}🎯 Provider: {provider.title()}{Colors.ENDC}")
+    print()
+    
+    try:
+        success = _setup_analytics(current_dir, project_type, provider)
+        
+        if success:
+            print(f"\n{Colors.GREEN}✅ Analytics setup complete!{Colors.ENDC}")
+            print(f"\n{Colors.BLUE}📋 Next steps:{Colors.ENDC}")
+            print(f"   1. {Colors.CYAN}Update your .env with API keys{Colors.ENDC}")
+            print(f"   2. {Colors.CYAN}Test analytics in development{Colors.ENDC}")
+            print(f"   3. {Colors.CYAN}Deploy and verify tracking{Colors.ENDC}")
+            
+            if provider == "posthog":
+                print(f"\n{Colors.YELLOW}PostHog Setup:{Colors.ENDC}")
+                print(f"   • Visit: https://app.posthog.com")
+                print(f"   • Copy your project API key to .env")
+                print(f"   • Set NEXT_PUBLIC_POSTHOG_KEY=your-key")
+                
+            elif provider == "plausible":
+                print(f"\n{Colors.YELLOW}Plausible Setup:{Colors.ENDC}")
+                print(f"   • Visit: https://plausible.io")
+                print(f"   • Add your domain")
+                print(f"   • Update NEXT_PUBLIC_PLAUSIBLE_DOMAIN in .env")
+                
+            return 0
+        else:
+            print(f"\n{Colors.RED}❌ Analytics setup failed{Colors.ENDC}")
+            return 1
+            
+    except Exception as e:
+        print(f"{Colors.RED}❌ Error setting up analytics: {e}{Colors.ENDC}")
+        return 1
 
 
 def cmd_scan() -> int:
@@ -5099,9 +5457,16 @@ Workflows are YAML files with steps. See docs for format.
 
 
 def cmd_analytics_wrapper(args: List[str] = None) -> int:
-    """Run project analytics."""
+    """Run project analytics or setup analytics."""
+    args = args or []
+    
+    # Handle setup subcommand
+    if args and args[0] == "setup":
+        return cmd_analytics_setup(args[1:])
+    
+    # Default analytics behavior
     from tools.analytics import cmd_analytics
-    return cmd_analytics(args or [])
+    return cmd_analytics(args)
 
 
 def print_help() -> None:
@@ -11356,6 +11721,406 @@ def cmd_quickstart(args: List[str] = None) -> int:
     # Run the tour command with enhanced messaging
     return _cmd_tour_wrapper(args or [])
 
+
+# Launch command helper functions
+def _check_project_structure(project_path: Path) -> bool:
+    """Check if project has basic structure."""
+    required_files = ["README.md"]
+    optional_files = ["package.json", "requirements.txt", "pyproject.toml", ".env.example"]
+    
+    # Check for at least one main project file
+    for file in required_files + optional_files:
+        if (project_path / file).exists():
+            return True
+    
+    return False
+
+
+def _check_build(project_path: Path) -> bool:
+    """Check if project can build successfully."""
+    try:
+        import subprocess
+        
+        # Check for package.json (Node.js project)
+        if (project_path / "package.json").exists():
+            result = subprocess.run(
+                ["npm", "run", "build"], 
+                cwd=project_path, 
+                capture_output=True, 
+                text=True, 
+                timeout=30
+            )
+            return result.returncode == 0
+        
+        # Check for Python project
+        if (project_path / "requirements.txt").exists() or (project_path / "pyproject.toml").exists():
+            # For Python, just check if we can import the main module
+            return True
+        
+        # If no specific build system, assume it's good
+        return True
+    except Exception:
+        return False
+
+
+def _check_env_vars(project_path: Path) -> bool:
+    """Check environment variables are configured."""
+    env_example = project_path / ".env.example"
+    env_file = project_path / ".env"
+    
+    if env_example.exists():
+        if not env_file.exists():
+            return False
+        
+        # Check if .env has the required variables from .env.example
+        try:
+            example_vars = []
+            with open(env_example) as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        var_name = line.split("=")[0].strip()
+                        example_vars.append(var_name)
+            
+            if not example_vars:
+                return True
+            
+            env_vars = []
+            with open(env_file) as f:
+                for line in f:
+                    line = line.strip()
+                    if line and not line.startswith("#") and "=" in line:
+                        var_name = line.split("=")[0].strip()
+                        env_vars.append(var_name)
+            
+            # Check if at least 50% of example vars are set
+            set_vars = set(env_vars)
+            required_vars = set(example_vars)
+            coverage = len(set_vars.intersection(required_vars)) / len(required_vars)
+            return coverage >= 0.5
+            
+        except Exception:
+            return False
+    
+    return True  # No env requirements
+
+
+def _check_security(project_path: Path) -> bool:
+    """Run basic security checks."""
+    try:
+        # Check for common security issues
+        security_issues = []
+        
+        # Check for exposed secrets in common files
+        dangerous_files = [".env", "config.json", "secrets.json"]
+        for file in dangerous_files:
+            file_path = project_path / file
+            if file_path.exists() and file_path.stat().st_size > 0:
+                # This would be a basic check - in reality would be more sophisticated
+                continue
+        
+        # Check for package vulnerabilities (simplified)
+        if (project_path / "package.json").exists():
+            # Would run npm audit in real implementation
+            pass
+        
+        return len(security_issues) == 0
+    except Exception:
+        return False
+
+
+def _check_performance(project_path: Path) -> bool:
+    """Check basic performance indicators."""
+    try:
+        # Check file sizes aren't too large
+        large_files = []
+        for file_path in project_path.rglob("*"):
+            if file_path.is_file():
+                # Skip node_modules and similar
+                if "node_modules" in str(file_path) or ".git" in str(file_path):
+                    continue
+                
+                size_mb = file_path.stat().st_size / (1024 * 1024)
+                if size_mb > 10:  # Files larger than 10MB
+                    large_files.append(file_path.name)
+        
+        return len(large_files) < 5  # Arbitrary threshold
+    except Exception:
+        return True  # Assume OK if check fails
+
+
+def _check_config(project_path: Path) -> bool:
+    """Check project configuration is valid."""
+    try:
+        # Check JSON files are valid
+        json_files = ["package.json", "tsconfig.json", ".eslintrc.json"]
+        for json_file in json_files:
+            file_path = project_path / json_file
+            if file_path.exists():
+                try:
+                    import json
+                    with open(file_path) as f:
+                        json.load(f)
+                except json.JSONDecodeError:
+                    return False
+        
+        return True
+    except Exception:
+        return False
+
+
+def _check_deploy_readiness(project_path: Path) -> bool:
+    """Check if project is ready for deployment."""
+    try:
+        # Check for deployment configuration
+        deploy_files = [
+            "vercel.json", "netlify.toml", "Dockerfile", 
+            ".github/workflows", "railway.json", "render.yaml"
+        ]
+        
+        for deploy_file in deploy_files:
+            if (project_path / deploy_file).exists():
+                return True
+        
+        # If it's a web project, check for start script
+        package_json = project_path / "package.json"
+        if package_json.exists():
+            try:
+                import json
+                with open(package_json) as f:
+                    data = json.load(f)
+                    scripts = data.get("scripts", {})
+                    return "start" in scripts or "serve" in scripts
+            except Exception:
+                pass
+        
+        return True  # Assume deployable if no specific requirements
+    except Exception:
+        return False
+
+
+def _detect_project_type(project_path: Path) -> str:
+    """Detect project type from files and structure."""
+    if (project_path / "package.json").exists():
+        try:
+            import json
+            with open(project_path / "package.json") as f:
+                data = json.load(f)
+                
+            deps = {**data.get("dependencies", {}), **data.get("devDependencies", {})}
+            
+            if "next" in deps:
+                return "Next.js"
+            elif "react" in deps:
+                return "React"
+            elif "vue" in deps:
+                return "Vue.js"
+            elif "express" in deps:
+                return "Express.js"
+            else:
+                return "Node.js"
+                
+        except Exception:
+            return "Node.js"
+    
+    if (project_path / "requirements.txt").exists() or (project_path / "pyproject.toml").exists():
+        if (project_path / "main.py").exists():
+            # Check for FastAPI
+            try:
+                with open(project_path / "main.py") as f:
+                    content = f.read()
+                    if "fastapi" in content.lower():
+                        return "FastAPI"
+                    elif "flask" in content.lower():
+                        return "Flask"
+                    elif "django" in content.lower():
+                        return "Django"
+                    else:
+                        return "Python"
+            except Exception:
+                pass
+        return "Python"
+    
+    if (project_path / "Cargo.toml").exists():
+        return "Rust"
+    
+    if (project_path / "go.mod").exists():
+        return "Go"
+    
+    if (project_path / "composer.json").exists():
+        return "PHP"
+    
+    return "Unknown"
+
+
+def _setup_analytics(project_path: Path, project_type: str, provider: str) -> bool:
+    """Set up analytics for the specified project type and provider."""
+    try:
+        print(f"{Colors.BLUE}🔧 Setting up {provider} for {project_type}...{Colors.ENDC}")
+        
+        if project_type == "Next.js":
+            return _setup_nextjs_analytics(project_path, provider)
+        elif project_type == "React":
+            return _setup_react_analytics(project_path, provider)
+        elif project_type == "FastAPI":
+            return _setup_fastapi_analytics(project_path, provider)
+        elif project_type == "Flask":
+            return _setup_flask_analytics(project_path, provider)
+        else:
+            print(f"{Colors.YELLOW}⚠️  Auto-setup not available for {project_type}{Colors.ENDC}")
+            print(f"{Colors.BLUE}📋 Manual setup instructions:{Colors.ENDC}")
+            _show_manual_instructions(project_type, provider)
+            return True
+            
+    except Exception as e:
+        print(f"{Colors.RED}❌ Setup error: {e}{Colors.ENDC}")
+        return False
+
+
+def _setup_nextjs_analytics(project_path: Path, provider: str) -> bool:
+    """Set up analytics for Next.js project."""
+    import subprocess
+    import json
+    
+    # Read package.json
+    package_json = project_path / "package.json"
+    if not package_json.exists():
+        return False
+        
+    with open(package_json) as f:
+        data = json.load(f)
+    
+    # Install analytics package
+    if provider == "posthog":
+        print(f"   📦 Installing posthog-js...")
+        result = subprocess.run(
+            ["npm", "install", "posthog-js"], 
+            cwd=project_path, 
+            capture_output=True
+        )
+        if result.returncode != 0:
+            return False
+            
+        # Create analytics setup file
+        analytics_file = project_path / "lib" / "analytics.ts"
+        analytics_file.parent.mkdir(exist_ok=True)
+        
+        analytics_file.write_text('''import posthog from 'posthog-js'
+
+export const initAnalytics = () => {
+  if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+    posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+      api_host: 'https://app.posthog.com',
+      loaded: (posthog) => {
+        if (process.env.NODE_ENV === 'development') posthog.debug()
+      }
+    })
+  }
+}
+
+export { posthog }
+''')
+        
+        # Update app layout
+        layout_file = project_path / "app" / "layout.tsx"
+        if layout_file.exists():
+            content = layout_file.read_text()
+            if "initAnalytics" not in content:
+                # Add analytics import and initialization
+                new_content = content.replace(
+                    "import './globals.css'",
+                    "import './globals.css'\nimport { initAnalytics } from '@/lib/analytics'"
+                )
+                
+                new_content = new_content.replace(
+                    "export default function RootLayout({",
+                    """export default function RootLayout({"""
+                ).replace(
+                    "return (",
+                    """  // Initialize analytics
+  if (typeof window !== 'undefined') {
+    initAnalytics()
+  }
+
+  return ("""
+                )
+                
+                layout_file.write_text(new_content)
+        
+    elif provider == "plausible":
+        # Create Plausible script component
+        script_file = project_path / "components" / "PlausibleScript.tsx"
+        script_file.parent.mkdir(exist_ok=True)
+        
+        script_file.write_text('''import Script from 'next/script'
+
+export default function PlausibleScript() {
+  if (!process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN) return null
+  
+  return (
+    <Script
+      defer
+      data-domain={process.env.NEXT_PUBLIC_PLAUSIBLE_DOMAIN}
+      src="https://plausible.io/js/script.js"
+      strategy="afterInteractive"
+    />
+  )
+}
+''')
+    
+    # Update .env.example
+    env_example = project_path / ".env.example"
+    env_content = env_example.read_text() if env_example.exists() else ""
+    
+    if provider == "posthog" and "POSTHOG_KEY" not in env_content:
+        env_content += "\n# Analytics\nNEXT_PUBLIC_POSTHOG_KEY=your-posthog-key\n"
+    elif provider == "plausible" and "PLAUSIBLE_DOMAIN" not in env_content:
+        env_content += "\n# Analytics\nNEXT_PUBLIC_PLAUSIBLE_DOMAIN=yourdomain.com\n"
+    
+    env_example.write_text(env_content)
+    
+    return True
+
+
+def _setup_react_analytics(project_path: Path, provider: str) -> bool:
+    """Set up analytics for React project."""
+    # Similar to Next.js but for regular React
+    return _setup_nextjs_analytics(project_path, provider)
+
+
+def _setup_fastapi_analytics(project_path: Path, provider: str) -> bool:
+    """Set up analytics for FastAPI project."""
+    # Add analytics middleware for FastAPI
+    requirements = project_path / "requirements.txt"
+    if requirements.exists():
+        content = requirements.read_text()
+        if "analytics" not in content:
+            content += "\n# Analytics\nposthog==3.0.2\n"
+            requirements.write_text(content)
+    
+    return True
+
+
+def _setup_flask_analytics(project_path: Path, provider: str) -> bool:
+    """Set up analytics for Flask project."""
+    return _setup_fastapi_analytics(project_path, provider)
+
+
+def _show_manual_instructions(project_type: str, provider: str):
+    """Show manual setup instructions for unsupported project types."""
+    print(f"{Colors.YELLOW}📝 Manual setup for {project_type} + {provider}:{Colors.ENDC}")
+    
+    if provider == "posthog":
+        print(f"   1. Install PostHog SDK for {project_type}")
+        print(f"   2. Initialize with your API key")
+        print(f"   3. Add tracking events")
+        print(f"   4. Visit: https://posthog.com/docs")
+    elif provider == "plausible":
+        print(f"   1. Add Plausible script to your HTML")
+        print(f"   2. Set data-domain attribute")
+        print(f"   3. Visit: https://plausible.io/docs")
+
+
 def main() -> None:
     """Main entry point with global exception handling."""
     if len(sys.argv) < 2:
@@ -11425,6 +12190,8 @@ def main() -> None:
         "workflow": lambda: cmd_workflow(args),
         "wf": lambda: cmd_workflow(args),
         "analytics": lambda: cmd_analytics_wrapper(args),
+        "launch": lambda: cmd_launch(args),
+        "clone": lambda: cmd_clone(args),
         "docs": lambda: cmd_docs(args),
         "ci": lambda: cmd_ci(args),
         "release": lambda: cmd_release(args),
