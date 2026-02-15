@@ -5,21 +5,12 @@ MyWork-AI Framework Setup
 Installation script for MyWork-AI framework tools.
 """
 
-from setuptools import setup
+from setuptools import setup, find_packages
 from pathlib import Path
 
 # Read the README
 readme_path = Path(__file__).parent / "README.md"
 long_description = readme_path.read_text() if readme_path.exists() else ""
-
-# Read requirements
-requirements = [
-    "click>=8.1.0",
-    "rich>=13.0.0",
-    "python-dotenv>=1.0.0",
-    "httpx>=0.25.0",
-    "pyyaml>=6.0.0",
-]
 
 # Optional requirements for different features
 extras_require = {
@@ -31,55 +22,34 @@ extras_require = {
         "pytest>=7.4.0",
         "pytest-cov>=4.1.0",
         "pytest-timeout>=2.2.0",
-        "flake8>=6.0.0",
-        "black>=23.0.0",
         "ruff>=0.1.0",
-        "mypy>=1.7.0",
     ],
-    "all": [],  # Will be populated below
 }
-extras_require["all"] = list(set(req for reqs in extras_require.values() for req in reqs))
 
 setup(
     name="mywork-ai",
-    version="2.4.0",
+    version="2.6.0",
     author="Dan Sidanutz",
-    author_email="dan@mywork.ai",
-    description="AI-powered development framework with tools, workflows, and brain (knowledge vault)",
+    author_email="dan@mywork-ai.dev",
+    description="AI-powered development framework — build, ship, and sell software products with CLI tools, workflows, and a marketplace",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/dansidanutz/MyWork-AI",
     project_urls={
         "Bug Reports": "https://github.com/dansidanutz/MyWork-AI/issues",
         "Source": "https://github.com/dansidanutz/MyWork-AI",
+        "Marketplace": "https://frontend-hazel-ten-17.vercel.app",
     },
-    packages=[],
-    package_dir={"": "tools"},
-    py_modules=[
-        "mw",
-        "config",
-        "brain",
-        "brain_learner",
-        "module_registry",
-        "health_check",
-        "auto_update",
-        "autocoder_api",
-        "autocoder_service",
-        "scaffold",
-        "switch_llm_provider",
-    ],
+    packages=["tools"],
     python_requires=">=3.9",
-    install_requires=requirements,
+    install_requires=[
+        "python-dotenv>=1.0.0",
+    ],
     extras_require=extras_require,
     entry_points={
         "console_scripts": [
-            "mw=mw:main",
-            "mywork=mw:main",
-            "mywork-brain=brain:main",
-            "mywork-health=health_check:main",
-            "mywork-registry=module_registry:main",
-            "mywork-scaffold=scaffold:main",
-            "mywork-update=auto_update:main",
+            "mw=tools.mw:main",
+            "mywork=tools.mw:main",
         ],
     },
     classifiers=[
@@ -95,5 +65,5 @@ setup(
         "Topic :: Software Development :: Libraries :: Application Frameworks",
         "Topic :: Software Development :: Build Tools",
     ],
-    keywords="ai, development, framework, automation, claude, gsd",
+    keywords="ai, development, framework, automation, marketplace, cli, workflow",
 )

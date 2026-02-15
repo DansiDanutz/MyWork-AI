@@ -6976,6 +6976,12 @@ def cmd_version(args: List[str] = None) -> int:
                     if line.startswith('version ='):
                         version = line.split('=')[1].strip().strip('"')
                         break
+        if version == "unknown":
+            try:
+                from importlib.metadata import version as _pkg_ver
+                version = _pkg_ver("mywork-ai")
+            except Exception:
+                pass
 
         info = {
             "version": version,
