@@ -1540,12 +1540,37 @@ def _n8n_setup(args: List[str]) -> int:
             print("✅ n8n is running!")
             print("   URL: http://localhost:5678")
             print("   Data: Persistent (Docker volume: n8n_data)")
+            
+            # Auto-append N8N_API_URL to .env file
+            try:
+                from pathlib import Path
+                env_file = Path.cwd() / ".env"
+                
+                # Check if N8N_API_URL already exists
+                if env_file.exists():
+                    content = env_file.read_text()
+                    if "N8N_API_URL" not in content:
+                        with open(env_file, "a") as f:
+                            f.write("\n# n8n Configuration (auto-added by mw n8n setup)\n")
+                            f.write("N8N_API_URL=http://localhost:5678\n")
+                        print("✅ Added N8N_API_URL to .env file")
+                    else:
+                        print("ℹ️ N8N_API_URL already exists in .env file")
+                else:
+                    # Create .env file with N8N_API_URL
+                    with open(env_file, "w") as f:
+                        f.write("# n8n Configuration (auto-added by mw n8n setup)\n")
+                        f.write("N8N_API_URL=http://localhost:5678\n")
+                    print("✅ Created .env file with N8N_API_URL")
+            except Exception as e:
+                print(f"⚠️ Could not auto-configure .env: {e}")
+
             print("\n📝 Next steps:")
             print("   1. Open http://localhost:5678 in your browser")
             print("   2. Create owner account")
             print("   3. Go to Settings → API → Create API key")
-            print("   4. Add to .env: N8N_API_URL=http://localhost:5678")
-            print("   5.              N8N_API_KEY=your-api-key")
+            print("   4. Add to .env: N8N_API_KEY=your-api-key")
+            print("      (N8N_API_URL already added ✅)")
             return 0
         except Exception as e:
             print(f"❌ Docker setup failed: {e}")
@@ -2671,21 +2696,40 @@ This command packages your project and guides you through the upload process.
             "requirements": _detect_requirements(current_dir),
         }
         
-        print(f"\n{Colors.BOLD}{Colors.GREEN}✅ Ready to publish!{Colors.ENDC}")
-        print(f"Package: {zip_path}")
-        print(f"Details: {json.dumps(listing_info, indent=2)}")
+        print(f"\n{Colors.BOLD}{Colors.GREEN}✅ Package ready! ({zip_size:.2f} MB){Colors.ENDC}")
         
-        print(f"\n{Colors.YELLOW}🔄 Manual Upload Required{Colors.ENDC}")
-        print("Full automated publishing is coming soon!")
-        print()
-        print(f"{Colors.BOLD}To complete the publication:{Colors.ENDC}")
-        print(f"1. Visit: {color('https://frontend-hazel-ten-17.vercel.app', Colors.BLUE)}")
-        print(f"2. Sign in to your account")
-        print(f"3. Click 'Publish Project' or 'List Product'")
-        print(f"4. Upload the package file: {color(zip_path, Colors.YELLOW)}")
-        print(f"5. Fill in the details (copy from above)")
-        print()
-        print(f"{Colors.GREEN}💡 Keep this package file until upload is complete!{Colors.ENDC}")
+        # Upload to R2 storage
+        print(f"\n{Colors.BLUE}☁️  Uploading to cloud storage...{Colors.ENDC}")
+        package_url = _marketplace_upload_r2(zip_path, listing_info["title"])
+        
+        if not package_url:
+            print(f"\n{Colors.YELLOW}⚠️  Cloud upload skipped (R2 not configured){Colors.ENDC}")
+            print(f"Package saved locally: {zip_path}")
+            print(f"\n{Colors.BOLD}To publish manually:{Colors.ENDC}")
+            print(f"1. Visit: {color('https://frontend-hazel-ten-17.vercel.app', Colors.BLUE)}")
+            print(f"2. Sign in and upload the package")
+        else:
+            listing_info["package_url"] = package_url
+            listing_info["package_size_bytes"] = os.path.getsize(zip_path)
+            print(f"✅ Uploaded: {package_url}")
+            
+            # Create product on marketplace API
+            print(f"\n{Colors.BLUE}📋 Listing on marketplace...{Colors.ENDC}")
+            product_id = _marketplace_create_product(listing_info)
+            
+            if product_id:
+                print(f"\n{Colors.BOLD}{Colors.GREEN}🎉 Published to marketplace!{Colors.ENDC}")
+                print(f"   Product ID: {product_id}")
+                print(f"   URL: https://frontend-hazel-ten-17.vercel.app/products/{listing_info.get('title', '').lower().replace(' ', '-')}")
+            else:
+                print(f"\n{Colors.YELLOW}⚠️  Package uploaded but listing needs manual step{Colors.ENDC}")
+                print(f"Visit: https://frontend-hazel-ten-17.vercel.app to complete listing")
+        
+        # Cleanup temp zip
+        try:
+            os.unlink(zip_path)
+        except:
+            pass
         
     except Exception as e:
         print(f"{Colors.RED}❌ Error creating package: {e}{Colors.ENDC}")
