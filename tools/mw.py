@@ -934,7 +934,8 @@ def cmd_open(args: List[str]) -> None:
     project_path = PROJECTS_DIR / project_name
 
     if not project_path.exists():
-        print(f"{Colors.RED}Project not found: {project_name}{Colors.ENDC}")
+        print(f"{Colors.RED}❌ Project not found: {project_name}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Try: mw projects{Colors.ENDC} (see all projects)")
         return 1
 
     subprocess.call(["code", str(project_path)])
@@ -957,7 +958,8 @@ def cmd_cd(args: List[str]) -> None:
     project_path = PROJECTS_DIR / project_name
 
     if not project_path.exists():
-        print(f"{Colors.RED}Project not found: {project_name}{Colors.ENDC}")
+        print(f"{Colors.RED}❌ Project not found: {project_name}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Try: mw projects{Colors.ENDC} (see all projects)")
         return 1
 
     print(f"cd {project_path}")
@@ -7494,6 +7496,7 @@ def cmd_env(args: List[str] = None) -> int:
             return 0
         else:
             print(f"{Colors.RED}❌ Variable '{key}' not found{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Try: mw env list{Colors.ENDC} (see all variables)")
             return 1
 
     elif subcommand == "set":
@@ -7523,6 +7526,7 @@ def cmd_env(args: List[str] = None) -> int:
         data = _parse_env(env_file)
         if key not in data:
             print(f"{Colors.RED}❌ Variable '{key}' not found{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Try: mw env list{Colors.ENDC} (see all variables)")
             return 1
         del data[key]
         _write_env(env_file, data)
