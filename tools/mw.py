@@ -6012,9 +6012,19 @@ Tags scanned: TODO, FIXME, HACK, XXX, NOTE, OPTIMIZE, REFACTOR
     return 0
 
 
-def cmd_version() -> int:
-    """Show framework version, Python version, and platform info."""
+def cmd_version(args: List[str] = None) -> int:
+    """Show framework version, Python version, and platform info.
+
+    Usage:
+        mw version              Show local version info
+        mw version --check      Check PyPI for updates
+        mw version --json       Output as JSON
+    """
     import platform
+    args = args or []
+    check_pypi = "--check" in args
+    as_json = "--json" in args
+
     try:
         pyproject_path = MYWORK_ROOT / "pyproject.toml"
         version = "unknown"
@@ -6024,9 +6034,57 @@ def cmd_version() -> int:
                     if line.startswith('version ='):
                         version = line.split('=')[1].strip().strip('"')
                         break
-        print(f"MyWork-AI v{version}")
-        print(f"Python {platform.python_version()} on {platform.system()} {platform.machine()}")
-        print(f"Install: {MYWORK_ROOT}")
+
+        info = {
+            "version": version,
+            "python": platform.python_version(),
+            "platform": f"{platform.system()} {platform.machine()}",
+            "install_path": str(MYWORK_ROOT),
+        }
+
+        # Check PyPI for latest version
+        if check_pypi:
+            try:
+                import urllib.request, json as _json
+                req = urllib.request.Request(
+                    "https://pypi.org/pypi/mywork-ai/json",
+                    headers={"Accept": "application/json", "User-Agent": "mywork-ai"},
+                )
+                with urllib.request.urlopen(req, timeout=5) as resp:
+                    pypi_data = _json.loads(resp.read())
+                latest = pypi_data.get("info", {}).get("version", "unknown")
+                info["latest_pypi"] = latest
+                # Compare versions properly using tuple comparison
+                def _parse_ver(v):
+                    try:
+                        return tuple(int(x) for x in v.split('.'))
+                    except (ValueError, AttributeError):
+                        return (0,)
+                info["update_available"] = (
+                    version != "unknown"
+                    and latest != "unknown"
+                    and _parse_ver(latest) > _parse_ver(version)
+                )
+            except Exception:
+                info["latest_pypi"] = "check failed"
+                info["update_available"] = False
+
+        if as_json:
+            import json as _json
+            print(_json.dumps(info, indent=2))
+        else:
+            print(f"MyWork-AI v{version}")
+            print(f"Python {platform.python_version()} on {platform.system()} {platform.machine()}")
+            print(f"Install: {MYWORK_ROOT}")
+            if check_pypi:
+                latest = info.get("latest_pypi", "?")
+                if info.get("update_available"):
+                    print(f"\n⬆️  Update available: v{version} → v{latest}")
+                    print(f"   Run: pip install --upgrade mywork-ai")
+                elif latest == "check failed":
+                    print(f"\n⚠️  Could not reach PyPI to check for updates")
+                else:
+                    print(f"\n✅ You're on the latest version (v{version})")
     except Exception as e:
         print(f"MyWork-AI (version check failed: {e})")
     return 0
@@ -10535,9 +10593,9 @@ def main() -> None:
         "plan": lambda: cmd_gsd(args),
         "webdash": lambda: _cmd_webdash(args),
         "html-report": lambda: _cmd_webdash(args),
-        "version": lambda: cmd_version(),
+        "version": lambda: cmd_version(args),
         "-v": lambda: cmd_version(),
-        "--version": lambda: cmd_version(),
+        "--version": lambda: cmd_version(args),
         "help": lambda: print_help() or 0,
         "-h": lambda: print_help() or 0,
         "--help": lambda: print_help() or 0,
