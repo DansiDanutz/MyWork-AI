@@ -12,6 +12,7 @@ def run_mw(*args, timeout=15):
     result = subprocess.run(
         [sys.executable, MW, *args],
         capture_output=True, text=True, timeout=timeout,
+        stdin=subprocess.DEVNULL,
         cwd=os.path.dirname(MW)
     )
     return result

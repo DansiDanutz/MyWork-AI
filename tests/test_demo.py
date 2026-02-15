@@ -6,7 +6,7 @@ def test_demo_help():
     """Demo --help should print usage."""
     r = subprocess.run(
         [sys.executable, "tools/demo.py", "--help"],
-        capture_output=True, text=True, timeout=10,
+        capture_output=True, text=True, timeout=10, stdin=subprocess.DEVNULL,
         cwd="/home/Memo1981/MyWork-AI"
     )
     assert "demo" in r.stdout.lower() or "usage" in r.stdout.lower()
@@ -23,7 +23,7 @@ def test_mw_demo_registered():
     """mw demo should be a recognized command."""
     r = subprocess.run(
         [sys.executable, "tools/mw.py", "--help"],
-        capture_output=True, text=True, timeout=10,
+        capture_output=True, text=True, timeout=10, stdin=subprocess.DEVNULL,
         cwd="/home/Memo1981/MyWork-AI"
     )
     assert "demo" in r.stdout
