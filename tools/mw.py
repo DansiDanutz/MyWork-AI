@@ -10984,6 +10984,106 @@ _mw""")
         return 1
 
 
+def check_version_startup():
+    """Check for new version on startup (cached, non-blocking)."""
+    import time
+    import json as _json
+    from pathlib import Path
+
+    # Cache file to avoid checking too frequently
+    cache_dir = Path.home() / ".mywork"
+    cache_file = cache_dir / "version_check.json"
+    
+    # Only check once per day
+    now = int(time.time())
+    if cache_file.exists():
+        try:
+            cache = _json.loads(cache_file.read_text())
+            last_check = cache.get("last_check", 0)
+            # Skip if checked within 24 hours (86400 seconds)
+            if now - last_check < 86400:
+                # Still show cached update notification if available
+                if cache.get("update_available"):
+                    print(f"{Colors.YELLOW}💡 MyWork-AI update available: v{cache.get('latest_version')} "
+                          f"(current: v{cache.get('current_version')}){Colors.ENDC}")
+                    print(f"   Run 'mw upgrade' to update.\n")
+                return
+        except Exception:
+            pass
+
+    try:
+        # Get current version
+        install_dir = Path(__file__).resolve().parent.parent
+        current_ver = "unknown"
+        try:
+            toml_path = install_dir / "pyproject.toml"
+            if toml_path.exists():
+                for line in toml_path.read_text().splitlines():
+                    if line.strip().startswith('version'):
+                        current_ver = line.split('"')[1]
+                        break
+        except Exception:
+            pass
+
+        # Quick check for git updates (if available)
+        update_available = False
+        latest_version = current_ver
+        
+        git_dir = install_dir / ".git"
+        if git_dir.exists():
+            try:
+                import subprocess as _sp
+                # Fetch quietly
+                _sp.run(["git", "fetch", "--quiet"], cwd=install_dir, 
+                       capture_output=True, timeout=5)
+                
+                # Check if behind
+                r = _sp.run(["git", "rev-list", "--count", "HEAD..origin/main"],
+                           cwd=install_dir, capture_output=True, text=True, timeout=3)
+                if r.returncode == 0 and r.stdout.strip().isdigit():
+                    behind = int(r.stdout.strip())
+                    update_available = behind > 0
+                    if update_available:
+                        # Try to get latest tag
+                        r = _sp.run(["git", "describe", "--tags", "--abbrev=0", "origin/main"],
+                                   cwd=install_dir, capture_output=True, text=True, timeout=2)
+                        if r.returncode == 0:
+                            latest_version = r.stdout.strip()
+            except Exception:
+                pass
+
+        # Cache the result
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        cache = {
+            "last_check": now,
+            "current_version": current_ver,
+            "latest_version": latest_version,
+            "update_available": update_available
+        }
+        cache_file.write_text(_json.dumps(cache, indent=2))
+        
+        # Show notification if update available
+        if update_available:
+            print(f"{Colors.YELLOW}💡 MyWork-AI update available: {latest_version} "
+                  f"(current: v{current_ver}){Colors.ENDC}")
+            print(f"   Run 'mw upgrade' to update.\n")
+            
+    except Exception:
+        # Silent fail - don't interrupt the user experience
+        pass
+
+def cmd_quickstart(args: List[str] = None) -> int:
+    """Quick start guide - guided first experience for new users.
+    
+    This is an enhanced version of the tour command optimized for new users.
+    """
+    print(f"\n{Colors.BOLD}{Colors.BLUE}🚀 MyWork-AI Quickstart{Colors.ENDC}")
+    print(f"{Colors.BLUE}{'═' * 50}{Colors.ENDC}")
+    print(f"{Colors.CYAN}Welcome! This will guide you through MyWork-AI in 2 minutes.{Colors.ENDC}\n")
+    
+    # Run the tour command with enhanced messaging
+    return _cmd_tour_wrapper(args or [])
+
 def main() -> None:
     """Main entry point with global exception handling."""
     if len(sys.argv) < 2:
@@ -10992,6 +11092,10 @@ def main() -> None:
 
     command = sys.argv[1].lower()
     args = sys.argv[2:]
+    
+    # Check for version updates on startup (non-blocking, cached)
+    if command not in ["upgrade", "version", "-v", "--version", "help", "-h", "--help"]:
+        check_version_startup()
     
     # Validate command input
     if not validate_input(command, "command", max_length=50):
@@ -11084,6 +11188,8 @@ def main() -> None:
         "serve": lambda: _cmd_serve_wrapper(args),
         "demo": lambda: _cmd_demo_wrapper(args),
         "tour": lambda: _cmd_tour_wrapper(args),
+        "quickstart": lambda: cmd_quickstart(args),
+        "quick": lambda: cmd_quickstart(args),  # Short alias
         "web": lambda: _cmd_serve_wrapper(args),
         "db": lambda: _cmd_db_wrapper(args),
         "database": lambda: _cmd_db_wrapper(args),
