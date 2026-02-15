@@ -34,6 +34,7 @@ Usage:
     mw n8n logs <exec_id>           Show execution details
     mw n8n config                   Show/set n8n connection config
     mw n8n test <file.json>         Validate workflow JSON locally
+    mw n8n mcp                      Generate .mcp.json for MCP integration
     mw n8n --help                   Show this help message
 
 Description:
@@ -114,6 +115,8 @@ Examples:
             print("❌ Error: Missing workflow file")
             return 1
         return _n8n_test(sub_args[0])
+    elif subcmd == "mcp":
+        return generate_mcp_config()
     else:
         print(f"❌ Unknown n8n command: {subcmd}")
         print("💡 Try: mw n8n --help")
@@ -434,4 +437,68 @@ def _n8n_test(workflow_file: str) -> int:
         return 1
     except json.JSONDecodeError as e:
         print(f"❌ Invalid JSON: {e}")
+        return 1
+
+def generate_mcp_config(url: str = None, api_key: str = None) -> int:
+    """Generate .mcp.json configuration for n8n-mcp integration."""
+    # Get current n8n config if not provided
+    if not url:
+        url, current_key = _n8n_get_config()
+        if not api_key:
+            api_key = current_key
+    
+    if not url:
+        print("❌ n8n URL not configured")
+        print("💡 Run 'mw n8n setup' first or set N8N_API_URL")
+        return 1
+    
+    mcp_config = {
+        "mcpServers": {
+            "n8n-mcp": {
+                "command": "npx",
+                "args": ["n8n-mcp"],
+                "env": {
+                    "MCP_MODE": "stdio", 
+                    "LOG_LEVEL": "error",
+                    "N8N_API_URL": url,
+                    "N8N_API_KEY": api_key or "your-n8n-api-key-here"
+                }
+            }
+        }
+    }
+    
+    mcp_file = Path(".mcp.json")
+    
+    # If .mcp.json already exists, merge with existing config
+    if mcp_file.exists():
+        try:
+            existing_config = json.loads(mcp_file.read_text())
+            if "mcpServers" in existing_config:
+                existing_config["mcpServers"]["n8n-mcp"] = mcp_config["mcpServers"]["n8n-mcp"]
+                mcp_config = existing_config
+            else:
+                existing_config.update(mcp_config)
+                mcp_config = existing_config
+        except json.JSONDecodeError:
+            print("⚠️  Existing .mcp.json is invalid, creating new one")
+    
+    try:
+        with open(mcp_file, 'w') as f:
+            json.dump(mcp_config, f, indent=2)
+        
+        print(f"✅ Generated .mcp.json configuration")
+        print(f"📄 MCP config written to: {mcp_file.absolute()}")
+        print("🔌 n8n-mcp server configured for MCP integration")
+        
+        if not api_key or api_key == "your-n8n-api-key-here":
+            print("⚠️  Update N8N_API_KEY in .mcp.json with your real API key")
+        
+        print("\n💡 Next steps:")
+        print("1. Install n8n-mcp: npm install -g n8n-mcp")
+        print("2. Test MCP connection with Claude Desktop or compatible client")
+        
+        return 0
+        
+    except Exception as e:
+        print(f"❌ Failed to write .mcp.json: {e}")
         return 1
