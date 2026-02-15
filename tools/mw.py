@@ -443,6 +443,7 @@ Usage:
 
 Templates:
     basic                           Basic project structure
+    saas                            Full SaaS starter with Next.js, Auth & Stripe
     fastapi                         FastAPI web service  
     nextjs                          Next.js web application
     fullstack                       Full-stack web application
@@ -3947,6 +3948,7 @@ Start with a solid foundation using our project scaffolding:
    
    Available templates:
    • {Colors.BLUE}basic{Colors.ENDC}      - Simple project structure
+   • {Colors.BLUE}saas{Colors.ENDC}       - Full SaaS starter with Next.js, Auth & Stripe
    • {Colors.BLUE}fastapi{Colors.ENDC}    - FastAPI web service
    • {Colors.BLUE}nextjs{Colors.ENDC}     - Next.js web application  
    • {Colors.BLUE}fullstack{Colors.ENDC} - Complete web application
