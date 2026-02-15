@@ -12123,6 +12123,1113 @@ def _show_manual_instructions(project_type: str, provider: str):
         print(f"   3. Visit: https://plausible.io/docs")
 
 
+def cmd_webhook(args: List[str] = None) -> int:
+    """Webhook testing server — start a temporary HTTP server to catch webhook requests."""
+    import http.server
+    import socketserver
+    import threading
+    import json
+    from datetime import datetime
+    import socket
+    
+    if args and args[0] in ["--help", "-h"]:
+        print("""
+Webhook Testing Server
+=====================
+Usage:
+    mw webhook test [--port <port>]    Start webhook test server
+    mw webhook test --help             Show this help
+
+Description:
+    Starts a temporary local HTTP server to catch and display incoming webhook requests.
+    Perfect for debugging webhook integrations and API callbacks.
+
+Examples:
+    mw webhook test                    # Start on random port
+    mw webhook test --port 9999        # Start on specific port
+    
+Server will show:
+    • Timestamp of each request
+    • HTTP method (GET, POST, etc.)
+    • Request path and query parameters
+    • Headers (formatted)
+    • Request body (JSON pretty-printed)
+    
+Press Ctrl+C to stop the server.
+""")
+        return 0
+    
+    if not args or args[0] != "test":
+        print(f"{Colors.RED}❌ Error: webhook command requires 'test' subcommand{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Try: mw webhook test{Colors.ENDC}")
+        return 1
+    
+    # Parse port argument
+    port = 0  # Random port
+    if len(args) >= 3 and args[1] == "--port":
+        try:
+            port = int(args[2])
+            if port < 1024 or port > 65535:
+                raise ValueError("Port must be between 1024-65535")
+        except ValueError as e:
+            print(f"{Colors.RED}❌ Error: Invalid port: {e}{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Try: mw webhook test --port 8080{Colors.ENDC}")
+            return 1
+    
+    class WebhookHandler(http.server.BaseHTTPRequestHandler):
+        def log_message(self, format, *args):
+            """Suppress default logging."""
+            pass
+            
+        def do_GET(self):
+            self._handle_request("GET")
+            
+        def do_POST(self):
+            self._handle_request("POST")
+            
+        def do_PUT(self):
+            self._handle_request("PUT")
+            
+        def do_DELETE(self):
+            self._handle_request("DELETE")
+            
+        def _handle_request(self, method):
+            timestamp = datetime.now().strftime("%H:%M:%S")
+            print(f"\n{Colors.GREEN}🔔 [{timestamp}] {method} {self.path}{Colors.ENDC}")
+            
+            # Headers
+            print(f"{Colors.CYAN}📋 Headers:{Colors.ENDC}")
+            for header, value in self.headers.items():
+                print(f"   {Colors.BLUE}{header}:{Colors.ENDC} {value}")
+            
+            # Body for POST/PUT
+            if method in ["POST", "PUT"] and 'content-length' in self.headers:
+                try:
+                    content_length = int(self.headers['content-length'])
+                    body = self.rfile.read(content_length).decode('utf-8')
+                    
+                    if body:
+                        print(f"{Colors.YELLOW}📝 Body:{Colors.ENDC}")
+                        try:
+                            # Try to pretty-print JSON
+                            parsed = json.loads(body)
+                            print(json.dumps(parsed, indent=2))
+                        except json.JSONDecodeError:
+                            # Not JSON, show raw
+                            print(body)
+                except Exception as e:
+                    print(f"{Colors.RED}❌ Error reading body: {e}{Colors.ENDC}")
+            
+            # Send response
+            self.send_response(200)
+            self.send_header('Content-type', 'application/json')
+            self.end_headers()
+            response = {"status": "received", "timestamp": timestamp, "method": method, "path": self.path}
+            self.wfile.write(json.dumps(response).encode())
+    
+    try:
+        with socketserver.TCPServer(("", port), WebhookHandler) as httpd:
+            actual_port = httpd.server_address[1]
+            print(f"{Colors.GREEN}🚀 Webhook test server started{Colors.ENDC}")
+            print(f"{Colors.CYAN}📡 Listening on: http://localhost:{actual_port}{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Send webhooks to any path, e.g., http://localhost:{actual_port}/webhook{Colors.ENDC}")
+            print(f"{Colors.BLUE}Press Ctrl+C to stop{Colors.ENDC}\n")
+            
+            httpd.serve_forever()
+    except KeyboardInterrupt:
+        print(f"\n{Colors.YELLOW}🛑 Webhook server stopped{Colors.ENDC}")
+        return 0
+    except Exception as e:
+        print(f"{Colors.RED}❌ Error starting server: {e}{Colors.ENDC}")
+        return 1
+
+
+def cmd_secrets_new(args: List[str] = None) -> int:
+    """New secrets management with encryption."""
+    import os
+    import json
+    import base64
+    import platform
+    from pathlib import Path
+    
+    secrets_dir = Path.home() / ".mywork"
+    secrets_file = secrets_dir / "secrets.json"
+    
+    # Try to use Fernet encryption, fallback to simple XOR
+    try:
+        from cryptography.fernet import Fernet
+        import hashlib
+        CRYPTO_AVAILABLE = True
+    except ImportError:
+        CRYPTO_AVAILABLE = False
+    
+    def get_master_key():
+        """Get or create master key for encryption."""
+        key_file = secrets_dir / ".master_key"
+        if key_file.exists():
+            return key_file.read_bytes()
+        
+        if CRYPTO_AVAILABLE:
+            # Generate new Fernet key
+            key = Fernet.generate_key()
+        else:
+            # Simple fallback key based on machine info
+            machine_info = f"{platform.node()}{platform.machine()}{os.environ.get('USER', 'default')}"
+            key = hashlib.sha256(machine_info.encode()).digest()[:32]
+        
+        secrets_dir.mkdir(exist_ok=True)
+        key_file.write_bytes(key)
+        key_file.chmod(0o600)  # User-only access
+        return key
+    
+    def encrypt_value(value: str) -> str:
+        """Encrypt a value using available method."""
+        if CRYPTO_AVAILABLE:
+            fernet = Fernet(base64.urlsafe_b64encode(get_master_key()[:32]))
+            return fernet.encrypt(value.encode()).decode()
+        else:
+            # Simple XOR fallback
+            key = get_master_key()
+            encrypted = bytes(a ^ b for a, b in zip(value.encode(), key * ((len(value) // len(key)) + 1)))
+            return base64.b64encode(encrypted).decode()
+    
+    def decrypt_value(encrypted: str) -> str:
+        """Decrypt a value using available method."""
+        if CRYPTO_AVAILABLE:
+            fernet = Fernet(base64.urlsafe_b64encode(get_master_key()[:32]))
+            return fernet.decrypt(encrypted.encode()).decode()
+        else:
+            # Simple XOR fallback
+            key = get_master_key()
+            encrypted_bytes = base64.b64decode(encrypted.encode())
+            decrypted = bytes(a ^ b for a, b in zip(encrypted_bytes, key * ((len(encrypted_bytes) // len(key)) + 1)))
+            return decrypted.decode()
+    
+    def load_secrets():
+        """Load secrets from file."""
+        if not secrets_file.exists():
+            return {}
+        try:
+            with open(secrets_file, 'r') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, IOError) as e:
+            print(f"{Colors.RED}❌ Error loading secrets: {e}{Colors.ENDC}")
+            return {}
+    
+    def save_secrets(secrets_data):
+        """Save secrets to file."""
+        secrets_dir.mkdir(exist_ok=True)
+        with open(secrets_file, 'w') as f:
+            json.dump(secrets_data, f, indent=2)
+        secrets_file.chmod(0o600)
+    
+    if not args:
+        args = ["list"]
+    
+    subcommand = args[0]
+    
+    if subcommand in ["--help", "-h"]:
+        print("""
+Secrets Management
+==================
+Usage:
+    mw secrets set <key> <value>       Store encrypted secret
+    mw secrets get <key>               Retrieve and decrypt secret
+    mw secrets list                    List all secret keys (not values)
+    mw secrets delete <key>            Remove a secret
+    mw secrets export --env            Export as KEY=VALUE for .env files
+
+Description:
+    Secure storage for API keys, passwords, and other sensitive data.
+    Uses Fernet encryption when available, falls back to XOR encoding.
+    Secrets stored in ~/.mywork/secrets.json (encrypted)
+
+Examples:
+    mw secrets set API_KEY "sk-1234567890"
+    mw secrets get API_KEY
+    mw secrets list
+    mw secrets delete API_KEY
+    mw secrets export --env > .env
+""")
+        return 0
+    
+    secrets = load_secrets()
+    
+    if subcommand == "set":
+        if len(args) < 3:
+            print(f"{Colors.RED}❌ Error: set requires key and value{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Try: mw secrets set API_KEY \"your-secret-value\"{Colors.ENDC}")
+            return 1
+        
+        key, value = args[1], args[2]
+        try:
+            secrets[key] = encrypt_value(value)
+            save_secrets(secrets)
+            print(f"{Colors.GREEN}✅ Secret '{key}' stored securely{Colors.ENDC}")
+            return 0
+        except Exception as e:
+            print(f"{Colors.RED}❌ Error storing secret: {e}{Colors.ENDC}")
+            return 1
+    
+    elif subcommand == "get":
+        if len(args) < 2:
+            print(f"{Colors.RED}❌ Error: get requires a key{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Try: mw secrets get API_KEY{Colors.ENDC}")
+            return 1
+        
+        key = args[1]
+        if key not in secrets:
+            print(f"{Colors.RED}❌ Error: Secret '{key}' not found{Colors.ENDC}")
+            return 1
+        
+        try:
+            value = decrypt_value(secrets[key])
+            print(value)  # Just the value, no formatting for piping
+            return 0
+        except Exception as e:
+            print(f"{Colors.RED}❌ Error decrypting secret: {e}{Colors.ENDC}")
+            return 1
+    
+    elif subcommand == "list":
+        if not secrets:
+            print(f"{Colors.YELLOW}📝 No secrets stored yet{Colors.ENDC}")
+            print(f"{Colors.BLUE}💡 Add secrets with: mw secrets set KEY VALUE{Colors.ENDC}")
+            return 0
+        
+        print(f"{Colors.GREEN}🔐 Stored secrets ({len(secrets)} total):{Colors.ENDC}")
+        for key in sorted(secrets.keys()):
+            print(f"   {Colors.CYAN}{key}{Colors.ENDC}")
+        return 0
+    
+    elif subcommand == "delete":
+        if len(args) < 2:
+            print(f"{Colors.RED}❌ Error: delete requires a key{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Try: mw secrets delete API_KEY{Colors.ENDC}")
+            return 1
+        
+        key = args[1]
+        if key not in secrets:
+            print(f"{Colors.RED}❌ Error: Secret '{key}' not found{Colors.ENDC}")
+            return 1
+        
+        del secrets[key]
+        save_secrets(secrets)
+        print(f"{Colors.GREEN}✅ Secret '{key}' deleted{Colors.ENDC}")
+        return 0
+    
+    elif subcommand == "export" and len(args) > 1 and args[1] == "--env":
+        if not secrets:
+            print(f"{Colors.YELLOW}📝 No secrets to export{Colors.ENDC}")
+            return 0
+        
+        try:
+            for key, encrypted_value in secrets.items():
+                value = decrypt_value(encrypted_value)
+                print(f"{key}={value}")
+            return 0
+        except Exception as e:
+            print(f"{Colors.RED}❌ Error exporting secrets: {e}{Colors.ENDC}")
+            return 1
+    
+    else:
+        print(f"{Colors.RED}❌ Unknown secrets subcommand: {subcommand}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Try: mw secrets --help{Colors.ENDC}")
+        return 1
+
+
+def cmd_cost(args: List[str] = None) -> int:
+    """AI API cost tracking and budgeting."""
+    import json
+    import re
+    import os
+    from pathlib import Path
+    from datetime import datetime, timedelta
+    
+    cost_log = Path.home() / ".mywork" / "cost_log.json"
+    
+    # Model pricing (per 1K tokens, input/output)
+    PRICING = {
+        "gpt-4": {"input": 0.03, "output": 0.06},
+        "gpt-4-turbo": {"input": 0.01, "output": 0.03},
+        "gpt-3.5-turbo": {"input": 0.0015, "output": 0.002},
+        "claude-3.5-sonnet": {"input": 0.003, "output": 0.015},
+        "claude-3-opus": {"input": 0.015, "output": 0.075},
+        "claude-3-haiku": {"input": 0.00025, "output": 0.00125},
+        "gemini-1.5-pro": {"input": 0.0035, "output": 0.01},
+        "deepseek-chat": {"input": 0.00014, "output": 0.00028},
+        "deepseek-coder": {"input": 0.00014, "output": 0.00028},
+    }
+    
+    def load_cost_log():
+        if not cost_log.exists():
+            return {"entries": [], "budget": None, "created": datetime.now().isoformat()}
+        try:
+            with open(cost_log, 'r') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, IOError):
+            return {"entries": [], "budget": None, "created": datetime.now().isoformat()}
+    
+    def save_cost_log(data):
+        cost_log.parent.mkdir(exist_ok=True)
+        with open(cost_log, 'w') as f:
+            json.dump(data, f, indent=2)
+    
+    if not args:
+        args = ["track"]
+    
+    subcommand = args[0]
+    
+    if subcommand in ["--help", "-h"]:
+        print("""
+AI Cost Tracking & Budgeting
+============================
+Usage:
+    mw cost estimate                   Scan project for AI API usage
+    mw cost track                      Show current cost tracking
+    mw cost budget --set <amount>      Set monthly budget alert
+    mw cost report                     Monthly cost breakdown
+    mw cost help                       Show this help
+
+Description:
+    Track AI API costs across providers and models. Scan code for API calls
+    and estimate monthly costs based on usage patterns.
+
+Examples:
+    mw cost estimate                   # Scan current directory
+    mw cost track                      # Show running total
+    mw cost budget --set 50            # Set $50 monthly budget
+    mw cost report                     # Monthly breakdown
+""")
+        return 0
+    
+    data = load_cost_log()
+    
+    if subcommand == "estimate":
+        print(f"{Colors.CYAN}🔍 Scanning project for AI API usage...{Colors.ENDC}")
+        
+        api_patterns = [
+            r'openai\.ChatCompletion\.create',
+            r'anthropic\.messages\.create',
+            r'client\.chat\.completions\.create',
+            r'gemini\.generate_content',
+            r'deepseek.*\.create',
+        ]
+        
+        found_calls = []
+        for root, dirs, files in os.walk('.'):
+            # Skip common directories
+            dirs[:] = [d for d in dirs if d not in ['.git', 'node_modules', '__pycache__', '.venv']]
+            
+            for file in files:
+                if file.endswith(('.py', '.js', '.ts')):
+                    file_path = Path(root) / file
+                    try:
+                        content = file_path.read_text(encoding='utf-8')
+                        for pattern in api_patterns:
+                            matches = re.findall(pattern, content)
+                            if matches:
+                                found_calls.append({
+                                    "file": str(file_path),
+                                    "pattern": pattern,
+                                    "count": len(matches)
+                                })
+                    except (UnicodeDecodeError, IOError):
+                        continue
+        
+        if not found_calls:
+            print(f"{Colors.YELLOW}📝 No AI API calls found in project{Colors.ENDC}")
+            print(f"{Colors.BLUE}💡 This scans for common patterns like openai.ChatCompletion.create{Colors.ENDC}")
+            return 0
+        
+        print(f"{Colors.GREEN}🎯 Found {len(found_calls)} potential API usage patterns:{Colors.ENDC}")
+        total_estimated = 0
+        
+        for call in found_calls:
+            print(f"\n   {Colors.BOLD}{call['file']}{Colors.ENDC}")
+            print(f"   Pattern: {call['pattern']} ({call['count']} occurrences)")
+            
+            # Rough estimation (assuming 1K tokens in + 0.5K out per call, 100 calls/month)
+            estimated_monthly = call['count'] * 100 * (0.01 * 1.5)  # Very rough estimate
+            total_estimated += estimated_monthly
+            print(f"   {Colors.CYAN}Estimated monthly:{Colors.ENDC} ~${estimated_monthly:.2f}")
+        
+        print(f"\n{Colors.GREEN}💰 Total estimated monthly cost: ~${total_estimated:.2f}{Colors.ENDC}")
+        print(f"{Colors.BLUE}Note: This is a rough estimate based on pattern matching{Colors.ENDC}")
+        return 0
+    
+    elif subcommand == "track":
+        entries = data.get("entries", [])
+        
+        if not entries:
+            print(f"{Colors.YELLOW}📊 No cost tracking data yet{Colors.ENDC}")
+            print(f"{Colors.BLUE}💡 Cost tracking requires manual logging or API integration{Colors.ENDC}")
+            return 0
+        
+        # Calculate current month total
+        current_month = datetime.now().strftime("%Y-%m")
+        monthly_total = sum(
+            entry["cost"] for entry in entries 
+            if entry.get("date", "").startswith(current_month)
+        )
+        
+        print(f"{Colors.GREEN}💰 Current month ({current_month}): ${monthly_total:.2f}{Colors.ENDC}")
+        
+        # Check budget
+        budget = data.get("budget")
+        if budget:
+            percentage = (monthly_total / budget) * 100
+            if percentage >= 90:
+                print(f"{Colors.RED}⚠️  Budget alert: {percentage:.1f}% of ${budget:.2f} budget used{Colors.ENDC}")
+            elif percentage >= 75:
+                print(f"{Colors.YELLOW}⚠️  Budget warning: {percentage:.1f}% of ${budget:.2f} budget used{Colors.ENDC}")
+            else:
+                print(f"{Colors.GREEN}✅ Budget: {percentage:.1f}% of ${budget:.2f} used{Colors.ENDC}")
+        
+        # Show recent entries
+        if entries:
+            print(f"\n{Colors.CYAN}📈 Recent entries:{Colors.ENDC}")
+            for entry in entries[-5:]:
+                print(f"   {entry.get('date', 'Unknown')}: ${entry['cost']:.4f} ({entry.get('model', 'Unknown')})")
+        
+        return 0
+    
+    elif subcommand == "budget" and len(args) > 2 and args[1] == "--set":
+        try:
+            budget = float(args[2])
+            data["budget"] = budget
+            save_cost_log(data)
+            print(f"{Colors.GREEN}✅ Monthly budget set to ${budget:.2f}{Colors.ENDC}")
+            return 0
+        except ValueError:
+            print(f"{Colors.RED}❌ Error: Invalid budget amount{Colors.ENDC}")
+            return 1
+    
+    elif subcommand == "report":
+        entries = data.get("entries", [])
+        
+        if not entries:
+            print(f"{Colors.YELLOW}📊 No cost data available for report{Colors.ENDC}")
+            return 0
+        
+        # Group by month and model
+        monthly_data = {}
+        for entry in entries:
+            date = entry.get("date", "unknown")
+            month = date[:7] if len(date) >= 7 else "unknown"
+            model = entry.get("model", "unknown")
+            cost = entry.get("cost", 0)
+            
+            if month not in monthly_data:
+                monthly_data[month] = {}
+            if model not in monthly_data[month]:
+                monthly_data[month][model] = 0
+            monthly_data[month][model] += cost
+        
+        print(f"{Colors.GREEN}📊 Monthly Cost Report{Colors.ENDC}")
+        for month in sorted(monthly_data.keys()):
+            month_total = sum(monthly_data[month].values())
+            print(f"\n{Colors.BOLD}{month}: ${month_total:.2f}{Colors.ENDC}")
+            for model, cost in sorted(monthly_data[month].items()):
+                print(f"   {model}: ${cost:.4f}")
+        
+        return 0
+    
+    else:
+        print(f"{Colors.RED}❌ Unknown cost subcommand: {subcommand}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Try: mw cost --help{Colors.ENDC}")
+        return 1
+
+
+def cmd_templates_browse(args: List[str] = None) -> int:
+    """Browse project templates with detailed information."""
+    
+    # Template database
+    TEMPLATES = {
+        "basic": {
+            "description": "Simple Python project with basic structure",
+            "tech_stack": ["Python", "pip"],
+            "setup_time": "5 minutes",
+            "difficulty": "Beginner",
+            "files": ["main.py", "README.md", "requirements.txt"],
+            "features": ["Basic project structure", "CLI entry point", "Documentation template"]
+        },
+        "api": {
+            "description": "REST API with FastAPI and database integration",
+            "tech_stack": ["Python", "FastAPI", "SQLite", "Pydantic"],
+            "setup_time": "15 minutes", 
+            "difficulty": "Intermediate",
+            "files": ["app/main.py", "app/models.py", "app/database.py", "docker-compose.yml"],
+            "features": ["RESTful endpoints", "Database models", "API documentation", "Docker ready"]
+        },
+        "saas": {
+            "description": "Full-stack SaaS application with authentication",
+            "tech_stack": ["React", "Node.js", "PostgreSQL", "Stripe", "Auth0"],
+            "setup_time": "45 minutes",
+            "difficulty": "Advanced",
+            "files": ["frontend/", "backend/", "database/", ".env.example"],
+            "features": ["User authentication", "Payment integration", "Admin dashboard", "Email notifications"]
+        },
+        "cli": {
+            "description": "Command-line tool with argument parsing and tests",
+            "tech_stack": ["Python", "Click", "pytest"],
+            "setup_time": "10 minutes",
+            "difficulty": "Beginner",
+            "files": ["cli.py", "tests/", "setup.py", "Makefile"],
+            "features": ["Argument parsing", "Subcommands", "Unit tests", "Packaging ready"]
+        },
+        "automation": {
+            "description": "Task automation with scheduling and notifications",
+            "tech_stack": ["Python", "APScheduler", "Selenium", "Telegram Bot API"],
+            "setup_time": "20 minutes",
+            "difficulty": "Intermediate", 
+            "files": ["scheduler.py", "tasks/", "config.yaml", "docker/"],
+            "features": ["Cron-like scheduling", "Web scraping", "Notifications", "Containerized"]
+        },
+        "scraper": {
+            "description": "Web scraping tool with data export and storage",
+            "tech_stack": ["Python", "Scrapy", "BeautifulSoup", "pandas", "PostgreSQL"],
+            "setup_time": "25 minutes",
+            "difficulty": "Intermediate",
+            "files": ["scraper.py", "spiders/", "pipelines.py", "data/"],
+            "features": ["Multiple scrapers", "Data cleaning", "Export formats", "Rate limiting"]
+        },
+        "chatbot": {
+            "description": "AI chatbot with multiple providers and conversation memory",
+            "tech_stack": ["Python", "OpenAI", "Anthropic", "Telegram", "Redis"],
+            "setup_time": "30 minutes",
+            "difficulty": "Advanced",
+            "files": ["bot.py", "handlers/", "memory.py", "config/"],
+            "features": ["Multiple AI providers", "Conversation history", "Plugin system", "Multi-platform"]
+        },
+        "dashboard": {
+            "description": "Analytics dashboard with real-time data visualization",
+            "tech_stack": ["React", "D3.js", "Node.js", "InfluxDB", "Grafana"],
+            "setup_time": "40 minutes",
+            "difficulty": "Advanced",
+            "files": ["src/", "server/", "database/", "grafana/"],
+            "features": ["Real-time charts", "Custom metrics", "User management", "Export reports"]
+        }
+    }
+    
+    if args and args[0] in ["--help", "-h"]:
+        print("""
+Project Templates Browser
+=========================
+Usage:
+    mw templates                       Browse all templates
+    mw templates browse                Browse all templates (alias)
+    mw templates info <name>           Show detailed template info
+    mw templates --help                Show this help
+
+Description:
+    Browse available project templates with tech stack, setup time,
+    and difficulty information. Perfect for starting new projects quickly.
+
+Examples:
+    mw templates                       # Show all templates
+    mw templates info api              # Details about API template
+    mw templates info saas             # Details about SaaS template
+""")
+        return 0
+    
+    if args and args[0] == "info":
+        if len(args) < 2:
+            print(f"{Colors.RED}❌ Error: info requires a template name{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Try: mw templates info api{Colors.ENDC}")
+            return 1
+        
+        template_name = args[1].lower()
+        if template_name not in TEMPLATES:
+            print(f"{Colors.RED}❌ Error: Template '{template_name}' not found{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Available templates: {', '.join(TEMPLATES.keys())}{Colors.ENDC}")
+            return 1
+        
+        template = TEMPLATES[template_name]
+        print(f"\n{Colors.BOLD}{Colors.GREEN}🎯 {template_name.title()} Template{Colors.ENDC}")
+        print(f"{Colors.CYAN}Description:{Colors.ENDC} {template['description']}")
+        print(f"{Colors.CYAN}Tech Stack:{Colors.ENDC} {', '.join(template['tech_stack'])}")
+        print(f"{Colors.CYAN}Setup Time:{Colors.ENDC} {template['setup_time']}")
+        print(f"{Colors.CYAN}Difficulty:{Colors.ENDC} {template['difficulty']}")
+        
+        print(f"\n{Colors.YELLOW}📁 Key Files:{Colors.ENDC}")
+        for file in template['files']:
+            print(f"   • {file}")
+        
+        print(f"\n{Colors.GREEN}✨ Features:{Colors.ENDC}")
+        for feature in template['features']:
+            print(f"   • {feature}")
+        
+        print(f"\n{Colors.BLUE}🚀 To create:{Colors.ENDC}")
+        print(f"   mw new my-project {template_name}")
+        
+        return 0
+    
+    # Default: show all templates
+    print(f"{Colors.GREEN}📋 Available Project Templates{Colors.ENDC}\n")
+    
+    # Table headers
+    print(f"{Colors.BOLD}{'Template':<12} {'Difficulty':<12} {'Setup Time':<12} {'Description'}{Colors.ENDC}")
+    print("─" * 80)
+    
+    for name, template in TEMPLATES.items():
+        # Color-code by difficulty
+        if template['difficulty'] == 'Beginner':
+            diff_color = Colors.GREEN
+        elif template['difficulty'] == 'Intermediate':
+            diff_color = Colors.YELLOW
+        else:
+            diff_color = Colors.RED
+        
+        print(f"{Colors.CYAN}{name:<12}{Colors.ENDC} "
+              f"{diff_color}{template['difficulty']:<12}{Colors.ENDC} "
+              f"{Colors.BLUE}{template['setup_time']:<12}{Colors.ENDC} "
+              f"{template['description']}")
+    
+    print(f"\n{Colors.BLUE}💡 For detailed info:{Colors.ENDC}")
+    print(f"   mw templates info <name>        # Show template details")
+    print(f"   mw new <project> <template>     # Create project from template")
+    
+    return 0
+
+
+def cmd_share(args: List[str] = None) -> int:
+    """Project sharing for team collaboration."""
+    import json
+    import yaml
+    from pathlib import Path
+    
+    if not args:
+        args = ["export"]
+    
+    subcommand = args[0]
+    
+    if subcommand in ["--help", "-h"]:
+        print("""
+Project Sharing
+===============
+Usage:
+    mw share export                    Export project config for sharing
+    mw share import <file>             Import shared project config
+    mw share --help                    Show this help
+
+Description:
+    Export and import project configurations for team collaboration.
+    Exports mywork.yaml, .env keys (without values), and package lists.
+    
+Examples:
+    mw share export                    # Creates .mywork-share.json
+    mw share import team-config.json   # Import teammate's config
+""")
+        return 0
+    
+    if subcommand == "export":
+        try:
+            export_data = {
+                "exported_at": datetime.now().isoformat(),
+                "project_name": Path.cwd().name,
+                "config": {},
+                "env_keys": [],
+                "packages": {}
+            }
+            
+            # Export mywork.yaml if exists
+            mywork_yaml = Path("mywork.yaml")
+            if mywork_yaml.exists():
+                try:
+                    with open(mywork_yaml, 'r') as f:
+                        export_data["config"] = yaml.safe_load(f) or {}
+                except yaml.YAMLError:
+                    print(f"{Colors.YELLOW}⚠️  Could not parse mywork.yaml{Colors.ENDC}")
+            
+            # Export .env keys (without values)
+            env_file = Path(".env")
+            if env_file.exists():
+                with open(env_file, 'r') as f:
+                    for line in f:
+                        line = line.strip()
+                        if line and not line.startswith('#') and '=' in line:
+                            key = line.split('=')[0].strip()
+                            export_data["env_keys"].append(key)
+            
+            # Export package lists
+            requirements_txt = Path("requirements.txt")
+            if requirements_txt.exists():
+                export_data["packages"]["python"] = requirements_txt.read_text().strip().split('\n')
+            
+            package_json = Path("package.json") 
+            if package_json.exists():
+                try:
+                    with open(package_json, 'r') as f:
+                        pkg_data = json.load(f)
+                        export_data["packages"]["node"] = {
+                            "dependencies": pkg_data.get("dependencies", {}),
+                            "devDependencies": pkg_data.get("devDependencies", {})
+                        }
+                except json.JSONDecodeError:
+                    pass
+            
+            # Write export file
+            export_file = Path(".mywork-share.json")
+            with open(export_file, 'w') as f:
+                json.dump(export_data, f, indent=2)
+            
+            print(f"{Colors.GREEN}✅ Project config exported to {export_file}{Colors.ENDC}")
+            print(f"\n{Colors.CYAN}📦 Exported:{Colors.ENDC}")
+            
+            if export_data["config"]:
+                print(f"   • MyWork config ({len(export_data['config'])} keys)")
+            if export_data["env_keys"]:
+                print(f"   • Environment variables ({len(export_data['env_keys'])} keys)")
+            if export_data["packages"]:
+                for pkg_type, packages in export_data["packages"].items():
+                    if isinstance(packages, list):
+                        print(f"   • {pkg_type.title()} packages ({len(packages)} packages)")
+                    elif isinstance(packages, dict):
+                        dep_count = len(packages.get("dependencies", {}))
+                        dev_count = len(packages.get("devDependencies", {}))
+                        print(f"   • {pkg_type.title()} packages ({dep_count} deps, {dev_count} dev)")
+            
+            print(f"\n{Colors.BLUE}💡 Share this file with your team:{Colors.ENDC}")
+            print(f"   mw share import .mywork-share.json")
+            
+            return 0
+            
+        except Exception as e:
+            print(f"{Colors.RED}❌ Error exporting config: {e}{Colors.ENDC}")
+            return 1
+    
+    elif subcommand == "import":
+        if len(args) < 2:
+            print(f"{Colors.RED}❌ Error: import requires a file path{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Try: mw share import .mywork-share.json{Colors.ENDC}")
+            return 1
+        
+        import_file = Path(args[1])
+        if not import_file.exists():
+            print(f"{Colors.RED}❌ Error: File '{import_file}' not found{Colors.ENDC}")
+            return 1
+        
+        try:
+            with open(import_file, 'r') as f:
+                import_data = json.load(f)
+            
+            print(f"{Colors.GREEN}📥 Importing project config from {import_file}{Colors.ENDC}")
+            print(f"Project: {import_data.get('project_name', 'Unknown')}")
+            print(f"Exported: {import_data.get('exported_at', 'Unknown')}")
+            
+            # Import mywork.yaml
+            if import_data.get("config"):
+                mywork_yaml = Path("mywork.yaml")
+                if mywork_yaml.exists():
+                    print(f"{Colors.YELLOW}⚠️  mywork.yaml already exists, backing up...{Colors.ENDC}")
+                    mywork_yaml.rename("mywork.yaml.bak")
+                
+                with open(mywork_yaml, 'w') as f:
+                    yaml.dump(import_data["config"], f, default_flow_style=False)
+                print(f"   ✅ Created mywork.yaml")
+            
+            # Import .env template
+            env_keys = import_data.get("env_keys", [])
+            if env_keys:
+                env_file = Path(".env")
+                missing_keys = []
+                
+                # Check existing .env
+                existing_keys = set()
+                if env_file.exists():
+                    with open(env_file, 'r') as f:
+                        for line in f:
+                            if '=' in line and not line.strip().startswith('#'):
+                                existing_keys.add(line.split('=')[0].strip())
+                
+                # Find missing keys
+                for key in env_keys:
+                    if key not in existing_keys:
+                        missing_keys.append(key)
+                
+                if missing_keys:
+                    print(f"\n{Colors.YELLOW}🔑 Missing environment variables:{Colors.ENDC}")
+                    env_template = ""
+                    if env_file.exists():
+                        env_template = env_file.read_text() + "\n"
+                    
+                    for key in missing_keys:
+                        value = input(f"   {key}=").strip()
+                        if value:
+                            env_template += f"{key}={value}\n"
+                        else:
+                            env_template += f"# {key}=\n"
+                    
+                    with open(env_file, 'w') as f:
+                        f.write(env_template)
+                    print(f"   ✅ Updated .env with {len(missing_keys)} variables")
+            
+            print(f"\n{Colors.GREEN}✅ Project config imported successfully{Colors.ENDC}")
+            print(f"{Colors.BLUE}💡 Next steps:{Colors.ENDC}")
+            print(f"   • Review mywork.yaml for project-specific settings")
+            print(f"   • Install packages: pip install -r requirements.txt")
+            print(f"   • Run: mw setup to complete configuration")
+            
+            return 0
+            
+        except (json.JSONDecodeError, IOError) as e:
+            print(f"{Colors.RED}❌ Error importing config: {e}{Colors.ENDC}")
+            return 1
+    
+    else:
+        print(f"{Colors.RED}❌ Unknown share subcommand: {subcommand}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Try: mw share --help{Colors.ENDC}")
+        return 1
+
+
+def cmd_cron_manage(args: List[str] = None) -> int:
+    """Manage MyWork cron jobs with system crontab integration."""
+    import subprocess
+    import tempfile
+    import re
+    from datetime import datetime
+    
+    MYWORK_MARKER = "# MYWORK"
+    LOG_DIR = Path.home() / ".mywork" / "cron_logs"
+    
+    if not args:
+        args = ["list"]
+    
+    subcommand = args[0]
+    
+    if subcommand in ["--help", "-h"]:
+        print("""
+Cron Job Management
+==================
+Usage:
+    mw cron add "<schedule>" "<command>"   Add a cron job
+    mw cron list                          List MyWork-managed cron jobs  
+    mw cron remove <id>                   Remove job by ID
+    mw cron logs                          Show recent execution logs
+    mw cron --help                        Show this help
+
+Schedule Format:
+    minute hour day month weekday
+    */5 * * * *     # Every 5 minutes
+    0 9 * * 1-5     # 9 AM on weekdays
+    0 0 * * 0       # Midnight every Sunday
+
+Examples:
+    mw cron add "*/15 * * * *" "python /path/to/script.py"
+    mw cron add "0 2 * * *" "mw backup --auto"
+    mw cron list
+    mw cron remove 1
+    mw cron logs
+""")
+        return 0
+    
+    def get_current_crontab():
+        """Get current crontab content."""
+        try:
+            result = subprocess.run(['crontab', '-l'], capture_output=True, text=True)
+            if result.returncode == 0:
+                return result.stdout.strip()
+            else:
+                return ""
+        except FileNotFoundError:
+            print(f"{Colors.RED}❌ Error: crontab command not found{Colors.ENDC}")
+            return None
+    
+    def get_mywork_jobs(crontab_content):
+        """Extract MyWork-managed jobs from crontab."""
+        jobs = []
+        lines = crontab_content.split('\n') if crontab_content else []
+        
+        for i, line in enumerate(lines):
+            if MYWORK_MARKER in line and not line.strip().startswith('#'):
+                # Parse cron line: schedule + command + marker
+                parts = line.rsplit(MYWORK_MARKER, 1)
+                if len(parts) == 2:
+                    cron_part = parts[0].strip()
+                    # Split into schedule (5 parts) and command (rest)
+                    schedule_parts = cron_part.split()
+                    if len(schedule_parts) >= 5:
+                        schedule = ' '.join(schedule_parts[:5])
+                        command = ' '.join(schedule_parts[5:])
+                        jobs.append({
+                            "id": len(jobs) + 1,
+                            "line_num": i,
+                            "schedule": schedule,
+                            "command": command,
+                            "full_line": line
+                        })
+        return jobs
+    
+    def set_crontab(content):
+        """Set new crontab content."""
+        try:
+            with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.cron') as f:
+                f.write(content)
+                temp_file = f.name
+            
+            result = subprocess.run(['crontab', temp_file], capture_output=True, text=True)
+            Path(temp_file).unlink()  # Clean up temp file
+            
+            if result.returncode != 0:
+                print(f"{Colors.RED}❌ Error updating crontab: {result.stderr}{Colors.ENDC}")
+                return False
+            return True
+        except Exception as e:
+            print(f"{Colors.RED}❌ Error: {e}{Colors.ENDC}")
+            return False
+    
+    if subcommand == "add":
+        if len(args) < 3:
+            print(f"{Colors.RED}❌ Error: add requires schedule and command{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Try: mw cron add \"*/5 * * * *\" \"python script.py\"{Colors.ENDC}")
+            return 1
+        
+        schedule = args[1]
+        command = args[2]
+        
+        # Validate cron schedule
+        schedule_parts = schedule.split()
+        if len(schedule_parts) != 5:
+            print(f"{Colors.RED}❌ Error: Invalid cron schedule format{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Format: minute hour day month weekday{Colors.ENDC}")
+            return 1
+        
+        # Get current crontab
+        current_crontab = get_current_crontab()
+        if current_crontab is None:
+            return 1
+        
+        # Add logging wrapper to command
+        LOG_DIR.mkdir(parents=True, exist_ok=True)
+        log_file = LOG_DIR / "cron.log"
+        wrapped_command = f'{{ echo "[$(date)] Starting: {command}"; {command}; echo "[$(date)] Finished with exit code $?"; }} >> {log_file} 2>&1'
+        
+        # Add new job
+        new_line = f"{schedule} {wrapped_command} {MYWORK_MARKER}"
+        new_crontab = current_crontab + ('\n' if current_crontab else '') + new_line
+        
+        if set_crontab(new_crontab):
+            print(f"{Colors.GREEN}✅ Cron job added successfully{Colors.ENDC}")
+            print(f"{Colors.CYAN}Schedule:{Colors.ENDC} {schedule}")
+            print(f"{Colors.CYAN}Command:{Colors.ENDC} {command}")
+            print(f"{Colors.BLUE}Logs will be written to: {log_file}{Colors.ENDC}")
+        else:
+            return 1
+        
+        return 0
+    
+    elif subcommand == "list":
+        current_crontab = get_current_crontab()
+        if current_crontab is None:
+            return 1
+        
+        jobs = get_mywork_jobs(current_crontab)
+        
+        if not jobs:
+            print(f"{Colors.YELLOW}📅 No MyWork cron jobs found{Colors.ENDC}")
+            print(f"{Colors.BLUE}💡 Add jobs with: mw cron add \"schedule\" \"command\"{Colors.ENDC}")
+            return 0
+        
+        print(f"{Colors.GREEN}📅 MyWork Cron Jobs ({len(jobs)} total):{Colors.ENDC}\n")
+        
+        for job in jobs:
+            print(f"{Colors.BOLD}[{job['id']}] {job['schedule']}{Colors.ENDC}")
+            print(f"    {Colors.CYAN}Command:{Colors.ENDC} {job['command']}")
+            
+            # Try to show next run time (basic estimation)
+            try:
+                # This is a simple approximation - real cron parsing is complex
+                parts = job['schedule'].split()
+                minute, hour = parts[0], parts[1]
+                if minute.isdigit() and hour.isdigit():
+                    print(f"    {Colors.BLUE}Next run: ~{hour:02d}:{minute:02d}{Colors.ENDC}")
+            except:
+                pass
+            print()
+        
+        return 0
+    
+    elif subcommand == "remove":
+        if len(args) < 2:
+            print(f"{Colors.RED}❌ Error: remove requires a job ID{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Try: mw cron list (to see IDs), then mw cron remove 1{Colors.ENDC}")
+            return 1
+        
+        try:
+            job_id = int(args[1])
+        except ValueError:
+            print(f"{Colors.RED}❌ Error: Invalid job ID{Colors.ENDC}")
+            return 1
+        
+        current_crontab = get_current_crontab()
+        if current_crontab is None:
+            return 1
+        
+        jobs = get_mywork_jobs(current_crontab)
+        target_job = None
+        
+        for job in jobs:
+            if job['id'] == job_id:
+                target_job = job
+                break
+        
+        if not target_job:
+            print(f"{Colors.RED}❌ Error: Job ID {job_id} not found{Colors.ENDC}")
+            return 1
+        
+        # Remove the job by rebuilding crontab without that line
+        lines = current_crontab.split('\n')
+        new_lines = []
+        
+        for i, line in enumerate(lines):
+            if i != target_job['line_num']:
+                new_lines.append(line)
+        
+        new_crontab = '\n'.join(new_lines)
+        
+        if set_crontab(new_crontab):
+            print(f"{Colors.GREEN}✅ Removed cron job {job_id}{Colors.ENDC}")
+            print(f"{Colors.BLUE}Command was: {target_job['command']}{Colors.ENDC}")
+        else:
+            return 1
+        
+        return 0
+    
+    elif subcommand == "logs":
+        log_file = LOG_DIR / "cron.log"
+        
+        if not log_file.exists():
+            print(f"{Colors.YELLOW}📝 No cron logs found{Colors.ENDC}")
+            print(f"{Colors.BLUE}💡 Logs appear after cron jobs run{Colors.ENDC}")
+            return 0
+        
+        try:
+            # Show last 50 lines
+            result = subprocess.run(['tail', '-n', '50', str(log_file)], 
+                                  capture_output=True, text=True)
+            
+            if result.returncode == 0:
+                print(f"{Colors.GREEN}📋 Recent cron execution logs:{Colors.ENDC}\n")
+                print(result.stdout)
+            else:
+                # Fallback to Python
+                lines = log_file.read_text().split('\n')
+                print(f"{Colors.GREEN}📋 Recent cron execution logs:{Colors.ENDC}\n")
+                for line in lines[-50:]:
+                    if line.strip():
+                        print(line)
+        except Exception as e:
+            print(f"{Colors.RED}❌ Error reading logs: {e}{Colors.ENDC}")
+            return 1
+        
+        return 0
+    
+    else:
+        print(f"{Colors.RED}❌ Unknown cron subcommand: {subcommand}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Try: mw cron --help{Colors.ENDC}")
+        return 1
+
+
 def main() -> None:
     """Main entry point with global exception handling."""
     if len(sys.argv) < 2:
@@ -12273,6 +13380,13 @@ def main() -> None:
         "autoforge": lambda: cmd_autoforge(args),
         "gsd": lambda: cmd_gsd(args),
         "plan": lambda: cmd_gsd(args),
+        # Competitive features
+        "webhook": lambda: cmd_webhook(args),
+        "secrets": lambda: cmd_secrets_new(args),  # Override existing secrets command
+        "cost": lambda: cmd_cost(args),
+        "templates": lambda: cmd_templates_browse(args),
+        "share": lambda: cmd_share(args),
+        "cron": lambda: cmd_cron_manage(args),
         "webdash": lambda: _cmd_webdash(args),
         "html-report": lambda: _cmd_webdash(args),
         "version": lambda: cmd_version(args),
