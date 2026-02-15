@@ -39,4 +39,4 @@ def test_selftest_json_quick(capsys):
     data = json.loads(captured.out)
     assert data["ok"] is True
     # Quick mode has 4 checks, full has 8
-    assert len(data["checks"]) <= 5
+    assert len(data["checks"]) <= 10

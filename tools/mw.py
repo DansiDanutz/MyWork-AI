@@ -7009,7 +7009,7 @@ def cmd_deploy(args: List[str] = None) -> int:
     print(f"  🎯 Platform: {Colors.BLUE}{platform}{Colors.ENDC}")
     print(f"  🏷️  Mode: {'Production' if prod else 'Preview'}")
     
-    # Handle dry-run mode
+    # Handle dry-run mode with comprehensive platform-specific guidance
     if dry_run:
         print(f"  {Colors.YELLOW}🔍 Mode: DRY RUN (preview only){Colors.ENDC}")
         print()
@@ -7017,7 +7017,100 @@ def cmd_deploy(args: List[str] = None) -> int:
         print(f"   Platform: {platform}")
         print(f"   Environment: {'Production' if prod else 'Preview'}")
         print(f"   Directory: {project_dir}")
+        print()
+        
+        # Platform-specific checks and guidance
+        print(f"{Colors.BLUE}🔍 Pre-deployment Analysis for {platform.title()}:{Colors.ENDC}")
+        
+        if platform == "vercel":
+            # Vercel-specific checks
+            package_json = os.path.join(project_dir, "package.json")
+            vercel_json = os.path.join(project_dir, "vercel.json")
+            
+            print(f"   📦 Package.json: {'✅ Found' if os.path.exists(package_json) else '❌ Missing (required)'}")
+            print(f"   ⚙️  Vercel.json: {'✅ Found' if os.path.exists(vercel_json) else '⚠️  Optional (recommended)'}")
+            
+            if os.path.exists(package_json):
+                try:
+                    with open(package_json) as f:
+                        pkg = json.load(f)
+                    build_script = pkg.get("scripts", {}).get("build")
+                    print(f"   🔨 Build script: {'✅ ' + build_script if build_script else '⚠️  No build script'}")
+                except:
+                    print(f"   🔨 Build script: ❌ Cannot read package.json")
+                    
+            print(f"\n   {Colors.YELLOW}📋 Vercel Deploy Guide:{Colors.ENDC}")
+            print(f"      1. Install Vercel CLI: npm i -g vercel")
+            print(f"      2. Login: vercel login")
+            print(f"      3. Deploy: vercel {'--prod' if prod else ''}")
+            print(f"      4. Custom domains: vercel domains add <domain>")
+            
+        elif platform == "railway":
+            # Railway-specific checks
+            requirements = os.path.join(project_dir, "requirements.txt")
+            pyproject = os.path.join(project_dir, "pyproject.toml")
+            package_json = os.path.join(project_dir, "package.json")
+            procfile = os.path.join(project_dir, "Procfile")
+            railway_toml = os.path.join(project_dir, "railway.toml")
+            
+            print(f"   🐍 Python deps: {'✅ requirements.txt' if os.path.exists(requirements) else '✅ pyproject.toml' if os.path.exists(pyproject) else '❌ Missing'}")
+            print(f"   📦 Node.js deps: {'✅ package.json' if os.path.exists(package_json) else '⚠️  Not detected'}")
+            print(f"   🚀 Procfile: {'✅ Found' if os.path.exists(procfile) else '⚠️  Will auto-detect start command'}")
+            print(f"   ⚙️  Railway config: {'✅ Found' if os.path.exists(railway_toml) else '⚠️  Optional'}")
+            
+            print(f"\n   {Colors.YELLOW}📋 Railway Deploy Guide:{Colors.ENDC}")
+            print(f"      1. Install Railway CLI: npm i -g @railway/cli")
+            print(f"      2. Login: railway login")
+            print(f"      3. Initialize: railway init")
+            print(f"      4. Deploy: railway up")
+            print(f"      5. Environment vars: railway variables")
+            
+        elif platform == "docker":
+            # Docker-specific checks
+            dockerfile = os.path.join(project_dir, "Dockerfile")
+            dockerignore = os.path.join(project_dir, ".dockerignore")
+            compose = os.path.join(project_dir, "docker-compose.yml")
+            
+            print(f"   🐳 Dockerfile: {'✅ Found' if os.path.exists(dockerfile) else '❌ Missing (required)'}")
+            print(f"   📄 .dockerignore: {'✅ Found' if os.path.exists(dockerignore) else '⚠️  Recommended'}")
+            print(f"   🚢 Compose file: {'✅ Found' if os.path.exists(compose) else '⚠️  Optional'}")
+            
+            if os.path.exists(dockerfile):
+                try:
+                    with open(dockerfile) as f:
+                        content = f.read()
+                    has_port = "EXPOSE" in content
+                    has_cmd = "CMD" in content or "ENTRYPOINT" in content
+                    print(f"   🔌 Exposes port: {'✅ Yes' if has_port else '⚠️  Check EXPOSE directive'}")
+                    print(f"   ⚡ Start command: {'✅ Defined' if has_cmd else '⚠️  Check CMD/ENTRYPOINT'}")
+                except:
+                    print(f"   🔍 Docker analysis: ❌ Cannot read Dockerfile")
+                    
+            print(f"\n   {Colors.YELLOW}📋 Docker Deploy Guide:{Colors.ENDC}")
+            print(f"      1. Build: docker build -t {os.path.basename(project_dir)} .")
+            print(f"      2. Test locally: docker run -p 3000:3000 {os.path.basename(project_dir)}")
+            print(f"      3. Push to registry: docker push <registry>/{os.path.basename(project_dir)}")
+            print(f"      4. Deploy to platform (Railway/Render/GCP/AWS)")
+            
+        elif platform == "render":
+            # Render-specific checks  
+            render_yaml = os.path.join(project_dir, "render.yaml")
+            requirements = os.path.join(project_dir, "requirements.txt")
+            package_json = os.path.join(project_dir, "package.json")
+            
+            print(f"   ⚙️  Render config: {'✅ Found' if os.path.exists(render_yaml) else '⚠️  Will use auto-detection'}")
+            print(f"   🐍 Python deps: {'✅ Found' if os.path.exists(requirements) else '⚠️  Not detected'}")
+            print(f"   📦 Node.js deps: {'✅ Found' if os.path.exists(package_json) else '⚠️  Not detected'}")
+            
+            print(f"\n   {Colors.YELLOW}📋 Render Deploy Guide:{Colors.ENDC}")
+            print(f"      1. Connect GitHub repo at render.com")
+            print(f"      2. Select 'Web Service' or 'Static Site'")
+            print(f"      3. Configure build/start commands")
+            print(f"      4. Set environment variables")
+            print(f"      5. Deploy automatically on git push")
+        
         print(f"\n{Colors.GREEN}✅ Dry run complete. Use without --dry-run to deploy.{Colors.ENDC}")
+        print(f"{Colors.BLUE}💡 Next: mw deploy --platform {platform} {'--prod' if prod else ''}{Colors.ENDC}")
         return 0
         
     print()

@@ -222,6 +222,8 @@ OTHER_VAR=some-value
         # Mock successful API responses
         mock_response1 = MagicMock()
         mock_response1.read.return_value = json.dumps({"data": []}).encode()
+        mock_response1.__enter__ = MagicMock(return_value=mock_response1)
+        mock_response1.__exit__ = MagicMock(return_value=False)
         
         mock_response2 = MagicMock()
         mock_response2.read.return_value = json.dumps({
@@ -230,6 +232,8 @@ OTHER_VAR=some-value
                 {"id": "2", "name": "Workflow 2", "active": False}
             ]
         }).encode()
+        mock_response2.__enter__ = MagicMock(return_value=mock_response2)
+        mock_response2.__exit__ = MagicMock(return_value=False)
         
         mock_urlopen.side_effect = [mock_response1, mock_response2]
         
@@ -416,18 +420,23 @@ class TestN8nApiHelpers(unittest.TestCase):
         self.assertEqual(url, "https://mcp.n8n.cloud")
         self.assertEqual(key, "mcp-api-key")
 
-    @patch.dict(os.environ, {'N8N_API_KEY': 'test-api-key'})
     def test_get_headers(self):
         """Test get_headers returns correct headers"""
         if not N8N_API_AVAILABLE:
             self.skipTest("n8n functions not available")
-            
-        headers = get_headers()
-        expected = {
-            "X-N8N-API-KEY": "test-api-key", 
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-        }
+        
+        import n8n_api as n8n_mod
+        original = n8n_mod.N8N_API_KEY
+        n8n_mod.N8N_API_KEY = "test-api-key"
+        try:
+            headers = get_headers()
+            expected = {
+                "X-N8N-API-KEY": "test-api-key", 
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            }
+        finally:
+            n8n_mod.N8N_API_KEY = original
         self.assertEqual(headers, expected)
 
 
