@@ -668,8 +668,53 @@ class ProjectScanner:
         return list(set(exports))
 
 
-def print_search_results(modules: List[Module], query: str):
-    """Print formatted search results."""
+def print_search_results(modules, query: str):
+    """Print formatted search results.
+    
+    Args:
+        modules: Either a list of Module objects or a dict from enhanced search
+                 with keys: modules, brain_entries, project_files, total_found
+        query: The search query string
+    """
+    # Handle dict results from enhanced search
+    if isinstance(modules, dict):
+        total = modules.get("total_found", 0)
+        mod_list = modules.get("modules", [])
+        brain_entries = modules.get("brain_entries", [])
+        project_files = modules.get("project_files", [])
+        
+        if total == 0 and not mod_list and not brain_entries and not project_files:
+            print(f"\n❌ No results found matching '{query}'")
+            return
+        
+        print(f"\n🔍 Search Results for '{query}' ({total} found)")
+        print("=" * 60)
+        
+        if mod_list:
+            print(f"\n📦 Modules ({len(mod_list)}):")
+            for i, mod in enumerate(mod_list[:20], 1):
+                print(f"\n  {i}. {mod.name}")
+                print(f"     Type: {mod.type} | Project: {mod.project}")
+                print(f"     File: {mod.file_path}:{mod.line_number}")
+                if mod.description:
+                    print(f"     Desc: {mod.description[:80]}...")
+                print(f"     Tags: {', '.join(mod.tags[:5])}")
+        
+        if brain_entries:
+            print(f"\n🧠 Brain Entries ({len(brain_entries)}):")
+            for i, entry in enumerate(brain_entries[:10], 1):
+                title = entry.get("title", entry.get("name", "Untitled"))
+                print(f"  {i}. {title}")
+        
+        if project_files:
+            print(f"\n📁 Project Files ({len(project_files)}):")
+            for i, f in enumerate(project_files[:10], 1):
+                name = f.get("name", f.get("path", "Unknown"))
+                print(f"  {i}. {name}")
+        
+        return
+
+    # Handle list of Module objects (legacy)
     if not modules:
         print(f"\n❌ No modules found matching '{query}'")
         return

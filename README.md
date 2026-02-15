@@ -6,7 +6,7 @@
 ![Python Version](https://img.shields.io/pypi/pyversions/mywork-ai?style=for-the-badge&logo=python&logoColor=white)
 ![Downloads](https://img.shields.io/pypi/dm/mywork-ai?style=for-the-badge&color=blue)
 ![License](https://img.shields.io/github/license/dansidanutz/MyWork-AI?style=for-the-badge)
-![Tests](https://img.shields.io/badge/tests-96%20passing-brightgreen?style=for-the-badge)
+![Tests](https://img.shields.io/badge/tests-114%20passing-brightgreen?style=for-the-badge)
 
 **🤖 AI-Powered Development Framework**
 
@@ -40,7 +40,7 @@ cd my-app
 mw doctor
 ```
 
-**That's it! You now have access to 78 AI-powered development commands.**
+**That's it! You now have access to 100+ AI-powered development commands.**
 
 ---
 
@@ -145,7 +145,7 @@ mw profile       # Command execution profiling
 ```
 
 <details>
-<summary><strong>📋 All 78 Commands</strong> (click to expand)</summary>
+<summary><strong>📋 All 100+ Commands</strong> (click to expand)</summary>
 
 ```bash
 # Core
@@ -309,7 +309,7 @@ mw scan security
 
 ### **vs Cursor IDE**
 - ✅ **CLI-first**: Works with any editor
-- ✅ **Complete toolkit**: 78 commands vs editor integration
+- ✅ **Complete toolkit**: 100+ commands vs editor integration
 - ✅ **Project analysis**: Health scoring, metrics, insights
 - ✅ **Free**: No subscription required
 
