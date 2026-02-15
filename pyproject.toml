@@ -115,7 +115,7 @@ target-version = ["py39", "py310", "py311", "py312"]
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_functions = ["test_*"]
-addopts = "-v --tb=short --timeout=60 --timeout-method=thread -m 'not slow' --forked"
+addopts = "-v --tb=short --timeout=60 --timeout-method=thread -m 'not slow'"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]

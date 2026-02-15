@@ -87,10 +87,42 @@ class HealthCheckLock:
         self.timeout = timeout
         self.lock_fd = None
 
+    def _check_stale_lock(self) -> bool:
+        """Check if lock file is stale (held by dead process). Returns True if stale and cleaned."""
+        try:
+            if not self.lock_file.exists():
+                return False
+            content = self.lock_file.read_text().strip()
+            if ":" in content:
+                parts = content.split(":")
+                if len(parts) >= 2:
+                    pid = int(parts[1])
+                    # Check if process is still alive
+                    try:
+                        os.kill(pid, 0)
+                    except ProcessLookupError:
+                        # Process is dead — stale lock
+                        self.lock_file.unlink(missing_ok=True)
+                        return True
+                    except PermissionError:
+                        pass  # Process exists but we can't signal it
+            # Also check age: if lock is older than 5 minutes, consider it stale
+            if len(parts) >= 3:
+                lock_time = float(parts[2])
+                if time.time() - lock_time > 300:
+                    self.lock_file.unlink(missing_ok=True)
+                    return True
+        except Exception:
+            pass
+        return False
+
     def __enter__(self):
         try:
             # Ensure .tmp directory exists
             self.lock_file.parent.mkdir(parents=True, exist_ok=True)
+
+            # Clean stale locks before attempting to acquire
+            self._check_stale_lock()
 
             # Create lock file
             self.lock_fd = open(self.lock_file, "w")
@@ -114,6 +146,9 @@ class HealthCheckLock:
                     return self
                 except (BlockingIOError, OSError):
                     if time.time() - start_time > self.timeout:
+                        # Last resort: try to clean stale lock and retry once
+                        if self._check_stale_lock():
+                            continue
                         raise RuntimeError(
                             f"Another health check is running (timeout after {self.timeout}s)"
                         )
