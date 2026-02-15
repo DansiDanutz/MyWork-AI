@@ -1923,8 +1923,24 @@ def is_auto_linter_running() -> bool:
 
 def cmd_credits(args: List[str]) -> int:
     """Credits ledger management — Phase 8 Payments."""
+    if not args or (len(args) == 1 and args[0] in ["--help", "-h"]):
+        print("""
+Credits Commands — Usage & Payment Tracking
+============================================
+Usage:
+    mw credits balance              Show your credit balance
+    mw credits history              Show transaction history
+    mw credits --help               Show this help message
+
+Description:
+    Track API usage credits and marketplace transactions.
+""")
+        return 0
     import subprocess
     script = os.path.join(os.path.dirname(__file__), "credits_ledger.py")
+    # Add default user if balance/history called without user_id
+    if args[0] in ["balance", "history"] and len(args) == 1:
+        args.append("default")
     result = subprocess.run([sys.executable, script] + args)
     return result.returncode
 
