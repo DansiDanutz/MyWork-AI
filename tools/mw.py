@@ -2736,6 +2736,188 @@ This command packages your project and guides you through the upload process.
         return 1
 
 
+def _marketplace_upload_r2(zip_path: str, product_name: str) -> str:
+    """Upload package to R2 cloud storage. Returns URL or empty string."""
+    import os
+    try:
+        import boto3
+        from botocore.config import Config
+    except ImportError:
+        print("  (boto3 not installed — run: pip install boto3)")
+        return ""
+    
+    # Read R2 credentials from env or .credentials file
+    r2_key = os.environ.get("R2_ACCESS_KEY_ID", "")
+    r2_secret = os.environ.get("R2_SECRET_ACCESS_KEY", "")
+    r2_endpoint = os.environ.get("R2_ENDPOINT", "")
+    r2_bucket = os.environ.get("R2_BUCKET", "mywork")
+    r2_public = os.environ.get("R2_PUBLIC_URL", "")
+    
+    if not all([r2_key, r2_secret, r2_endpoint]):
+        # Try loading from credentials file
+        cred_paths = [
+            Path.home() / ".openclaw" / "workspace" / ".credentials-marketplace.json",
+            Path.home() / ".mywork" / "credentials.json",
+            Path(".credentials.json"),
+        ]
+        for cp in cred_paths:
+            if cp.exists():
+                try:
+                    creds = json.loads(cp.read_text())
+                    r2_key = r2_key or creds.get("R2_ACCESS_KEY_ID", "")
+                    r2_secret = r2_secret or creds.get("R2_SECRET_ACCESS_KEY", "")
+                    r2_endpoint = r2_endpoint or creds.get("R2_ENDPOINT", "")
+                    r2_bucket = creds.get("R2_BUCKET", r2_bucket)
+                    r2_public = r2_public or creds.get("R2_PUBLIC_URL", "")
+                    break
+                except Exception:
+                    pass
+    
+    if not all([r2_key, r2_secret, r2_endpoint]):
+        return ""
+    
+    try:
+        r2 = boto3.client('s3',
+            endpoint_url=r2_endpoint,
+            aws_access_key_id=r2_key,
+            aws_secret_access_key=r2_secret,
+            config=Config(signature_version='s3v4'),
+            region_name='auto'
+        )
+        
+        # Generate unique key
+        import hashlib, time
+        slug = product_name.lower().replace(" ", "-")[:50]
+        ts = int(time.time())
+        key = f"packages/{slug}/{slug}-{ts}.zip"
+        
+        r2.upload_file(zip_path, r2_bucket, key, ExtraArgs={"ContentType": "application/zip"})
+        
+        if r2_public:
+            return f"{r2_public.rstrip('/')}/{key}"
+        return f"{r2_endpoint.rstrip('/')}/{r2_bucket}/{key}"
+    except Exception as e:
+        print(f"  ⚠️  Upload error: {e}")
+        return ""
+
+
+def _marketplace_create_product(listing_info: dict) -> str:
+    """Create product on marketplace API. Returns product ID or empty string."""
+    import urllib.request
+    import urllib.error
+    
+    api_url = os.environ.get("MARKETPLACE_API_URL", "https://mywork-ai-production.up.railway.app")
+    
+    # Build product payload
+    product = {
+        "title": listing_info.get("title", ""),
+        "description": listing_info.get("description", listing_info.get("short_description", "No description")),
+        "short_description": listing_info.get("short_description", "")[:500],
+        "category": listing_info.get("category", "tools"),
+        "price": float(listing_info.get("price", 0)),
+        "license_type": listing_info.get("license_type", "standard"),
+        "tech_stack": listing_info.get("tech_stack", []),
+        "requirements": listing_info.get("requirements", ""),
+        "package_url": listing_info.get("package_url"),
+        "package_size_bytes": listing_info.get("package_size_bytes"),
+    }
+    
+    # Need Clerk JWT for auth
+    clerk_secret = os.environ.get("CLERK_SECRET_KEY", "")
+    if not clerk_secret:
+        # Try credentials file
+        cred_paths = [
+            Path.home() / ".openclaw" / "workspace" / ".credentials-marketplace.json",
+            Path.home() / ".mywork" / "credentials.json",
+        ]
+        for cp in cred_paths:
+            if cp.exists():
+                try:
+                    creds = json.loads(cp.read_text())
+                    clerk_secret = creds.get("CLERK_SECRET_KEY", "")
+                    if clerk_secret:
+                        break
+                except Exception:
+                    pass
+    
+    if not clerk_secret:
+        print("  ⚠️  No CLERK_SECRET_KEY — can't authenticate with marketplace")
+        print("  💡 Set CLERK_SECRET_KEY in environment or .credentials-marketplace.json")
+        return ""
+    
+    try:
+        # Get active session for the Clerk user
+        req = urllib.request.Request(
+            "https://api.clerk.com/v1/users?limit=1",
+            headers={"Authorization": f"Bearer {clerk_secret}"}
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            users = json.loads(resp.read())
+            if not users:
+                print("  ⚠️  No Clerk users found")
+                return ""
+            user_id = users[0]["id"] if isinstance(users, list) else users.get("data", [{}])[0].get("id", "")
+        
+        if not user_id:
+            return ""
+        
+        # Create session and get JWT
+        req = urllib.request.Request(
+            "https://api.clerk.com/v1/sessions",
+            data=json.dumps({"user_id": user_id}).encode(),
+            headers={"Authorization": f"Bearer {clerk_secret}", "Content-Type": "application/json"},
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            session = json.loads(resp.read())
+            session_id = session["id"]
+        
+        # Get JWT token
+        req = urllib.request.Request(
+            f"https://api.clerk.com/v1/sessions/{session_id}/tokens",
+            headers={"Authorization": f"Bearer {clerk_secret}", "Content-Type": "application/json"},
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            jwt = json.loads(resp.read())["jwt"]
+        
+        # Create product
+        req = urllib.request.Request(
+            f"{api_url}/api/products",
+            data=json.dumps(product).encode(),
+            headers={"Authorization": f"Bearer {jwt}", "Content-Type": "application/json"},
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            result = json.loads(resp.read())
+            product_id = result.get("id", "")
+        
+        if not product_id:
+            return ""
+        
+        # Publish (activate) the product — need fresh JWT
+        req = urllib.request.Request(
+            f"https://api.clerk.com/v1/sessions/{session_id}/tokens",
+            headers={"Authorization": f"Bearer {clerk_secret}", "Content-Type": "application/json"},
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            jwt2 = json.loads(resp.read())["jwt"]
+        
+        req = urllib.request.Request(
+            f"{api_url}/api/products/{product_id}/publish",
+            headers={"Authorization": f"Bearer {jwt2}", "Content-Type": "application/json"},
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            json.loads(resp.read())
+        
+        return product_id
+    except Exception as e:
+        print(f"  ⚠️  Marketplace API error: {e}")
+        return ""
+
+
 def _detect_tech_stack(project_dir: Path) -> list:
     """Detect technology stack from project files."""
     tech_stack = []
