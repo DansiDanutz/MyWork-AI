@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Working FastAPI template."""
+from datetime import datetime
 
 def create_fastapi_project(name, target_dir):
     """Create a complete, runnable FastAPI project."""

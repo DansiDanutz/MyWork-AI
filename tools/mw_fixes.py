@@ -713,7 +713,7 @@ def create_enhanced_project(name, template_type, target_dir):
     """Create a project with enhanced templates."""
     templates = {
         "fastapi": {
-            "main.py": '''# {name} - FastAPI Application
+            "main.py": """# {name} - FastAPI Application
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
@@ -740,12 +740,12 @@ async def health():
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
-''',
-            "requirements.txt": '''fastapi>=0.109.0
+""",
+            "requirements.txt": """fastapi>=0.109.0
 uvicorn[standard]>=0.27.0
 python-dotenv>=1.0.0
-''',
-            "README.md": '''# {name}
+""",
+            "README.md": """# {name}
 
 FastAPI application.
 
@@ -757,11 +757,11 @@ python main.py
 ```
 
 Visit http://localhost:8000/docs for API documentation.
-''',
-            ".gitignore": '''__pycache__/
+""",
+            ".gitignore": """__pycache__/
 *.pyc
 .env
-''',
+""",
         }
     }
     
