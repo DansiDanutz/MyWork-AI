@@ -2223,6 +2223,7 @@ Subcommands:
     info                            Show marketplace information and links
     publish                         Publish current project to marketplace
     browse [--category <cat>]       Browse available marketplace products
+    search <query> [--category]     Search products by name, description, or tags
     install <product-id>            Download and install a marketplace product
     status                          Check marketplace connectivity
     
@@ -2231,6 +2232,8 @@ Examples:
     mw marketplace publish          # Publish current project (interactive)
     mw marketplace browse           # Browse all available products
     mw marketplace browse --category=tools  # Browse tools category
+    mw marketplace search auth      # Search for authentication related products
+    mw marketplace search "email" --category=tools  # Search email tools
     mw marketplace install c54f73f4 # Install a specific product
     mw marketplace status           # Check marketplace API status
 """)
@@ -2244,6 +2247,8 @@ Examples:
         return _cmd_marketplace_publish(args[1:] if len(args) > 1 else [])
     elif subcommand == "browse":
         return _cmd_marketplace_browse(args[1:] if len(args) > 1 else [])
+    elif subcommand == "search":
+        return _cmd_marketplace_search(args[1:] if len(args) > 1 else [])
     elif subcommand == "install":
         return _cmd_marketplace_install(args[1:] if len(args) > 1 else [])
     elif subcommand == "status":
@@ -2465,6 +2470,140 @@ Examples:
         
     except Exception as e:
         print(f"{Colors.RED}❌ Error browsing marketplace: {e}{Colors.ENDC}")
+        return 1
+
+
+def _cmd_marketplace_search(args: Optional[List[str]] = None) -> None:
+    """Search marketplace products by query."""
+    import requests
+    
+    if not args or args[0] in ["--help", "-h"]:
+        print("""
+Search Marketplace Products
+===========================
+Usage:
+    mw marketplace search <query> [options]
+
+Arguments:
+    <query>                  Search term (name, description, tags)
+
+Options:
+    --category=<category>    Filter by category (tools, templates, components, etc.)
+    --help, -h               Show this help
+
+Examples:
+    mw marketplace search auth               # Search for auth-related products  
+    mw marketplace search "email template"   # Search for email templates
+    mw marketplace search api --category=tools  # Search API tools
+""")
+        return 0
+
+    # Parse arguments
+    query = args[0] if args else ""
+    category_filter = None
+    
+    for arg in args[1:]:
+        if arg.startswith("--category="):
+            category_filter = arg.split("=", 1)[1]
+    
+    if not query:
+        print(f"{Colors.RED}❌ Search query is required{Colors.ENDC}")
+        print("Usage: mw marketplace search <query>")
+        return 1
+    
+    backend_url = "https://mywork-ai-production.up.railway.app"
+    
+    print(f"{Colors.BOLD}🔍 Searching Marketplace: '{query}'{Colors.ENDC}")
+    print("=" * 50)
+    
+    try:
+        # Build API URL with search params
+        url = f"{backend_url}/api/products"
+        params = {"search": query}
+        if category_filter:
+            params["category"] = category_filter
+        
+        response = requests.get(url, params=params, timeout=15)
+        if response.status_code != 200:
+            print(f"{Colors.RED}❌ Search failed: HTTP {response.status_code}{Colors.ENDC}")
+            return 1
+        
+        data = response.json()
+        products = data.get('products', [])
+        
+        # If API doesn't support search, do client-side filtering
+        if not products and 'search' not in str(response.request.url):
+            # Fallback: get all products and filter client-side
+            response = requests.get(f"{backend_url}/api/products", timeout=15)
+            if response.status_code == 200:
+                data = response.json()
+                all_products = data.get('products', [])
+                
+                # Filter products that match the query
+                query_lower = query.lower()
+                products = []
+                for product in all_products:
+                    title = product.get('title', '').lower()
+                    desc = product.get('description', '').lower()
+                    short_desc = product.get('short_description', '').lower()
+                    category = product.get('category', '').lower()
+                    tags = ' '.join(product.get('tags', [])).lower()
+                    
+                    if (query_lower in title or 
+                        query_lower in desc or 
+                        query_lower in short_desc or 
+                        query_lower in category or 
+                        query_lower in tags):
+                        
+                        # Apply category filter if specified
+                        if not category_filter or product.get('category', '').lower() == category_filter.lower():
+                            products.append(product)
+        
+        if not products:
+            filter_msg = f" in category '{category_filter}'" if category_filter else ""
+            print(f"No products found matching '{query}'{filter_msg}")
+            print(f"\n{Colors.BLUE}💡 Try:{Colors.ENDC}")
+            print(f"   • Different search terms")
+            print(f"   • Browse all: mw marketplace browse")
+            return 0
+        
+        print(f"Found {len(products)} product(s) matching '{query}'")
+        if category_filter:
+            print(f"Filtered by category: {category_filter}")
+        print()
+        
+        # Display results (reuse browse display logic)
+        for product in products:
+            product_id = product.get('id', 'unknown')[:8]
+            title = product.get('title', 'Untitled')
+            price = product.get('price', 0)
+            category = product.get('category', 'uncategorized')
+            description = product.get('short_description', product.get('description', ''))
+            rating = product.get('rating_average', 0)
+            sales = product.get('sales', 0)
+            
+            # Truncate description
+            if len(description) > 100:
+                description = description[:97] + "..."
+            
+            print(f"{Colors.BOLD}{Colors.BLUE}📦 {title}{Colors.ENDC}")
+            print(f"   ID: {color(product_id, Colors.YELLOW)}")
+            print(f"   Price: {color(f'${price}', Colors.GREEN)} | Category: {category}")
+            print(f"   Rating: {'⭐' * int(rating)} ({rating:.1f}) | Sales: {sales}")
+            print(f"   {description}")
+            
+            if product.get('demo_url'):
+                print(f"   🔗 Demo: {color(product['demo_url'], Colors.BLUE)}")
+            
+            print()
+        
+        print(f"{Colors.BLUE}💡 To install a product:{Colors.ENDC}")
+        print(f"   mw marketplace install <product-id>")
+        print(f"{Colors.BLUE}💡 To view in browser:{Colors.ENDC}")
+        print(f"   Visit: https://frontend-hazel-ten-17.vercel.app")
+        
+    except Exception as e:
+        print(f"{Colors.RED}❌ Error searching marketplace: {e}{Colors.ENDC}")
         return 1
 
 
