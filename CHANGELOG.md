@@ -1,3 +1,23 @@
+## [2.4.0] - 2026-02-15
+
+### Added
+- **n8n Integration**: 16 new `mw n8n` commands (setup, status, list, import, export, activate, deactivate, delete, exec, executions, logs, config, test)
+- **GSD Planning**: `mw gsd` commands for project planning (new, status, progress, quick)
+- **AutoForge Registration**: `mw af` / `mw autoforge` commands properly wired
+- **Marketplace Automation**: `mw marketplace publish` now auto-uploads to R2 and lists via API
+- **Workflow Validation**: `mw n8n test` validates workflow JSON locally before deploy
+- **n8n Docker Setup**: `mw n8n setup` installs n8n via Docker or npm automatically
+
+### Fixed
+- README accuracy: test count (96), command count (78), removed dead links
+- CI/CD pipeline: added pytest-timeout, fixed flake8 dependency
+- Package description updated to reflect 78 commands
+- All 96 tests passing in 21 seconds
+
+### Changed
+- Total commands: 78 unique functions (110 with aliases)
+- Marketplace publish: automated R2 upload + API listing (was manual-only)
+
 # MyWork-AI Changelog
 
 All notable changes to MyWork-AI will be documented in this file.

@@ -42,7 +42,7 @@ extras_require["all"] = list(set(req for reqs in extras_require.values() for req
 
 setup(
     name="mywork-ai",
-    version="2.0.0",
+    version="2.4.0",
     author="Dan Sidanutz",
     author_email="dan@mywork.ai",
     description="AI-powered development framework with tools, workflows, and brain (knowledge vault)",
