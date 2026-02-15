@@ -11,7 +11,7 @@ What this workflow accomplishes.
 
 ## Tools Used
 
-- `tools/example_tool.py` - What it does
+- `tools/health_check.py` - System health diagnostics and reporting
 
 ## Steps
 
