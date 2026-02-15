@@ -66,7 +66,26 @@ DEFAULT_MODEL = "claude-opus-4-5-20251101"
 AVAILABLE_MODELS = [
     "claude-opus-4-5-20251101",
     "claude-sonnet-4-5-20250929",
+    "glm-4-plus",
+    "glm-4-long",
+    "codex",
 ]
+
+# Provider endpoints for non-Anthropic models
+MODEL_PROVIDERS = {
+    "glm-4-plus": {
+        "base_url": "https://open.bigmodel.cn/api/paas/v4",
+        "env_key": "ZAI_API_KEY",
+    },
+    "glm-4-long": {
+        "base_url": "https://open.bigmodel.cn/api/paas/v4",
+        "env_key": "ZAI_API_KEY",
+    },
+    "codex": {
+        "type": "cli",
+        "command": "codex",
+    },
+}
 
 
 def get_autoforge_python() -> str:
