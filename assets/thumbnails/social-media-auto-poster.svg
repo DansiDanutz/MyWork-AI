@@ -6,11 +6,11 @@
     </linearGradient>
   </defs>
   <rect width="800" height="450" fill="url(#bg)"/>
-  <rect x="0" y="420" width="800" height="30" fill="#4D96FF" opacity="0.8"/>
-  <text x="400" y="140" text-anchor="middle" font-family="Arial,sans-serif" font-size="72" fill="white">📱</text>
-  <text x="400" y="220" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="bold" fill="white">Social Media</text>
-  <text x="400" y="265" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="bold" fill="white">Auto-Poster</text>
-  <text x="400" y="320" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" fill="#888">MyWork-AI Marketplace</text>
-  <text x="400" y="355" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" font-weight="bold" fill="#4D96FF">$19.99</text>
-  <rect x="20" y="20" width="760" height="410" rx="12" fill="none" stroke="#4D96FF" stroke-width="2" opacity="0.3"/>
+  <rect x="0" y="420" width="800" height="30" fill="#F06292" opacity="0.8"/>
+  <circle cx="400" cy="110" r="35" fill="none" stroke="#F06292" stroke-width="4"/><circle cx="400" cy="100" r="8" fill="#F06292"/><path d="M380 120 Q400 140 420 120" stroke="#F06292" stroke-width="3" fill="none"/><line x1="435" y1="80" x2="445" y2="70" stroke="#F06292" stroke-width="3"/><circle cx="448" cy="67" r="5" fill="#F06292"/>
+  <text x="400" y="210" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="bold" fill="white">Social Media</text>
+  <text x="400" y="255" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="bold" fill="white">Auto-Poster</text>
+  <text x="400" y="310" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" fill="#888">MyWork-AI Marketplace</text>
+  <text x="400" y="345" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" font-weight="bold" fill="#F06292">$19.99</text>
+  <rect x="20" y="20" width="760" height="410" rx="12" fill="none" stroke="#F06292" stroke-width="2" opacity="0.3"/>
 </svg>

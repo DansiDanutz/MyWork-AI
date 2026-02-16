@@ -6,11 +6,11 @@
     </linearGradient>
   </defs>
   <rect width="800" height="450" fill="url(#bg)"/>
-  <rect x="0" y="420" width="800" height="30" fill="#00D2FF" opacity="0.8"/>
-  <text x="400" y="140" text-anchor="middle" font-family="Arial,sans-serif" font-size="72" fill="white">📧</text>
-  <text x="400" y="220" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="bold" fill="white">AI Email</text>
-  <text x="400" y="265" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="bold" fill="white">Assistant</text>
-  <text x="400" y="320" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" fill="#888">MyWork-AI Marketplace</text>
-  <text x="400" y="355" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" font-weight="bold" fill="#00D2FF">$34.99</text>
-  <rect x="20" y="20" width="760" height="410" rx="12" fill="none" stroke="#00D2FF" stroke-width="2" opacity="0.3"/>
+  <rect x="0" y="420" width="800" height="30" fill="#81C784" opacity="0.8"/>
+  <rect x="365" y="85" width="70" height="50" rx="6" fill="none" stroke="#81C784" stroke-width="4"/><polyline points="365,85 400,115 435,85" fill="none" stroke="#81C784" stroke-width="3"/>
+  <text x="400" y="210" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="bold" fill="white">AI Email</text>
+  <text x="400" y="255" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="bold" fill="white">Assistant</text>
+  <text x="400" y="310" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" fill="#888">MyWork-AI Marketplace</text>
+  <text x="400" y="345" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" font-weight="bold" fill="#81C784">$34.99</text>
+  <rect x="20" y="20" width="760" height="410" rx="12" fill="none" stroke="#81C784" stroke-width="2" opacity="0.3"/>
 </svg>

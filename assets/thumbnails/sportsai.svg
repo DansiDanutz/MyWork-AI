@@ -6,11 +6,11 @@
     </linearGradient>
   </defs>
   <rect width="800" height="450" fill="url(#bg)"/>
-  <rect x="0" y="420" width="800" height="30" fill="#E74C3C" opacity="0.8"/>
-  <text x="400" y="140" text-anchor="middle" font-family="Arial,sans-serif" font-size="72" fill="white">⚽</text>
-  <text x="400" y="220" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="bold" fill="white">SportsAI</text>
-  <text x="400" y="265" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="bold" fill="white">Platform</text>
-  <text x="400" y="320" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" fill="#888">MyWork-AI Marketplace</text>
-  <text x="400" y="355" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" font-weight="bold" fill="#E74C3C">$399</text>
-  <rect x="20" y="20" width="760" height="410" rx="12" fill="none" stroke="#E74C3C" stroke-width="2" opacity="0.3"/>
+  <rect x="0" y="420" width="800" height="30" fill="#66BB6A" opacity="0.8"/>
+  <circle cx="400" cy="110" r="35" fill="none" stroke="#66BB6A" stroke-width="4"/><path d="M375 110 Q400 85 425 110 Q400 135 375 110" fill="none" stroke="#66BB6A" stroke-width="2"/><line x1="400" y1="75" x2="400" y2="145" stroke="#66BB6A" stroke-width="2"/>
+  <text x="400" y="210" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="bold" fill="white">SportsAI</text>
+  <text x="400" y="255" text-anchor="middle" font-family="Arial,sans-serif" font-size="36" font-weight="bold" fill="white">Analytics Platform</text>
+  <text x="400" y="310" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" fill="#888">MyWork-AI Marketplace</text>
+  <text x="400" y="345" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" font-weight="bold" fill="#66BB6A">$399.00</text>
+  <rect x="20" y="20" width="760" height="410" rx="12" fill="none" stroke="#66BB6A" stroke-width="2" opacity="0.3"/>
 </svg>
