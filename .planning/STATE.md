@@ -34,6 +34,10 @@ Date: 2026-02-10
 - **Simulation engine**: 5/5 scenarios pass
 - **Security audit**: 0 critical, 5 low-risk remaining
 
+### Recent Changes (2026-02-16)
+- Added `mw changelog` / `mw changes` — view recent changelog entries with `--all` and `-n N` flags
+- Small, focused addition by Memo (GSD Auto Forge daily task)
+
 ### Recent Changes (2026-02-15)
 - Enhanced `mw version` with `--check` (checks PyPI for updates) and `--json` output
 - Proper semantic version comparison (no false positives when local > PyPI)

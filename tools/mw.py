@@ -6954,6 +6954,58 @@ Tags scanned: TODO, FIXME, HACK, XXX, NOTE, OPTIMIZE, REFACTOR
     return 0
 
 
+def cmd_changelog(args: List[str] = None) -> int:
+    """Show recent changelog entries.
+
+    Usage:
+        mw changelog            Show latest changelog section
+        mw changelog --all      Show full changelog
+        mw changelog -n 3       Show last N versions
+    """
+    args = args or []
+    show_all = "--all" in args
+    num_versions = 1
+
+    for i, a in enumerate(args):
+        if a == "-n" and i + 1 < len(args):
+            try:
+                num_versions = int(args[i + 1])
+            except ValueError:
+                pass
+
+    changelog_path = MYWORK_ROOT / "CHANGELOG.md"
+    if not changelog_path.exists():
+        print("❌ CHANGELOG.md not found")
+        return 1
+
+    content = changelog_path.read_text()
+    if show_all:
+        print(content)
+        return 0
+
+    # Split by version headers (## [...])
+    import re
+    sections = re.split(r'(?=^## \[)', content, flags=re.MULTILINE)
+    # Filter to actual version sections
+    version_sections = [s for s in sections if s.strip().startswith("## [")]
+
+    if not version_sections:
+        print(content[:2000])
+        return 0
+
+    shown = version_sections[:num_versions]
+    print("📋 \033[1mMyWork-AI Changelog\033[0m\n")
+    for section in shown:
+        print(section.strip())
+        print()
+
+    remaining = len(version_sections) - num_versions
+    if remaining > 0:
+        print(f"  ... {remaining} more version(s). Use 'mw changelog --all' to see all.")
+
+    return 0
+
+
 def cmd_version(args: List[str] = None) -> int:
     """Show framework version, Python version, and platform info.
 
@@ -13395,6 +13447,8 @@ def main() -> None:
         "cron": lambda: cmd_cron_manage(args),
         "webdash": lambda: _cmd_webdash(args),
         "html-report": lambda: _cmd_webdash(args),
+        "changelog": lambda: cmd_changelog(args),
+        "changes": lambda: cmd_changelog(args),
         "version": lambda: cmd_version(args),
         "-v": lambda: cmd_version(),
         "--version": lambda: cmd_version(args),
