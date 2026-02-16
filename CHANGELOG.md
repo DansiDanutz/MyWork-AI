@@ -1,3 +1,30 @@
+## [2.6.0] - 2026-02-16
+
+### Added
+- **6 Competitive Features**: `mw webhook test`, `mw secrets`, `mw cost`, `mw templates browse`, `mw share`, `mw cron`
+- **AI Cost Tracking**: Track spending across GPT-4, Claude, Gemini, DeepSeek in one dashboard
+- **Encrypted Secrets Vault**: Fernet-encrypted secrets management (better than plain .env)
+- **Webhook Testing**: Local webhook listener for debugging integrations
+- **Template Browser**: Interactive gallery of 8 project templates with difficulty levels
+- **Config Sharing**: Export/import project configs for team collaboration
+- **Marketplace Publisher**: `tools/marketplace_publisher.py` — manage products across platforms
+- **9 Marketplace Products**: Complete working FastAPI applications ready to sell
+- **Landing Pages**: 10 professional dark-theme product pages + mega bundle
+
+### Fixed
+- **Critical Packaging Bug**: v2.5.0 and earlier only shipped 11 of 134 .py files — all 134 now included
+- **Version Detection**: `mw version` now shows correct version from pip install (was "vunknown")
+- **Tour/Demo from pip**: `mw tour` and `mw demo` now work after pip install
+- **26 Broken Tests**: Fixed duplicate `_detect_project_type` function override
+- **CI Pipeline**: Updated from flake8 to ruff
+
+### Changed
+- Total commands: 67+ (was 61)
+- Total tests: 133 passing (was 114)
+- Package includes all 134 Python modules (was 11)
+- GitHub description and topics updated for discoverability
+- README completely rewritten with accurate stats
+
 ## [2.4.0] - 2026-02-15
 
 ### Added
