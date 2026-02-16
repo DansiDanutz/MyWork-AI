@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#252542"/>
+      <stop offset="100%" style="stop-color:#1e1e35"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4f46e5"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bg)"/>
+  
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="200" height="500" fill="#0f0f1a"/>
+  <text x="20" y="40" fill="#fff" font-family="sans-serif" font-size="18" font-weight="bold">📅 BookPro</text>
+  
+  <!-- Sidebar Menu -->
+  <text x="20" y="90" fill="#4f46e5" font-family="sans-serif" font-size="14" font-weight="bold">Dashboard</text>
+  <text x="20" y="120" fill="#888" font-family="sans-serif" font-size="14">Calendar</text>
+  <text x="20" y="150" fill="#888" font-family="sans-serif" font-size="14">Appointments</text>
+  <text x="20" y="180" fill="#888" font-family="sans-serif" font-size="14">Clients</text>
+  <text x="20" y="210" fill="#888" font-family="sans-serif" font-size="14">Services</text>
+  <text x="20" y="240" fill="#888" font-family="sans-serif" font-size="14">Settings</text>
+  
+  <!-- Header -->
+  <rect x="200" y="0" width="600" height="60" fill="#1a1a2e"/>
+  <text x="220" y="38" fill="#fff" font-family="sans-serif" font-size="16">Dashboard</text>
+  <text x="680" y="38" fill="#888" font-family="sans-serif" font-size="14">John Doe ▼</text>
+  
+  <!-- Stats Cards -->
+  <rect x="220" y="80" width="170" height="100" rx="8" fill="url(#card)"/>
+  <text x="235" y="110" fill="#888" font-family="sans-serif" font-size="12">Today's Bookings</text>
+  <text x="235" y="140" fill="#fff" font-family="sans-serif" font-size="28" font-weight="bold">24</text>
+  <text x="235" y="165" fill="#4ade80" font-family="sans-serif" font-size="12">↑ 12% vs yesterday</text>
+  
+  <rect x="410" y="80" width="170" height="100" rx="8" fill="url(#card)"/>
+  <text x="425" y="110" fill="#888" font-family="sans-serif" font-size="12">Revenue Today</text>
+  <text x="425" y="140" fill="#fff" font-family="sans-serif" font-size="28" font-weight="bold">$1,840</text>
+  <text x="425" y="165" fill="#4ade80" font-family="sans-serif" font-size="12">↑ 8% vs yesterday</text>
+  
+  <rect x="600" y="80" width="170" height="100" rx="8" fill="url(#card)"/>
+  <text x="615" y="110" fill="#888" font-family="sans-serif" font-size="12">Active Clients</text>
+  <text x="615" y="140" fill="#fff" font-family="sans-serif" font-size="28" font-weight="bold">156</text>
+  <text x="615" y="165" fill="#fbbf24" font-family="sans-serif" font-size="12">New: 12 this week</text>
+  
+  <!-- Upcoming Appointments -->
+  <rect x="220" y="200" width="550" height="140" rx="8" fill="url(#card)"/>
+  <text x="235" y="230" fill="#fff" font-family="sans-serif" font-size="14" font-weight="bold">Upcoming Appointments</text>
+  
+  <!-- Appointment 1 -->
+  <rect x="235" y="245" width="520" height="40" rx="4" fill="#2a2a4a"/>
+  <text x="250" y="270" fill="#fff" font-family="sans-serif" font-size="12">Sarah Johnson</text>
+  <text x="350" y="270" fill="#888" font-family="sans-serif" font-size="12">Hair Cut • 30min</text>
+  <text x="480" y="270" fill="#4f46e5" font-family="sans-serif" font-size="12">14:00</text>
+  <text x="680" y="270" fill="#4ade80" font-family="sans-serif" font-size="12">Confirmed</text>
+  
+  <!-- Appointment 2 -->
+  <rect x="235" y="295" width="520" height="40" rx="4" fill="#2a2a4a"/>
+  <text x="250" y="320" fill="#fff" font-family="sans-serif" font-size="12">Mike Williams</text>
+  <text x="350" y="320" fill="#888" font-family="sans-serif" font-size="12">Massage • 60min</text>
+  <text x="480" y="320" fill="#4f46e5" font-family="sans-serif" font-size="12">15:30</text>
+  <text x="680" y="320" fill="#fbbf24" font-family="sans-serif" font-size="12">Pending</text>
+  
+  <!-- Quick Actions -->
+  <rect x="220" y="360" width="260" height="120" rx="8" fill="url(#card)"/>
+  <text x="235" y="390" fill="#fff" font-family="sans-serif" font-size="14" font-weight="bold">Quick Actions</text>
+  <rect x="235" y="410" width="100" height="35" rx="4" fill="url(#accent)"/>
+  <text x="265" y="432" fill="#fff" font-family="sans-serif" font-size="12">New Booking</text>
+  <rect x="345" y="410" width="100" height="35" rx="4" fill="#374151"/>
+  <text x="375" y="432" fill="#fff" font-family="sans-serif" font-size="12">Add Client</text>
+  <rect x="235" y="455" width="210" height="35" rx="4" fill="#374151"/>
+  <text x="275" y="477" fill="#fff" font-family="sans-serif" font-size="12">View Calendar</text>
+  
+  <!-- Mini Calendar -->
+  <rect x="510" y="360" width="260" height="120" rx="8" fill="url(#card)"/>
+  <text x="525" y="390" fill="#fff" font-family="sans-serif" font-size="14" font-weight="bold">February 2026</text>
+  <text x="525" y="415" fill="#666" font-family="sans-serif" font-size="11">Su Mo Tu We Th Fr Sa</text>
+  <text x="525" y="432" fill="#888" font-family="sans-serif" font-size="11">1  2  3  4  5  6  7</text>
+  <text x="525" y="449" fill="#888" font-family="sans-serif" font-size="11">8  9 10 11 12 13 14</text>
+  <text x="525" y="466" fill="#888" font-family="sans-serif" font-size="11">15 16 17 18 19 20 21</text>
+  <rect x="543" y="458" width="20" height="14" rx="2" fill="#4f46e5"/>
+  <text x="548" y="469" fill="#fff" font-family="sans-serif" font-size="10">16</text>
+</svg>

@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#3b82f6"/><stop offset="100%" stop-color="#6366f1"/></linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#bg)"/>
+  <!-- Title bar -->
+  <rect x="0" y="0" width="800" height="48" fill="#0f172a" opacity="0.8"/>
+  <circle cx="20" cy="24" r="6" fill="#ef4444"/><circle cx="40" cy="24" r="6" fill="#eab308"/><circle cx="60" cy="24" r="6" fill="#22c55e"/>
+  <text x="400" y="30" text-anchor="middle" fill="#94a3b8" font-family="monospace" font-size="13">AI Customer Support Bot — Dashboard</text>
+  <!-- Sidebar -->
+  <rect x="0" y="48" width="180" height="452" fill="#0f172a"/>
+  <text x="20" y="80" fill="#60a5fa" font-family="sans-serif" font-weight="bold" font-size="14">🤖 Support Bot</text>
+  <text x="20" y="112" fill="#e2e8f0" font-family="sans-serif" font-size="12">📊 Dashboard</text>
+  <rect x="10" y="98" width="160" height="22" rx="4" fill="#1e3a5f" opacity="0.5"/>
+  <text x="20" y="142" fill="#94a3b8" font-family="sans-serif" font-size="12">💬 Conversations</text>
+  <text x="20" y="172" fill="#94a3b8" font-family="sans-serif" font-size="12">📋 Knowledge Base</text>
+  <text x="20" y="202" fill="#94a3b8" font-family="sans-serif" font-size="12">⚙️ Settings</text>
+  <text x="20" y="232" fill="#94a3b8" font-family="sans-serif" font-size="12">📈 Analytics</text>
+  <!-- Main content -->
+  <!-- Stats cards -->
+  <rect x="200" y="64" width="140" height="80" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="220" y="90" fill="#94a3b8" font-family="sans-serif" font-size="11">Total Conversations</text>
+  <text x="220" y="120" fill="#e2e8f0" font-family="sans-serif" font-weight="bold" font-size="24">2,847</text>
+  <text x="220" y="136" fill="#22c55e" font-family="sans-serif" font-size="11">↑ 23% this week</text>
+  <rect x="356" y="64" width="140" height="80" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="376" y="90" fill="#94a3b8" font-family="sans-serif" font-size="11">Auto-Resolved</text>
+  <text x="376" y="120" fill="#22c55e" font-family="sans-serif" font-weight="bold" font-size="24">89%</text>
+  <text x="376" y="136" fill="#22c55e" font-family="sans-serif" font-size="11">↑ 5% improvement</text>
+  <rect x="512" y="64" width="140" height="80" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="532" y="90" fill="#94a3b8" font-family="sans-serif" font-size="11">Avg Response Time</text>
+  <text x="532" y="120" fill="#60a5fa" font-family="sans-serif" font-weight="bold" font-size="24">1.2s</text>
+  <text x="532" y="136" fill="#22c55e" font-family="sans-serif" font-size="11">↓ 0.3s faster</text>
+  <rect x="668" y="64" width="120" height="80" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="688" y="90" fill="#94a3b8" font-family="sans-serif" font-size="11">Satisfaction</text>
+  <text x="688" y="120" fill="#eab308" font-family="sans-serif" font-weight="bold" font-size="24">4.7★</text>
+  <text x="688" y="136" fill="#94a3b8" font-family="sans-serif" font-size="11">from 892 ratings</text>
+  <!-- Recent conversations -->
+  <rect x="200" y="160" width="380" height="320" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="220" y="188" fill="#e2e8f0" font-family="sans-serif" font-weight="bold" font-size="14">Recent Conversations</text>
+  <!-- Conv items -->
+  <rect x="212" y="200" width="356" height="50" rx="4" fill="#0f172a"/>
+  <circle cx="232" cy="225" r="12" fill="#3b82f6"/><text x="228" y="229" fill="white" font-family="sans-serif" font-size="10">JD</text>
+  <text x="252" y="218" fill="#e2e8f0" font-family="sans-serif" font-size="12">John D. — "How do I reset password?"</text>
+  <text x="252" y="236" fill="#22c55e" font-family="sans-serif" font-size="10">✓ Auto-resolved in 3s</text>
+  <text x="520" y="218" fill="#64748b" font-family="sans-serif" font-size="10">2m ago</text>
+  <rect x="212" y="258" width="356" height="50" rx="4" fill="#0f172a"/>
+  <circle cx="232" cy="283" r="12" fill="#8b5cf6"/><text x="228" y="287" fill="white" font-family="sans-serif" font-size="10">SM</text>
+  <text x="252" y="276" fill="#e2e8f0" font-family="sans-serif" font-size="12">Sarah M. — "Billing inquiry about pro plan"</text>
+  <text x="252" y="294" fill="#22c55e" font-family="sans-serif" font-size="10">✓ Auto-resolved in 8s</text>
+  <text x="520" y="276" fill="#64748b" font-family="sans-serif" font-size="10">5m ago</text>
+  <rect x="212" y="316" width="356" height="50" rx="4" fill="#0f172a"/>
+  <circle cx="232" cy="341" r="12" fill="#ec4899"/><text x="228" y="345" fill="white" font-family="sans-serif" font-size="10">AK</text>
+  <text x="252" y="334" fill="#e2e8f0" font-family="sans-serif" font-size="12">Alex K. — "Integration with Shopify?"</text>
+  <text x="252" y="352" fill="#eab308" font-family="sans-serif" font-size="10">⏳ Escalated to human</text>
+  <text x="520" y="334" fill="#64748b" font-family="sans-serif" font-size="10">12m ago</text>
+  <rect x="212" y="374" width="356" height="50" rx="4" fill="#0f172a"/>
+  <circle cx="232" cy="399" r="12" fill="#14b8a6"/><text x="228" y="403" fill="white" font-family="sans-serif" font-size="10">LW</text>
+  <text x="252" y="392" fill="#e2e8f0" font-family="sans-serif" font-size="12">Lisa W. — "Return policy for electronics"</text>
+  <text x="252" y="410" fill="#22c55e" font-family="sans-serif" font-size="10">✓ Auto-resolved in 5s</text>
+  <text x="520" y="392" fill="#64748b" font-family="sans-serif" font-size="10">18m ago</text>
+  <!-- Right panel - Chart -->
+  <rect x="596" y="160" width="192" height="320" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="616" y="188" fill="#e2e8f0" font-family="sans-serif" font-weight="bold" font-size="13">Volume (7d)</text>
+  <!-- Bar chart -->
+  <rect x="616" y="280" width="20" height="60" rx="2" fill="#3b82f6" opacity="0.7"/>
+  <rect x="642" y="260" width="20" height="80" rx="2" fill="#3b82f6" opacity="0.7"/>
+  <rect x="668" y="240" width="20" height="100" rx="2" fill="#3b82f6" opacity="0.8"/>
+  <rect x="694" y="220" width="20" height="120" rx="2" fill="#3b82f6" opacity="0.9"/>
+  <rect x="720" y="250" width="20" height="90" rx="2" fill="#3b82f6" opacity="0.8"/>
+  <rect x="746" y="270" width="20" height="70" rx="2" fill="#3b82f6" opacity="0.7"/>
+  <rect x="616" y="210" width="20" height="130" rx="2" fill="url(#blue)"/>
+  <text x="610" y="360" fill="#64748b" font-family="sans-serif" font-size="9">Mon Tue Wed Thu Fri Sat Sun</text>
+  <text x="616" y="400" fill="#94a3b8" font-family="sans-serif" font-size="11">Peak: Thursday</text>
+  <text x="616" y="418" fill="#94a3b8" font-family="sans-serif" font-size="11">Avg: 406/day</text>
+  <text x="616" y="450" fill="#22c55e" font-family="sans-serif" font-size="12">🟢 Bot Online</text>
+  <text x="616" y="468" fill="#94a3b8" font-family="sans-serif" font-size="10">Uptime: 99.97%</text>
+</svg>

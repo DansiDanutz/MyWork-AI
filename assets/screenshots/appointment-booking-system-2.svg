@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#252542"/>
+      <stop offset="100%" style="stop-color:#1e1e35"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bg)"/>
+  
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="200" height="500" fill="#0f0f1a"/>
+  <text x="20" y="40" fill="#fff" font-family="sans-serif" font-size="18" font-weight="bold">📅 BookPro</text>
+  <text x="20" y="90" fill="#888" font-family="sans-serif" font-size="14">Dashboard</text>
+  <text x="20" y="120" fill="#4f46e5" font-family="sans-serif" font-size="14" font-weight="bold">Calendar</text>
+  <text x="20" y="150" fill="#888" font-family="sans-serif" font-size="14">Appointments</text>
+  <text x="20" y="180" fill="#888" font-family="sans-serif" font-size="14">Clients</text>
+  <text x="20" y="210" fill="#888" font-family="sans-serif" font-size="14">Services</text>
+  <text x="20" y="240" fill="#888" font-family="sans-serif" font-size="14">Settings</text>
+  
+  <!-- Header -->
+  <rect x="200" y="0" width="600" height="60" fill="#1a1a2e"/>
+  <text x="220" y="38" fill="#fff" font-family="sans-serif" font-size="16">Calendar View</text>
+  <rect x="600" y="20" width="180" height="30" rx="4" fill="#252542"/>
+  <text x="615" y="40" fill="#888" font-family="sans-serif" font-size="12">Week View ▼</text>
+  
+  <!-- Calendar Grid -->
+  <rect x="220" y="80" width="550" height="400" rx="8" fill="url(#card)"/>
+  
+  <!-- Time slots -->
+  <g fill="#666" font-family="sans-serif" font-size="11">
+    <text x="240" y="110">09:00</text>
+    <text x="240" y="165">10:00</text>
+    <text x="240" y="220">11:00</text>
+    <text x="240" y="275">12:00</text>
+    <text x="240" y="330">13:00</text>
+    <text x="240" y="385">14:00</text>
+    <text x="240" y="440">15:00</text>
+  </g>
+  
+  <!-- Days header -->
+  <g fill="#888" font-family="sans-serif" font-size="12" text-anchor="middle">
+    <text x="340" y="105">Mon 16</text>
+    <text x="430" y="105">Tue 17</text>
+    <text x="520" y="105">Wed 18</text>
+    <text x="610" y="105">Thu 19</text>
+    <text x="700" y="105">Fri 20</text>
+  </g>
+  
+  <!-- Grid lines -->
+  <g stroke="#333" stroke-width="0.5">
+    <line x1="300" y1="80" x2="300" y2="480"/>
+    <line x1="390" y1="80" x2="390" y2="480"/>
+    <line x1="480" y1="80" x2="480" y2="480"/>
+    <line x1="570" y1="80" x2="570" y2="480"/>
+    <line x1="660" y1="80" x2="660" y2="480"/>
+    <line x1="220" y1="120" x2="770" y2="120"/>
+    <line x1="220" y1="175" x2="770" y2="175"/>
+    <line x1="220" y1="230" x2="770" y2="230"/>
+    <line x1="220" y1="285" x2="770" y2="285"/>
+    <line x1="220" y1="340" x2="770" y2="340"/>
+    <line x1="220" y1="395" x2="770" y2="395"/>
+    <line x1="220" y1="450" x2="770" y2="450"/>
+  </g>
+  
+  <!-- Appointment blocks -->
+  <!-- Monday -->
+  <rect x="305" y="140" width="80" height="50" rx="3" fill="#4f46e5" opacity="0.8"/>
+  <text x="310" y="158" fill="#fff" font-family="sans-serif" font-size="9">Hair Cut</text>
+  <text x="310" y="172" fill="#fff" font-family="sans-serif" font-size="8">Sarah J.</text>
+  
+  <!-- Tuesday -->
+  <rect x="395" y="200" width="80" height="60" rx="3" fill="#7c3aed" opacity="0.8"/>
+  <text x="400" y="218" fill="#fff" font-family="sans-serif" font-size="9">Massage</text>
+  <text x="400" y="232" fill="#fff" font-family="sans-serif" font-size="8">Mike W.</text>
+  
+  <!-- Wednesday -->
+  <rect x="485" y="125" width="80" height="90" rx="3" fill="#059669" opacity="0.8"/>
+  <text x="490" y="143" fill="#fff" font-family="sans-serif" font-size="9">Facial</text>
+  <text x="490" y="157" fill="#fff" font-family="sans-serif" font-size="8">Emma K.</text>
+  <text x="490" y="171" fill="#fff" font-family="sans-serif" font-size="8">14:00-15:30</text>
+  
+  <!-- Thursday -->
+  <rect x="575" y="230" width="80" height="40" rx="3" fill="#dc2626" opacity="0.8"/>
+  <text x="580" y="248" fill="#fff" font-family="sans-serif" font-size="9">Consultation</text>
+  <text x="580" y="262" fill="#fff" font-family="sans-serif" font-size="8">Alex M.</text>
+  
+  <!-- Friday -->
+  <rect x="665" y="155" width="80" height="70" rx="3" fill="#f59e0b" opacity="0.8"/>
+  <text x="670" y="173" fill="#fff" font-family="sans-serif" font-size="9">Color</text>
+  <text x="670" y="187" fill="#fff" font-family="sans-serif" font-size="8">Lisa P.</text>
+  
+  <!-- Current time indicator -->
+  <line x1="220" y1="375" x2="770" y2="375" stroke="#ef4444" stroke-width="2"/>
+  <rect x="770" y="370" width="10" height="10" fill="#ef4444"/>
+</svg>

@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <defs><linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0f172a"/><stop offset="100%" stop-color="#1e293b"/></linearGradient></defs>
+  <rect width="800" height="500" fill="url(#bg2)"/>
+  <rect x="0" y="0" width="800" height="48" fill="#0f172a" opacity="0.8"/>
+  <circle cx="20" cy="24" r="6" fill="#ef4444"/><circle cx="40" cy="24" r="6" fill="#eab308"/><circle cx="60" cy="24" r="6" fill="#22c55e"/>
+  <text x="400" y="30" text-anchor="middle" fill="#94a3b8" font-family="monospace" font-size="13">AI Customer Support Bot — Live Chat Widget</text>
+  <!-- Website mockup background -->
+  <rect x="30" y="64" width="500" height="420" rx="8" fill="#f8fafc"/>
+  <rect x="30" y="64" width="500" height="40" rx="8" fill="#e2e8f0"/>
+  <text x="50" y="88" fill="#475569" font-family="sans-serif" font-size="12">🏠 My Store — Products</text>
+  <rect x="50" y="120" width="200" height="140" rx="6" fill="#e2e8f0"/>
+  <text x="100" y="190" fill="#64748b" font-family="sans-serif" font-size="11">Product Image</text>
+  <rect x="270" y="120" width="240" height="20" rx="3" fill="#cbd5e1"/>
+  <rect x="270" y="150" width="180" height="14" rx="3" fill="#e2e8f0"/>
+  <rect x="270" y="174" width="80" height="28" rx="4" fill="#3b82f6"/>
+  <text x="290" y="193" fill="white" font-family="sans-serif" font-size="12">Buy Now</text>
+  <!-- Chat widget -->
+  <rect x="548" y="64" width="240" height="420" rx="12" fill="#1e293b" stroke="#334155" stroke-width="2"/>
+  <!-- Chat header -->
+  <rect x="548" y="64" width="240" height="52" rx="12" fill="#3b82f6"/>
+  <circle cx="574" cy="90" r="14" fill="white" opacity="0.2"/>
+  <text x="570" y="94" fill="white" font-family="sans-serif" font-size="14">🤖</text>
+  <text x="596" y="86" fill="white" font-family="sans-serif" font-weight="bold" font-size="13">Support Assistant</text>
+  <text x="596" y="102" fill="#bfdbfe" font-family="sans-serif" font-size="10">● Online — typically replies in &lt;2s</text>
+  <!-- Chat messages -->
+  <!-- Bot welcome -->
+  <rect x="562" y="130" width="180" height="44" rx="12" fill="#334155"/>
+  <text x="574" y="148" fill="#e2e8f0" font-family="sans-serif" font-size="11">Hi! 👋 How can I help you</text>
+  <text x="574" y="164" fill="#e2e8f0" font-family="sans-serif" font-size="11">today?</text>
+  <!-- User message -->
+  <rect x="608" y="186" width="166" height="36" rx="12" fill="#3b82f6"/>
+  <text x="620" y="204" fill="white" font-family="sans-serif" font-size="11">What's your return policy?</text>
+  <!-- Bot response -->
+  <rect x="562" y="234" width="210" height="80" rx="12" fill="#334155"/>
+  <text x="574" y="254" fill="#e2e8f0" font-family="sans-serif" font-size="11">Great question! We offer a</text>
+  <text x="574" y="270" fill="#e2e8f0" font-family="sans-serif" font-size="11">30-day money back guarantee</text>
+  <text x="574" y="286" fill="#e2e8f0" font-family="sans-serif" font-size="11">on all products. Simply contact</text>
+  <text x="574" y="302" fill="#60a5fa" font-family="sans-serif" font-size="11">returns@store.com 📧</text>
+  <!-- User follow-up -->
+  <rect x="628" y="326" width="146" height="36" rx="12" fill="#3b82f6"/>
+  <text x="640" y="348" fill="white" font-family="sans-serif" font-size="11">Do I need the receipt?</text>
+  <!-- Bot typing indicator -->
+  <rect x="562" y="374" width="80" height="30" rx="12" fill="#334155"/>
+  <circle cx="580" cy="389" r="4" fill="#94a3b8"><animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite"/></circle>
+  <circle cx="596" cy="389" r="4" fill="#94a3b8"><animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" begin="0.3s" repeatCount="indefinite"/></circle>
+  <circle cx="612" cy="389" r="4" fill="#94a3b8"><animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" begin="0.6s" repeatCount="indefinite"/></circle>
+  <!-- Input area -->
+  <rect x="558" y="420" width="220" height="40" rx="20" fill="#0f172a" stroke="#475569" stroke-width="1"/>
+  <text x="578" y="444" fill="#64748b" font-family="sans-serif" font-size="12">Type a message...</text>
+  <circle cx="758" cy="440" r="14" fill="#3b82f6"/>
+  <text x="752" y="445" fill="white" font-family="sans-serif" font-size="14">→</text>
+  <!-- Quick replies -->
+  <rect x="558" y="466" width="76" height="22" rx="11" fill="none" stroke="#475569" stroke-width="1"/>
+  <text x="568" y="481" fill="#94a3b8" font-family="sans-serif" font-size="9">📦 Shipping</text>
+  <rect x="642" y="466" width="66" height="22" rx="11" fill="none" stroke="#475569" stroke-width="1"/>
+  <text x="652" y="481" fill="#94a3b8" font-family="sans-serif" font-size="9">💰 Pricing</text>
+  <rect x="716" y="466" width="58" height="22" rx="11" fill="none" stroke="#475569" stroke-width="1"/>
+  <text x="726" y="481" fill="#94a3b8" font-family="sans-serif" font-size="9">🛒 Order</text>
+</svg>

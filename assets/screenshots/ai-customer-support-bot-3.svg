@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <rect width="800" height="500" fill="#0f172a"/>
+  <rect x="0" y="0" width="800" height="48" fill="#0f172a" opacity="0.8"/>
+  <circle cx="20" cy="24" r="6" fill="#ef4444"/><circle cx="40" cy="24" r="6" fill="#eab308"/><circle cx="60" cy="24" r="6" fill="#22c55e"/>
+  <text x="400" y="30" text-anchor="middle" fill="#94a3b8" font-family="monospace" font-size="13">Terminal — Quick Setup &amp; API</text>
+  <!-- Terminal content -->
+  <text x="20" y="76" fill="#22c55e" font-family="monospace" font-size="13">$ pip install mywork-ai</text>
+  <text x="20" y="96" fill="#94a3b8" font-family="monospace" font-size="12">Successfully installed mywork-ai-2.6.0</text>
+  <text x="20" y="122" fill="#22c55e" font-family="monospace" font-size="13">$ mw clone ai-customer-support-bot</text>
+  <text x="20" y="142" fill="#94a3b8" font-family="monospace" font-size="12">Cloning into 'ai-customer-support-bot'...</text>
+  <text x="20" y="158" fill="#94a3b8" font-family="monospace" font-size="12">✓ Downloaded 12 files (445 lines of code)</text>
+  <text x="20" y="184" fill="#22c55e" font-family="monospace" font-size="13">$ cp .env.example .env</text>
+  <text x="20" y="204" fill="#22c55e" font-family="monospace" font-size="13">$ nano .env</text>
+  <text x="20" y="224" fill="#64748b" font-family="monospace" font-size="12"># Add your OpenAI key and configure</text>
+  <text x="20" y="244" fill="#eab308" font-family="monospace" font-size="12">OPENAI_API_KEY=sk-your-key-here</text>
+  <text x="20" y="260" fill="#eab308" font-family="monospace" font-size="12">BOT_NAME="My Store Support"</text>
+  <text x="20" y="276" fill="#eab308" font-family="monospace" font-size="12">KNOWLEDGE_DIR=./knowledge</text>
+  <text x="20" y="302" fill="#22c55e" font-family="monospace" font-size="13">$ python bot.py</text>
+  <text x="20" y="322" fill="#60a5fa" font-family="monospace" font-size="12">🤖 AI Customer Support Bot v1.0</text>
+  <text x="20" y="338" fill="#94a3b8" font-family="monospace" font-size="12">Loading knowledge base... 24 documents indexed</text>
+  <text x="20" y="354" fill="#94a3b8" font-family="monospace" font-size="12">Starting FastAPI server on port 8000...</text>
+  <text x="20" y="370" fill="#22c55e" font-family="monospace" font-size="12">✓ Bot is ready! API: http://localhost:8000</text>
+  <text x="20" y="386" fill="#22c55e" font-family="monospace" font-size="12">✓ Widget: http://localhost:8000/widget</text>
+  <text x="20" y="412" fill="#22c55e" font-family="monospace" font-size="13">$ curl localhost:8000/api/chat -d '{"msg":"hi"}'</text>
+  <text x="20" y="432" fill="#c084fc" font-family="monospace" font-size="12">{</text>
+  <text x="20" y="448" fill="#c084fc" font-family="monospace" font-size="12">  "reply": "Hello! 👋 How can I help you today?",</text>
+  <text x="20" y="464" fill="#c084fc" font-family="monospace" font-size="12">  "confidence": 0.97,</text>
+  <text x="20" y="480" fill="#c084fc" font-family="monospace" font-size="12">  "source": "greeting_handler",  "latency_ms": 340</text>
+  <text x="20" y="496" fill="#c084fc" font-family="monospace" font-size="12">}</text>
+</svg>
