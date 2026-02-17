@@ -6813,6 +6813,187 @@ def _cmd_context_wrapper(args: List[str] = None) -> int:
             return 1
 
 
+def cmd_loc(args: List[str] = None) -> int:
+    """Count lines of code by language with blank/comment/code breakdown.
+
+    Usage:
+        mw loc [path] [--json] [--top N] [--lang LANG]
+
+    Scans source files and reports total, code, blank, and comment lines
+    grouped by language. Skips build dirs and vendored code.
+    """
+    args = args or []
+    if args and args[0] in ("--help", "-h"):
+        print("""
+Lines of Code Counter
+=====================
+Usage:
+    mw loc [path]          Count lines in path (default: current dir)
+    mw loc --json          Output as JSON
+    mw loc --top N         Show only top N languages (default: all)
+    mw loc --lang python   Filter to one language
+
+Counts code, blank, and comment lines per language.
+Skips .git, node_modules, __pycache__, dist, build, venv, etc.
+""")
+        return 0
+
+    scan_path = Path(".")
+    json_mode = False
+    top_n = None
+    filter_lang = None
+
+    i = 0
+    while i < len(args):
+        if args[i] == "--json":
+            json_mode = True
+            i += 1
+        elif args[i] == "--top" and i + 1 < len(args):
+            top_n = int(args[i + 1])
+            i += 2
+        elif args[i] == "--lang" and i + 1 < len(args):
+            filter_lang = args[i + 1].lower()
+            i += 2
+        elif not args[i].startswith("-"):
+            scan_path = Path(args[i])
+            i += 1
+        else:
+            i += 1
+
+    if not scan_path.exists():
+        print(f"{Colors.RED}✗ Path not found: {scan_path}{Colors.ENDC}")
+        return 1
+
+    # Language definitions: ext -> (name, single-line comment prefix)
+    LANG_MAP = {
+        ".py": ("Python", "#"),
+        ".js": ("JavaScript", "//"),
+        ".ts": ("TypeScript", "//"),
+        ".jsx": ("JSX", "//"),
+        ".tsx": ("TSX", "//"),
+        ".go": ("Go", "//"),
+        ".rs": ("Rust", "//"),
+        ".rb": ("Ruby", "#"),
+        ".java": ("Java", "//"),
+        ".kt": ("Kotlin", "//"),
+        ".swift": ("Swift", "//"),
+        ".c": ("C", "//"),
+        ".cpp": ("C++", "//"),
+        ".h": ("C/C++ Header", "//"),
+        ".hpp": ("C++ Header", "//"),
+        ".cs": ("C#", "//"),
+        ".sh": ("Shell", "#"),
+        ".bash": ("Shell", "#"),
+        ".zsh": ("Shell", "#"),
+        ".html": ("HTML", None),
+        ".css": ("CSS", None),
+        ".scss": ("SCSS", "//"),
+        ".yaml": ("YAML", "#"),
+        ".yml": ("YAML", "#"),
+        ".toml": ("TOML", "#"),
+        ".json": ("JSON", None),
+        ".md": ("Markdown", None),
+        ".sql": ("SQL", "--"),
+        ".r": ("R", "#"),
+        ".php": ("PHP", "//"),
+        ".lua": ("Lua", "--"),
+        ".vim": ("Vim", '"'),
+        ".ex": ("Elixir", "#"),
+        ".exs": ("Elixir", "#"),
+        ".zig": ("Zig", "//"),
+    }
+
+    SKIP_DIRS = {
+        ".git", "node_modules", "__pycache__", ".venv", "venv",
+        "dist", "build", ".tox", ".mypy_cache", ".pytest_cache",
+        "target", ".next", "coverage", ".ruff_cache", "vendor",
+        ".eggs", "*.egg-info",
+    }
+
+    # Collect stats: {lang_name: {files, code, blank, comment, total}}
+    lang_stats: dict = {}
+
+    for root_dir, dirs, files in os.walk(scan_path):
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not d.endswith(".egg-info")]
+        for fname in files:
+            fpath = Path(root_dir) / fname
+            ext = fpath.suffix.lower()
+            if ext not in LANG_MAP:
+                continue
+            lang_name, comment_prefix = LANG_MAP[ext]
+            if filter_lang and lang_name.lower() != filter_lang:
+                continue
+
+            if lang_name not in lang_stats:
+                lang_stats[lang_name] = {"files": 0, "code": 0, "blank": 0, "comment": 0, "total": 0}
+
+            try:
+                content = fpath.read_text(errors="replace")
+            except (OSError, PermissionError):
+                continue
+
+            lang_stats[lang_name]["files"] += 1
+            for line in content.splitlines():
+                lang_stats[lang_name]["total"] += 1
+                stripped = line.strip()
+                if not stripped:
+                    lang_stats[lang_name]["blank"] += 1
+                elif comment_prefix and stripped.startswith(comment_prefix):
+                    lang_stats[lang_name]["comment"] += 1
+                else:
+                    lang_stats[lang_name]["code"] += 1
+
+    if not lang_stats:
+        print(f"{Colors.YELLOW}⚠ No source files found in {scan_path}{Colors.ENDC}")
+        return 0
+
+    # Sort by code lines descending
+    sorted_langs = sorted(lang_stats.items(), key=lambda x: x[1]["code"], reverse=True)
+    if top_n:
+        sorted_langs = sorted_langs[:top_n]
+
+    if json_mode:
+        import json as _json
+        output = {
+            "languages": {name: stats for name, stats in sorted_langs},
+            "totals": {
+                "files": sum(s["files"] for _, s in sorted_langs),
+                "code": sum(s["code"] for _, s in sorted_langs),
+                "blank": sum(s["blank"] for _, s in sorted_langs),
+                "comment": sum(s["comment"] for _, s in sorted_langs),
+                "total": sum(s["total"] for _, s in sorted_langs),
+            },
+        }
+        print(_json.dumps(output, indent=2))
+        return 0
+
+    # Pretty table output
+    print(f"\n{Colors.BOLD}📊 Lines of Code — {scan_path.resolve().name}{Colors.ENDC}\n")
+    header = f"  {'Language':<18} {'Files':>6} {'Code':>8} {'Comment':>8} {'Blank':>7} {'Total':>8}"
+    print(f"{Colors.BLUE}{header}{Colors.ENDC}")
+    print(f"  {'─' * 60}")
+
+    total_files = total_code = total_comment = total_blank = total_total = 0
+    for lang_name, stats in sorted_langs:
+        print(f"  {lang_name:<18} {stats['files']:>6} {stats['code']:>8} {stats['comment']:>8} {stats['blank']:>7} {stats['total']:>8}")
+        total_files += stats["files"]
+        total_code += stats["code"]
+        total_comment += stats["comment"]
+        total_blank += stats["blank"]
+        total_total += stats["total"]
+
+    print(f"  {'─' * 60}")
+    print(f"{Colors.GREEN}  {'Total':<18} {total_files:>6} {total_code:>8} {total_comment:>8} {total_blank:>7} {total_total:>8}{Colors.ENDC}")
+
+    # Code ratio
+    if total_total > 0:
+        ratio = total_code / total_total * 100
+        print(f"\n  {Colors.BOLD}Code ratio:{Colors.ENDC} {ratio:.1f}% code, {total_comment / total_total * 100:.1f}% comments, {total_blank / total_total * 100:.1f}% blank")
+
+    print()
+    return 0
+
+
 def cmd_todo(args: List[str] = None) -> int:
     """Scan project files for TODO/FIXME/HACK/XXX comments.
 
@@ -13416,6 +13597,9 @@ def main() -> None:
         "bench": lambda: cmd_benchmark(args),
         "perf": lambda: cmd_benchmark(args),
         "recap": lambda: cmd_recap(args),
+        "loc": lambda: cmd_loc(args),
+        "lines": lambda: cmd_loc(args),
+        "cloc": lambda: cmd_loc(args),
         "todo": lambda: cmd_todo(args),
         "watch": lambda: _cmd_watch_wrapper(args),
         "context": lambda: _cmd_context_wrapper(args),

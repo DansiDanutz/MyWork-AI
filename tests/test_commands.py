@@ -128,3 +128,49 @@ class TestBadge:
         r = run_mw("badge")
         # Badge without args might show help or generate
         assert r.returncode in (0, 1)
+
+
+class TestLoc:
+    def test_loc_runs(self):
+        r = run_mw("loc")
+        assert r.returncode == 0
+        assert "Lines of Code" in r.stdout
+
+    def test_loc_help(self):
+        r = run_mw("loc", "--help")
+        assert r.returncode == 0
+        assert "Lines of Code Counter" in r.stdout
+
+    def test_loc_json(self):
+        import json
+        r = run_mw("loc", "--json")
+        assert r.returncode == 0
+        data = json.loads(r.stdout)
+        assert "languages" in data
+        assert "totals" in data
+        assert data["totals"]["total"] > 0
+
+    def test_loc_top(self):
+        import json
+        r = run_mw("loc", "--top", "3", "--json")
+        assert r.returncode == 0
+        data = json.loads(r.stdout)
+        assert len(data["languages"]) <= 3
+
+    def test_loc_alias_lines(self):
+        r = run_mw("lines")
+        assert r.returncode == 0
+        assert "Lines of Code" in r.stdout
+
+    def test_loc_bad_path(self):
+        r = run_mw("loc", "/nonexistent/path/xyz")
+        assert r.returncode == 1
+
+    def test_loc_lang_filter(self):
+        import json
+        r = run_mw("loc", "--lang", "python", "--json")
+        assert r.returncode == 0
+        data = json.loads(r.stdout)
+        assert len(data["languages"]) <= 1
+        if data["languages"]:
+            assert "Python" in data["languages"]
