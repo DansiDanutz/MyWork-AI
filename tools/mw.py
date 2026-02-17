@@ -432,28 +432,17 @@ Examples:
 
 
 def _ai_enhance_project(description: str) -> dict:
-    """Use AI to enhance a project description into a full spec."""
+    """Use AI to enhance a project description into a full spec.
+    
+    Supports multiple providers in priority order:
+    1. LiteLLM (if installed) — uses any configured provider
+    2. DeepSeek API directly
+    3. OpenRouter API
+    4. Google Gemini API
+    """
     import json as _json
-    api_key = os.environ.get("OPENROUTER_API_KEY", "")
-    if not api_key:
-        # Try loading from config
-        try:
-            creds_path = Path.home() / ".openclaw" / "workspace" / "TOOLS.md"
-            if creds_path.exists():
-                for line in creds_path.read_text().splitlines():
-                    if "sk-or-v1-" in line:
-                        api_key = line.split("sk-or-v1-")[1].split()[0]
-                        api_key = "sk-or-v1-" + api_key
-                        break
-        except Exception:
-            pass
 
-    if not api_key:
-        return None
-
-    try:
-        import urllib.request
-        prompt = f"""You are a project architect. Given this project idea, create a structured plan.
+    prompt = f"""You are a project architect. Given this project idea, create a structured plan.
 
 Project idea: "{description}"
 
@@ -474,36 +463,207 @@ Return a JSON object with:
 
 Return ONLY valid JSON, no markdown."""
 
-        data = _json.dumps({
-            "model": "deepseek/deepseek-chat",
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.7,
-            "max_tokens": 1000
-        }).encode()
+    def _parse_json_response(content: str) -> dict:
+        content = content.strip()
+        if content.startswith("```"):
+            content = content.split("\n", 1)[1]
+        if content.endswith("```"):
+            content = content.rsplit("```", 1)[0]
+        return _json.loads(content.strip())
 
-        req = urllib.request.Request(
-            "https://openrouter.ai/api/v1/chat/completions",
-            data=data,
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-                "HTTP-Referer": "https://mywork-ai.dev"
-            }
-        )
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            result = _json.loads(resp.read())
-            content = result["choices"][0]["message"]["content"]
-            # Strip markdown code fences if present
-            content = content.strip()
-            if content.startswith("```"):
-                content = content.split("\n", 1)[1]
-            if content.endswith("```"):
-                content = content.rsplit("```", 1)[0]
-            content = content.strip()
-            return _json.loads(content)
-    except Exception as e:
-        print(f"{Colors.YELLOW}⚠️  AI enhancement failed: {e}{Colors.ENDC}")
-        return None
+    # Strategy 1: LiteLLM (supports 100+ providers)
+    try:
+        import litellm
+        litellm.drop_params = True
+        # Try providers in order of preference
+        for model in ["deepseek/deepseek-chat", "gpt-4.1-mini", "gemini/gemini-2.0-flash"]:
+            try:
+                resp = litellm.completion(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.7,
+                    max_tokens=1000,
+                )
+                return _parse_json_response(resp.choices[0].message.content)
+            except Exception:
+                continue
+    except ImportError:
+        pass
+
+    # Strategy 2: Direct API calls (no litellm needed)
+    import urllib.request
+
+    # Try DeepSeek
+    deepseek_key = os.environ.get("DEEPSEEK_API_KEY", "")
+    if deepseek_key:
+        try:
+            data = _json.dumps({
+                "model": "deepseek-chat",
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.7, "max_tokens": 1000
+            }).encode()
+            req = urllib.request.Request("https://api.deepseek.com/chat/completions",
+                data=data, headers={"Authorization": f"Bearer {deepseek_key}", "Content-Type": "application/json"})
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                return _parse_json_response(_json.loads(resp.read())["choices"][0]["message"]["content"])
+        except Exception:
+            pass
+
+    # Try OpenRouter
+    or_key = os.environ.get("OPENROUTER_API_KEY", "")
+    if not or_key:
+        try:
+            creds_path = Path.home() / ".openclaw" / "workspace" / "TOOLS.md"
+            if creds_path.exists():
+                for line in creds_path.read_text().splitlines():
+                    if "sk-or-v1-" in line:
+                        or_key = "sk-or-v1-" + line.split("sk-or-v1-")[1].split()[0]
+                        break
+        except Exception:
+            pass
+    if or_key:
+        try:
+            data = _json.dumps({
+                "model": "deepseek/deepseek-chat",
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.7, "max_tokens": 1000
+            }).encode()
+            req = urllib.request.Request("https://openrouter.ai/api/v1/chat/completions",
+                data=data, headers={"Authorization": f"Bearer {or_key}", "Content-Type": "application/json",
+                "HTTP-Referer": "https://mywork-ai.dev"})
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                return _parse_json_response(_json.loads(resp.read())["choices"][0]["message"]["content"])
+        except Exception:
+            pass
+
+    # Try Gemini
+    gemini_key = os.environ.get("GEMINI_API_KEY", "")
+    if gemini_key:
+        try:
+            data = _json.dumps({
+                "contents": [{"parts": [{"text": prompt}]}],
+                "generationConfig": {"temperature": 0.7, "maxOutputTokens": 1000}
+            }).encode()
+            req = urllib.request.Request(
+                f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={gemini_key}",
+                data=data, headers={"Content-Type": "application/json"})
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                result = _json.loads(resp.read())
+                text = result["candidates"][0]["content"]["parts"][0]["text"]
+                return _parse_json_response(text)
+        except Exception:
+            pass
+
+    print(f"{Colors.YELLOW}⚠️  No AI provider available. Set one of: DEEPSEEK_API_KEY, OPENAI_API_KEY, GEMINI_API_KEY, OPENROUTER_API_KEY{Colors.ENDC}")
+    print(f"{Colors.YELLOW}   Or install LiteLLM: pip install mywork-ai[agent]{Colors.ENDC}")
+    return None
+
+
+def _ai_generate_code(spec: dict) -> str:
+    """Generate a custom main.py from AI spec using LiteLLM or direct API."""
+    import json as _json
+    endpoints = spec.get("endpoints", [])
+    features = spec.get("features", [])
+    title = spec.get("title", "My Project")
+    desc = spec.get("description", "")
+
+    prompt = f"""Generate a complete, working FastAPI main.py for this project:
+
+Title: {title}
+Description: {desc}
+Endpoints: {', '.join(endpoints)}
+Features: {', '.join(features)}
+Env vars: {', '.join(spec.get('env_vars', []))}
+
+Requirements:
+- Use FastAPI with proper type hints and Pydantic models
+- Include all listed endpoints with realistic logic
+- Add CORS middleware
+- Include a health check endpoint
+- Use os.environ with dotenv for config
+- Add demo/mock mode that works WITHOUT API keys
+- Include proper error handling
+- Add OpenAPI metadata (title, description, version)
+- Keep it under 300 lines
+- Make it actually runnable with: uvicorn main:app --reload
+
+Return ONLY the Python code, no markdown fences."""
+
+    try:
+        import litellm
+        litellm.drop_params = True
+        for model in ["deepseek/deepseek-chat", "gpt-4.1-mini"]:
+            try:
+                resp = litellm.completion(
+                    model=model,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.3, max_tokens=4000,
+                )
+                code = resp.choices[0].message.content.strip()
+                if code.startswith("```"):
+                    code = code.split("\n", 1)[1]
+                if code.endswith("```"):
+                    code = code.rsplit("```", 1)[0]
+                return code.strip()
+            except Exception:
+                continue
+    except ImportError:
+        pass
+
+    # Fallback: DeepSeek direct
+    deepseek_key = os.environ.get("DEEPSEEK_API_KEY", "")
+    if deepseek_key:
+        try:
+            import urllib.request
+            data = _json.dumps({
+                "model": "deepseek-chat",
+                "messages": [{"role": "user", "content": prompt}],
+                "temperature": 0.3, "max_tokens": 4000
+            }).encode()
+            req = urllib.request.Request("https://api.deepseek.com/chat/completions",
+                data=data, headers={"Authorization": f"Bearer {deepseek_key}", "Content-Type": "application/json"})
+            with urllib.request.urlopen(req, timeout=60) as resp:
+                code = _json.loads(resp.read())["choices"][0]["message"]["content"].strip()
+                if code.startswith("```"):
+                    code = code.split("\n", 1)[1]
+                if code.endswith("```"):
+                    code = code.rsplit("```", 1)[0]
+                return code.strip()
+        except Exception:
+            pass
+    return None
+
+
+def _infer_requirements(tech_stack: list) -> list:
+    """Infer Python requirements from tech stack list."""
+    mapping = {
+        "fastapi": "fastapi>=0.109.0",
+        "uvicorn": "uvicorn[standard]>=0.27.0",
+        "pydantic": "pydantic>=2.0",
+        "sqlalchemy": "sqlalchemy>=2.0",
+        "sqlite": "",
+        "postgresql": "asyncpg>=0.29.0",
+        "postgres": "asyncpg>=0.29.0",
+        "jinja2": "jinja2>=3.1.0",
+        "weasyprint": "weasyprint>=60.0",
+        "openai": "openai>=1.0",
+        "resend": "resend>=0.7",
+        "sendgrid": "sendgrid>=6.0",
+        "redis": "redis>=5.0",
+        "docker": "",
+        "python": "",
+        "requests": "requests>=2.31",
+        "httpx": "httpx>=0.27",
+        "celery": "celery>=5.3",
+        "stripe": "stripe>=8.0",
+    }
+    reqs = set(["fastapi>=0.109.0", "uvicorn[standard]>=0.27.0", "python-dotenv>=1.0.0"])
+    for tech in tech_stack:
+        key = tech.lower().split()[0]
+        pkg = mapping.get(key, "")
+        if pkg:
+            reqs.add(pkg)
+    return sorted(reqs)
 
 
 def cmd_new(args: List[str]) -> int:
@@ -687,6 +847,48 @@ Auto-publish → **LIVE!** 🎉
                     env_path = project_dir / ".env.example"
                     if not env_path.exists():
                         env_path.write_text(env_content)
+
+                # AI Code Generation — generate custom main.py from spec
+                if template == "fastapi" and spec.get("endpoints"):
+                    print(f"{Colors.BLUE}🧠 Generating custom code from AI spec...{Colors.ENDC}")
+                    custom_code = _ai_generate_code(spec)
+                    if custom_code:
+                        main_path = project_dir / "main.py"
+                        main_path.write_text(custom_code)
+                        print(f"{Colors.GREEN}✅ Custom main.py generated with {len(spec.get('endpoints',[]))} endpoints{Colors.ENDC}")
+
+                        # Generate requirements.txt from tech stack
+                        reqs = _infer_requirements(spec.get("tech_stack", []))
+                        if reqs:
+                            (project_dir / "requirements.txt").write_text("\n".join(reqs) + "\n")
+
+                # Write agent.yaml so the project has an AI assistant built in
+                agent_yaml = f"""# AI Assistant for {spec.get('title', project_name)}
+name: {spec.get('title', project_name)} Assistant
+model: deepseek/deepseek-chat
+description: AI assistant for the {spec.get('title', project_name)} project
+temperature: 0.5
+instructions: |
+  You are an AI assistant for the {spec.get('title', project_name)} project.
+  Tech stack: {', '.join(spec.get('tech_stack', []))}
+  Help the developer build, debug, and improve this project.
+tools:
+  - name: read_file
+    description: Read a project file
+    parameters:
+      path: {{type: string, description: "File path"}}
+    command: "cat '{{path}}'"
+  - name: list_files
+    description: List project files
+    parameters:
+      dir: {{type: string, description: "Directory", default: "."}}
+    command: "ls -la '{{dir}}'"
+  - name: run_tests
+    description: Run project tests
+    parameters: {{}}
+    command: "cd {project_dir} && python3 -m pytest -v 2>&1 || echo 'No tests yet'"
+"""
+                (project_dir / "agent.yaml").write_text(agent_yaml)
 
                 print(f"\n{Colors.GREEN}{'=' * 50}{Colors.ENDC}")
                 print(f"{Colors.GREEN}✅ Project created successfully!{Colors.ENDC}")
