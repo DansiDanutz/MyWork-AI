@@ -34,6 +34,12 @@ Date: 2026-02-10
 - **Simulation engine**: 5/5 scenarios pass
 - **Security audit**: 0 critical, 5 low-risk remaining
 
+### Recent Changes (2026-02-17)
+- Added `mw loc` / `mw lines` / `mw cloc` — lines of code counter by language
+- Counts code, blank, comment lines per language with pretty table output
+- Supports --json, --top N, --lang LANG flags
+- 7 new tests → **140 total passing**
+
 ### Recent Changes (2026-02-16)
 - Added `mw changelog` / `mw changes` — view recent changelog entries with `--all` and `-n N` flags
 - Small, focused addition by Memo (GSD Auto Forge daily task)
