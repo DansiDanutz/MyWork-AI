@@ -5792,6 +5792,12 @@ def _cmd_webdash(args: List[str] = None) -> int:
     return webdash_main(args or [])
 
 
+def _cmd_agent_wrapper(args: List[str] = None) -> int:
+    """Run the agent engine (mw agent / mw bot)."""
+    from tools.agent import cmd_agent
+    return cmd_agent(args or [])
+
+
 def _cmd_demo_wrapper(args: List[str] = None) -> int:
     """Launch interactive demo."""
     from tools.demo import main as demo_main
@@ -13854,6 +13860,8 @@ def main() -> None:
         "templates": lambda: cmd_templates_browse(args),
         "share": lambda: cmd_share(args),
         "cron": lambda: cmd_cron_manage(args),
+        "agent": lambda: _cmd_agent_wrapper(args),
+        "bot": lambda: _cmd_agent_wrapper(args),
         "webdash": lambda: _cmd_webdash(args),
         "html-report": lambda: _cmd_webdash(args),
         "changelog": lambda: cmd_changelog(args),
