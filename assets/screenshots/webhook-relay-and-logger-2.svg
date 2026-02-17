@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#252542"/>
+      <stop offset="100%" style="stop-color:#1e1e35"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="500" fill="url(#bg)"/>
+  
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="200" height="500" fill="#0f0f1a"/>
+  <text x="20" y="40" fill="#fff" font-family="sans-serif" font-size="18" font-weight="bold">🔄 WebhookRelay</text>
+  <text x="20" y="90" fill="#888" font-family="sans-serif" font-size="14">Dashboard</text>
+  <text x="20" y="120" fill="#10b981" font-family="sans-serif" font-size="14" font-weight="bold">Endpoints</text>
+  <text x="20" y="150" fill="#888" font-family="sans-serif" font-size="14">Logs</text>
+  <text x="20" y="180" fill="#888" font-family="sans-serif" font-size="14">Rules</text>
+  <text x="20" y="210" fill="#888" font-family="sans-serif" font-size="14">Integrations</text>
+  <text x="20" y="240" fill="#888" font-family="sans-serif" font-size="14">Settings</text>
+  
+  <!-- Header -->
+  <rect x="200" y="0" width="600" height="60" fill="#1a1a2e"/>
+  <text x="220" y="38" fill="#fff" font-family="sans-serif" font-size="16">Endpoint Configuration</text>
+  <rect x="600" y="18" width="140" height="32" rx="16" fill="#10b981"/>
+  <text x="630" y="40" fill="#fff" font-family="sans-serif" font-size="13" font-weight="bold">Save Changes</text>
+  
+  <!-- Endpoint Form -->
+  <rect x="220" y="80" width="550" height="400" rx="8" fill="url(#card)"/>
+  <text x="235" y="110" fill="#fff" font-family="sans-serif" font-size="14" font-weight="bold">Edit Endpoint</text>
+  
+  <!-- Form Fields -->
+  <text x="235" y="140" fill="#888" font-family="sans-serif" font-size="12">Endpoint Name</text>
+  <rect x="235" y="150" width="520" height="40" rx="4" fill="#2a2a4a"/>
+  <text x="245" y="175" fill="#fff" font-family="sans-serif" font-size="12">stripe-payments-webhook</text>
+  
+  <text x="235" y="210" fill="#888" font-family="sans-serif" font-size="12">Endpoint URL</text>
+  <rect x="235" y="220" width="520" height="40" rx="4" fill="#2a2a4a"/>
+  <text x="245" y="245" fill="#10b981" font-family="sans-serif" font-size="12">https://api.example.com/webhooks/stripe</text>
+  
+  <text x="235" y="280" fill="#888" font-family="sans-serif" font-size="12">Secret Key</text>
+  <rect x="235" y="290" width="520" height="40" rx="4" fill="#2a2a4a"/>
+  <text x="245" y="315" fill="#888" font-family="sans-serif" font-size="12">••••••••••••••••••••••••••••••••</text>
+  
+  <text x="235" y="350" fill="#888" font-family="sans-serif" font-size="12">Allowed Methods</text>
+  <rect x="235" y="360" width="520" height="40" rx="4" fill="#2a2a4a"/>
+  <text x="245" y="385" fill="#fff" font-family="sans-serif" font-size="12">POST, PUT, PATCH</text>
+  
+  <text x="235" y="420" fill="#888" font-family="sans-serif" font-size="12">Rate Limit</text>
+  <rect x="235" y="430" width="520" height="40" rx="4" fill="#2a2a4a"/>
+  <text x="245" y="455" fill="#fff" font-family="sans-serif" font-size="12">100 requests per minute</text>
+  
+  <!-- Toggle -->
+  <rect x="235" y="490" width="24" height="14" rx="7" fill="#10b981"/>
+  <text x="265" y="500" fill="#fff" font-family="sans-serif" font-size="12">Active</text>
+</svg>

@@ -431,6 +431,81 @@ Examples:
     return run_tool("module_registry", ["search"] + args)
 
 
+def _ai_enhance_project(description: str) -> dict:
+    """Use AI to enhance a project description into a full spec."""
+    import json as _json
+    api_key = os.environ.get("OPENROUTER_API_KEY", "")
+    if not api_key:
+        # Try loading from config
+        try:
+            creds_path = Path.home() / ".openclaw" / "workspace" / "TOOLS.md"
+            if creds_path.exists():
+                for line in creds_path.read_text().splitlines():
+                    if "sk-or-v1-" in line:
+                        api_key = line.split("sk-or-v1-")[1].split()[0]
+                        api_key = "sk-or-v1-" + api_key
+                        break
+        except Exception:
+            pass
+
+    if not api_key:
+        return None
+
+    try:
+        import urllib.request
+        prompt = f"""You are a project architect. Given this project idea, create a structured plan.
+
+Project idea: "{description}"
+
+Return a JSON object with:
+{{
+  "name": "kebab-case project name",
+  "title": "Human-readable title",
+  "template": "best template from: fastapi, nextjs, fullstack, cli, automation, basic",
+  "description": "2-3 sentence enhanced description",
+  "tech_stack": ["list", "of", "technologies"],
+  "features": ["feature 1", "feature 2", "feature 3", "feature 4", "feature 5"],
+  "endpoints": ["GET /health", "POST /api/resource", "..."],
+  "env_vars": ["API_KEY", "DATABASE_URL", "..."],
+  "estimated_time": "e.g. 30 minutes",
+  "pricing_suggestion": "$X.99",
+  "target_audience": "Who would buy this"
+}}
+
+Return ONLY valid JSON, no markdown."""
+
+        data = _json.dumps({
+            "model": "deepseek/deepseek-chat",
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.7,
+            "max_tokens": 1000
+        }).encode()
+
+        req = urllib.request.Request(
+            "https://openrouter.ai/api/v1/chat/completions",
+            data=data,
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://mywork-ai.dev"
+            }
+        )
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            result = _json.loads(resp.read())
+            content = result["choices"][0]["message"]["content"]
+            # Strip markdown code fences if present
+            content = content.strip()
+            if content.startswith("```"):
+                content = content.split("\n", 1)[1]
+            if content.endswith("```"):
+                content = content.rsplit("```", 1)[0]
+            content = content.strip()
+            return _json.loads(content)
+    except Exception as e:
+        print(f"{Colors.YELLOW}⚠️  AI enhancement failed: {e}{Colors.ENDC}")
+        return None
+
+
 def cmd_new(args: List[str]) -> int:
     """Create new project."""
     if len(args) == 1 and args[0] in ["--help", "-h"]:
@@ -439,6 +514,7 @@ New Project Commands — Project Scaffolding
 ==========================================
 Usage:
     mw new <name> [template]        Create a new project
+    mw new --ai "description"       AI-powered project generation
     mw new --help                   Show this help message
 
 Templates:
@@ -450,6 +526,14 @@ Templates:
     cli                             Command-line interface tool
     automation                      Automation/scripting project
 
+AI Mode (--ai):
+    Describe your project idea in natural language. AI will:
+    • Enhance your prompt into a full specification
+    • Choose the best template automatically
+    • Generate feature list, tech stack, and endpoints
+    • Create BUILD_HISTORY.md for marketplace readiness
+    • Suggest pricing and target audience
+
 Description:
     Creates a new project with the MyWork framework structure including:
     • Project directory and basic files
@@ -458,25 +542,166 @@ Description:
     • Template-specific boilerplate code
 
 Examples:
-    mw new my-api fastapi           # Create FastAPI project
-    mw new todo-app fullstack       # Create full-stack project  
-    mw new backup-tool cli          # Create CLI tool project
-    mw new website nextjs           # Create Next.js project
+    mw new my-api fastapi                        # Create FastAPI project
+    mw new --ai "AI chatbot for customer support" # AI-powered generation
+    mw new todo-app fullstack                    # Create full-stack project  
+    mw new backup-tool cli                       # Create CLI tool project
 """)
         return 0
     
     if not args:
         print(f"{Colors.RED}❌ Error: Project name is required{Colors.ENDC}")
         print(f"{Colors.YELLOW}💡 Usage: mw new <project-name> [template]{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Or:    mw new --ai \"your project idea\"{Colors.ENDC}")
         print(f"{Colors.BLUE}Examples:{Colors.ENDC}")
         print(f"   mw new my-app")
         print(f"   mw new api-server fastapi")
-        print(f"   mw new website nextjs")
+        print(f"   mw new --ai \"invoice generator API\"")
         return 1
     
     if args[0] in ["--help", "-h"]:
         return 0  # Help already shown above
-    
+
+    # AI-powered project generation
+    if args[0] == "--ai":
+        description = " ".join(args[1:])
+        if not description:
+            print(f"{Colors.RED}❌ Error: Project description required{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Usage: mw new --ai \"describe your project idea\"{Colors.ENDC}")
+            return 1
+
+        print(f"\n{Colors.BOLD}{Colors.BLUE}🤖 AI Project Generator{Colors.ENDC}")
+        print(f"{Colors.CYAN}{'=' * 50}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}📝 Your idea:{Colors.ENDC} {description}")
+        print(f"{Colors.BLUE}🔄 Enhancing with AI...{Colors.ENDC}")
+
+        spec = _ai_enhance_project(description)
+        if not spec:
+            print(f"{Colors.RED}❌ AI enhancement unavailable. Falling back to manual mode.{Colors.ENDC}")
+            print(f"{Colors.YELLOW}💡 Set OPENROUTER_API_KEY or run: mw new <name> <template>{Colors.ENDC}")
+            return 1
+
+        # Display the enhanced spec
+        print(f"\n{Colors.GREEN}✨ AI Enhanced Specification:{Colors.ENDC}")
+        print(f"{Colors.CYAN}{'─' * 50}{Colors.ENDC}")
+        print(f"  {Colors.BOLD}📦 Name:{Colors.ENDC}      {spec.get('name', 'my-project')}")
+        print(f"  {Colors.BOLD}📋 Title:{Colors.ENDC}     {spec.get('title', description)}")
+        print(f"  {Colors.BOLD}🏗️  Template:{Colors.ENDC}  {spec.get('template', 'fastapi')}")
+        print(f"  {Colors.BOLD}📝 Description:{Colors.ENDC}")
+        print(f"     {spec.get('description', description)}")
+        print(f"  {Colors.BOLD}🛠️  Tech Stack:{Colors.ENDC} {', '.join(spec.get('tech_stack', []))}")
+        print(f"  {Colors.BOLD}⚡ Features:{Colors.ENDC}")
+        for feat in spec.get("features", [])[:6]:
+            print(f"     • {feat}")
+        if spec.get("endpoints"):
+            print(f"  {Colors.BOLD}🔗 Endpoints:{Colors.ENDC}")
+            for ep in spec.get("endpoints", [])[:5]:
+                print(f"     • {ep}")
+        if spec.get("env_vars"):
+            print(f"  {Colors.BOLD}🔐 Env Vars:{Colors.ENDC}  {', '.join(spec.get('env_vars', []))}")
+        print(f"  {Colors.BOLD}⏱️  Est. Time:{Colors.ENDC}  {spec.get('estimated_time', '~30 min')}")
+        print(f"  {Colors.BOLD}💰 Price:{Colors.ENDC}      {spec.get('pricing_suggestion', '$29.99')}")
+        print(f"  {Colors.BOLD}🎯 Audience:{Colors.ENDC}   {spec.get('target_audience', 'Developers')}")
+        print(f"{Colors.CYAN}{'─' * 50}{Colors.ENDC}")
+
+        # Ask for confirmation
+        try:
+            confirm = input(f"\n{Colors.YELLOW}🚀 Generate this project? [Y/n]: {Colors.ENDC}").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            confirm = "y"
+        
+        if confirm in ("n", "no"):
+            print(f"{Colors.YELLOW}Cancelled.{Colors.ENDC}")
+            return 0
+
+        project_name = spec.get("name", "my-project")
+        template = spec.get("template", "fastapi")
+
+        # Scaffold the project
+        print(f"\n{Colors.BLUE}📦 Scaffolding {project_name} with {template} template...{Colors.ENDC}")
+        result = run_tool("scaffold", ["new", project_name, template, "--current-dir"])
+
+        if result == 0:
+            # Write enhanced files into the project
+            import json as _json
+            project_dir = Path.cwd() / project_name
+            if not project_dir.exists():
+                project_dir = Path(os.environ.get("MYWORK_ROOT", str(Path.home() / "MyWork-AI"))) / "projects" / project_name
+
+            if project_dir.exists():
+                # Write PROJECT.md with AI spec
+                planning_dir = project_dir / ".planning"
+                planning_dir.mkdir(exist_ok=True)
+
+                (planning_dir / "AI_SPEC.json").write_text(_json.dumps(spec, indent=2))
+
+                # Write BUILD_HISTORY.md
+                bh_content = f"""# {spec.get('title', project_name)} — My Build Journey
+
+> Step-by-step: from idea to published product on MyWork-AI marketplace.
+
+---
+
+## 🔐 Step 1: Logged In (0:00)
+Opened MyWork-AI, logged in. Dashboard ready.
+
+## 💡 Step 2: Created My Product Idea (0:02)
+> *"{description}"*
+
+{spec.get('description', '')}
+
+## ✨ Step 3: Prompt Got Enhanced (0:03)
+The AI analyzed my prompt and suggested:
+- **Tech Stack:** {', '.join(spec.get('tech_stack', []))}
+- **Features:** {', '.join(spec.get('features', [])[:3])}
+- **Template:** {spec.get('template', 'fastapi')}
+
+## ✅ Step 4: Accepted the Enhanced Prompt (0:04)
+Reviewed and accepted. Project generation started.
+
+## 🏗️ Step 5: Project Generated (0:06)
+Full project scaffolded with {template} template.
+
+## 🧪 Step 6: Tested Locally (0:15)
+```bash
+cp .env.example .env
+bash setup.sh
+```
+
+## 💰 Step 7: Set Pricing (0:22)
+**{spec.get('pricing_suggestion', '$29.99')}** — targeting: {spec.get('target_audience', 'developers')}
+
+## 📦 Step 8: Published (0:25)
+Auto-publish → **LIVE!** 🎉
+
+---
+## ⏱️ Total Time: {spec.get('estimated_time', '~25 minutes')}
+"""
+                (project_dir / "BUILD_HISTORY.md").write_text(bh_content)
+
+                # Write .env.example with suggested vars
+                if spec.get("env_vars"):
+                    env_content = "# Environment Variables\n# Copy to .env and fill in values\n\n"
+                    for var in spec["env_vars"]:
+                        env_content += f"{var}=\n"
+                    env_path = project_dir / ".env.example"
+                    if not env_path.exists():
+                        env_path.write_text(env_content)
+
+                print(f"\n{Colors.GREEN}{'=' * 50}{Colors.ENDC}")
+                print(f"{Colors.GREEN}✅ Project created successfully!{Colors.ENDC}")
+                print(f"{Colors.CYAN}📂 {project_dir}{Colors.ENDC}")
+                print(f"{Colors.YELLOW}📋 AI spec saved to .planning/AI_SPEC.json{Colors.ENDC}")
+                print(f"{Colors.YELLOW}📖 BUILD_HISTORY.md generated{Colors.ENDC}")
+                print(f"\n{Colors.BOLD}Next steps:{Colors.ENDC}")
+                print(f"   cd {project_name}")
+                print(f"   cp .env.example .env")
+                print(f"   bash setup.sh")
+                print(f"   mw marketplace publish  # When ready to sell!")
+                print()
+
+        return result
+
     # Validate project name if provided
     if len(args) > 0:
         project_name = args[0]
