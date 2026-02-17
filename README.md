@@ -10,7 +10,7 @@
 
 **🤖 Build, Ship & Sell Software Products — From One CLI**
 
-*67+ commands · AI-powered · Marketplace included · n8n automation*
+*72+ commands · AI code generation · Agent engine · Marketplace included · n8n automation*
 
 [🚀 Quick Start](#-quick-start) · [🔧 Commands](#-command-reference) · [💡 Examples](#-examples) · [🛒 Marketplace](https://frontend-hazel-ten-17.vercel.app)
 
@@ -39,14 +39,50 @@ pip install mywork-ai
 # Set up (configures API keys, preferences)
 mw setup
 
-# Create a project
-mw new my-saas-app saas
+# Create a project with AI (generates real code, not templates!)
+mw new --ai "invoice API with PDF export and email delivery"
+
+# Or use templates
+mw new my-api fastapi
 
 # Check health
-cd my-saas-app && mw doctor
+cd my-project && mw doctor
+
+# Run the AI agent built into your project
+mw agent run agent.yaml
 
 # Deploy
 mw deploy
+```
+
+### ✨ AI Agent Engine (NEW in v2.7.0)
+
+```bash
+# Create an AI agent
+mw agent init customer-bot
+
+# Run it (CLI chat with tool calling)
+mw agent run customer-bot.yaml
+
+# Run with web UI
+mw agent run customer-bot.yaml --web
+# → Open http://localhost:8080
+
+# Supports 100+ models: OpenAI, Claude, DeepSeek, Gemini, Ollama, Mistral...
+```
+
+Agent config is a simple YAML file:
+```yaml
+name: Code Reviewer
+model: deepseek/deepseek-chat
+instructions: |
+  Review code for bugs, security issues, and improvements.
+tools:
+  - name: read_file
+    description: Read a source file
+    parameters:
+      path: {type: string, description: "File path"}
+    command: "cat '{path}'"
 ```
 
 **You're live in 5 minutes.**
