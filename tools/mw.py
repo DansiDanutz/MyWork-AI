@@ -6083,8 +6083,31 @@ def _cmd_api_wrapper(args: List[str] = None) -> int:
 
 def _cmd_serve_wrapper(args: List[str] = None) -> int:
     """Launch web dashboard."""
-    from tools.web_dashboard import cmd_serve
+    try:
+        from tools.web_dashboard import cmd_serve
+    except ImportError:
+        # Direct import for pip install
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("web_dashboard", 
+            str(Path(__file__).parent / "web_dashboard.py"))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod.cmd_serve(args or [])
     return cmd_serve(args or [])
+
+
+def _cmd_tui_wrapper(args: List[str] = None) -> int:
+    """Launch TUI dashboard."""
+    try:
+        from tools.tui_dashboard import cmd_tui
+    except ImportError:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("tui_dashboard",
+            str(Path(__file__).parent / "tui_dashboard.py"))
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod.cmd_tui(args or [])
+    return cmd_tui(args or [])
 
 
 def _cmd_webdash(args: List[str] = None) -> int:
@@ -14539,6 +14562,8 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
         "cron": lambda: cmd_cron_manage(args),
         "agent": lambda: _cmd_agent_wrapper(args),
         "bot": lambda: _cmd_agent_wrapper(args),
+        "tui": lambda: _cmd_tui_wrapper(args),
+        "ui": lambda: _cmd_tui_wrapper(args),
         "webdash": lambda: _cmd_webdash(args),
         "html-report": lambda: _cmd_webdash(args),
         "changelog": lambda: cmd_changelog(args),

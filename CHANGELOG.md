@@ -1,3 +1,15 @@
+## [2.9.0] - 2026-02-18
+
+### Added
+- **`mw tui`** — Interactive TUI dashboard with Rich (one-key actions: new, plan, execute, deploy, sell, test, git, health)
+- **`mw web`** — Browser dashboard at localhost:9000 (project overview, marketplace stats, pipeline visualization, run commands from browser)
+- Phase 3 of upgrade plan COMPLETE
+
+### Changed
+- Total commands: **74+**
+
+---
+
 ## [2.8.0] - 2026-02-18
 
 ### Added
