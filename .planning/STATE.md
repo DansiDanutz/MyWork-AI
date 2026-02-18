@@ -34,6 +34,11 @@ Date: 2026-02-10
 - **Simulation engine**: 5/5 scenarios pass
 - **Security audit**: 0 critical, 5 low-risk remaining
 
+### Recent Changes (2026-02-18)
+- Enhanced `mw stats` with richer output: contributors, project age, most active day, top languages with visual bars, commits/day metric
+- Added `--json` flag to `mw stats` for machine-readable output
+- Fixed duplicate dispatch entry that shadowed `cmd_stats` with `_cmd_metrics`
+
 ### Recent Changes (2026-02-17)
 - Added `mw loc` / `mw lines` / `mw cloc` — lines of code counter by language
 - Counts code, blank, comment lines per language with pretty table output
