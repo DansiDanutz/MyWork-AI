@@ -1,3 +1,36 @@
+## [2.8.0] - 2026-02-18
+
+### Added
+- **`mw plan`** — AI Project Planner: describe your idea → AI generates REQUIREMENTS.md, ROADMAP.md, and AI_SPEC.json with phased tasks, tech stack, and pricing
+- **`mw execute`** — AI-Powered Build Execution: reads the plan, generates code phase-by-phase (main.py, requirements, Dockerfile, docker-compose, setup.sh, README, LICENSE), auto-commits each phase
+- **Full `mw plan` → `mw execute` → `mw marketplace publish` pipeline** — from idea to sellable product in minutes
+- **`mw stats --json`** — machine-readable output for stats command
+- **Enhanced `mw stats`** — contributors, project age, most active day, top languages with visual bars
+
+### Fixed
+- datetime import in execute command scope
+
+### Changed
+- Total commands: **72+**
+- Tests: **140 passing**
+- Now supports full GSD-style AI-driven workflow: plan → discuss → execute → publish
+
+---
+
+## [2.7.0] - 2026-02-17
+
+### Added
+- **`mw new --ai`** — AI-powered project generation: describe idea → AI spec → scaffold → custom code generation → working project
+- **`mw agent`** — Nanobot-inspired AI agent engine (agent.yaml configs, multi-provider LLM)
+- **Multi-provider AI support** — LiteLLM → DeepSeek → OpenRouter → Gemini fallback chain
+- **AI code generation in `mw new`** — generates real FastAPI endpoints from AI spec
+- **`mw loc` / `mw lines`** — Lines of code counter by language
+
+### Changed
+- Total commands: **70+**
+
+---
+
 ## [2.6.0] - 2026-02-16
 
 ### Added

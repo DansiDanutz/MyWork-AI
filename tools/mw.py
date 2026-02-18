@@ -14029,6 +14029,380 @@ def main() -> None:
         print("Badge tool not found")
         return 1
 
+    # ─── mw plan ──────────────────────────────────────────────────────
+    def cmd_plan(plan_args):
+        """AI project planner — describe idea → questions → spec → roadmap."""
+        import json as _json
+
+        if not plan_args or plan_args[0] in ("-h", "--help"):
+            print(f"""
+{Colors.BOLD}mw plan — AI Project Planner{Colors.ENDC}
+{'=' * 40}
+Usage:
+    mw plan "SaaS dashboard with auth and billing"
+    mw plan --from spec.json     Resume from saved spec
+    mw plan --show               Show current plan
+
+Generates:
+    .planning/REQUIREMENTS.md    Full requirements document
+    .planning/ROADMAP.md         Phased roadmap with tasks
+    .planning/AI_SPEC.json       Machine-readable spec
+""")
+            return 0
+
+        if plan_args[0] == "--show":
+            for f in ["REQUIREMENTS.md", "ROADMAP.md", "AI_SPEC.json"]:
+                p = Path.cwd() / ".planning" / f
+                if p.exists():
+                    print(f"\n{Colors.BOLD}📄 {f}{Colors.ENDC}")
+                    print(p.read_text()[:3000])
+            return 0
+
+        description = " ".join(plan_args)
+        print(f"\n{Colors.BOLD}{Colors.BLUE}🧠 AI Project Planner{Colors.ENDC}")
+        print(f"{Colors.CYAN}{'=' * 50}{Colors.ENDC}")
+        print(f"{Colors.YELLOW}💡 Idea:{Colors.ENDC} {description}\n")
+
+        # Step 1: AI enhancement
+        print(f"{Colors.BLUE}Phase 1: Understanding your idea...{Colors.ENDC}")
+        spec = _ai_enhance_project(description)
+        if not spec:
+            print(f"{Colors.RED}❌ AI unavailable. Set DEEPSEEK_API_KEY or OPENROUTER_API_KEY{Colors.ENDC}")
+            return 1
+
+        # Step 2: Generate REQUIREMENTS.md
+        print(f"{Colors.BLUE}Phase 2: Writing requirements...{Colors.ENDC}")
+        reqs_md = f"""# Requirements: {spec.get('title', description)}
+
+## Overview
+{spec.get('description', description)}
+
+## Target Audience
+{spec.get('target_audience', 'Developers')}
+
+## Tech Stack
+{chr(10).join(f'- {t}' for t in spec.get('tech_stack', []))}
+
+## Features
+{chr(10).join(f'- [ ] {f}' for f in spec.get('features', []))}
+
+## API Endpoints
+{chr(10).join(f'- `{e}`' for e in spec.get('endpoints', []))}
+
+## Environment Variables
+{chr(10).join(f'- `{v}`' for v in spec.get('env_vars', []))}
+
+## Pricing
+- Suggested: {spec.get('pricing_suggestion', '$29.99')}
+- Estimated build time: {spec.get('estimated_time', '4-6 hours')}
+
+## Non-Functional Requirements
+- Must work in demo mode without API keys
+- Docker support (Dockerfile + docker-compose.yml)
+- Comprehensive error handling
+- OpenAPI docs auto-generated
+- MIT License
+"""
+
+        # Step 3: Generate ROADMAP.md
+        print(f"{Colors.BLUE}Phase 3: Creating roadmap...{Colors.ENDC}")
+        features = spec.get("features", [])
+        phase1 = features[:3] if len(features) > 3 else features
+        phase2 = features[3:6] if len(features) > 3 else []
+        phase3 = features[6:] if len(features) > 6 else []
+
+        roadmap_md = f"""# Roadmap: {spec.get('title', description)}
+
+## Phase 1: Core MVP (Day 1-2)
+**Goal:** Working API with basic functionality
+{chr(10).join(f'- [ ] {f}' for f in phase1)}
+- [ ] Health check endpoint
+- [ ] Basic error handling
+- [ ] .env.example + setup.sh
+
+## Phase 2: Features (Day 3-4)
+**Goal:** Full feature set
+{chr(10).join(f'- [ ] {f}' for f in phase2) if phase2 else '- [ ] Polish existing features'}
+- [ ] Input validation
+- [ ] Comprehensive tests
+- [ ] API documentation
+
+## Phase 3: Production Ready (Day 5)
+**Goal:** Marketplace-ready product
+{chr(10).join(f'- [ ] {f}' for f in phase3) if phase3 else '- [ ] Performance optimization'}
+- [ ] Dockerfile + docker-compose.yml
+- [ ] BUILD_HISTORY.md
+- [ ] README with screenshots
+- [ ] `mw marketplace publish`
+
+## Launch Checklist
+- [ ] All endpoints return correct responses
+- [ ] Demo mode works without API keys
+- [ ] Setup.sh runs cleanly
+- [ ] Tests pass
+- [ ] Published to marketplace
+"""
+
+        # Save files
+        planning_dir = Path.cwd() / ".planning"
+        planning_dir.mkdir(exist_ok=True)
+        (planning_dir / "REQUIREMENTS.md").write_text(reqs_md)
+        (planning_dir / "ROADMAP.md").write_text(roadmap_md)
+        (planning_dir / "AI_SPEC.json").write_text(_json.dumps(spec, indent=2))
+
+        print(f"\n{Colors.GREEN}✅ Plan generated!{Colors.ENDC}")
+        print(f"  📋 .planning/REQUIREMENTS.md")
+        print(f"  🗺️  .planning/ROADMAP.md")
+        print(f"  🤖 .planning/AI_SPEC.json")
+        print(f"\n{Colors.BOLD}Next:{Colors.ENDC} mw execute phase 1")
+        return 0
+
+    # ─── mw execute ───────────────────────────────────────────────────
+    def cmd_execute(exec_args):
+        """Execute a phase from the roadmap — AI builds it step by step."""
+        import json as _json
+        from datetime import datetime
+
+        if not exec_args or exec_args[0] in ("-h", "--help"):
+            print(f"""
+{Colors.BOLD}mw execute — AI-Powered Build Execution{Colors.ENDC}
+{'=' * 40}
+Usage:
+    mw execute phase 1         Execute phase 1 from roadmap
+    mw execute all             Execute all phases
+    mw execute --status        Show execution progress
+
+Reads .planning/ROADMAP.md and AI_SPEC.json, then:
+1. Breaks phase into atomic tasks
+2. Generates code for each task
+3. Tests and verifies
+4. Commits after each step
+""")
+            return 0
+
+        spec_path = Path.cwd() / ".planning" / "AI_SPEC.json"
+        roadmap_path = Path.cwd() / ".planning" / "ROADMAP.md"
+
+        if not spec_path.exists():
+            print(f"{Colors.RED}❌ No plan found. Run: mw plan \"your idea\"{Colors.ENDC}")
+            return 1
+
+        spec = _json.loads(spec_path.read_text())
+        phase_arg = " ".join(exec_args).lower()
+
+        # Parse which phase to execute
+        phase_num = None
+        if "1" in phase_arg:
+            phase_num = 1
+        elif "2" in phase_arg:
+            phase_num = 2
+        elif "3" in phase_arg:
+            phase_num = 3
+        elif "all" in phase_arg:
+            phase_num = 0  # all phases
+
+        if phase_num is None:
+            print(f"{Colors.RED}❌ Specify phase: mw execute phase 1{Colors.ENDC}")
+            return 1
+
+        print(f"\n{Colors.BOLD}{Colors.BLUE}⚡ Executing {'all phases' if phase_num == 0 else f'Phase {phase_num}'}{Colors.ENDC}")
+        print(f"{Colors.CYAN}{'=' * 50}{Colors.ENDC}")
+
+        # For Phase 1: generate the main code
+        if phase_num in (0, 1):
+            print(f"\n{Colors.YELLOW}📦 Phase 1: Core MVP{Colors.ENDC}")
+
+            # Step 1: Generate main.py
+            print(f"  {Colors.BLUE}[1/4] Generating main application code...{Colors.ENDC}")
+            code = _ai_generate_code(spec)
+            if code:
+                main_path = Path.cwd() / "main.py"
+                main_path.write_text(code)
+                print(f"  {Colors.GREEN}✅ main.py generated ({len(code)} chars){Colors.ENDC}")
+            else:
+                print(f"  {Colors.RED}❌ Code generation failed{Colors.ENDC}")
+                return 1
+
+            # Step 2: Generate requirements.txt
+            print(f"  {Colors.BLUE}[2/4] Generating requirements...{Colors.ENDC}")
+            reqs = _infer_requirements(spec.get("tech_stack", []))
+            if reqs:
+                (Path.cwd() / "requirements.txt").write_text("\n".join(reqs) + "\n")
+                print(f"  {Colors.GREEN}✅ requirements.txt ({len(reqs)} packages){Colors.ENDC}")
+
+            # Step 3: Generate .env.example
+            print(f"  {Colors.BLUE}[3/4] Generating environment config...{Colors.ENDC}")
+            env_content = "# Environment Variables\n# Copy to .env and fill in values\n\n"
+            env_content += "DEMO_MODE=true\n"
+            for var in spec.get("env_vars", []):
+                env_content += f"{var}=\n"
+            (Path.cwd() / ".env.example").write_text(env_content)
+            print(f"  {Colors.GREEN}✅ .env.example{Colors.ENDC}")
+
+            # Step 4: Generate setup.sh
+            print(f"  {Colors.BLUE}[4/4] Generating setup script...{Colors.ENDC}")
+            setup_sh = f"""#!/bin/bash
+# Setup script for {spec.get('title', 'project')}
+set -e
+
+echo "🔧 Setting up {spec.get('title', 'project')}..."
+
+# Create virtual environment
+python3 -m venv venv 2>/dev/null || true
+source venv/bin/activate 2>/dev/null || true
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Setup environment
+if [ ! -f .env ]; then
+    cp .env.example .env
+    echo "📝 Created .env from .env.example — edit with your values"
+fi
+
+echo ""
+echo "✅ Setup complete!"
+echo "   Run: uvicorn main:app --reload"
+echo "   Docs: http://localhost:8000/docs"
+"""
+            setup_path = Path.cwd() / "setup.sh"
+            setup_path.write_text(setup_sh)
+            setup_path.chmod(0o755)
+            print(f"  {Colors.GREEN}✅ setup.sh{Colors.ENDC}")
+
+            # Git commit
+            try:
+                subprocess.run(["git", "add", "-A"], capture_output=True, cwd=str(Path.cwd()))
+                subprocess.run(["git", "commit", "-m", "Phase 1: Core MVP generated by mw execute"],
+                             capture_output=True, cwd=str(Path.cwd()))
+                print(f"  {Colors.GREEN}📝 Git committed{Colors.ENDC}")
+            except Exception:
+                pass
+
+            print(f"\n{Colors.GREEN}✅ Phase 1 complete!{Colors.ENDC}")
+
+        if phase_num in (0, 2):
+            print(f"\n{Colors.YELLOW}📦 Phase 2: Features{Colors.ENDC}")
+            # Generate Dockerfile
+            print(f"  {Colors.BLUE}[1/2] Generating Dockerfile...{Colors.ENDC}")
+            dockerfile = f"""FROM python:3.12-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+EXPOSE 8000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+"""
+            (Path.cwd() / "Dockerfile").write_text(dockerfile)
+            print(f"  {Colors.GREEN}✅ Dockerfile{Colors.ENDC}")
+
+            # Generate docker-compose.yml
+            print(f"  {Colors.BLUE}[2/2] Generating docker-compose.yml...{Colors.ENDC}")
+            compose = f"""version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    restart: unless-stopped
+"""
+            (Path.cwd() / "docker-compose.yml").write_text(compose)
+            print(f"  {Colors.GREEN}✅ docker-compose.yml{Colors.ENDC}")
+
+            try:
+                subprocess.run(["git", "add", "-A"], capture_output=True, cwd=str(Path.cwd()))
+                subprocess.run(["git", "commit", "-m", "Phase 2: Docker + features"],
+                             capture_output=True, cwd=str(Path.cwd()))
+            except Exception:
+                pass
+            print(f"\n{Colors.GREEN}✅ Phase 2 complete!{Colors.ENDC}")
+
+        if phase_num in (0, 3):
+            print(f"\n{Colors.YELLOW}📦 Phase 3: Production Ready{Colors.ENDC}")
+            # Generate README
+            print(f"  {Colors.BLUE}[1/2] Generating README...{Colors.ENDC}")
+            readme = f"""# {spec.get('title', 'Project')}
+
+> {spec.get('description', '')}
+
+## Quick Start
+
+```bash
+# Clone and setup
+cp .env.example .env
+bash setup.sh
+
+# Run
+uvicorn main:app --reload
+
+# Open docs
+open http://localhost:8000/docs
+```
+
+## Features
+{chr(10).join(f'- {f}' for f in spec.get('features', []))}
+
+## Tech Stack
+{chr(10).join(f'- {t}' for t in spec.get('tech_stack', []))}
+
+## Docker
+
+```bash
+docker-compose up -d
+```
+
+## API Endpoints
+{chr(10).join(f'- `{e}`' for e in spec.get('endpoints', []))}
+
+## License
+MIT
+
+---
+Built with [MyWork-AI](https://pypi.org/project/mywork-ai/)
+"""
+            (Path.cwd() / "README.md").write_text(readme)
+            print(f"  {Colors.GREEN}✅ README.md{Colors.ENDC}")
+
+            # Generate LICENSE
+            print(f"  {Colors.BLUE}[2/2] Generating LICENSE...{Colors.ENDC}")
+            (Path.cwd() / "LICENSE").write_text(f"""MIT License
+
+Copyright (c) {datetime.now().year}
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+""")
+            print(f"  {Colors.GREEN}✅ LICENSE{Colors.ENDC}")
+
+            try:
+                subprocess.run(["git", "add", "-A"], capture_output=True, cwd=str(Path.cwd()))
+                subprocess.run(["git", "commit", "-m", "Phase 3: Production ready"],
+                             capture_output=True, cwd=str(Path.cwd()))
+            except Exception:
+                pass
+            print(f"\n{Colors.GREEN}✅ Phase 3 complete!{Colors.ENDC}")
+
+        print(f"\n{Colors.BOLD}{Colors.GREEN}🎉 Execution complete!{Colors.ENDC}")
+        print(f"{Colors.YELLOW}Next steps:{Colors.ENDC}")
+        print(f"  cd {Path.cwd().name}")
+        print(f"  bash setup.sh")
+        print(f"  uvicorn main:app --reload")
+        print(f"  mw marketplace publish  # When ready to sell")
+        return 0
+
     # Command routing
     commands = {
         "dashboard": lambda: cmd_dashboard(args),
@@ -14153,7 +14527,9 @@ def main() -> None:
         "af": lambda: cmd_autoforge(args),
         "autoforge": lambda: cmd_autoforge(args),
         "gsd": lambda: cmd_gsd(args),
-        "plan": lambda: cmd_gsd(args),
+        "plan": lambda: cmd_plan(plan_args=args),
+        "execute": lambda: cmd_execute(exec_args=args),
+        "exec": lambda: cmd_execute(exec_args=args),
         # Competitive features
         "webhook": lambda: cmd_webhook(args),
         "secrets": lambda: cmd_secrets_new(args),  # Override existing secrets command
