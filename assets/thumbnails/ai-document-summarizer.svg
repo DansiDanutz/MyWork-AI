@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0c1222"/>
+      <stop offset="100%" style="stop-color:#1a2744"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3b82f6"/>
+      <stop offset="100%" style="stop-color:#10b981"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <!-- document icon -->
+  <rect x="170" y="70" width="60" height="75" rx="4" fill="none" stroke="url(#accent)" stroke-width="2.5"/>
+  <path d="M210 70 L230 90 L230 145 Q230 149 226 149 L174 149 Q170 149 170 145 L170 74 Q170 70 174 70 Z" fill="none" stroke="url(#accent)" stroke-width="2.5"/>
+  <path d="M210 70 L210 90 L230 90" fill="none" stroke="url(#accent)" stroke-width="2"/>
+  <!-- text lines -->
+  <line x1="182" y1="105" x2="218" y2="105" stroke="#3b82f6" stroke-width="2" opacity="0.6"/>
+  <line x1="182" y1="115" x2="212" y2="115" stroke="#3b82f6" stroke-width="2" opacity="0.4"/>
+  <line x1="182" y1="125" x2="220" y2="125" stroke="#3b82f6" stroke-width="2" opacity="0.6"/>
+  <line x1="182" y1="135" x2="205" y2="135" stroke="#3b82f6" stroke-width="2" opacity="0.3"/>
+  <!-- AI sparkle -->
+  <circle cx="240" cy="85" r="12" fill="none" stroke="#10b981" stroke-width="1.5" opacity="0.8"/>
+  <text x="240" y="90" text-anchor="middle" fill="#10b981" font-family="Arial" font-size="14">✦</text>
+  <text x="200" y="200" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="20" font-weight="bold">AI Doc Summarizer</text>
+  <text x="200" y="225" text-anchor="middle" fill="#94a3b8" font-family="Arial,sans-serif" font-size="13">PDF · DOCX · Key Points · Q&amp;A</text>
+  <rect x="140" y="245" width="120" height="28" rx="14" fill="url(#accent)"/>
+  <text x="200" y="264" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="12" font-weight="bold">$24.99</text>
+</svg>

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a0533;stop-opacity:1"/>
+      <stop offset="100%" style="stop-color:#0d1b2a;stop-opacity:1"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8b5cf6"/>
+      <stop offset="100%" style="stop-color:#06b6d4"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#bg)"/>
+  <circle cx="200" cy="120" r="45" fill="none" stroke="url(#accent)" stroke-width="3"/>
+  <rect x="190" y="95" width="20" height="35" rx="10" fill="url(#accent)"/>
+  <path d="M175 120 Q175 150 200 150 Q225 150 225 120" fill="none" stroke="url(#accent)" stroke-width="2.5"/>
+  <line x1="200" y1="150" x2="200" y2="165" stroke="url(#accent)" stroke-width="2.5"/>
+  <!-- sound waves -->
+  <path d="M235 105 Q250 120 235 135" fill="none" stroke="#8b5cf6" stroke-width="2" opacity="0.7"/>
+  <path d="M245 95 Q265 120 245 145" fill="none" stroke="#8b5cf6" stroke-width="2" opacity="0.4"/>
+  <text x="200" y="210" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="22" font-weight="bold">Voice AI Platform</text>
+  <text x="200" y="235" text-anchor="middle" fill="#94a3b8" font-family="Arial,sans-serif" font-size="13">Multi-tenant · Embeddable · SaaS-ready</text>
+  <rect x="140" y="255" width="120" height="28" rx="14" fill="url(#accent)"/>
+  <text x="200" y="274" text-anchor="middle" fill="white" font-family="Arial,sans-serif" font-size="12" font-weight="bold">$399.99</text>
+</svg>
