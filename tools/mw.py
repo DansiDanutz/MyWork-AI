@@ -5020,13 +5020,15 @@ build/
 
 
 def cmd_stats(args: List[str] = None):
-    """Show framework-wide statistics."""
+    """Show framework-wide statistics with git insights."""
+    json_mode = args and ("--json" in args)
     if args and (args[0] in ["--help", "-h"]):
         print("""
 Stats Commands — Framework Statistics
 ====================================
 Usage:
     mw stats                        Show framework-wide statistics
+    mw stats --json                 Output as JSON
     mw stats --help                 Show this help message
 
 Description:
@@ -5034,16 +5036,18 @@ Description:
     • Total projects count
     • Brain entries count
     • Lines of code across all projects
-    • Git commits count
+    • Git commits, contributors, age, most active day
     • Framework usage metrics
 
 Examples:
     mw stats                        # Show all statistics
+    mw stats --json                 # Machine-readable JSON output
 """)
         return 0
     
-    print(f"{Colors.BOLD}{Colors.BLUE}📊 MyWork-AI Framework Statistics{Colors.ENDC}")
-    print(f"{Colors.BLUE}{'=' * 50}{Colors.ENDC}")
+    if not json_mode:
+        print(f"{Colors.BOLD}{Colors.BLUE}📊 MyWork-AI Framework Statistics{Colors.ENDC}")
+        print(f"{Colors.BLUE}{'=' * 50}{Colors.ENDC}")
     
     stats = {}
     
@@ -5065,51 +5069,112 @@ Examples:
     else:
         stats['brain_entries'] = 0
     
-    # Count lines of code (Python files only for performance)
+    # Count lines of code
     total_lines = 0
     total_files = 0
+    lang_stats = {}
+    
+    ext_to_lang = {
+        '.py': 'Python', '.js': 'JavaScript', '.jsx': 'React JSX',
+        '.ts': 'TypeScript', '.tsx': 'React TSX', '.vue': 'Vue',
+        '.md': 'Markdown', '.sh': 'Shell', '.css': 'CSS',
+        '.html': 'HTML', '.json': 'JSON', '.yaml': 'YAML', '.yml': 'YAML',
+    }
     
     for root, dirs, files in os.walk(MYWORK_ROOT):
-        # Skip certain directories
-        dirs[:] = [d for d in dirs if not d.startswith('.') and d not in ['node_modules', '__pycache__', 'venv', 'env']]
+        dirs[:] = [d for d in dirs if not d.startswith('.') and d not in [
+            'node_modules', '__pycache__', 'venv', 'env', 'dist', '.git',
+            'build', '.egg-info', 'mywork_ai.egg-info', 'simulation_workspace'
+        ]]
         
         for file in files:
-            if file.endswith(('.py', '.js', '.jsx', '.ts', '.tsx', '.vue', '.md')):
+            ext = Path(file).suffix
+            if ext in ext_to_lang:
                 file_path = Path(root) / file
                 try:
                     lines = len(file_path.read_text().splitlines())
                     total_lines += lines
                     total_files += 1
+                    lang = ext_to_lang[ext]
+                    lang_stats[lang] = lang_stats.get(lang, 0) + lines
                 except:
                     continue
     
     stats['total_lines'] = total_lines
     stats['total_files'] = total_files
+    stats['languages'] = lang_stats
     
-    # Count git commits
-    try:
-        result = subprocess.run(
-            ['git', 'rev-list', '--count', 'HEAD'],
-            cwd=MYWORK_ROOT,
-            capture_output=True,
-            text=True
-        )
-        if result.returncode == 0:
-            stats['git_commits'] = int(result.stdout.strip())
-        else:
-            stats['git_commits'] = 0
-    except:
-        stats['git_commits'] = 0
+    # Git statistics
+    def _git(cmd_args):
+        """Run a git command and return stdout or empty string."""
+        try:
+            r = subprocess.run(
+                ['git'] + cmd_args, cwd=MYWORK_ROOT,
+                capture_output=True, text=True, timeout=10
+            )
+            return r.stdout.strip() if r.returncode == 0 else ''
+        except:
+            return ''
+    
+    stats['git_commits'] = int(_git(['rev-list', '--count', 'HEAD']) or '0')
+    
+    # Contributors
+    contributors_raw = _git(['shortlog', '-sn', '--no-merges', 'HEAD'])
+    if contributors_raw:
+        contribs = []
+        for line in contributors_raw.splitlines():
+            parts = line.strip().split('\t', 1)
+            if len(parts) == 2:
+                contribs.append({'commits': int(parts[0].strip()), 'name': parts[1].strip()})
+        stats['contributors'] = contribs
+        stats['contributor_count'] = len(contribs)
+    else:
+        stats['contributors'] = []
+        stats['contributor_count'] = 0
+    
+    # Project age (first commit date)
+    first_commit_date = _git(['log', '--reverse', '--format=%aI', '--max-count=1'])
+    last_commit_date = _git(['log', '--format=%aI', '--max-count=1'])
+    stats['first_commit'] = first_commit_date or 'Unknown'
+    stats['last_commit'] = last_commit_date or 'Unknown'
+    
+    if first_commit_date:
+        try:
+            from datetime import datetime as _dt
+            first = _dt.fromisoformat(first_commit_date.replace('Z', '+00:00'))
+            age_days = (_dt.now(first.tzinfo) - first).days
+            stats['age_days'] = age_days
+        except:
+            stats['age_days'] = None
+    else:
+        stats['age_days'] = None
+    
+    # Most active day of week
+    day_log = _git(['log', '--format=%ad', '--date=format:%A'])
+    if day_log:
+        from collections import Counter as _Counter
+        day_counts = _Counter(day_log.splitlines())
+        most_active_day = day_counts.most_common(1)[0] if day_counts else None
+        stats['most_active_day'] = most_active_day[0] if most_active_day else 'Unknown'
+        stats['most_active_day_commits'] = most_active_day[1] if most_active_day else 0
+    else:
+        stats['most_active_day'] = 'Unknown'
+        stats['most_active_day_commits'] = 0
     
     # Framework size
     try:
-        result = subprocess.run(['du', '-sh', str(MYWORK_ROOT)], capture_output=True, text=True)
+        result = subprocess.run(['du', '-sh', str(MYWORK_ROOT)], capture_output=True, text=True, timeout=10)
         if result.returncode == 0:
             stats['framework_size'] = result.stdout.split()[0]
         else:
             stats['framework_size'] = 'Unknown'
     except:
         stats['framework_size'] = 'Unknown'
+    
+    # JSON output
+    if json_mode:
+        print(json.dumps(stats, indent=2, default=str))
+        return 0
     
     # Display stats in a nice format
     def stat_line(icon, label, value, color=Colors.GREEN):
@@ -5121,18 +5186,52 @@ Examples:
     print(stat_line("📄", "Total Files", stats['total_files']))
     print(stat_line("📝", "Lines of Code", f"{stats['total_lines']:,}"))
     print(stat_line("🔄", "Git Commits", stats['git_commits']))
+    print(stat_line("👥", "Contributors", stats['contributor_count']))
     print(stat_line("💽", "Framework Size", stats['framework_size']))
     
-    # Calculate some metrics
+    # Age
+    if stats['age_days'] is not None:
+        if stats['age_days'] > 30:
+            age_str = f"{stats['age_days'] // 30} months, {stats['age_days'] % 30} days"
+        else:
+            age_str = f"{stats['age_days']} days"
+        print(stat_line("📅", "Project Age", age_str, Colors.BLUE))
+    
+    # Most active day
+    if stats['most_active_day'] != 'Unknown':
+        print(stat_line("🔥", "Most Active Day", f"{stats['most_active_day']} ({stats['most_active_day_commits']} commits)", Colors.BLUE))
+    
+    # Last commit
+    if stats['last_commit'] != 'Unknown':
+        print(stat_line("⏰", "Last Commit", stats['last_commit'][:10], Colors.BLUE))
+    
+    # Top languages (top 5)
+    if lang_stats:
+        print(f"\n   {Colors.BOLD}📊 Top Languages:{Colors.ENDC}")
+        sorted_langs = sorted(lang_stats.items(), key=lambda x: x[1], reverse=True)[:5]
+        max_lines = sorted_langs[0][1] if sorted_langs else 1
+        for lang, lines in sorted_langs:
+            bar_len = int((lines / max_lines) * 20)
+            bar = '█' * bar_len + '░' * (20 - bar_len)
+            pct = (lines / total_lines * 100) if total_lines else 0
+            print(f"      {lang:<14} {bar} {lines:>6,} ({pct:.1f}%)")
+    
+    # Top contributors (top 3)
+    if stats['contributors']:
+        print(f"\n   {Colors.BOLD}👥 Top Contributors:{Colors.ENDC}")
+        for c in stats['contributors'][:3]:
+            print(f"      {c['name']:<25} {c['commits']:>4} commits")
+    
+    # Derived metrics
     if stats['projects'] > 0:
         avg_lines_per_project = stats['total_lines'] // stats['projects']
-        print(stat_line("📊", "Avg Lines/Project", f"{avg_lines_per_project:,}", Colors.BLUE))
+        print(f"\n" + stat_line("📊", "Avg Lines/Project", f"{avg_lines_per_project:,}", Colors.BLUE))
     
-    if stats['git_commits'] > 0 and stats['projects'] > 0:
-        avg_commits_per_project = stats['git_commits'] // stats['projects']
-        print(stat_line("⚡", "Avg Commits/Project", avg_commits_per_project, Colors.BLUE))
+    if stats['git_commits'] > 0 and stats['age_days'] and stats['age_days'] > 0:
+        commits_per_day = stats['git_commits'] / stats['age_days']
+        print(stat_line("⚡", "Avg Commits/Day", f"{commits_per_day:.1f}", Colors.BLUE))
     
-    print(f"\n{Colors.BLUE}💡 Use 'mw dashboard' for detailed project overview{Colors.ENDC}")
+    print(f"\n{Colors.BLUE}💡 Use 'mw stats --json' for machine-readable output{Colors.ENDC}")
     return 0
 
 
@@ -14039,7 +14138,7 @@ def main() -> None:
         "ctx": lambda: _cmd_context_wrapper(args),
         "todos": lambda: cmd_todo(args),
         "metrics": lambda: _cmd_metrics(args),
-        "stats": lambda: _cmd_metrics(args),
+        "stats": lambda: cmd_stats(args),
         "time": lambda: cmd_time(args),
         "timer": lambda: cmd_time(args),
         "track": lambda: cmd_time(args),
