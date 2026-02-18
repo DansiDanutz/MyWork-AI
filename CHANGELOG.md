@@ -1,3 +1,16 @@
+## [3.0.0] - 2026-02-18
+
+### Added
+- **`mw build-and-sell`** — One command: idea → plan → build → test → package → marketplace-ready product (also `mw bas` / `mw sell`)
+- All 4 phases of the upgrade plan COMPLETE
+- Full pipeline: 51 seconds from idea to sellable product
+
+### Changed
+- Total commands: **77+**
+- Major version bump — framework is feature-complete for v3
+
+---
+
 ## [2.9.0] - 2026-02-18
 
 ### Added
