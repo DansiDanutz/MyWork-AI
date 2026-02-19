@@ -44,39 +44,100 @@ def get_memory_mb():
 
 
 def bench_function(file_path, func_name, runs=10, warmup=2):
-    """Benchmark a Python function."""
+    """Benchmark a Python function.
+    
+    Args:
+        file_path: Path to Python file containing the function
+        func_name: Name of the function to benchmark
+        runs: Number of benchmark iterations
+        warmup: Number of warmup iterations (not counted)
+    
+    Returns:
+        Dict with statistical analysis of timing results
+    
+    Raises:
+        FileNotFoundError: If file_path doesn't exist
+        AttributeError: If func_name doesn't exist in the module
+        Exception: If the function raises an error during execution
+    """
+    if not os.path.exists(file_path):
+        raise FileNotFoundError(f"File not found: {file_path}")
+    
     spec = importlib.util.spec_from_file_location("bench_module", file_path)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
 
+    if not hasattr(mod, func_name):
+        raise AttributeError(f"Function '{func_name}' not found in {file_path}")
+    
     func = getattr(mod, func_name)
     
-    # Warmup
+    # Warmup (ignore failures)
     for _ in range(warmup):
-        func()
+        try:
+            func()
+        except Exception:
+            pass
     
     times = []
     for _ in range(runs):
-        start = time.perf_counter_ns()
-        func()
-        elapsed = (time.perf_counter_ns() - start) / 1_000_000  # ms
-        times.append(elapsed)
+        try:
+            start = time.perf_counter_ns()
+            func()
+            elapsed = (time.perf_counter_ns() - start) / 1_000_000  # ms
+            times.append(elapsed)
+        except Exception as e:
+            print(f"⚠️  Warning: Run failed with {type(e).__name__}: {e}", file=sys.stderr)
+    
+    if not times:
+        raise ValueError(f"All {runs} benchmark runs failed for function: {func_name}")
     
     return analyze(times, f"{os.path.basename(file_path)}::{func_name}")
 
 
-def bench_command(cmd, runs=10, warmup=2):
-    """Benchmark a shell command."""
-    # Warmup
+def bench_command(cmd, runs=10, warmup=2, timeout=30):
+    """Benchmark a shell command.
+    
+    Only includes successful runs (exit code 0) in the results.
+    Failed runs are skipped and a warning is printed.
+    
+    Args:
+        cmd: Shell command to benchmark
+        runs: Number of benchmark iterations
+        warmup: Number of warmup iterations (not counted)
+        timeout: Timeout in seconds per run
+    
+    Returns:
+        Dict with statistical analysis of successful runs only
+    """
+    # Warmup (ignore failures during warmup)
     for _ in range(warmup):
-        subprocess.run(cmd, shell=True, capture_output=True)
+        try:
+            subprocess.run(cmd, shell=True, capture_output=True, timeout=timeout)
+        except (subprocess.TimeoutExpired, Exception):
+            pass
     
     times = []
-    for _ in range(runs):
-        start = time.perf_counter_ns()
-        result = subprocess.run(cmd, shell=True, capture_output=True)
-        elapsed = (time.perf_counter_ns() - start) / 1_000_000  # ms
-        times.append(elapsed)
+    failed_runs = 0
+    for i in range(runs):
+        try:
+            start = time.perf_counter_ns()
+            result = subprocess.run(cmd, shell=True, capture_output=True, timeout=timeout)
+            elapsed = (time.perf_counter_ns() - start) / 1_000_000  # ms
+            
+            # Only include successful runs
+            if result.returncode == 0:
+                times.append(elapsed)
+            else:
+                failed_runs += 1
+        except (subprocess.TimeoutExpired, Exception) as e:
+            failed_runs += 1
+    
+    if failed_runs > 0:
+        print(f"⚠️  Warning: {failed_runs}/{runs} runs failed (skipped from results)", file=sys.stderr)
+    
+    if not times:
+        raise ValueError(f"All {runs} benchmark runs failed for command: {cmd[:60]}")
     
     return analyze(times, cmd[:60])
 
