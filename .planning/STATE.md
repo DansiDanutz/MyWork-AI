@@ -57,3 +57,14 @@ Date: 2026-02-18
 - [x] Phase 2: Smart Planning — `mw plan` + `mw execute` (DONE)
 - [ ] Phase 3: Developer Experience — TUI dashboard, `mw web`
 - [ ] Phase 4: Marketplace Evolution — `mw build-and-sell`, analytics
+
+## Recent Improvements
+
+### 2026-02-21 — Comprehensive Badge Tests
+- Added `tests/test_badge.py` with 42 comprehensive tests for badge.py
+- Test coverage: version detection, test counting, command counting, LOC counting
+- Tests for license detection (MIT, Apache, GPL, custom)
+- Tests for badge URL generation, formatting (MD/HTML), README updating
+- Tests for edge cases (empty projects, malformed configs, zero tests)
+- Total test count increased from ~140 to ~182 tests (~30% increase)
+- Commit: `ba0bfef` - "Add comprehensive tests for badge.py"
