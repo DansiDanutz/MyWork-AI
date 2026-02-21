@@ -66,5 +66,5 @@ Date: 2026-02-18
 - Tests for license detection (MIT, Apache, GPL, custom)
 - Tests for badge URL generation, formatting (MD/HTML), README updating
 - Tests for edge cases (empty projects, malformed configs, zero tests)
-- Total test count increased from ~140 to ~182 tests (~30% increase)
+- Total test count: 206 passing tests (added 42 new tests, ~25% increase)
 - Commit: `ba0bfef` - "Add comprehensive tests for badge.py"
