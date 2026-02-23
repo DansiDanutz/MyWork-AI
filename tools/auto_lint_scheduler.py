@@ -198,6 +198,7 @@ def main():
 
     except KeyboardInterrupt:
         print("\n👋 Stopping automated lint fixer")
+        sys.exit(0)
     except Exception as e:
         print(f"\n❌ Error in daemon mode: {e}")
         sys.exit(1)

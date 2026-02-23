@@ -60,6 +60,17 @@ Date: 2026-02-18
 
 ## Recent Improvements
 
+### 2026-02-23 — Comprehensive Tree Viewer Tests
+- Added `tests/test_tree_viewer.py` with 44 comprehensive tests for tree_viewer.py
+- Test coverage: human_size (bytes, KB, MB, GB, TB conversions)
+- Tests for get_icon (file type icons: Python, JS, TS, config, docs, Docker, etc.)
+- Tests for git_status_color (M/A/D status colors)
+- Tests for build_tree (basic, depth limiting, dirs-only, filters, sizes, JSON)
+- Tests for cmd_tree (help, invalid dir, options, JSON output)
+- Tests for git status and gitignore integration
+- Integration tests for complex directory structures
+- Commit: `2f7d546` - "Add comprehensive tests for tree_viewer.py (44 tests)"
+
 ### 2026-02-21 — Comprehensive Badge Tests
 - Added `tests/test_badge.py` with 42 comprehensive tests for badge.py
 - Test coverage: version detection, test counting, command counting, LOC counting
