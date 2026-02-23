@@ -6,10 +6,10 @@ Date: 2026-02-18
 
 ### Package
 - **PyPI package**: `mywork-ai` v2.8.0
-- **Install**: `pip install mywork-ai` 
+- **Install**: `pip install mywork-ai`
 - **CLI**: `mw <command>`
 - **Commands**: 72+
-- **Tests**: 140 passing
+- **Tests**: 280 passing
 
 ### What's New in v2.8.0
 - `mw plan` — AI Project Planner (describe idea → REQUIREMENTS.md + ROADMAP.md + AI_SPEC.json)
