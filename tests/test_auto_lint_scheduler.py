@@ -111,7 +111,14 @@ class TestCheckGitStatus:
         # Modify markdown files
         (temp_mywork_root / "test.md").write_text("# Modified")
 
-        success, md_changes, total_changes = check_git_status()
+        # Change to temp directory before checking git status
+        import os
+        old_cwd = os.getcwd()
+        os.chdir(temp_mywork_root)
+        try:
+            success, md_changes, total_changes = check_git_status()
+        finally:
+            os.chdir(old_cwd)
 
         assert success is True
         assert md_changes >= 1  # At least one markdown file changed
@@ -394,8 +401,15 @@ class TestRunSingleCycle:
         # Create an uncommitted file
         (temp_mywork_root / "uncommitted.txt").write_text("test")
 
-        with patch("auto_lint_scheduler.run_lint_fixer") as mock_fixer:
-            run_single_cycle(3600, False)
+        # Change to temp directory before running
+        import os
+        old_cwd = os.getcwd()
+        os.chdir(temp_mywork_root)
+        try:
+            with patch("auto_lint_scheduler.run_lint_fixer") as mock_fixer:
+                run_single_cycle(3600, False)
+        finally:
+            os.chdir(old_cwd)
 
             # Lint fixer should not be called due to dirty tree
             mock_fixer.assert_not_called()
