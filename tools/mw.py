@@ -9053,7 +9053,7 @@ def cmd_env(args: List[str] = None) -> int:
         return 0
 
     elif subcommand == "audit":
-        """Security audit of environment variables - check for exposed secrets."""
+        # Security audit of environment variables - check for exposed secrets
         print(f"\n{Colors.BOLD}🔒 Environment Security Audit{Colors.ENDC}\n")
         
         if not env_file.exists():

@@ -9,7 +9,7 @@ Date: 2026-02-24
 - **Install**: `pip install mywork-ai`
 - **CLI**: `mw <command>`
 - **Commands**: 72+
-- **Tests**: 304 passing
+- **Tests**: 341 passing
 
 ### What's New in v2.8.0
 - `mw plan` — AI Project Planner (describe idea → REQUIREMENTS.md + ROADMAP.md + AI_SPEC.json)
@@ -45,6 +45,17 @@ Date: 2026-02-24
 - 13 products live, $1,400+ catalog value
 
 ### Recent Work
+
+### 2026-02-26 — Comprehensive AI Review Tests
+- Added `tests/test_ai_review.py` with 37 comprehensive tests for ai_review.py
+- Test coverage: language detection (Python, JS, TS, web, config, system, data analysis languages)
+- Tests for review prompt generation (structure, language, context, special characters)
+- Tests for output formatting (file review, git diff, errors, missing fields)
+- Tests for git diff retrieval (staged/unstaged, exception handling)
+- Tests for file review (non-existent files, empty files, successful reviews, language detection)
+- Tests for diff review (empty diff, successful review, exception handling)
+- Tests for OpenRouter API calls (successful response, no choices, exceptions, no API key)
+- Total test count: 341 passing tests (added 37 new tests)
 
 ### 2026-02-24 — Comprehensive Changelog Generator Tests
 - Added `tests/test_changelog_gen.py` with 24 comprehensive tests for changelog_gen.py
