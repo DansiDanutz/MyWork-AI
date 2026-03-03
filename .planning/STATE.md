@@ -9,7 +9,7 @@ Date: 2026-02-24
 - **Install**: `pip install mywork-ai`
 - **CLI**: `mw <command>`
 - **Commands**: 72+
-- **Tests**: 409+ passing (upgraded from 341 with new test suites)
+- **Tests**: 424 passing (upgraded from 341 with 83 new tests)
 
 ### What's New in v2.8.0
 - `mw plan` — AI Project Planner (describe idea → REQUIREMENTS.md + ROADMAP.md + AI_SPEC.json)
@@ -72,14 +72,14 @@ Date: 2026-02-24
 - Total test count: 304 passing tests (added 24 new tests)
 - Commit: `6ceab9b` - "Add comprehensive tests for changelog_gen.py (24 tests)"
 
-### 2026-03-03 — Added Comprehensive Test Suites (68 New Tests)
-- Added `test_autoforge_api.py` with 16 comprehensive tests for autoforge_api module
+### 2026-03-03 — Added Comprehensive Test Suites (83 New Tests)
+- Added `test_autoforge_api.py` with 23 comprehensive tests for autoforge_api module
   - Tests get_autoforge_python() utility (venv detection, .venv detection, sys.executable fallback)
   - Tests AutoForgeAPI class (server status checks, agent lifecycle methods, feature retrieval)
   - Tests notify_webhook() function (webhook sending with URL validation, graceful error handling)
   - Tests get_progress() function (API-based progress tracking, error handling)
   - Tests backward compatibility alias (AutoForgeClient == AutoForgeAPI)
-- Added `test_bench.py` with 38 comprehensive tests for benchmarking tool
+- Added `test_bench.py` with 36 comprehensive tests for benchmarking tool
   - Tests memory usage retrieval (get_memory_mb with success/zero/exception cases)
   - Tests function benchmarking (bench_function with simple/failing/warmup scenarios)
   - Tests command benchmarking (bench_command with success/failure/timeout/warmup cases)
@@ -89,10 +89,10 @@ Date: 2026-02-24
   - Tests baseline management (save/load/show history with temp directories)
   - Tests command-line interface (help, history, command mode, baseline saving)
   - Tests edge cases (empty times, zero runs, nonexistent files)
-- Added `test_tui_dashboard.py` with 14+ tests for TUI dashboard module
+- Added `test_tui_dashboard.py` with 24 tests for TUI dashboard module
   - Tests dashboard rendering and panel building
   - Tests command-line interface for TUI dashboard
-- Test count upgraded from 341 to 409+ tests (+68 new tests)
+- Test count upgraded from 341 to 424 tests (+83 new tests)
 - Commit: `8c382fd` - "Add comprehensive tests: autoforge_api, bench, and tui_dashboard"
 
 ### 2026-02-19 — Improved bench.py Error Handling
