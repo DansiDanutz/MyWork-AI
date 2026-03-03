@@ -6,7 +6,7 @@
 ![Python Version](https://img.shields.io/pypi/pyversions/mywork-ai?style=for-the-badge&logo=python&logoColor=white)
 ![Downloads](https://img.shields.io/pypi/dm/mywork-ai?style=for-the-badge&color=blue)
 ![License](https://img.shields.io/github/license/dansidanutz/MyWork-AI?style=for-the-badge)
-![Tests](https://img.shields.io/badge/tests-133%20passing-brightgreen?style=for-the-badge)
+![Tests](https://img.shields.io/badge/tests-409%20passing-brightgreen?style=for-the-badge)
 
 **🤖 Build, Ship & Sell Software Products — From One CLI**
 
@@ -303,13 +303,13 @@ mw selftest
 
 ## 📊 Stats
 
-- **67+ CLI commands** across 12 categories
-- **133 automated tests** passing
+- **72+ CLI commands** across 12 categories
+- **409 automated tests** passing
 - **12 project templates** (basic → full SaaS)
 - **16 n8n commands** for workflow automation
-- **9 marketplace products** ready to sell
+- **13 marketplace products** live
 - **2,700+ n8n templates** browseable
-- **v2.6.0** on PyPI
+- **v2.8.0** on PyPI
 
 ---
 
