@@ -37,7 +37,8 @@ def run(cmd: str, cwd: str = None) -> str:
 
 
 def detect_version(project_path: Path) -> Optional[str]:
-    for f in ["pyproject.toml", "setup.py", "package.json", "VERSION"]:
+    """Detect project version from various config files."""
+    for f in ["pyproject.toml", "setup.py", "package.json", "VERSION", ".version"]:
         fp = project_path / f
         if not fp.exists():
             continue
@@ -47,8 +48,10 @@ def detect_version(project_path: Path) -> Optional[str]:
                 return json.loads(content).get("version")
             except json.JSONDecodeError:
                 continue
-        elif f == "VERSION":
-            return content.strip()
+        elif f in ("VERSION", ".version"):
+            # Support both VERSION and .version files
+            version = content.strip().splitlines()[0].strip()
+            return version
         else:
             m = re.search(r'version\s*=\s*["\']([^"\']+)["\']', content)
             if m:

@@ -101,6 +101,18 @@ class TestVersionDetection:
         version = badge.detect_version(tmp_path)
         assert version == "1.2.3"
 
+    def test_detect_version_dot_version_file(self, tmp_path):
+        """Test .version file support (common in many projects)."""
+        (tmp_path / ".version").write_text("2.4.5\n")
+        version = badge.detect_version(tmp_path)
+        assert version == "2.4.5"
+
+    def test_detect_version_dot_version_multiline(self, tmp_path):
+        """Test .version file with multiple lines (only first line used)."""
+        (tmp_path / ".version").write_text("3.0.0-beta\nignored\nmore ignored\n")
+        version = badge.detect_version(tmp_path)
+        assert version == "3.0.0-beta"
+
     def test_detect_version_no_config(self, tmp_path):
         version = badge.detect_version(tmp_path)
         assert version is None
