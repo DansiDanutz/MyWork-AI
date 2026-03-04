@@ -1,6 +1,6 @@
 # MyWork Framework State
 
-Date: 2026-02-24
+Date: 2026-03-04
 
 ## 🚀 PRODUCTION READY — v2.8.0
 
@@ -45,6 +45,14 @@ Date: 2026-02-24
 - 13 products live, $1,400+ catalog value
 
 ### Recent Work
+
+### 2026-03-04 — Enhanced Badge Version Detection
+- Added support for `.version` file format (common in many projects)
+- Improved `detect_version()` in badge.py to handle both VERSION and .version files
+- Added multi-line handling (only first line is used for version string)
+- Added 2 new test cases: test_detect_version_dot_version_file and test_detect_version_dot_version_multiline
+- This makes the `mw badge` tool compatible with more project versioning patterns
+- Commit: `1adc2ea` - "feat(badge): Add support for .version file"
 
 ### 2026-02-27 — Code Quality Fix in cmd_env
 - Fixed misplaced docstring inside elif block in cmd_env audit subcommand
