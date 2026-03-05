@@ -351,6 +351,15 @@ class SimpleAPIHandler(http.server.BaseHTTPRequestHandler):
     """Minimal HTTP handler when FastAPI is not available."""
 
     def do_GET(self):
+        """Handle HTTP GET requests for the simple API server.
+        
+        Routes requests to appropriate handlers based on the URL path.
+        Supports health checks, status, projects, brain search, git log,
+        metrics, and doctor endpoints when FastAPI is not available.
+        
+        Returns:
+            JSON response with appropriate status code
+        """
         parsed = urlparse(self.path)
         path = parsed.path.rstrip("/")
         params = parse_qs(parsed.query)
