@@ -274,14 +274,35 @@ def _build_tool_definitions(tools: List[Dict]) -> List[Dict]:
     return definitions
 
 
+def _format_command(template: str, arguments: Dict[str, Any]) -> str:
+    """Format a command template with variable substitution.
+    
+    Args:
+        template: Command template with placeholders like "cat {path}"
+        arguments: Dictionary mapping placeholder names to values
+        
+    Returns:
+        Formatted command string
+        
+    Examples:
+        >>> _format_command("cat {path}", {"path": "/tmp/test.txt"})
+        "cat /tmp/test.txt"
+        >>> _format_command("curl -s 'https://api.com?q={query}&limit={limit}'", 
+                         {"query": "hello", "limit": 10})
+        "curl -s 'https://api.com?q=hello&limit=10'"
+    """
+    command = template
+    for key, value in arguments.items():
+        command = command.replace(f"{{{key}}}", str(value))
+    return command
+
 def _execute_tool(tool_config: Dict, arguments: Dict[str, Any]) -> str:
     """Execute a tool command with parameter substitution."""
     command = tool_config.get("command", "")
-
-    # Substitute parameters
-    for key, value in arguments.items():
-        command = command.replace(f"{{{key}}}", str(value))
-
+    
+    # Substitute parameters using the _format_command helper
+    command = _format_command(command, arguments)
+    
     try:
         result = subprocess.run(
             command,
