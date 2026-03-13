@@ -280,7 +280,7 @@ class TestReviewFile:
     def test_review_empty_file(self, mock_exists, mock_open):
         """Return error for empty file."""
         mock_exists.return_value = True
-        mock_open.return_value.read.return_value = ""
+        mock_open.return_value.__enter__.return_value.read.return_value = ""
         result = review_file("empty.py")
         
         assert "error" in result
@@ -292,7 +292,7 @@ class TestReviewFile:
     def test_review_successful_file(self, mock_api, mock_exists, mock_open):
         """Successfully review a file."""
         mock_exists.return_value = True
-        mock_open.return_value.read.return_value = "print('hello')"
+        mock_open.return_value.__enter__.return_value.read.return_value = "print('hello')"
         mock_api.return_value = "Review: Good code!"
         
         result = review_file("test.py")
@@ -328,7 +328,7 @@ class TestReviewFile:
         ]
         
         mock_exists.return_value = True
-        mock_open.return_value.read.return_value = "code"
+        mock_open.return_value.__enter__.return_value.read.return_value = "code"
         mock_api.return_value = "Review"
         
         for filename, expected_lang in test_cases:
