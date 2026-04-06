@@ -1,0 +1,133 @@
+{
+  "name": "Daily Task Digest (Supabase \u2192 Telegram)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "name": "Every Day 09:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        250,
+        300
+      ],
+      "id": "trigger-2"
+    },
+    {
+      "parameters": {
+        "url": "={{.SUPABASE_URL}}/rest/v1/gsd_tasks?status=in.(todo,in_progress)&order=priority.asc&limit=20",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{.SUPABASE_SERVICE_KEY}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{.SUPABASE_SERVICE_KEY}}"
+            }
+          ]
+        }
+      },
+      "name": "Fetch Open Tasks",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        450,
+        300
+      ],
+      "id": "http-2"
+    },
+    {
+      "parameters": {
+        "jsCode": "const tasks = .first().json;\nif (!Array.isArray(tasks) || tasks.length === 0) {\n  return [{json: {message: \"\u2705 No open tasks today!\"}}];\n}\nconst lines = tasks.map(t => );\nconst msg = ;\nreturn [{json: {message: msg}}];"
+      },
+      "name": "Format Digest",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        650,
+        300
+      ],
+      "id": "code-2"
+    },
+    {
+      "parameters": {
+        "chatId": "={{.DAN_CHAT_ID}}",
+        "text": "={{.message}}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "name": "Send Digest",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        850,
+        300
+      ],
+      "id": "tg-2"
+    }
+  ],
+  "connections": {
+    "Every Day 09:00": {
+      "main": [
+        [
+          {
+            "node": "Fetch Open Tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Open Tasks": {
+      "main": [
+        [
+          {
+            "node": "Format Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Digest": {
+      "main": [
+        [
+          {
+            "node": "Send Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "pm"
+    },
+    {
+      "name": "supabase"
+    },
+    {
+      "name": "telegram"
+    }
+  ]
+}

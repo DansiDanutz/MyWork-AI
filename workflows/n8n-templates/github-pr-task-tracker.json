@@ -1,0 +1,109 @@
+{
+  "name": "GitHub PR \u2192 Supabase Task Update",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "github-pr-webhook",
+        "responseMode": "onReceived"
+      },
+      "name": "GitHub Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        250,
+        300
+      ],
+      "id": "webhook-3",
+      "webhookId": "github-pr-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = .first().json.body || .first().json;\nconst pr = body.pull_request;\nif (!pr) return [];\nconst branchName = pr.head?.ref || \"\";\nconst prState = body.action;\nconst taskMatch = branchName.match(/([A-Z]+-\\d+)/);\nconst taskId = taskMatch ? taskMatch[1] : null;\nif (!taskId) return [];\nconst statusMap = { opened: \"in_progress\", closed: pr.merged ? \"done\" : \"todo\", synchronize: \"in_progress\" };\nreturn [{json: { taskId, branchName, prState, newStatus: statusMap[prState] || \"in_progress\", prUrl: pr.html_url, prTitle: pr.title }}];"
+      },
+      "name": "Extract Task ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        450,
+        300
+      ],
+      "id": "code-3"
+    },
+    {
+      "parameters": {
+        "url": "={{.SUPABASE_URL}}/rest/v1/gsd_tasks?task_id=eq.{{.taskId}}",
+        "method": "PATCH",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{.SUPABASE_SERVICE_KEY}}"
+            },
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{.SUPABASE_SERVICE_KEY}}"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=representation"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"status\": \"{{.newStatus}}\", \"branch_name\": \"{{.branchName}}\"}"
+      },
+      "name": "Update Task Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        650,
+        300
+      ],
+      "id": "http-3"
+    }
+  ],
+  "connections": {
+    "GitHub Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Task ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Task ID": {
+      "main": [
+        [
+          {
+            "node": "Update Task Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "tags": [
+    {
+      "name": "github"
+    },
+    {
+      "name": "supabase"
+    },
+    {
+      "name": "automation"
+    }
+  ]
+}
