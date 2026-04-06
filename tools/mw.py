@@ -12437,9 +12437,10 @@ def check_version_startup():
             if now - last_check < 86400:
                 # Still show cached update notification if available
                 if cache.get("update_available"):
+                    import sys as _sys
                     print(f"{Colors.YELLOW}💡 MyWork-AI update available: v{cache.get('latest_version')} "
-                          f"(current: v{cache.get('current_version')}){Colors.ENDC}")
-                    print(f"   Run 'mw upgrade' to update.\n")
+                          f"(current: v{cache.get('current_version')}){Colors.ENDC}", file=_sys.stderr)
+                    print(f"   Run 'mw upgrade' to update.", file=_sys.stderr)
                 return
         except Exception:
             pass
@@ -12497,9 +12498,10 @@ def check_version_startup():
         
         # Show notification if update available
         if update_available:
+            import sys as _sys
             print(f"{Colors.YELLOW}💡 MyWork-AI update available: {latest_version} "
-                  f"(current: v{current_ver}){Colors.ENDC}")
-            print(f"   Run 'mw upgrade' to update.\n")
+                  f"(current: v{current_ver}){Colors.ENDC}", file=_sys.stderr)
+            print(f"   Run 'mw upgrade' to update.", file=_sys.stderr)
             
     except Exception:
         # Silent fail - don't interrupt the user experience
