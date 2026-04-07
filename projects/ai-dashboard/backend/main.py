@@ -118,6 +118,11 @@ app.add_middleware(
 )
 
 
+
+# Billing router
+from routes.billing import router as billing_router
+app.include_router(billing_router)
+
 # ============ Pydantic Models ============
 
 
