@@ -28,7 +28,7 @@ extras_require = {
 
 setup(
     name="mywork-ai",
-    version="3.0.0",
+    version="3.0.1",
     author="Dan Sidanutz",
     author_email="dan@mywork-ai.dev",
     description="AI-powered development framework — build, ship, and sell software products with CLI tools, workflows, and a marketplace",

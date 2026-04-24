@@ -309,7 +309,7 @@ mw selftest
 - **16 n8n commands** for workflow automation
 - **13 marketplace products** live
 - **2,700+ n8n templates** browseable
-- **v2.8.0** on PyPI
+- **v3.0.1** on PyPI
 
 ---
 

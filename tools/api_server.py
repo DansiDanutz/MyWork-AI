@@ -44,6 +44,35 @@ try:
 except ImportError:
     HAS_FASTAPI = False
 
+def _get_framework_version() -> str:
+    """Get version from importlib.metadata (pypi) or pyproject.toml fallback."""
+    try:
+        from importlib.metadata import version as pkg_version
+        return pkg_version("mywork-ai")
+    except Exception:
+        pass
+    try:
+        import tomllib  # Python 3.11+
+    except ImportError:
+        try:
+            import tomli as tomllib
+        except ImportError:
+            tomllib = None
+    if tomllib:
+        try:
+            with open(FRAMEWORK_ROOT / "pyproject.toml", "rb") as _f:
+                return tomllib.load(_f).get("project", {}).get("version", "3.0.1")
+        except Exception:
+            pass
+    return "3.0.1"
+
+FRAMEWORK_VERSION = _get_framework_version()
+
+# Optional API key auth — set MW_API_KEY env var to enable
+_MW_API_KEY = os.environ.get("MW_API_KEY", "")
+
+
+
 FRAMEWORK_ROOT = Path(__file__).parent.parent
 START_TIME = time.time()
 
@@ -206,7 +235,7 @@ def get_metrics() -> dict:
         "command_count": cmd_count,
         "tools_count": tools_count,
         "uptime_seconds": round(time.time() - START_TIME),
-        "framework_version": "2.1.0",
+        "framework_version": FRAMEWORK_VERSION,
         "python_version": sys.version.split()[0],
         "timestamp": datetime.now(timezone.utc).isoformat(),
     }
@@ -219,7 +248,7 @@ def create_app() -> "FastAPI":
     app = FastAPI(
         title="MyWork-AI API",
         description="REST interface for the MyWork development framework",
-        version="1.0.0",
+        version=FRAMEWORK_VERSION,
         docs_url="/docs",
         redoc_url="/redoc",
     )
@@ -232,6 +261,23 @@ def create_app() -> "FastAPI":
         allow_headers=["*"],
     )
 
+    # Optional API key auth — active only if MW_API_KEY is set
+    if _MW_API_KEY:
+        from fastapi import Request
+        from fastapi.responses import JSONResponse as _JSONResponse
+
+        @app.middleware("http")
+        async def api_key_middleware(request: Request, call_next):
+            if request.url.path in ("/health", "/docs", "/redoc", "/openapi.json"):
+                return await call_next(request)
+            key = request.headers.get("X-API-Key", "")
+            if key != _MW_API_KEY:
+                return _JSONResponse(
+                    status_code=403,
+                    content={"error": "Invalid or missing X-API-Key header"},
+                )
+            return await call_next(request)
+
     @app.get("/health")
     async def health():
         """Health check endpoint."""
@@ -241,7 +287,7 @@ def create_app() -> "FastAPI":
             "uptime_seconds": round(time.time() - START_TIME),
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "framework": "mywork-ai",
-            "version": "2.1.0",
+            "version": FRAMEWORK_VERSION,
         }
 
     @app.get("/status")
@@ -341,6 +387,59 @@ def create_app() -> "FastAPI":
     async def metrics():
         """Framework metrics."""
         return get_metrics()
+
+    # ─── Agent endpoints ────────────────────────────────────────────────────
+
+    @app.get("/agents")
+    async def list_agents():
+        """List available agent YAML/Markdown definitions."""
+        agents = []
+        search_dirs = [
+            FRAMEWORK_ROOT / "agents",
+            Path.home() / ".mywork" / "agents",
+            Path.cwd() / "agents",
+        ]
+        for d in search_dirs:
+            if d.is_dir():
+                for p in sorted(d.glob("**/*.yaml")) + sorted(d.glob("**/*.yml")) + sorted(d.glob("**/*.md")):
+                    try:
+                        agents.append({
+                            "name": p.stem,
+                            "path": str(p),
+                            "size_bytes": p.stat().st_size,
+                        })
+                    except Exception:
+                        pass
+        return {"agents": agents, "count": len(agents)}
+
+    @app.get("/agents/{name}/validate")
+    async def validate_agent(name: str):
+        """Validate an agent YAML config by name."""
+        result = run_mw(["agent", "validate", name], timeout=30)
+        return {"name": name, "valid": result["success"], "output": result["stdout"], "errors": result["stderr"]}
+
+    @app.post("/agents/{name}/run")
+    async def run_agent_chat(name: str, message: str = "", max_turns: int = 1):
+        """Run a single-turn interaction with an agent (non-streaming)."""
+        if not message:
+            raise HTTPException(status_code=400, detail="message is required")
+        result = run_mw(
+            ["agent", "run", name, "--message", message, "--max-turns", str(max_turns)],
+            timeout=120,
+        )
+        return {
+            "agent": name,
+            "input": message,
+            "output": result["stdout"],
+            "success": result["success"],
+            "error": result["stderr"] if not result["success"] else None,
+        }
+
+    @app.get("/agents/{name}/info")
+    async def agent_info(name: str):
+        """Get agent configuration and capabilities."""
+        result = run_mw(["agent", "info", name], timeout=15)
+        return {"name": name, "output": result["stdout"], "success": result["success"]}
 
     return app
 

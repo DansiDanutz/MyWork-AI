@@ -98,6 +98,7 @@ Code Review & Quality Commands:
     mw snapshot               Capture project metrics snapshot (LoC, tests, deps, git)
     mw snapshot history       Show snapshot history over time
     mw snapshot compare       Compare last two snapshots
+    mw sbom                   Generate Software Bill of Materials (CycloneDX/SPDX)
     mw release <patch|minor|major>                        Version bump + changelog + tag
     mw deploy <proj> --platform <vercel|railway|render>  Deploy project
 
@@ -14026,6 +14027,67 @@ Examples:
         return 1
 
 
+def cmd_sbom(args: List[str] = None) -> int:
+    """Software Bill of Materials (SBOM) generation for supply chain security.
+
+    Usage:
+        mw sbom                  # Human-readable summary
+        mw sbom --format json    # CycloneDX JSON format
+        mw sbom --format spdx    # SPDX JSON format
+        mw sbom --format all     # Generate all formats
+        mw sbom -o sbom.json     # Save to file
+    """
+    import subprocess as _sp
+    args = args or []
+
+    tool_path = Path(_FRAMEWORK_ROOT) / "tools" / "mw_sbom.py"
+    if not tool_path.exists():
+        print(f"{Colors.RED}❌ SBOM tool not found at {tool_path}{Colors.ENDC}")
+        return 1
+
+    # Parse arguments
+    output_format = "txt"
+    output_file = None
+    i = 0
+    while i < len(args):
+        if args[i] == "--format" and i + 1 < len(args):
+            output_format = args[i + 1]
+            i += 2
+        elif args[i] in ["-o", "--output"] and i + 1 < len(args):
+            output_file = args[i + 1]
+            i += 2
+        else:
+            i += 1
+
+    # Build command
+    cmd_args = ["--format", output_format]
+    if output_file:
+        cmd_args.extend(["-o", output_file])
+
+    print(f"{Colors.BLUE}📦 Generating MyWork-AI SBOM...{Colors.ENDC}")
+    print(f"{Colors.CYAN}  Format: {output_format}{Colors.ENDC}")
+    if output_file:
+        print(f"{Colors.CYAN}  Output: {output_file}{Colors.ENDC}")
+    print()
+
+    result = _sp.run(
+        [sys.executable, str(tool_path)] + cmd_args,
+        cwd=str(_FRAMEWORK_ROOT),
+        capture_output=True,
+        text=True
+    )
+
+    if result.returncode == 0:
+        print(result.stdout)
+        if output_file:
+            print(f"{Colors.GREEN}✅ SBOM generated successfully!{Colors.ENDC}")
+        return 0
+    else:
+        print(f"{Colors.RED}❌ SBOM generation failed:{Colors.ENDC}")
+        print(result.stderr)
+        return 1
+
+
 def main() -> None:
     """Main entry point with global exception handling."""
     if len(sys.argv) < 2:
@@ -14757,6 +14819,8 @@ echo "✅ Ready! Run: uvicorn main:app --reload"
         "webhook": lambda: cmd_webhook(args),
         "secrets": lambda: cmd_secrets_new(args),  # Override existing secrets command
         "cost": lambda: cmd_cost(args),
+        "sbom": lambda: cmd_sbom(args),
+        "bom": lambda: cmd_sbom(args),  # Alias
         "templates": lambda: cmd_templates_browse(args),
         "share": lambda: cmd_share(args),
         "cron": lambda: cmd_cron_manage(args),
