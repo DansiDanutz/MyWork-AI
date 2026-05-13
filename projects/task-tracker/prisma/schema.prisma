@@ -28,6 +28,13 @@ model User {
   bio           String?
   customAvatar  String?  // URL to uploaded avatar (overrides GitHub image)
 
+  // Billing fields (Phase 1: Stripe subscription management)
+  planId               String?  @default("free")
+  subscriptionStatus   String?  // 'active', 'canceled', 'past_due', 'incomplete', etc.
+  stripeCustomerId     String?  @unique
+  stripeSubscriptionId String?  @unique
+  planUpdatedAt        DateTime @updatedAt
+
   accounts      Account[]
   sessions      Session[]
   analyticsEvents AnalyticsEvent[]
@@ -137,6 +144,20 @@ model Tag {
   @@unique([userId, name]) // User can't have duplicate tag names
   @@index([userId])
   @@map("tags")
+}
+
+// Credit transactions for Stripe billing
+model CreditTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  amount      Float    // positive = credit, negative = debit
+  source      String   // 'stripe', 'spend', 'refund', 'bonus'
+  stripeId    String?  // Stripe payment intent or checkout session ID
+  description String?
+  createdAt   DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@map("credit_transactions")
 }
 
 // File attachments for tasks

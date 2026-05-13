@@ -1,12 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { CreditsLedger } from '../../../../../../../tools/credits_ledger';
+import { addCredits } from '@/lib/billing';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-01-27.acacia',
-});
+function getStripe(): Stripe {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new Error('STRIPE_SECRET_KEY is not configured');
+  }
+  return new Stripe(process.env.STRIPE_SECRET_KEY, {
+    apiVersion: '2026-04-22.dahlia',
+  });
+}
 
-const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!;
+function getWebhookSecret(): string {
+  if (!process.env.STRIPE_WEBHOOK_SECRET) {
+    throw new Error('STRIPE_WEBHOOK_SECRET is not configured');
+  }
+  return process.env.STRIPE_WEBHOOK_SECRET;
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -15,13 +25,11 @@ export async function POST(req: NextRequest) {
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(body, sig, webhookSecret);
+    event = getStripe().webhooks.constructEvent(body, sig, getWebhookSecret());
   } catch (err) {
     console.error('Webhook signature verification failed:', err);
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
-
-  const ledger = new CreditsLedger();
 
   try {
     switch (event.type) {
@@ -33,7 +41,7 @@ export async function POST(req: NextRequest) {
           const amount = parseFloat(credits);
           const stripeId = session.payment_intent as string;
 
-          const entry = ledger.add_credits(
+          const entry = await addCredits(
             userId,
             amount,
             'stripe',
@@ -41,7 +49,7 @@ export async function POST(req: NextRequest) {
             `Purchased ${packageId} pack via Stripe`,
           );
 
-          console.log(`✅ Payment processed: ${userId} +${amount} credits (${entry.tx_id})`);
+          console.log(`✅ Payment processed: ${userId} +${amount} credits (${entry.id})`);
         }
         break;
       }
