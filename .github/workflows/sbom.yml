@@ -40,11 +40,10 @@ jobs:
         run: |
           cyclonedx-py environment --pyproject pyproject.toml --output-format JSON --output-file sbom-python.json
 
-      - name: Generate SBOM (SPDX)
+      - name: Generate dependency audit
         run: |
-          pip install install-py-project
           pip install pip-audit
-          pip-audit --format spdx-json --output sbom-spdx.json || true
+          pip-audit --format json --output sbom-audit.json || true
 
       - name: Upload SBOM artifacts
         uses: actions/upload-artifact@v4
