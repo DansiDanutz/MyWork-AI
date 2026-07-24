@@ -13,7 +13,9 @@ from unittest.mock import patch, mock_open
 
 # Import agent module
 import sys
-sys.path.insert(0, '/home/Memo1981/MyWork-AI/tools/')
+ROOT = Path(__file__).resolve().parents[1]
+TOOLS = ROOT / "tools"
+sys.path.insert(0, str(TOOLS))
 try:
     import agent as agent_module
 except ImportError:
@@ -137,7 +139,7 @@ def test_cli_help_output():
     try:
         result = subprocess.run([
             sys.executable, '-c', 
-            'import sys; sys.path.insert(0, "/home/Memo1981/MyWork-AI/tools"); import agent; agent.cmd_agent(["--help"])'
+            f'import sys; sys.path.insert(0, {str(TOOLS)!r}); import agent; agent.cmd_agent(["--help"])'
         ], capture_output=True, text=True, timeout=10)
         
         # Help should either succeed or show usage
