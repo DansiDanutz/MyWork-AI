@@ -1,5 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "rootDirectory": "projects/ai-dashboard/frontend"
+  "installCommand": "cd projects/ai-dashboard/frontend && npm install",
+  "buildCommand": "cd projects/ai-dashboard/frontend && npm run build",
+  "outputDirectory": "projects/ai-dashboard/frontend/.next"
 }
