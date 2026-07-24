@@ -38,7 +38,7 @@ jobs:
 
       - name: Generate SBOM (Python)
         run: |
-          cyclonedx-py --format json --output sbom-python.json -i .
+          cyclonedx-py environment --pyproject pyproject.toml --output-format JSON --output-file sbom-python.json
 
       - name: Generate SBOM (SPDX)
         run: |
