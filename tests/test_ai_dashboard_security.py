@@ -7,7 +7,6 @@ from pathlib import Path
 import pytest
 from fastapi import HTTPException
 
-
 ROOT = Path(__file__).resolve().parents[1]
 BACKEND = ROOT / "projects" / "ai-dashboard" / "backend"
 ADMIN_TOKEN = "configured-admin-token-with-32-chars"
@@ -67,6 +66,53 @@ def test_admin_auth_fails_closed_for_weak_configuration(monkeypatch):
         security.require_admin("Bearer too-short")
 
     assert error.value.status_code == 503
+
+
+def test_billing_identity_fails_closed_without_configuration(monkeypatch):
+    monkeypatch.delenv("AI_DASHBOARD_BILLING_EMAIL", raising=False)
+    monkeypatch.delenv("AI_DASHBOARD_FRONTEND_ORIGIN", raising=False)
+    security = load_security_module()
+
+    with pytest.raises(HTTPException) as error:
+        security.require_billing_identity()
+
+    assert error.value.status_code == 503
+
+
+@pytest.mark.parametrize(
+    "email,origin",
+    [
+        ("not-an-email", "https://dashboard.example.com"),
+        ("admin@ops@example.com", "https://dashboard.example.com"),
+        ("admin..ops@example.com", "https://dashboard.example.com"),
+        ("admin@example.com", "http://dashboard.example.com"),
+        ("admin@example.com", "https://dashboard.example.com/path"),
+        ("admin@example.com", "https://user@dashboard.example.com"),
+        ("admin@example.com", "https://dashboard example.com"),
+        ("admin@example.com", "https://-dashboard.example.com"),
+        ("admin@example.com", "https://dashboard.example.com:invalid"),
+    ],
+)
+def test_billing_identity_rejects_untrusted_values(monkeypatch, email, origin):
+    monkeypatch.setenv("AI_DASHBOARD_BILLING_EMAIL", email)
+    monkeypatch.setenv("AI_DASHBOARD_FRONTEND_ORIGIN", origin)
+    security = load_security_module()
+
+    with pytest.raises(HTTPException) as error:
+        security.require_billing_identity()
+
+    assert error.value.status_code == 503
+
+
+def test_billing_identity_accepts_configured_https_origin(monkeypatch):
+    monkeypatch.setenv("AI_DASHBOARD_BILLING_EMAIL", "admin@example.com")
+    monkeypatch.setenv("AI_DASHBOARD_FRONTEND_ORIGIN", "https://dashboard.example.com/")
+    security = load_security_module()
+
+    assert security.require_billing_identity() == (
+        "admin@example.com",
+        "https://dashboard.example.com",
+    )
 
 
 def protected_functions(path):
@@ -138,12 +184,19 @@ def test_frontend_uses_authenticated_server_proxy_for_backend_access():
     frontend = BACKEND.parent / "frontend"
     api_client = (frontend / "lib" / "api.ts").read_text()
     billing_client = (frontend / "lib" / "billing.ts").read_text()
+    pricing_client = (frontend / "app" / "pricing" / "page.tsx").read_text()
+    billing_backend = (BACKEND / "routes" / "billing.py").read_text()
+    security_backend = (BACKEND / "security.py").read_text()
     middleware = (frontend / "middleware.ts").read_text()
     proxy = (frontend / "app" / "api" / "backend" / "[...path]" / "route.ts").read_text()
     vercel = (frontend / "vercel.json").read_text()
 
     assert 'const API_BASE = "/api/backend"' in api_client
     assert 'const API_BASE = "/api/backend"' in billing_client
+    assert "user@example.com" not in pricing_client
+    assert "success_url" not in billing_client
+    assert "require_billing_identity()" in billing_backend
+    assert "AI_DASHBOARD_BILLING_EMAIL" in security_backend
     assert "NEXT_PUBLIC_API_URL" not in api_client + billing_client + vercel
     assert "AI_DASHBOARD_BROWSER_SECRET" in middleware
     assert 'AI_DASHBOARD_ADMIN_TOKEN?.trim()' in middleware + proxy

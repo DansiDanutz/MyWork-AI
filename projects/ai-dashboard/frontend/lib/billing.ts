@@ -22,16 +22,11 @@ export async function getPlans(): Promise<PlansResponse> {
   return res.json();
 }
 
-export async function createCheckout(
-  email: string,
-  plan: string,
-  successUrl: string,
-  cancelUrl: string,
-): Promise<CheckoutResponse> {
+export async function createCheckout(plan: string): Promise<CheckoutResponse> {
   const res = await fetch(API_BASE + "/api/billing/checkout", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, plan, success_url: successUrl, cancel_url: cancelUrl }),
+    body: JSON.stringify({ plan }),
   });
   if (!res.ok) {
     const err = await res.json();
@@ -40,11 +35,11 @@ export async function createCheckout(
   return res.json();
 }
 
-export async function openCustomerPortal(customerId: string, returnUrl: string) {
+export async function openCustomerPortal(customerId: string) {
   const res = await fetch(API_BASE + "/api/billing/portal", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ customer_id: customerId, return_url: returnUrl }),
+    body: JSON.stringify({ customer_id: customerId }),
   });
   if (!res.ok) throw new Error("Portal failed");
   return res.json();

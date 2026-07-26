@@ -111,6 +111,10 @@ Uses API keys from environment (backend `.env` by default via `load_dotenv()`):
 - `AI_DASHBOARD_BROWSER_SECRET` - Separate random value of at least 32 characters used to
   authenticate browser requests before the frontend can proxy to the backend
 - `AI_DASHBOARD_BACKEND_URL` - Server-only backend origin used by the frontend proxy
+- `AI_DASHBOARD_BILLING_EMAIL` - Server-authoritative Stripe customer email; never supplied
+  by browser checkout requests
+- `AI_DASHBOARD_FRONTEND_ORIGIN` - Exact HTTPS origin used for Stripe success, cancel, and
+  customer-portal return URLs (loopback HTTP is allowed for local development)
 - `AI_DASHBOARD_HOST` - Direct development-server bind address (default: `127.0.0.1`)
 
 The frontend challenges every dashboard request with HTTP Basic authentication. Its
@@ -122,7 +126,9 @@ loopback development. The backend token and browser secret must not be the same 
 Before using `start.sh` or `start.bat`, export distinct `AI_DASHBOARD_ADMIN_TOKEN` and
 `AI_DASHBOARD_BROWSER_SECRET` values of at least 32 characters. Production deployments must
 configure those two secrets and `AI_DASHBOARD_BROWSER_USERNAME` in the provider before the
-frontend is promoted.
+frontend is promoted. Billing also remains disabled until the backend has a validated
+`AI_DASHBOARD_BILLING_EMAIL` and `AI_DASHBOARD_FRONTEND_ORIGIN`; client requests cannot
+override either value.
 
 ### Dependency audit exception
 
