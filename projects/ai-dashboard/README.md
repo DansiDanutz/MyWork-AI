@@ -105,6 +105,12 @@ Uses API keys from environment (backend `.env` by default via `load_dotenv()`):
 - `YOUTUBE_UPLOAD_PRIVACY_STATUS` - Upload privacy (default: unlisted)
 - `SIMULATE_YOUTUBE_UPLOAD` - Set true to simulate uploads without OAuth
 - `GITHUB_TOKEN` - Higher rate limits
+- `AI_DASHBOARD_ADMIN_TOKEN` - At least 32 random characters; required as a bearer token
+  for privileged scrape, automation, scheduler, and billing control routes
+- `AI_DASHBOARD_HOST` - Direct development-server bind address (default: `127.0.0.1`)
+
+The public frontend must not receive `AI_DASHBOARD_ADMIN_TOKEN`. Route privileged browser
+requests through a server-side authenticated proxy before reconnecting a deployed backend.
 
 ## YouTube Upload Smoke Test
 

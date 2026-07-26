@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Request, Header, HTTPException
+import logging
+
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 from services.billing_service import get_plans, create_checkout_session, create_customer_portal_session, handle_webhook, STRIPE_ENABLED
-import logging
+
+from security import require_admin
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/billing", tags=["billing"])
@@ -25,7 +28,7 @@ async def list_plans():
 
 
 @router.post("/checkout")
-async def checkout(req: CheckoutRequest):
+async def checkout(req: CheckoutRequest, _admin: None = Depends(require_admin)):
     if not STRIPE_ENABLED:
         raise HTTPException(status_code=503, detail="Billing not configured. Set STRIPE_SECRET_KEY.")
     try:
@@ -37,7 +40,7 @@ async def checkout(req: CheckoutRequest):
 
 
 @router.post("/portal")
-async def customer_portal(req: PortalRequest):
+async def customer_portal(req: PortalRequest, _admin: None = Depends(require_admin)):
     if not STRIPE_ENABLED:
         raise HTTPException(status_code=503, detail="Billing not configured.")
     try:

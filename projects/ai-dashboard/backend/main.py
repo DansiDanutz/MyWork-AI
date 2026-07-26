@@ -35,6 +35,7 @@ from database import (
 # Import scrapers and services
 from scrapers import YouTubeScraper, NewsAggregator, GitHubTrendingScraper
 from services import SchedulerService, YouTubeAutomationService, PromptOptimizer
+from security import require_admin
 
 # Initialize services
 scheduler = SchedulerService()
@@ -243,7 +244,9 @@ async def get_videos(
 
 
 @app.post("/api/videos/scrape")
-async def trigger_video_scrape(db: Session = Depends(get_db)):
+async def trigger_video_scrape(
+    db: Session = Depends(get_db), _admin: None = Depends(require_admin)
+):
     """Manually trigger YouTube scraper"""
     try:
         scraper = YouTubeScraper()
@@ -277,7 +280,9 @@ async def get_trending_news(limit: int = Query(20, ge=1, le=50), db: Session = D
 
 
 @app.post("/api/news/scrape")
-async def trigger_news_scrape(db: Session = Depends(get_db)):
+async def trigger_news_scrape(
+    db: Session = Depends(get_db), _admin: None = Depends(require_admin)
+):
     """Manually trigger news aggregator"""
     try:
         aggregator = NewsAggregator()
@@ -311,7 +316,9 @@ async def get_trending_projects(limit: int = Query(20, ge=1, le=50), db: Session
 
 
 @app.post("/api/projects/scrape")
-async def trigger_projects_scrape(db: Session = Depends(get_db)):
+async def trigger_projects_scrape(
+    db: Session = Depends(get_db), _admin: None = Depends(require_admin)
+):
     """Manually trigger GitHub scraper"""
     try:
         scraper = GitHubTrendingScraper()
@@ -329,6 +336,7 @@ async def get_automations(
     status: Optional[str] = None,
     limit: int = Query(50, ge=1, le=100),
     db: Session = Depends(get_db),
+    _admin: None = Depends(require_admin),
 ):
     """Get all video automations"""
     drafts = youtube_automation.get_all_drafts(db, status=status, limit=limit)
@@ -336,7 +344,11 @@ async def get_automations(
 
 
 @app.get("/api/automation/{automation_id}", response_model=AutomationResponse)
-async def get_automation(automation_id: int, db: Session = Depends(get_db)):
+async def get_automation(
+    automation_id: int,
+    db: Session = Depends(get_db),
+    _admin: None = Depends(require_admin),
+):
     """Get a specific automation"""
     draft = youtube_automation.get_draft(db, automation_id)
     if not draft:
@@ -345,7 +357,11 @@ async def get_automation(automation_id: int, db: Session = Depends(get_db)):
 
 
 @app.post("/api/automation", response_model=AutomationResponse)
-async def create_automation(data: AutomationCreate, db: Session = Depends(get_db)):
+async def create_automation(
+    data: AutomationCreate,
+    db: Session = Depends(get_db),
+    _admin: None = Depends(require_admin),
+):
     """Create a new video automation from prompt"""
     try:
         draft = await youtube_automation.create_video_draft(
@@ -361,7 +377,10 @@ async def create_automation(data: AutomationCreate, db: Session = Depends(get_db
 
 @app.patch("/api/automation/{automation_id}", response_model=AutomationResponse)
 async def update_automation(
-    automation_id: int, data: AutomationUpdate, db: Session = Depends(get_db)
+    automation_id: int,
+    data: AutomationUpdate,
+    db: Session = Depends(get_db),
+    _admin: None = Depends(require_admin),
 ):
     """Update a video automation draft"""
     try:
@@ -375,7 +394,11 @@ async def update_automation(
 
 
 @app.post("/api/automation/{automation_id}/generate-video")
-async def generate_video(automation_id: int, db: Session = Depends(get_db)):
+async def generate_video(
+    automation_id: int,
+    db: Session = Depends(get_db),
+    _admin: None = Depends(require_admin),
+):
     """Generate HeyGen video for automation"""
     try:
         draft = await youtube_automation.generate_heygen_video(db, automation_id)
@@ -387,14 +410,22 @@ async def generate_video(automation_id: int, db: Session = Depends(get_db)):
 
 
 @app.get("/api/automation/{automation_id}/video-status")
-async def check_video_status(automation_id: int, db: Session = Depends(get_db)):
+async def check_video_status(
+    automation_id: int,
+    db: Session = Depends(get_db),
+    _admin: None = Depends(require_admin),
+):
     """Check HeyGen video generation status"""
     status = await youtube_automation.check_heygen_status(db, automation_id)
     return status
 
 
 @app.post("/api/automation/{automation_id}/approve")
-async def approve_automation(automation_id: int, db: Session = Depends(get_db)):
+async def approve_automation(
+    automation_id: int,
+    db: Session = Depends(get_db),
+    _admin: None = Depends(require_admin),
+):
     """Approve and upload video to YouTube"""
     try:
         draft = await youtube_automation.approve_and_upload(db, automation_id)
@@ -414,13 +445,13 @@ async def approve_automation(automation_id: int, db: Session = Depends(get_db)):
 
 
 @app.get("/api/scheduler/status")
-async def get_scheduler_status():
+async def get_scheduler_status(_admin: None = Depends(require_admin)):
     """Get scheduler job status"""
     return scheduler.get_job_status()
 
 
 @app.post("/api/scheduler/run/{job_id}")
-async def run_job(job_id: str):
+async def run_job(job_id: str, _admin: None = Depends(require_admin)):
     """Manually trigger a scheduled job"""
     try:
         await scheduler.run_job_now(job_id)
@@ -465,4 +496,9 @@ async def get_stats(db: Session = Depends(get_db)):
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(
+        "main:app",
+        host=os.getenv("AI_DASHBOARD_HOST", "127.0.0.1"),
+        port=8000,
+        reload=True,
+    )
