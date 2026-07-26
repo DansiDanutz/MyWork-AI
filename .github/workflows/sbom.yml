@@ -33,7 +33,7 @@ jobs:
 
       - name: Install MyWork-AI dependencies
         run: |
-          pip install -e .
+          python -m pip install --upgrade 'setuptools>=83'
           pip install -e ".[api,dev]"
 
       - name: Generate SBOM (Python)
