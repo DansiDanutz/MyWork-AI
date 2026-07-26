@@ -23,8 +23,8 @@ import {
 } from "@/lib/api";
 
 export default function AutomationDetailClient() {
-  const params = useParams();
-  const automationId = parseInt(params.id as string);
+  const params = useParams<{ id: string }>();
+  const automationId = Number.parseInt(params?.id ?? "", 10);
 
   const [automation, setAutomation] = useState<Automation | null>(null);
   const [loading, setLoading] = useState(true);

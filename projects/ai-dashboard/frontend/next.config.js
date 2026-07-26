@@ -8,13 +8,6 @@ const nextConfig = {
     ],
     unoptimized: true,
   },
-  // Skip type checking during build for faster iteration
-  typescript: {
-    ignoreBuildErrors: true,
-  },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   // Disable barrel optimization for react-icons to fix import errors
   transpilePackages: ["react-icons"],
   experimental: {
