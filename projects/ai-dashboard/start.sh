@@ -29,10 +29,11 @@ if [ ! -d "$SCRIPT_DIR/frontend/node_modules" ]; then
 fi
 
 # Start backend in background
-echo "Starting backend (FastAPI) on port 8000..."
+BACKEND_HOST="${AI_DASHBOARD_HOST:-127.0.0.1}"
+echo "Starting backend (FastAPI) at ${BACKEND_HOST}:8000..."
 cd "$SCRIPT_DIR/backend"
 source venv/bin/activate
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload &
+uvicorn main:app --host "$BACKEND_HOST" --port 8000 --reload &
 BACKEND_PID=$!
 
 # Give backend time to start

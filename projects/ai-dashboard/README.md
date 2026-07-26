@@ -112,6 +112,15 @@ Uses API keys from environment (backend `.env` by default via `load_dotenv()`):
 The public frontend must not receive `AI_DASHBOARD_ADMIN_TOKEN`. Route privileged browser
 requests through a server-side authenticated proxy before reconnecting a deployed backend.
 
+### Dependency audit exception
+
+DSPy currently resolves DiskCache 5.6.3, for which `pip-audit` reports
+`PYSEC-2026-2447` (unsafe pickle deserialization) with no fixed release. The dashboard
+disables DSPy disk caching before use and retains memory caching only. CI ignores exactly
+that advisory for the deployed requirements and continues to block every other finding.
+[Issue #6](https://github.com/DansiDanutz/MyWork-AI/issues/6) tracks removal of the
+exception when a compatible fix ships.
+
 ## YouTube Upload Smoke Test
 
 Run from the backend directory after setting OAuth env vars:

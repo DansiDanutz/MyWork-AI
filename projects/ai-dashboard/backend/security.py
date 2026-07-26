@@ -1,5 +1,7 @@
 """Fail-closed authentication for the personal dashboard control plane."""
 
+from __future__ import annotations
+
 import os
 from hmac import compare_digest
 from typing import Annotated

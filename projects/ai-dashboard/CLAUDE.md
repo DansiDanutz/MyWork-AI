@@ -7,8 +7,8 @@
 **Status**: ✅ MVP Complete, Audited (Phase 7 complete)
 
 **Tech Stack**:
-- Backend: FastAPI + Python 3.9+
-- Frontend: Next.js 14 + React + TypeScript
+- Backend: FastAPI + Python 3.10+
+- Frontend: Next.js 15 + React + TypeScript
 - Database: SQLite
 - Scraping: BeautifulSoup, yt-dlp, Feedparser
 - Automation: APScheduler, Python-OAuth2

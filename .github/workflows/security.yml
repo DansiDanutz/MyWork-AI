@@ -66,6 +66,10 @@ jobs:
           python -m pip install --upgrade 'setuptools>=83'
           pip install -e . pip-audit
           pip-audit
+          # Disk caching is disabled in prompt_optimizer.py; remove this one-ID
+          # exception when https://github.com/DansiDanutz/MyWork-AI/issues/6 closes.
+          pip-audit -r projects/ai-dashboard/backend/requirements.txt \
+            --ignore-vuln PYSEC-2026-2447
 
   code-quality:
     name: Code Quality

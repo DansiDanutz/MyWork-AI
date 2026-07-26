@@ -7,6 +7,10 @@ import dspy
 
 logger = logging.getLogger(__name__)
 
+# DiskCache 5.6.3 has no fixed release for PYSEC-2026-2447. Keep DSPy caching
+# in memory so application data never crosses its unsafe pickle boundary.
+dspy.configure_cache(enable_disk_cache=False, enable_memory_cache=True)
+
 
 class VideoScriptSignature(dspy.Signature):
     """Generate an engaging YouTube video script about an AI topic"""

@@ -30,6 +30,17 @@ def test_admin_auth_fails_closed_without_configuration(monkeypatch):
     assert error.value.status_code == 503
 
 
+def test_example_environment_cannot_authenticate():
+    example = (BACKEND / ".env.example").read_text().splitlines()
+    configured = next(
+        line.partition("=")[2]
+        for line in example
+        if line.startswith("AI_DASHBOARD_ADMIN_TOKEN=")
+    )
+
+    assert configured == ""
+
+
 @pytest.mark.parametrize("authorization", [None, "", "Basic token", "Bearer wrong-token"])
 def test_admin_auth_rejects_missing_or_invalid_bearer(monkeypatch, authorization):
     monkeypatch.setenv("AI_DASHBOARD_ADMIN_TOKEN", ADMIN_TOKEN)
@@ -107,5 +118,17 @@ def test_every_privileged_dashboard_route_requires_admin():
 
 def test_dashboard_development_server_defaults_to_loopback():
     source = (BACKEND / "main.py").read_text()
+    shell_launcher = (BACKEND.parent / "start.sh").read_text()
+    windows_launcher = (BACKEND.parent / "start.bat").read_text()
 
     assert 'os.getenv("AI_DASHBOARD_HOST", "127.0.0.1")' in source
+    assert '${AI_DASHBOARD_HOST:-127.0.0.1}' in shell_launcher
+    assert 'set "AI_DASHBOARD_HOST=127.0.0.1"' in windows_launcher
+    assert "--host 0.0.0.0" not in shell_launcher
+    assert "--host 0.0.0.0" not in windows_launcher
+
+
+def test_dspy_disk_cache_is_disabled():
+    source = (BACKEND / "services" / "prompt_optimizer.py").read_text()
+
+    assert "dspy.configure_cache(enable_disk_cache=False, enable_memory_cache=True)" in source

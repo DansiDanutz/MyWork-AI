@@ -29,8 +29,9 @@ if not exist "frontend\node_modules" (
     echo.
 )
 
-echo Starting backend (FastAPI) on port 8000...
-start "AI Dashboard Backend" cmd /c "cd backend && venv\Scripts\activate && uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+if "%AI_DASHBOARD_HOST%"=="" set "AI_DASHBOARD_HOST=127.0.0.1"
+echo Starting backend (FastAPI) at %AI_DASHBOARD_HOST%:8000...
+start "AI Dashboard Backend" cmd /c "cd backend && venv\Scripts\activate && uvicorn main:app --host %AI_DASHBOARD_HOST% --port 8000 --reload"
 
 REM Give backend time to start
 timeout /t 3 /nobreak > nul
