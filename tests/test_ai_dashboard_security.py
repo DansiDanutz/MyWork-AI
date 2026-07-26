@@ -146,6 +146,7 @@ def test_frontend_uses_authenticated_server_proxy_for_backend_access():
     assert 'const API_BASE = "/api/backend"' in billing_client
     assert "NEXT_PUBLIC_API_URL" not in api_client + billing_client + vercel
     assert "AI_DASHBOARD_BROWSER_SECRET" in middleware
+    assert 'AI_DASHBOARD_ADMIN_TOKEN?.trim()' in middleware + proxy
     assert 'headers.set("authorization", `Bearer ${config.backendToken}`)' in proxy
     assert "const headers = new Headers" in proxy
     assert 'redirect: "manual"' in proxy

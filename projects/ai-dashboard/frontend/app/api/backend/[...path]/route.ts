@@ -17,7 +17,7 @@ function authConfig(): BrowserAuthConfig & { backendUrl: string } {
   return {
     username: process.env.AI_DASHBOARD_BROWSER_USERNAME?.trim() ?? "",
     browserSecret: process.env.AI_DASHBOARD_BROWSER_SECRET ?? "",
-    backendToken: process.env.AI_DASHBOARD_ADMIN_TOKEN ?? "",
+    backendToken: process.env.AI_DASHBOARD_ADMIN_TOKEN?.trim() ?? "",
     backendUrl: process.env.AI_DASHBOARD_BACKEND_URL?.trim() ?? "",
   };
 }
