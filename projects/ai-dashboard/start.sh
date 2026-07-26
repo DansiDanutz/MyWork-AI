@@ -10,6 +10,19 @@ echo "       AI Dashboard - Starting Up        "
 echo "=========================================="
 echo ""
 
+if [ "${#AI_DASHBOARD_ADMIN_TOKEN}" -lt 32 ] || [ "${#AI_DASHBOARD_BROWSER_SECRET}" -lt 32 ]; then
+    echo "AI_DASHBOARD_ADMIN_TOKEN and AI_DASHBOARD_BROWSER_SECRET must each be at least 32 characters."
+    exit 1
+fi
+
+if [ "$AI_DASHBOARD_ADMIN_TOKEN" = "$AI_DASHBOARD_BROWSER_SECRET" ]; then
+    echo "Backend and browser credentials must be different."
+    exit 1
+fi
+
+export AI_DASHBOARD_BROWSER_USERNAME="${AI_DASHBOARD_BROWSER_USERNAME:-admin}"
+export AI_DASHBOARD_BACKEND_URL="${AI_DASHBOARD_BACKEND_URL:-http://127.0.0.1:8000}"
+
 # Check for Python virtual environment
 if [ ! -d "$SCRIPT_DIR/backend/venv" ]; then
     echo "Creating Python virtual environment..."

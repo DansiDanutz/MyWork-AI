@@ -107,10 +107,22 @@ Uses API keys from environment (backend `.env` by default via `load_dotenv()`):
 - `GITHUB_TOKEN` - Higher rate limits
 - `AI_DASHBOARD_ADMIN_TOKEN` - At least 32 random characters; required as a bearer token
   for privileged scrape, automation, scheduler, and billing control routes
+- `AI_DASHBOARD_BROWSER_USERNAME` - HTTP Basic username for the personal frontend
+- `AI_DASHBOARD_BROWSER_SECRET` - Separate random value of at least 32 characters used to
+  authenticate browser requests before the frontend can proxy to the backend
+- `AI_DASHBOARD_BACKEND_URL` - Server-only backend origin used by the frontend proxy
 - `AI_DASHBOARD_HOST` - Direct development-server bind address (default: `127.0.0.1`)
 
-The public frontend must not receive `AI_DASHBOARD_ADMIN_TOKEN`. Route privileged browser
-requests through a server-side authenticated proxy before reconnecting a deployed backend.
+The frontend challenges every dashboard request with HTTP Basic authentication. Its
+same-origin `/api/backend/*` route validates that separate browser credential, rejects
+cross-origin mutations, and adds `AI_DASHBOARD_ADMIN_TOKEN` only on the server. Never expose
+either secret through a `NEXT_PUBLIC_*` variable, and use this flow only over HTTPS outside
+loopback development. The backend token and browser secret must not be the same value.
+
+Before using `start.sh` or `start.bat`, export distinct `AI_DASHBOARD_ADMIN_TOKEN` and
+`AI_DASHBOARD_BROWSER_SECRET` values of at least 32 characters. Production deployments must
+configure those two secrets and `AI_DASHBOARD_BROWSER_USERNAME` in the provider before the
+frontend is promoted.
 
 ### Dependency audit exception
 

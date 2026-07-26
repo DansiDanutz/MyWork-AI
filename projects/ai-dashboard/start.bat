@@ -7,6 +7,15 @@ echo        AI Dashboard - Starting Up
 echo ==========================================
 echo.
 
+powershell -NoProfile -Command "if (($env:AI_DASHBOARD_ADMIN_TOKEN).Length -lt 32 -or ($env:AI_DASHBOARD_BROWSER_SECRET).Length -lt 32 -or $env:AI_DASHBOARD_ADMIN_TOKEN -eq $env:AI_DASHBOARD_BROWSER_SECRET) { exit 1 }"
+if errorlevel 1 (
+    echo AI_DASHBOARD_ADMIN_TOKEN and AI_DASHBOARD_BROWSER_SECRET must be different values of at least 32 characters.
+    exit /b 1
+)
+
+if "%AI_DASHBOARD_BROWSER_USERNAME%"=="" set "AI_DASHBOARD_BROWSER_USERNAME=admin"
+if "%AI_DASHBOARD_BACKEND_URL%"=="" set "AI_DASHBOARD_BACKEND_URL=http://127.0.0.1:8000"
+
 cd /d "%~dp0"
 
 REM Check for Python virtual environment

@@ -64,5 +64,8 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Test browser authentication
+        run: npm run test:browser-auth
+
       - name: Build with type checks
         run: npm run build

@@ -132,3 +132,20 @@ def test_dspy_disk_cache_is_disabled():
     source = (BACKEND / "services" / "prompt_optimizer.py").read_text()
 
     assert "dspy.configure_cache(enable_disk_cache=False, enable_memory_cache=True)" in source
+
+
+def test_frontend_uses_authenticated_server_proxy_for_backend_access():
+    frontend = BACKEND.parent / "frontend"
+    api_client = (frontend / "lib" / "api.ts").read_text()
+    billing_client = (frontend / "lib" / "billing.ts").read_text()
+    middleware = (frontend / "middleware.ts").read_text()
+    proxy = (frontend / "app" / "api" / "backend" / "[...path]" / "route.ts").read_text()
+    vercel = (frontend / "vercel.json").read_text()
+
+    assert 'const API_BASE = "/api/backend"' in api_client
+    assert 'const API_BASE = "/api/backend"' in billing_client
+    assert "NEXT_PUBLIC_API_URL" not in api_client + billing_client + vercel
+    assert "AI_DASHBOARD_BROWSER_SECRET" in middleware
+    assert 'headers.set("authorization", `Bearer ${config.backendToken}`)' in proxy
+    assert "const headers = new Headers" in proxy
+    assert 'redirect: "manual"' in proxy
