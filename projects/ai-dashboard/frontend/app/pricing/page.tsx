@@ -44,8 +44,8 @@ export default function PricingPage() {
         origin + "/pricing?canceled=true",
       );
       window.location.href = result.url;
-    } catch (e: any) {
-      setError(e.message || "Checkout failed");
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Checkout failed");
       setLoading(null);
     }
   }

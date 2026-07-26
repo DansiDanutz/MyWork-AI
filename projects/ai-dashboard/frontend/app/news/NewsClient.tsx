@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   LuRefreshCw,
   LuExternalLink,
@@ -18,11 +18,7 @@ export default function NewsClient() {
   const [showTrending, setShowTrending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchNews();
-  }, [showTrending]);
-
-  const fetchNews = async () => {
+  const fetchNews = useCallback(async () => {
     try {
       setLoading(true);
       const data = showTrending ? await getTrendingNews(30) : await getNews(50);
@@ -34,7 +30,11 @@ export default function NewsClient() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showTrending]);
+
+  useEffect(() => {
+    void fetchNews();
+  }, [fetchNews]);
 
   const handleScrape = async () => {
     try {
@@ -137,6 +137,8 @@ export default function NewsClient() {
               {/* Thumbnail */}
               {item.thumbnail_url && (
                 <div className="hidden md:block flex-shrink-0">
+                  {/* URL hosts are supplied by third-party news feeds, so they cannot be safely allowlisted. */}
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={item.thumbnail_url}
                     alt={item.title}
@@ -211,7 +213,7 @@ export default function NewsClient() {
       {news.length === 0 && !error && (
         <div className="text-center py-12 text-gray-500">
           <LuMessageSquare className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>No news yet. Click "Scrape Now" to fetch AI news.</p>
+          <p>No news yet. Click &quot;Scrape Now&quot; to fetch AI news.</p>
         </div>
       )}
     </div>

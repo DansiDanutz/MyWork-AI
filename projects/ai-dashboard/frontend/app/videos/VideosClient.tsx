@@ -108,6 +108,8 @@ export default function VideosClient() {
             {/* Thumbnail */}
             <div className="relative aspect-video bg-gray-100">
               {video.thumbnail_url ? (
+                // YouTube thumbnail URLs are already optimized and the app's image proxy is disabled.
+                // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={video.thumbnail_url}
                   alt={video.title}
@@ -162,7 +164,7 @@ export default function VideosClient() {
       {videos.length === 0 && !error && (
         <div className="text-center py-12 text-gray-500">
           <LuPlay className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>No videos yet. Click "Scrape Now" to fetch AI videos.</p>
+          <p>No videos yet. Click &quot;Scrape Now&quot; to fetch AI videos.</p>
         </div>
       )}
     </div>

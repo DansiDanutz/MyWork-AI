@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 // Server component - force dynamic to prevent SSG prerendering
 export const dynamic = "force-dynamic";
 export const runtime = "edge";
@@ -43,7 +45,7 @@ export default function NotFound() {
         >
           The page you are looking for does not exist.
         </p>
-        <a
+        <Link
           href="/"
           style={{
             display: "inline-block",
@@ -56,7 +58,7 @@ export default function NotFound() {
           }}
         >
           Go Home
-        </a>
+        </Link>
       </div>
     </div>
   );
