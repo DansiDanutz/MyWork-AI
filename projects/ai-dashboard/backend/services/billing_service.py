@@ -35,21 +35,37 @@ PLANS = {
 }
 
 
+class BillingIdentityError(RuntimeError):
+    """Raised when the configured Stripe customer does not match the billing owner."""
+
+
 def get_plans():
     return {k: {'name': v['name'], 'price': v['price'], 'features': v['features']} for k, v in PLANS.items()}
 
 
-def create_checkout_session(user_email, plan_key, success_url, cancel_url):
+def _require_customer_identity(customer_id, user_email):
+    customer = stripe.Customer.retrieve(customer_id)
+    if (
+        getattr(customer, 'deleted', False)
+        or not customer.email
+        or customer.email.casefold() != user_email.casefold()
+    ):
+        raise BillingIdentityError('Configured Stripe customer does not match the billing identity.')
+    return customer
+
+
+def create_checkout_session(user_email, customer_id, plan_key, success_url, cancel_url):
     if not STRIPE_ENABLED:
         raise RuntimeError('Stripe is not configured. Set STRIPE_SECRET_KEY.')
     plan = PLANS.get(plan_key)
     if not plan or not plan.get('stripe_price_id'):
         raise ValueError(f'Invalid plan: {plan_key}')
     try:
+        customer = _require_customer_identity(customer_id, user_email)
         session = stripe.checkout.Session.create(
             mode='subscription',
             payment_method_types=['card'],
-            customer_email=user_email,
+            customer=customer.id,
             line_items=[{'price': plan['stripe_price_id'], 'quantity': 1}],
             success_url=success_url,
             cancel_url=cancel_url,
@@ -59,28 +75,22 @@ def create_checkout_session(user_email, plan_key, success_url, cancel_url):
         return {'session_id': session.id, 'url': session.url}
     except stripe.error.StripeError as e:
         logger.error(f'Stripe checkout error: {e}')
-        raise
+        raise RuntimeError('Stripe checkout failed.') from e
 
 
-def create_customer_portal_session(user_email, return_url):
+def create_customer_portal_session(customer_id, user_email, return_url):
     if not STRIPE_ENABLED:
         raise RuntimeError('Stripe is not configured.')
     try:
-        customers = stripe.Customer.list(email=user_email, limit=2).data
-        if (
-            len(customers) != 1
-            or not customers[0].email
-            or customers[0].email.casefold() != user_email.casefold()
-        ):
-            raise ValueError('Configured billing identity must resolve to exactly one customer.')
+        customer = _require_customer_identity(customer_id, user_email)
         session = stripe.billing_portal.Session.create(
-            customer=customers[0].id,
+            customer=customer.id,
             return_url=return_url,
         )
         return {'url': session.url}
     except stripe.error.StripeError as e:
         logger.error(f'Stripe portal error: {e}')
-        raise
+        raise RuntimeError('Stripe portal failed.') from e
 
 
 def handle_webhook(payload, sig_header):

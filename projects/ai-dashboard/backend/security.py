@@ -15,6 +15,7 @@ HOSTNAME_PATTERN = re.compile(
     r"(?=.{1,253}\Z)(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)*"
     r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
 )
+STRIPE_CUSTOMER_PATTERN = re.compile(r"cus_[A-Za-z0-9]{8,64}")
 
 
 def require_billing_identity() -> tuple[str, str]:
@@ -60,6 +61,14 @@ def require_billing_identity() -> tuple[str, str]:
         raise HTTPException(status_code=503, detail="Billing identity is not configured")
 
     return email, configured_origin.rstrip("/")
+
+
+def require_stripe_customer_id() -> str:
+    """Return the server-owned Stripe customer identifier for the billing identity."""
+    customer_id = os.getenv("AI_DASHBOARD_STRIPE_CUSTOMER_ID", "").strip()
+    if not STRIPE_CUSTOMER_PATTERN.fullmatch(customer_id):
+        raise HTTPException(status_code=503, detail="Stripe customer identity is not configured")
+    return customer_id
 
 
 def require_admin(authorization: Annotated[str | None, Header()] = None) -> None:

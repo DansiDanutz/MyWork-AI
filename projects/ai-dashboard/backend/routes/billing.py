@@ -2,7 +2,7 @@ import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, ConfigDict
-from security import require_admin, require_billing_identity
+from security import require_admin, require_billing_identity, require_stripe_customer_id
 from services.billing_service import (
     STRIPE_ENABLED,
     create_checkout_session,
@@ -31,9 +31,11 @@ async def checkout(req: CheckoutRequest, _admin: None = Depends(require_admin)):
     if not STRIPE_ENABLED:
         raise HTTPException(status_code=503, detail="Billing not configured. Set STRIPE_SECRET_KEY.")
     email, frontend_origin = require_billing_identity()
+    customer_id = require_stripe_customer_id()
     try:
         return create_checkout_session(
             email,
+            customer_id,
             req.plan,
             f"{frontend_origin}/pricing?success=true",
             f"{frontend_origin}/pricing?canceled=true",
@@ -49,13 +51,12 @@ async def customer_portal(_admin: None = Depends(require_admin)):
     if not STRIPE_ENABLED:
         raise HTTPException(status_code=503, detail="Billing not configured.")
     email, frontend_origin = require_billing_identity()
+    customer_id = require_stripe_customer_id()
     try:
-        return create_customer_portal_session(email, frontend_origin)
-    except ValueError as e:
+        return create_customer_portal_session(customer_id, email, frontend_origin)
+    except RuntimeError as e:
         logger.warning("Billing portal identity resolution failed: %s", e)
         raise HTTPException(status_code=503, detail="Billing portal unavailable.") from e
-    except RuntimeError as e:
-        raise HTTPException(status_code=503, detail=str(e)) from e
 
 
 @router.post("/webhook")
