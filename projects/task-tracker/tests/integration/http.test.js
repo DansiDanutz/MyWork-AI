@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports -- Node's test runner executes this CommonJS smoke test directly. */
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
