@@ -35,11 +35,9 @@ export async function createCheckout(plan: string): Promise<CheckoutResponse> {
   return res.json();
 }
 
-export async function openCustomerPortal(customerId: string) {
+export async function openCustomerPortal() {
   const res = await fetch(API_BASE + "/api/billing/portal", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ customer_id: customerId }),
   });
   if (!res.ok) throw new Error("Portal failed");
   return res.json();

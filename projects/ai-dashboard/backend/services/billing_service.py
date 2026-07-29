@@ -1,7 +1,7 @@
 """Stripe Billing Service for MyWork AI."""
 
-import os
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -62,11 +62,21 @@ def create_checkout_session(user_email, plan_key, success_url, cancel_url):
         raise
 
 
-def create_customer_portal_session(customer_id, return_url):
+def create_customer_portal_session(user_email, return_url):
     if not STRIPE_ENABLED:
         raise RuntimeError('Stripe is not configured.')
     try:
-        session = stripe.billing_portal.Session.create(customer=customer_id, return_url=return_url)
+        customers = stripe.Customer.list(email=user_email, limit=2).data
+        if (
+            len(customers) != 1
+            or not customers[0].email
+            or customers[0].email.casefold() != user_email.casefold()
+        ):
+            raise ValueError('Configured billing identity must resolve to exactly one customer.')
+        session = stripe.billing_portal.Session.create(
+            customer=customers[0].id,
+            return_url=return_url,
+        )
         return {'url': session.url}
     except stripe.error.StripeError as e:
         logger.error(f'Stripe portal error: {e}')
@@ -83,7 +93,7 @@ def handle_webhook(payload, sig_header):
         event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
     except stripe.error.SignatureVerificationError:
         logger.warning('Invalid webhook signature')
-        raise ValueError('Invalid signature')
+        raise ValueError('Invalid signature') from None
     event_type = event['type']
     data = event['data']['object']
     if event_type == 'checkout.session.completed':

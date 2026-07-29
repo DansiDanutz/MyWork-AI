@@ -21,12 +21,6 @@ class CheckoutRequest(BaseModel):
     plan: str
 
 
-class PortalRequest(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    customer_id: str
-
-
 @router.get("/plans")
 async def list_plans():
     return {"plans": get_plans(), "stripe_enabled": STRIPE_ENABLED}
@@ -51,12 +45,15 @@ async def checkout(req: CheckoutRequest, _admin: None = Depends(require_admin)):
 
 
 @router.post("/portal")
-async def customer_portal(req: PortalRequest, _admin: None = Depends(require_admin)):
+async def customer_portal(_admin: None = Depends(require_admin)):
     if not STRIPE_ENABLED:
         raise HTTPException(status_code=503, detail="Billing not configured.")
-    _, frontend_origin = require_billing_identity()
+    email, frontend_origin = require_billing_identity()
     try:
-        return create_customer_portal_session(req.customer_id, frontend_origin)
+        return create_customer_portal_session(email, frontend_origin)
+    except ValueError as e:
+        logger.warning("Billing portal identity resolution failed: %s", e)
+        raise HTTPException(status_code=503, detail="Billing portal unavailable.") from e
     except RuntimeError as e:
         raise HTTPException(status_code=503, detail=str(e)) from e
 

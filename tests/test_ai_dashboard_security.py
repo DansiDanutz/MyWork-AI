@@ -2,7 +2,9 @@
 
 import ast
 import importlib.util
+import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 from fastapi import HTTPException
@@ -17,6 +19,38 @@ def load_security_module():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def load_billing_service(monkeypatch, customers):
+    calls = {}
+
+    class Customer:
+        @staticmethod
+        def list(**kwargs):
+            calls["customer_list"] = kwargs
+            return SimpleNamespace(data=customers)
+
+    class PortalSession:
+        @staticmethod
+        def create(**kwargs):
+            calls["portal_session"] = kwargs
+            return SimpleNamespace(url="https://billing.stripe.test/session")
+
+    stripe = SimpleNamespace(
+        api_key=None,
+        Customer=Customer,
+        billing_portal=SimpleNamespace(Session=PortalSession),
+        error=SimpleNamespace(StripeError=Exception),
+    )
+    monkeypatch.setitem(sys.modules, "stripe", stripe)
+    monkeypatch.setenv("STRIPE_SECRET_KEY", "sk_test_configured")
+    spec = importlib.util.spec_from_file_location(
+        "ai_dashboard_billing_service",
+        BACKEND / "services" / "billing_service.py",
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module, calls
 
 
 def test_admin_auth_fails_closed_without_configuration(monkeypatch):
@@ -115,6 +149,48 @@ def test_billing_identity_accepts_configured_https_origin(monkeypatch):
     )
 
 
+def test_portal_customer_is_derived_from_configured_billing_email(monkeypatch):
+    service, calls = load_billing_service(
+        monkeypatch,
+        [SimpleNamespace(id="cus_server_resolved", email="owner@example.com")],
+    )
+
+    result = service.create_customer_portal_session(
+        "owner@example.com",
+        "https://dashboard.example.com",
+    )
+
+    assert calls["customer_list"] == {"email": "owner@example.com", "limit": 2}
+    assert calls["portal_session"] == {
+        "customer": "cus_server_resolved",
+        "return_url": "https://dashboard.example.com",
+    }
+    assert result == {"url": "https://billing.stripe.test/session"}
+
+
+@pytest.mark.parametrize(
+    "customers",
+    [
+        [],
+        [SimpleNamespace(id="cus_wrong", email="other@example.com")],
+        [
+            SimpleNamespace(id="cus_1", email="owner@example.com"),
+            SimpleNamespace(id="cus_2", email="owner@example.com"),
+        ],
+    ],
+)
+def test_portal_customer_resolution_fails_closed_when_not_unique(monkeypatch, customers):
+    service, calls = load_billing_service(monkeypatch, customers)
+
+    with pytest.raises(ValueError, match="exactly one customer"):
+        service.create_customer_portal_session(
+            "owner@example.com",
+            "https://dashboard.example.com",
+        )
+
+    assert "portal_session" not in calls
+
+
 def protected_functions(path):
     tree = ast.parse(path.read_text())
 
@@ -196,6 +272,7 @@ def test_frontend_uses_authenticated_server_proxy_for_backend_access():
     assert "user@example.com" not in pricing_client
     assert "success_url" not in billing_client
     assert "require_billing_identity()" in billing_backend
+    assert "customer_id" not in billing_backend + billing_client
     assert "AI_DASHBOARD_BILLING_EMAIL" in security_backend
     assert "NEXT_PUBLIC_API_URL" not in api_client + billing_client + vercel
     assert "AI_DASHBOARD_BROWSER_SECRET" in middleware
