@@ -10,6 +10,19 @@ echo "       AI Dashboard - Starting Up        "
 echo "=========================================="
 echo ""
 
+if [ "${#AI_DASHBOARD_ADMIN_TOKEN}" -lt 32 ] || [ "${#AI_DASHBOARD_BROWSER_SECRET}" -lt 32 ]; then
+    echo "AI_DASHBOARD_ADMIN_TOKEN and AI_DASHBOARD_BROWSER_SECRET must each be at least 32 characters."
+    exit 1
+fi
+
+if [ "$AI_DASHBOARD_ADMIN_TOKEN" = "$AI_DASHBOARD_BROWSER_SECRET" ]; then
+    echo "Backend and browser credentials must be different."
+    exit 1
+fi
+
+export AI_DASHBOARD_BROWSER_USERNAME="${AI_DASHBOARD_BROWSER_USERNAME:-admin}"
+export AI_DASHBOARD_BACKEND_URL="${AI_DASHBOARD_BACKEND_URL:-http://127.0.0.1:8000}"
+
 # Check for Python virtual environment
 if [ ! -d "$SCRIPT_DIR/backend/venv" ]; then
     echo "Creating Python virtual environment..."
@@ -29,10 +42,11 @@ if [ ! -d "$SCRIPT_DIR/frontend/node_modules" ]; then
 fi
 
 # Start backend in background
-echo "Starting backend (FastAPI) on port 8000..."
+BACKEND_HOST="${AI_DASHBOARD_HOST:-127.0.0.1}"
+echo "Starting backend (FastAPI) at ${BACKEND_HOST}:8000..."
 cd "$SCRIPT_DIR/backend"
 source venv/bin/activate
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload &
+uvicorn main:app --host "$BACKEND_HOST" --port 8000 --reload &
 BACKEND_PID=$!
 
 # Give backend time to start

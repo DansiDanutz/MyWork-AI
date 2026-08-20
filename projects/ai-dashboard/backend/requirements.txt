@@ -19,7 +19,7 @@ feedparser>=6.0.10
 
 # AI/LLM
 anthropic>=0.18.1
-dspy-ai>=2.4.0
+dspy-ai>=3.2.1
 
 # Environment
 python-dotenv>=1.0.0

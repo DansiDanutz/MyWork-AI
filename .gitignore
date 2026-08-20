@@ -153,6 +153,8 @@ pnpm-lock.yaml
 
 # Build outputs
 .next/
+.auth-test/
+*.tsbuildinfo
 .nuxt/
 dist/
 out/
