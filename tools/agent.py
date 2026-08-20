@@ -31,18 +31,20 @@ Agent YAML format:
         description: Read a file
         parameters:
           path: {type: string, description: File path}
-        command: "cat {path}"
+        command: "cat -- '{path}'"
     mcpServers:
       - url: https://example.com/mcp
         headers:
           Authorization: "Bearer ${MY_TOKEN}"
 """
 
+import html
 import json
 import os
-import sys
-import subprocess
 import re
+import shlex
+import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -50,6 +52,7 @@ from typing import Any, Dict, List, Optional
 # Lazy imports for optional deps
 yaml = None
 litellm = None
+WEB_CHAT_HOST = "127.0.0.1"
 
 
 def _ensure_yaml():
@@ -101,31 +104,25 @@ instructions: |
   You are a helpful AI assistant named {name}.
   Be concise, accurate, and helpful.
 
-# Tools the agent can call (shell commands with parameter substitution)
+# Tools the agent can call (argument-vector commands with parameter substitution)
 tools:
   - name: web_search
     description: Search the web for information
     parameters:
       query: {{type: string, description: "Search query"}}
-    command: "curl -s 'https://html.duckduckgo.com/html/?q={{query}}' | head -100"
+    command: "curl -sS --max-filesize 100000 'https://html.duckduckgo.com/html/?q={{query}}'"
 
   - name: read_file
     description: Read contents of a file
     parameters:
       path: {{type: string, description: "File path to read"}}
-    command: "cat '{{path}}'"
+    command: "cat -- '{{path}}'"
 
   - name: list_files
     description: List files in a directory
     parameters:
       dir: {{type: string, description: "Directory path", default: "."}}
-    command: "ls -la '{{dir}}'"
-
-  - name: run_command
-    description: Run a shell command
-    parameters:
-      cmd: {{type: string, description: "Shell command to execute"}}
-    command: "{{cmd}}"
+    command: "ls -la -- '{{dir}}'"
 
 # MCP Servers (optional)
 # mcpServers:
@@ -296,17 +293,28 @@ def _format_command(template: str, arguments: Dict[str, Any]) -> str:
         command = command.replace(f"{{{key}}}", str(value))
     return command
 
+
+def _command_argv(template: str, arguments: Dict[str, Any]) -> List[str]:
+    """Build an argv without allowing parameters to change the executable or shell syntax."""
+    argv = shlex.split(template)
+    if not argv:
+        return []
+    if re.search(r"\{[^{}]+\}", argv[0]):
+        raise ValueError("Tool executable must be fixed in configuration")
+
+    return [_format_command(token, arguments) for token in argv]
+
 def _execute_tool(tool_config: Dict, arguments: Dict[str, Any]) -> str:
     """Execute a tool command with parameter substitution."""
     command = tool_config.get("command", "")
     
-    # Substitute parameters using the _format_command helper
-    command = _format_command(command, arguments)
-    
     try:
+        argv = _command_argv(command, arguments)
+        if not argv:
+            return "[Error: Tool command is empty]"
         result = subprocess.run(
-            command,
-            shell=True,
+            argv,
+            shell=False,
             capture_output=True,
             text=True,
             timeout=30,
@@ -492,13 +500,13 @@ def run_web_chat(config: Dict[str, Any], port: int = 8080):
 
     print(f"\n🌐 {config['name']} running at http://localhost:{port}")
     print(f"   Press Ctrl+C to stop\n")
-    uvicorn.run(app, host="0.0.0.0", port=port, log_level="warning")
+    uvicorn.run(app, host=WEB_CHAT_HOST, port=port, log_level="warning")
 
 
 def _web_ui_html(config: Dict[str, Any]) -> str:
     """Generate a clean chat UI."""
-    name = config.get("name", "MyWork Agent")
-    desc = config.get("description", "")
+    name = html.escape(str(config.get("name", "MyWork Agent")), quote=True)
+    desc = html.escape(str(config.get("description", "")), quote=True)
     return f"""<!DOCTYPE html>
 <html lang="en">
 <head>

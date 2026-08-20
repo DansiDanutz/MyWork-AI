@@ -229,7 +229,7 @@ export default function YouTubeBotClient() {
           <div className="p-12 text-center text-gray-500">
             <LuPlay className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p>
-              No videos yet. Click "Create Video" to start your first
+              No videos yet. Click &quot;Create Video&quot; to start your first
               automation.
             </p>
           </div>

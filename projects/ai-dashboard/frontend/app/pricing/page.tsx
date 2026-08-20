@@ -36,16 +36,10 @@ export default function PricingPage() {
     setLoading(planKey);
     setError(null);
     try {
-      const origin = window.location.origin;
-      const result = await createCheckout(
-        "user@example.com",
-        planKey,
-        origin + "/pricing?success=true",
-        origin + "/pricing?canceled=true",
-      );
+      const result = await createCheckout(planKey);
       window.location.href = result.url;
-    } catch (e: any) {
-      setError(e.message || "Checkout failed");
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Checkout failed");
       setLoading(null);
     }
   }

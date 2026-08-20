@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_BASE = "/api/backend";
 
 export const api = axios.create({
   baseURL: API_BASE,
@@ -64,6 +64,13 @@ export interface Automation {
   created_at: string;
   approved_at: string | null;
   uploaded_at: string | null;
+}
+
+export interface AutomationUpdate {
+  title?: string;
+  description?: string;
+  script?: string;
+  tags?: string[];
 }
 
 export interface Stats {
@@ -130,7 +137,7 @@ export async function createAutomation(
 
 export async function updateAutomation(
   id: number,
-  updates: Partial<Automation>,
+  updates: AutomationUpdate,
 ): Promise<Automation> {
   const { data } = await api.patch(`/api/automation/${id}`, updates);
   return data;
@@ -169,7 +176,7 @@ export async function triggerScraper(
   return data;
 }
 
-export async function getSchedulerStatus(): Promise<Record<string, any>> {
+export async function getSchedulerStatus(): Promise<Record<string, unknown>> {
   const { data } = await api.get("/api/scheduler/status");
   return data;
 }

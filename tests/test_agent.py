@@ -4,15 +4,17 @@ Test suite for the MyWork agent engine (tools/agent.py).
 Covers agent configuration, validation, tool execution, and CLI commands.
 """
 
-import pytest
-import tempfile
+import ipaddress
 import subprocess
-import yaml
+import tempfile
+import sys
 from pathlib import Path
-from unittest.mock import patch, mock_open
+from unittest.mock import mock_open, patch
+
+import pytest
+import yaml
 
 # Import agent module
-import sys
 ROOT = Path(__file__).resolve().parents[1]
 TOOLS = ROOT / "tools"
 sys.path.insert(0, str(TOOLS))
@@ -122,6 +124,38 @@ class TestToolExecution:
         result = agent_module._format_command(template, args)
         assert "test search" in result
         assert "limit=10" in result
+
+    def test_tool_arguments_cannot_inject_shell_commands(self):
+        tool = {"command": "cat -- '{path}'"}
+        with patch.object(agent_module.subprocess, "run") as run:
+            run.return_value.stdout = ""
+            run.return_value.stderr = ""
+            run.return_value.returncode = 0
+
+            agent_module._execute_tool(tool, {"path": "/tmp/input; touch /tmp/injected"})
+
+        argv = run.call_args.args[0]
+        assert argv == ["cat", "--", "/tmp/input; touch /tmp/injected"]
+        assert run.call_args.kwargs["shell"] is False
+
+    def test_tool_arguments_cannot_select_the_executable(self):
+        result = agent_module._execute_tool({"command": "{cmd}"}, {"cmd": "touch"})
+
+        assert result == "[Error: Tool executable must be fixed in configuration]"
+
+
+def test_web_agent_default_bind_is_loopback_only():
+    """The LLM shell-tool web surface must never default to a network-wide bind."""
+    assert ipaddress.ip_address(agent_module.WEB_CHAT_HOST).is_loopback
+
+
+def test_web_agent_escapes_configured_html():
+    html = agent_module._web_ui_html(
+        {"name": '<script>alert("name")</script>', "description": "<img src=x onerror=alert(1)>"}
+    )
+    assert '<script>alert("name")</script>' not in html
+    assert "<img src=x onerror=alert(1)>" not in html
+    assert "&lt;script&gt;" in html
 
 
 class TestEnvironmentVariableResolution:

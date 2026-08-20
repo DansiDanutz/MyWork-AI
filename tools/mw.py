@@ -878,16 +878,16 @@ tools:
     description: Read a project file
     parameters:
       path: {{type: string, description: "File path"}}
-    command: "cat '{{path}}'"
+    command: "cat -- '{{path}}'"
   - name: list_files
     description: List project files
     parameters:
       dir: {{type: string, description: "Directory", default: "."}}
-    command: "ls -la '{{dir}}'"
+    command: "ls -la -- '{{dir}}'"
   - name: run_tests
     description: Run project tests
     parameters: {{}}
-    command: "cd {project_dir} && python3 -m pytest -v 2>&1 || echo 'No tests yet'"
+    command: "python3 -m pytest -v '{project_dir}'"
 """
                 (project_dir / "agent.yaml").write_text(agent_yaml)
 
@@ -11775,7 +11775,6 @@ Examples:
 
     # Python version
     try:
-        import sys
         v = sys.version_info
         if v >= (3, 10):
             add_check("passed", "🟢", f"Python {v.major}.{v.minor}.{v.micro} (modern)")
@@ -13593,6 +13592,7 @@ def cmd_share(args: List[str] = None) -> int:
     """Project sharing for team collaboration."""
     import json
     import yaml
+    from datetime import datetime
     from pathlib import Path
     
     if not args:

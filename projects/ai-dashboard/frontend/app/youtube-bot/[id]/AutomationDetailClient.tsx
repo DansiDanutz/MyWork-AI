@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -20,11 +20,12 @@ import {
   updateAutomation,
   approveAutomation,
   Automation,
+  AutomationUpdate,
 } from "@/lib/api";
 
 export default function AutomationDetailClient() {
-  const params = useParams();
-  const automationId = parseInt(params.id as string);
+  const params = useParams<{ id: string }>();
+  const automationId = Number.parseInt(params?.id ?? "", 10);
 
   const [automation, setAutomation] = useState<Automation | null>(null);
   const [loading, setLoading] = useState(true);
@@ -39,11 +40,7 @@ export default function AutomationDetailClient() {
   const [script, setScript] = useState("");
   const [tags, setTags] = useState("");
 
-  useEffect(() => {
-    fetchAutomation();
-  }, [automationId]);
-
-  const fetchAutomation = async () => {
+  const fetchAutomation = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getAutomation(automationId);
@@ -59,7 +56,11 @@ export default function AutomationDetailClient() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [automationId]);
+
+  useEffect(() => {
+    void fetchAutomation();
+  }, [fetchAutomation]);
 
   const handleSave = async () => {
     try {
@@ -67,15 +68,15 @@ export default function AutomationDetailClient() {
       setError(null);
       setSuccess(null);
 
-      const updates: Partial<Automation> = {};
+      const updates: AutomationUpdate = {};
       if (title !== automation?.video_title) {
-        (updates as any).title = title;
+        updates.title = title;
       }
       if (description !== automation?.video_description) {
-        (updates as any).description = description;
+        updates.description = description;
       }
       if (script !== automation?.video_script) {
-        (updates as any).script = script;
+        updates.script = script;
       }
 
       const tagArray = tags
@@ -83,7 +84,7 @@ export default function AutomationDetailClient() {
         .map((t) => t.trim())
         .filter((t) => t);
       if (JSON.stringify(tagArray) !== JSON.stringify(automation?.video_tags)) {
-        (updates as any).tags = tagArray;
+        updates.tags = tagArray;
       }
 
       if (Object.keys(updates).length > 0) {
@@ -353,6 +354,8 @@ export default function AutomationDetailClient() {
           {automation.thumbnail_url && (
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <h3 className="font-medium mb-4">Thumbnail</h3>
+              {/* Automation thumbnail hosts are selected by the configured video provider. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={automation.thumbnail_url}
                 alt="Thumbnail"

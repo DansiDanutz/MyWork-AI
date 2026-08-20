@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   LuRefreshCw,
   LuExternalLink,
@@ -24,11 +24,7 @@ export default function ProjectsClient() {
   const [showTrending, setShowTrending] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchProjects();
-  }, [showTrending]);
-
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async () => {
     try {
       setLoading(true);
       const data = showTrending
@@ -42,7 +38,11 @@ export default function ProjectsClient() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showTrending]);
+
+  useEffect(() => {
+    void fetchProjects();
+  }, [fetchProjects]);
 
   const handleScrape = async () => {
     try {
@@ -229,7 +229,9 @@ export default function ProjectsClient() {
       {projects.length === 0 && !error && (
         <div className="text-center py-12 text-gray-500">
           <LuCode className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>No projects yet. Click "Scrape Now" to fetch GitHub projects.</p>
+          <p>
+            No projects yet. Click &quot;Scrape Now&quot; to fetch GitHub projects.
+          </p>
         </div>
       )}
     </div>

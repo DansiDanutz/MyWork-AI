@@ -7,8 +7,8 @@
 **Status**: ✅ MVP Complete, Audited (Phase 7 complete)
 
 **Tech Stack**:
-- Backend: FastAPI + Python 3.9+
-- Frontend: Next.js 14 + React + TypeScript
+- Backend: FastAPI + Python 3.10+
+- Frontend: Next.js 15 + React + TypeScript
 - Database: SQLite
 - Scraping: BeautifulSoup, yt-dlp, Feedparser
 - Automation: APScheduler, Python-OAuth2
@@ -212,7 +212,8 @@ def run_new_source_scraper():
 
 ### This is a Personal Tool
 
-- **NOT multi-user**: No authentication system (no login/logout)
+- **NOT multi-user**: No account or login system; privileged backend controls require the
+  server-side `AI_DASHBOARD_ADMIN_TOKEN` bearer credential
 - **NOT a SaaS**: No user accounts, no subscriptions
 - **Single user**: You (the owner) are the only user
 - **Focus on utility**: Make it useful for one person, not many
@@ -324,7 +325,9 @@ Check `.planning/STATE.md` for latest status, but generally:
 
 ## Important Notes
 
-1. **No Authentication**: This is a personal tool with no login system
+1. **Control-plane Authentication**: This personal tool has no login system, but every
+   privileged backend route requires `AI_DASHBOARD_ADMIN_TOKEN`; never expose that token
+   in browser code, and use a server-side proxy before reconnecting the public frontend
 2. **SQLite Database**: Uses SQLite (not PostgreSQL) for simplicity
 3. **Scheduled Scraping**: All scrapers run on intervals via APScheduler
 4. **YouTube OAuth**: Uses OAuth 2.0 for YouTube uploads - be careful with tokens
